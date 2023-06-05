@@ -1,0 +1,1 @@
+export const roles = ['super_admin','patient','hc_provider','director_general']
