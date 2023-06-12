@@ -1,1 +1,1 @@
-export const roles = ['super_admin','patient','hc_provider','director_general']
+export const roles = ["super_admin","Ministry of health staff" ,"Director general","Director of finance" ,"Human resource manager" ,"pharmacist" ,"hc_provider" ,"laboratory_scientist" ,"Community health worker" ,"Receptionist" ,"Cashier" , "patient"]

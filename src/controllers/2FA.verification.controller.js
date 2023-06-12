@@ -7,13 +7,25 @@ const verification = async (req,res)=>{
         let select = await query(`select id,status,email,Full_name,role from patients where email = ? AND fa = ?`,[email,_2FA_code])
         if (!select) return res.status(500).send({success:false, message: errorMessage.is_error})
         if (select.length === 0) {
-            select = await query(`select id,status,email,Full_name,role,status from users where email = ? AND fa = ?`,[email,_2FA_code])
+            select = await query(`select id,email,Full_name,role,status from users where email = ? AND fa = ?`,[email,_2FA_code])
         }
         if (!select) return res.status(500).send({success:false, message: errorMessage.is_error})
         if (select.length > 0){
             [select] = select;
-            (select.role == 'patient') ? await query(`update patients set fa = null,status = "active" where id = ?`,[select.id]): await query(`update users set fa = null, ${(select.status === 'unverified')? 'status = "active"' : ''} where id = ?`,[select.id]);
-            return res.send({success: true, message: addToken({id:select.id,role: select.role,status: select.status})})
+            if(select.role == 'patient') { 
+                await query(`update patients set fa = null,status = "active" where id = ?`,[select.id])
+            }else{
+                var hospital =  await query(`select id from hospitals where JSON_CONTAINS(employees, JSON_QUOTE(?), '$')`,[select.id]);
+                [hospital] = hospital 
+                 await query(`update users set fa = null ${(select.status === 'unverified')? ',status = "active"' : ''} where id = ?`,[select.id]);
+            }
+            let token 
+            if (select.role != 'patient') {
+                 token = addToken({id:select.id,role: select.role,status: select.status,hospital: hospital.id})
+            }else{
+                 token = addToken({id:select.id,role: select.role,status: select.status})
+            }
+            return res.send({success: true, message: token})
             
         } 
         res.send({success: false, message: errorMessage._2FA_error_message})

@@ -16,7 +16,7 @@ export const authorizeRole = async (req, res, next) => {
         }
       }
       if (!f) {
-        return res.status(403).send({ message: errorMessage._err_forbidden });
+        return res.status(403).send({ message: errorMessage._err_forbidden,success: false });
       }
       next()
     } catch (error) {
