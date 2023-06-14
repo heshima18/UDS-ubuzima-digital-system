@@ -20,7 +20,7 @@ const verification = async (req,res)=>{
                  await query(`update users set fa = null ${(select.status === 'unverified')? ',status = "active"' : ''} where id = ?`,[select.id]);
             }
             let token 
-            if (select.role != 'patient') {
+            if (select.role != 'patient' && select.role != 'Admin') {
                  token = addToken({id:select.id,role: select.role,status: select.status,hospital: hospital.id})
             }else{
                  token = addToken({id:select.id,role: select.role,status: select.status})

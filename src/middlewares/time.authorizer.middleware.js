@@ -18,6 +18,7 @@ export const CheckAppointmentTimer = async (req, res, next) => {
       time.setHours(time.getHours() + 2);
       console.log((q.time >= time),q.time , time)
       if (time <= q.time) return res.send({ message: errorMessage._err_hcp_unav, success: false });
+      if (time.getHours() >= 18 || time.getHours() <= 8) return res.send({ message: errorMessage._err_hcp_unav, success: false });
       next();
     } catch (error) {
       console.log(error)
