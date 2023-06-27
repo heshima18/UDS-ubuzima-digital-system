@@ -4,7 +4,7 @@ export const CheckAppointmentTimer = async (req, res, next) => {
     try {
       let {time,hc_provider} = req.body
       if (!hc_provider) return res.status(404).send({ message: errorMessage._err_hcp_404, success: false });
-      let q = await query(`select time from appointments where hc_provider = ? order by time desc limit 0,1`,[hc_provider])
+      let q = await query(`select time from appointments where hc_provider = ? and status != ? and status != ? order by time desc limit 0,1`,[hc_provider,'outdated','declined'])
       if (!q) return res.status(500).send({ message: errorMessage.is_error, success: false });
       if(q.length == 0){
         next();

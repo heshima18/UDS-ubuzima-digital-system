@@ -2,7 +2,7 @@ import query from './query.controller'
 import errorMessage from './response.message.controller'
 import addToken from './token.signer.controller'
 const verification = async (req,res)=>{
-    let {email,_2FA_code,role}  = req.body
+    let {email,_2FA_code}  = req.body
     try {
         let select = await query(`select id,status,email,Full_name,role from patients where email = ? AND fa = ?`,[email,_2FA_code])
         if (!select) return res.status(500).send({success:false, message: errorMessage.is_error})

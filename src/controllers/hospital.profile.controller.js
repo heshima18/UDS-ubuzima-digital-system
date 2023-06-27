@@ -6,10 +6,7 @@ export const getHPs = async (req,res)=>{
       hospitals.name AS name,
       hospitals.id AS id,
       GROUP_CONCAT(DISTINCT JSON_OBJECT('province', provinces.name, 'district', districts.name, 'sector', sectors.name,'cell', cells.name)) as location,
-      IFNULL(
-        CONCAT('[', GROUP_CONCAT(DISTINCT JSON_OBJECT('id', users.id, 'name', users.Full_name, 'position', users.role) SEPARATOR ','), ']'),
-        '[]'
-      ) AS employees,
+      COALESCE(CONCAT('[', GROUP_CONCAT(DISTINCT JSON_OBJECT('id', users.id, 'name', users.Full_name, 'position', users.title,'phone', users.phone)), ']'), '[]') AS employees,
       CONCAT('[', GROUP_CONCAT(DISTINCT JSON_OBJECT('id', departments.id, 'name', departments.name)), ']') AS departments,
       COUNT(DISTINCT medical_history.id) AS total_patients
     FROM
@@ -48,7 +45,7 @@ export const getHP = async (req,res)=>{
       hospitals.name AS name,
       hospitals.id AS id,
       GROUP_CONCAT(DISTINCT JSON_OBJECT('province', provinces.name, 'district', districts.name, 'sector', sectors.name,'cell', cells.name)) as location,
-      COALESCE(CONCAT('[', GROUP_CONCAT(DISTINCT JSON_OBJECT('id', users.id, 'name', users.Full_name, 'position', users.role)), ']'), '[]') AS employees,
+      COALESCE(CONCAT('[', GROUP_CONCAT(DISTINCT JSON_OBJECT('id', users.id, 'name', users.Full_name, 'position', users.title,'phone', users.phone)), ']'), '[]') AS employees,
       CONCAT('[', GROUP_CONCAT(DISTINCT JSON_OBJECT('id', departments.id, 'name', departments.name)), ']') AS departments,
       COUNT(DISTINCT medical_history.id) AS total_patients
     FROM

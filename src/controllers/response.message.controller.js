@@ -5,10 +5,13 @@ const errorMessage = {
     tc_message:'test recorded successfully',
     ms_message:'message sent successfully',
     dc_message:'department created successfully',
+    appoi_appr_message:'appointment approved successfully',
+    appoi_decli_message:'appointment declined successfully',
     ab_message:'appointment booked successfully',
     la_message:'location recorded successfully',
     iu_message:'inventory updated successfully',
     uc_error_message:'user not created',
+    pAp_message:'payment approved successully',
     mc_error_message:'medicine was not created',
     lgIn_message: 'logged in successfully',
     _err_u_404: 'user not found',
@@ -24,9 +27,12 @@ const errorMessage = {
     _err_NID_avai: 'the provided national ID is available do you wish to login instead ?',
     _err_uname_avai: 'the provided username is available do you wish to login instead ?',
     _err_hc_404: 'the provided hospital was not found',
+    _err_ms_404: 'the provided medical session was not found',
+    _session_clo_message: 'medical session was closed successfully',
     _err_hcp_404: 'the provided healthcare provider  was not found',
     _err_hcp_unav: 'the selected healthcare provider  is not available in the selected time',
-    session_message:'session created successfully'
+    session_message:'session created successfully',
+    test_added_message:'test(s) added to the session successfully'
 
 
 }

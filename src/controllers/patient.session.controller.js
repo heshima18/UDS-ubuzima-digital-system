@@ -6,6 +6,7 @@ export const addSession = async (req,res)=>{
   try {
     let {patient,symptoms,tests,decision,departments,medicines,comment,token} = req.body
       let uid = id();
+      tests = tests || []
       let decoded = authenticateToken(token)
       let hc_provider = decoded.token.id 
       let hp = decoded.token.hospital
@@ -40,6 +41,7 @@ export const addSession = async (req,res)=>{
       res.send({success: true, message: errorMessage.session_message})
     
   } catch (error) {
+    console.log(error)
     res.status(500).send({success:false, message: errorMessage.is_error})
   }
 }
@@ -48,39 +50,31 @@ export const getUsessions = async (req,res)=>{
       let response = await query(`SELECT 
       p.full_name AS patient_name,
       mh.id AS session_id,
-       GROUP_CONCAT(DISTINCT JSON_OBJECT('id', mh.hospital, 'name', hospitals.name)) AS hp_info,
-      CONCAT('[', GROUP_CONCAT(DISTINCT JSON_OBJECT('id', departments.id, 'name', departments.name)), ']') AS departments,
-      GROUP_CONCAT(DISTINCT JSON_OBJECT('id', users.id, 'name', users.Full_name)) AS hcp_info,
       mh.tests as raw_tests,
       mh.comment as comment,
-      mh.decision as decision,
       mh.status as status,
-      payments.status as payment_status,
       mh.medicines as raw_medicines,
+      payments.amount as payment_amount,
+      payments.status as payment_status,
+      mh.decision as decision,
+      GROUP_CONCAT(DISTINCT JSON_OBJECT('id', users.id, 'name', users.Full_name)) AS hcp_info,
+      GROUP_CONCAT(DISTINCT JSON_OBJECT('id', mh.hospital, 'name', hospitals.name)) AS hp_info,
       CONCAT('[', GROUP_CONCAT(DISTINCT CONCAT('{"name": "', m.name, '"}')), ']') AS medicines,
-      CONCAT('[', GROUP_CONCAT(DISTINCT CONCAT('{"name": "', t.name, '"}')), ']') AS tests
-
+      COALESCE( CONCAT('[', GROUP_CONCAT(DISTINCT CONCAT('{"name": "', t.name, '"}')), ']'), '[]') AS tests,
+      CONCAT('[', GROUP_CONCAT(DISTINCT JSON_OBJECT('id', d.id, 'name', d.name)), ']') AS departments
     FROM
       medical_history mh
       INNER JOIN patients p ON mh.patient = p.id
-      INNER JOIN (
-        SELECT
-          JSON_EXTRACT(medicines, '$[*].id') AS medicine_ids,
-          JSON_EXTRACT(tests, '$[*].id') AS test_ids,
-          mh.id AS history_id
-        FROM
-          medical_history mh
-      ) subq ON subq.history_id = mh.id
-      INNER JOIN medicines m ON JSON_CONTAINS(subq.medicine_ids, CONCAT('"', m.id, '"'))
-      INNER JOIN tests t ON JSON_CONTAINS(subq.test_ids, CONCAT('"', t.id, '"'))
+      INNER JOIN users ON mh.Hc_provider = users.id
       INNER JOIN hospitals ON mh.hospital = hospitals.id
       INNER JOIN payments ON mh.id = payments.session
-      INNER JOIN users ON mh.Hc_provider = users.id
-      INNER JOIN departments ON JSON_CONTAINS(mh.departments, JSON_QUOTE(departments.id), '$')
+      INNER JOIN medicines AS m ON JSON_CONTAINS(mh.medicines, JSON_OBJECT('id', m.id), '$')
+      LEFT JOIN tests AS t ON JSON_CONTAINS(mh.tests, JSON_OBJECT('id', t.id), '$')
+      INNER JOIN departments as d ON JSON_CONTAINS(mh.departments, JSON_QUOTE(d.id), '$')
     WHERE mh.patient = ?
     GROUP BY
-      p.full_name,
-      mh.hospital;
+    p.full_name,
+    mh.hospital;
     `,[userid])
       if(!response) return res.status(500).send({success: false, message: errorMessage.is_error})
       for (const mh of response) {
@@ -96,7 +90,11 @@ export const getUsessions = async (req,res)=>{
             Object.assign(response[response.indexOf(mh)].medicines[mh.medicines.indexOf(medicine)],{qty: response[response.indexOf(mh)].raw_medicines[mh.medicines.indexOf(medicine)].qty})
         }
         for (const tests of mh.tests) {
-            Object.assign(response[response.indexOf(mh)].tests[mh.tests.indexOf(tests)],{result: response[response.indexOf(mh)].raw_tests[mh.tests.indexOf(tests)].result})
+          try {
+            Object.assign(response[response.indexOf(mh)].tests[mh.tests.indexOf(tests)],{result: response[response.indexOf(mh)].raw_tests[mh.tests.indexOf(tests)].result,tester: response[response.indexOf(mh)].raw_tests[mh.tests.indexOf(tests)].tester})
+          } catch (error) {
+            
+          }
         }
         delete response[response.indexOf(mh)].raw_tests
         delete response[response.indexOf(mh)].raw_medicines
@@ -105,47 +103,37 @@ export const getUsessions = async (req,res)=>{
     
   } catch (error) {
     console.log(error)
-    res.status(500).send({success:false, message: errorMessage.is_error})
+    
   }
 }
 export const session = async (req,res)=>{
-  try { let {session} = req.params
+  try { 
+    let {session} = req.params
       let response = await query(`SELECT 
       p.full_name AS patient_name,
       mh.id AS session_id,
-       GROUP_CONCAT(DISTINCT JSON_OBJECT('id', mh.hospital, 'name', hospitals.name)) AS hp_info,
-      CONCAT('[', GROUP_CONCAT(DISTINCT JSON_OBJECT('id', departments.id, 'name', departments.name)), ']') AS departments,
-      GROUP_CONCAT(DISTINCT JSON_OBJECT('id', users.id, 'name', users.Full_name)) AS hcp_info,
       mh.tests as raw_tests,
       mh.comment as comment,
-      mh.decision as decision,
       mh.status as status,
-      payments.status as payment_status,
       mh.medicines as raw_medicines,
+      payments.amount as payment_amount,
+      payments.status as payment_status,
+      mh.decision as decision,
+      GROUP_CONCAT(DISTINCT JSON_OBJECT('id', users.id, 'name', users.Full_name)) AS hcp_info,
+      GROUP_CONCAT(DISTINCT JSON_OBJECT('id', mh.hospital, 'name', hospitals.name)) AS hp_info,
       CONCAT('[', GROUP_CONCAT(DISTINCT CONCAT('{"name": "', m.name, '"}')), ']') AS medicines,
-      CONCAT('[', GROUP_CONCAT(DISTINCT CONCAT('{"name": "', t.name, '"}')), ']') AS tests
-
+      COALESCE( CONCAT('[', GROUP_CONCAT(DISTINCT CONCAT('{"name": "', t.name, '"}')), ']'), '[]') AS tests,
+      CONCAT('[', GROUP_CONCAT(DISTINCT JSON_OBJECT('id', d.id, 'name', d.name)), ']') AS departments
     FROM
       medical_history mh
       INNER JOIN patients p ON mh.patient = p.id
-      INNER JOIN (
-        SELECT
-          JSON_EXTRACT(medicines, '$[*].id') AS medicine_ids,
-          JSON_EXTRACT(tests, '$[*].id') AS test_ids,
-          mh.id AS history_id
-        FROM
-          medical_history mh
-      ) subq ON subq.history_id = mh.id
-      INNER JOIN medicines m ON JSON_CONTAINS(subq.medicine_ids, CONCAT('"', m.id, '"'))
-      INNER JOIN tests t ON JSON_CONTAINS(subq.test_ids, CONCAT('"', t.id, '"'))
+      INNER JOIN users ON mh.Hc_provider = users.id
       INNER JOIN hospitals ON mh.hospital = hospitals.id
       INNER JOIN payments ON mh.id = payments.session
-      INNER JOIN users ON mh.Hc_provider = users.id
-      INNER JOIN departments ON JSON_CONTAINS(mh.departments, JSON_QUOTE(departments.id), '$')
+      INNER JOIN medicines AS m ON JSON_CONTAINS(mh.medicines, JSON_OBJECT('id', m.id), '$')
+      LEFT JOIN tests AS t ON JSON_CONTAINS(mh.tests, JSON_OBJECT('id', t.id), '$')
+      INNER JOIN departments as d ON JSON_CONTAINS(mh.departments, JSON_QUOTE(d.id), '$')
     WHERE mh.id = ?
-    GROUP BY
-      p.full_name,
-      mh.hospital;
     `,[session])
       if(!response) return res.status(500).send({success: false, message: errorMessage.is_error})
       if (response.length == 0) return res.status(404).send({success: false, message: errorMessage._err_sess_404})
@@ -162,13 +150,73 @@ export const session = async (req,res)=>{
             Object.assign(response[response.indexOf(mh)].medicines[mh.medicines.indexOf(medicine)],{qty: response[response.indexOf(mh)].raw_medicines[mh.medicines.indexOf(medicine)].qty})
         }
         for (const tests of mh.tests) {
-            Object.assign(response[response.indexOf(mh)].tests[mh.tests.indexOf(tests)],{result: response[response.indexOf(mh)].raw_tests[mh.tests.indexOf(tests)].result})
+            Object.assign(response[response.indexOf(mh)].tests[mh.tests.indexOf(tests)],{result: response[response.indexOf(mh)].raw_tests[mh.tests.indexOf(tests)].result,tester: response[response.indexOf(mh)].raw_tests[mh.tests.indexOf(tests)].tester})
         }
         delete response[response.indexOf(mh)].raw_tests
         delete response[response.indexOf(mh)].raw_medicines
       }
       [response] = response
       res.send({success: true, message: response})
+    
+  } catch (error) {
+    console.log(error)
+    res.status(500).send({success:false, message: errorMessage.is_error})
+  }
+}
+export const addSessionTests = async (req,res)=>{
+  try {
+    let {session,tests,token} = req.body
+      let decoded = authenticateToken(token)
+      let tester = decoded.token.id
+      let itt = 0
+      for (const test of tests) {
+        query(`update medical_history set tests =  JSON_ARRAY_APPEND(tests, '$', JSON_OBJECT("id", ?, "result", ?, "tester", ?)) where id = ?`,[test.id,test.result,tester,session])
+        var t = await query(`select price from tests where id = ?`, [test.id]);
+        (t.length == 0) ? t = {price : 0} : [t] = t;
+        itt +=t.price
+      } 
+      let tt = itt
+      let updatepayment = await query(`update payments set amount = (SElect amount from payments where session = ?) + ? where session = ?`,[session,tt,session])
+      if (!updatepayment) {
+        return res.status(500).send({success:false, message: errorMessage.is_error})
+      }
+      res.send({success: true, message: errorMessage.test_added_message})
+    
+  } catch (error) {
+    console.log(error)
+    res.status(500).send({success:false, message: errorMessage.is_error})
+  }
+}
+export const approvePayment = async (req,res)=>{
+  try {
+    let {session,token} = req.body
+      let decoded = authenticateToken(token)
+      let approver = decoded.token.id;
+      let updatepayment = await  query(`update payments set status = ?,type = ?, approver = ? where session = ? `,['paid','manually approved payment',approver,session])
+      if (!updatepayment) {
+        return res.status(500).send({success:false, message: errorMessage.is_error})
+      }else if (updatepayment.affectedRows == 0) {
+        return res.status(404).send({success:false, message: errorMessage._err_ms_404})
+      }
+      res.send({success: true, message: errorMessage.pAp_message})
+    
+  } catch (error) {
+    console.log(error)
+    res.status(500).send({success:false, message: errorMessage.is_error})
+  }
+}
+export const closeSession = async (req,res)=>{
+  try {
+    let {session,token} = req.body
+      let decoded = authenticateToken(token)
+      let Hc_provider = decoded.token.id;
+      let close = await  query(`update medical_history set status = ? where id = ? AND hc_provider = ?`,['closed',session,Hc_provider])
+      if (!close) {
+        return res.status(500).send({success:false, message: errorMessage.is_error})
+      }else if (close.affectedRows == 0) {
+        return res.status(404).send({success:false, message: errorMessage._err_forbidden})
+      }
+      res.send({success: true, message: errorMessage._session_clo_message})
     
   } catch (error) {
     console.log(error)

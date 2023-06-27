@@ -1,1 +1,1 @@
-export const roles = ["Admin","Ministry of health staff" ,"Director general","Director of finance" ,"Human resource manager" ,"Medical doctor" ,"Pharmacist" ,"Nurse" ,"Medical laboratory scientists" ,"Community health worker" ,"Receptionist" ,"Cashier" , "patient"]
+export const roles = ["Admin","Ministry of health staff" ,"Director general","Director of finance" ,"Human resource manager" ,"Medical doctor" ,"Pharmacist" ,"Nurse" ,"Medical Scientist" ,"Community health worker" ,"Receptionist" ,"Cashier" , "patient","Laboratory Scientist"]
