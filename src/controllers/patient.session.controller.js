@@ -4,13 +4,16 @@ import id from "./randomInt.generator.controller";
 import authenticateToken from './token.verifier.controller';
 export const addSession = async (req,res)=>{
   try {
-    let {patient,symptoms,tests,decision,departments,medicines,comment,token} = req.body
+    let {patient,symptoms,tests,decision,departments,medicines,comment,token,assurance} = req.body
       let uid = id();
       tests = tests || []
+      departments = departments || []
       let decoded = authenticateToken(token)
+      medicines = medicines || []
       let hc_provider = decoded.token.id 
       let hp = decoded.token.hospital
-      let insert = await query(`insert into medical_history(id,patient,hospital,departments,hc_provider,symptoms,tests,medicines,decision,comment,status)values(?,?,?,?,?,?,?,?,?,?,?)`,[uid,patient,hp,JSON.stringify(departments),hc_provider,JSON.stringify(symptoms),JSON.stringify(tests),JSON.stringify(medicines),JSON.stringify(decision),comment,'open'])
+      let insert = await query(`insert into medical_history(id,patient,hospital,departments,hc_provider,symptoms,tests,medicines,decision,comment,status,assurance)values(?,?,?,?,?,?,?,?,?,?,?,?)`,[uid,patient,hp,JSON.stringify(departments),hc_provider,JSON.stringify(symptoms),JSON.stringify(tests),JSON.stringify(medicines),JSON.stringify(decision),comment,'open',assurance])
+      query(`update patients set last_diagnosed = (SELECT date FROM medical_history where id = ?) where id = ?`,[uid,patient])
       let itt,imt
       itt = 0
       imt = 0
@@ -73,8 +76,7 @@ export const getUsessions = async (req,res)=>{
       INNER JOIN departments as d ON JSON_CONTAINS(mh.departments, JSON_QUOTE(d.id), '$')
     WHERE mh.patient = ?
     GROUP BY
-    p.full_name,
-    mh.hospital;
+    mh.id;
     `,[userid])
       if(!response) return res.status(500).send({success: false, message: errorMessage.is_error})
       for (const mh of response) {
@@ -114,14 +116,16 @@ export const session = async (req,res)=>{
       mh.id AS session_id,
       mh.tests as raw_tests,
       mh.comment as comment,
+      assurances.name as assurance,
       mh.status as status,
       mh.medicines as raw_medicines,
       payments.amount as payment_amount,
+      payments.id as payment_id,
       payments.status as payment_status,
       mh.decision as decision,
       GROUP_CONCAT(DISTINCT JSON_OBJECT('id', users.id, 'name', users.Full_name)) AS hcp_info,
       GROUP_CONCAT(DISTINCT JSON_OBJECT('id', mh.hospital, 'name', hospitals.name)) AS hp_info,
-      CONCAT('[', GROUP_CONCAT(DISTINCT CONCAT('{"name": "', m.name, '"}')), ']') AS medicines,
+      CONCAT('[', GROUP_CONCAT(DISTINCT CONCAT('{"name": "', m.name, '","id": "', m.id, '"}')), ']') AS medicines,
       COALESCE( CONCAT('[', GROUP_CONCAT(DISTINCT CONCAT('{"name": "', t.name, '"}')), ']'), '[]') AS tests,
       CONCAT('[', GROUP_CONCAT(DISTINCT JSON_OBJECT('id', d.id, 'name', d.name)), ']') AS departments
     FROM
@@ -133,7 +137,10 @@ export const session = async (req,res)=>{
       INNER JOIN medicines AS m ON JSON_CONTAINS(mh.medicines, JSON_OBJECT('id', m.id), '$')
       LEFT JOIN tests AS t ON JSON_CONTAINS(mh.tests, JSON_OBJECT('id', t.id), '$')
       INNER JOIN departments as d ON JSON_CONTAINS(mh.departments, JSON_QUOTE(d.id), '$')
+      left join assurances on mh.assurance = assurances.id
     WHERE mh.id = ?
+    GROUP BY
+    mh.id;
     `,[session])
       if(!response) return res.status(500).send({success: false, message: errorMessage.is_error})
       if (response.length == 0) return res.status(404).send({success: false, message: errorMessage._err_sess_404})
@@ -167,20 +174,78 @@ export const addSessionTests = async (req,res)=>{
   try {
     let {session,tests,token} = req.body
       let decoded = authenticateToken(token)
-      let tester = decoded.token.id
+      let tester = decoded.token
       let itt = 0
       for (const test of tests) {
-        query(`update medical_history set tests =  JSON_ARRAY_APPEND(tests, '$', JSON_OBJECT("id", ?, "result", ?, "tester", ?)) where id = ?`,[test.id,test.result,tester,session])
         var t = await query(`select price from tests where id = ?`, [test.id]);
-        (t.length == 0) ? t = {price : 0} : [t] = t;
-        itt +=t.price
-      } 
-      let tt = itt
-      let updatepayment = await query(`update payments set amount = (SElect amount from payments where session = ?) + ? where session = ?`,[session,tt,session])
+        if (!t) return res.status(500).send({success:false, message: errorMessage.is_error})
+        if(t.length == 0) {
+          t = {price : 0}
+        }else{
+           [t] = t
+           itt +=t.price
+           query(`update medical_history set tests =  JSON_ARRAY_APPEND(tests, '$', JSON_OBJECT("id", ?, "result", ?, "tester", ?)) where id = ?`,[test.id,test.result,tester.id,session])
+        }
+      }
+      if (itt == 0) return res.status(403).send({success: false, message: errorMessage._err_test_404})
+      let updatepayment = await query(`update payments set amount = (SElect amount from payments where session = ?) + ? where session = ?`,[session,itt,session])
+      query(`update medical_history set departments =  JSON_ARRAY_APPEND(departments, '$', ?) where id = ?`,[tester.department,session])
       if (!updatepayment) {
         return res.status(500).send({success:false, message: errorMessage.is_error})
       }
       res.send({success: true, message: errorMessage.test_added_message})
+    
+  } catch (error) {
+    console.log(error)
+    res.status(500).send({success:false, message: errorMessage.is_error})
+  }
+}
+export const addSessionMedicine = async (req,res)=>{
+  try {
+    let {session,medicines,token} = req.body
+      let decoded = authenticateToken(token)
+      let hc_provider = decoded.token.id
+      var itt = 0
+      for (const medicine of medicines) {
+        var m = await query(`select price from medicines where id = ?`, [medicine.id]);
+        if (!m) return res.status(500).send({success:false, message: errorMessage.is_error})
+        if(m.length == 0) {
+           m = {price : 0}
+          }else{
+           [m] = m
+           itt += (m.price * medicine.quantity)
+           query(`update medical_history set medicines =  JSON_ARRAY_APPEND(medicines, '$', JSON_OBJECT("id", ?, "qty", ?)) where id = ? and status != ? AND hc_provider = ?`,[medicine.id,medicine.quantity,session,'closed',hc_provider])
+
+        }
+      }
+      if (itt == 0) return res.status(403).send({success: false, message: errorMessage._err_med_404})
+      let updatepayment = await query(`update payments set amount = (SElect amount from payments where session = ?) + ? where session = ?`,[session,itt,session])
+      if (!updatepayment) {
+        return res.status(500).send({success:false, message: errorMessage.is_error})
+      }
+      res.send({success: true, message: errorMessage.medicine_addedtosession_message})
+    
+  } catch (error) {
+    console.log(error)
+    res.status(500).send({success:false, message: errorMessage.is_error})
+  }
+}
+export const addSessionDecision = async (req,res)=>{
+  try {
+    let {session,decisions,token} = req.body
+    let decoded = authenticateToken(token)
+      let hc_provider = decoded.token.id
+      for (const decision of decisions) {
+        let addDecisions = await query(`update medical_history
+         set decision =  JSON_ARRAY_APPEND(decision,'$',?) 
+         where id = ? AND Status != ? AND hc_provider = ?`,[decision,session,'closed',hc_provider]) 
+         if (!addDecisions) {
+           return res.status(500).send({success:false, message: errorMessage.is_error})
+         }else if (addDecisions.affectedRows == 0) {
+           return res.status(401).send({success:false, message: errorMessage._err_forbidden})
+         }
+      }
+      res.send({success: true, message: errorMessage.dec_added_message})
     
   } catch (error) {
     console.log(error)
@@ -214,7 +279,7 @@ export const closeSession = async (req,res)=>{
       if (!close) {
         return res.status(500).send({success:false, message: errorMessage.is_error})
       }else if (close.affectedRows == 0) {
-        return res.status(404).send({success:false, message: errorMessage._err_forbidden})
+        return res.status(401).send({success:false, message: errorMessage._err_forbidden})
       }
       res.send({success: true, message: errorMessage._session_clo_message})
     

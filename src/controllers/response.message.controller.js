@@ -8,16 +8,22 @@ const errorMessage = {
     appoi_appr_message:'appointment approved successfully',
     appoi_decli_message:'appointment declined successfully',
     ab_message:'appointment booked successfully',
+    dec_added_message:'decision was added to the session successfully',
     la_message:'location recorded successfully',
+    assu_added_message:'assurance recorded successfully',
+    assu_user_error_message:'the selected user is not eligible for this assurance',
+    assu_added_to_user_message:'assurance assigned to the user successfully',
     iu_message:'inventory updated successfully',
     uc_error_message:'user not created',
     pAp_message:'payment approved successully',
     mc_error_message:'medicine was not created',
     lgIn_message: 'logged in successfully',
+    _err_assu_404:'assurance not found',
     _err_u_404: 'user not found',
     _err_p_404: 'patient not found',
     _err_sess_404: 'the requested session was not found',
-    _err_med_404: 'medicine not found',
+    _err_med_404: 'medicine(s) not found',
+    _err_test_404: 'test(s) not found',
     lgIn_error_message: 'incorrect username or password',
     uNa_error_message: 'the current user is not active',
     _2FA_code_message: 'verification code sent!, check in your mailbox for a verication code',
@@ -32,7 +38,8 @@ const errorMessage = {
     _err_hcp_404: 'the provided healthcare provider  was not found',
     _err_hcp_unav: 'the selected healthcare provider  is not available in the selected time',
     session_message:'session created successfully',
-    test_added_message:'test(s) added to the session successfully'
+    test_added_message:'test(s) added to the session successfully',
+    medicine_addedtosession_message:'medicine(s) added to the session successfully'
 
 
 }

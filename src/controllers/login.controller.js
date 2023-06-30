@@ -8,10 +8,14 @@ const login = async (req, res) => {
 
   try {
     let select;
-    select = await query(`SELECT id, status, email, Full_name,role FROM patients WHERE username = ? AND password = ?`, [username, password]);
+    select = await query(`
+    SELECT id, status, email, Full_name,role 
+    FROM patients
+    WHERE 
+    (username = ? AND password = ?) OR (email = ? AND password = ?) OR (NID = ? AND password = ?) OR (id = ? AND password = ?)`, [username, password,username, password,username, password,username, password]);
     
     if (select.length === 0) {
-      select = await query(`SELECT id, status, email, Full_name,role FROM users WHERE username = ? AND password = ?`, [username, password]);
+      select = await query(`SELECT id, status, email, Full_name,role FROM users WHERE (username = ? AND password = ?) OR (email = ? AND password = ?) OR (NID = ? AND password = ?) OR (id = ? AND password = ?)`, [username, password,username, password, username, password, username, password]);
     }
 
     if (select.length === 0) {

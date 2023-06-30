@@ -7,7 +7,18 @@ const verification = async (req,res)=>{
         let select = await query(`select id,status,email,Full_name,role from patients where email = ? AND fa = ?`,[email,_2FA_code])
         if (!select) return res.status(500).send({success:false, message: errorMessage.is_error})
         if (select.length === 0) {
-            select = await query(`select id,email,Full_name,role,status from users where email = ? AND fa = ?`,[email,_2FA_code])
+            select = await query(`SELECT
+             users.id,
+             users.email,
+             users.Full_name,
+             users.role,
+             users.status,
+             users.department,
+             departments.title 
+             FROM
+              users 
+              LEFT JOIN departments on users.department = departments.id
+            where email = ? AND fa = ?`,[email,_2FA_code])
         }
         if (!select) return res.status(500).send({success:false, message: errorMessage.is_error})
         if (select.length > 0){
@@ -16,12 +27,12 @@ const verification = async (req,res)=>{
                 await query(`update patients set fa = null,status = "active" where id = ?`,[select.id])
             }else{
                 var hospital =  await query(`select id from hospitals where JSON_CONTAINS(employees, JSON_QUOTE(?), '$')`,[select.id]);
-                [hospital] = hospital 
-                 await query(`update users set fa = null ${(select.status === 'unverified')? ',status = "active"' : ''} where id = ?`,[select.id]);
+                [hospital] = hospital
+                query(`update users set fa = null ${(select.status === 'unverified')? ',status = "active"' : ''} where id = ?`,[select.id]);
             }
             let token 
             if (select.role != 'patient' && select.role != 'Admin') {
-                 token = addToken({id:select.id,role: select.role,status: select.status,hospital: hospital.id})
+                 token = addToken({id:select.id,role: select.role,status: select.status,hospital: hospital.id,department: select.department})
             }else{
                  token = addToken({id:select.id,role: select.role,status: select.status})
             }

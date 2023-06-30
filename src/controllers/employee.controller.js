@@ -4,9 +4,9 @@ import id from "./randomInt.generator.controller";
 import generate2FAcode from './2FA.code.generator.controller'
 import sendmail from "./2FA.sender.controller";
 import {checkEmail, checkNID, checku_name} from './credentials.verifier.controller';
-const addemployee = async (req,res)=>{
+export const addemployee = async (req,res)=>{
   try {
-    let {username,password,Full_name,email,phone,nid,role,hospital,title} = req.body
+    let {username,password,Full_name,email,phone,nid,role,hospital,department} = req.body
       let uid = id()
       let des = await checkEmail(email,phone,'users')
       if(!des) return res.status(500).send({success: false, message : errorMessage.is_error});
@@ -22,7 +22,7 @@ const addemployee = async (req,res)=>{
       let update = await query(`UPDATE hospitals SET employees = JSON_ARRAY_APPEND(employees, '$', ?) where hospitals.id = ?`,[uid,hospital]);
       if (!update) return res.status(500).send({success:false, message: errorMessage.is_error})
       if (!update.affectedRows) return res.status(404).send({success:false, message: errorMessage._err_hc_404})
-      let insert = await query(`insert into users(id,NID,email,phone,Full_name,username,password,role,title,status)values(?,?,?,?,?,?,?,?,?,?)`,[uid,nid,email,phone,Full_name,username,password,role,title,'unverified'])
+      let insert = await query(`insert into users(id,NID,email,phone,Full_name,username,password,role,department,status)values(?,?,?,?,?,?,?,?,?,?)`,[uid,nid,email,phone,Full_name,username,password,role,department,'unverified'])
       let FAcode = generate2FAcode()
       if (!insert) {
         return res.status(500).send({success:false, message: errorMessage.is_error})
@@ -36,4 +36,3 @@ const addemployee = async (req,res)=>{
     res.status(500).send({success:false, message: errorMessage.is_error})
   }
 }
-export default addemployee

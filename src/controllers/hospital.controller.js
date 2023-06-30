@@ -1,5 +1,14 @@
 import query from './query.controller'
 import errorMessage from './response.message.controller'
+export const addhospital = async (req,res)=>{
+  let { name,departments,province,type,district,sector,cell,dependency,phone } = req.body
+  let insert = await query(`insert into hospitals(id,name,departments,province,type,phone,district,sector,cell,dependency)values(?,?,?,?,?,?,?,?,?,?)`,[id(),name,JSON.stringify(departments),province,type,phone,district,sector,cell,dependency])
+  if (!insert) {
+      res.status(500).send({success:false, message: errorMessage.is_error})
+      return
+  }
+  res.send({success: true, message: 'health service center created sucessfully'})
+}
 export const getHPs = async (req,res)=>{
   try {
       let response = await query(`SELECT
