@@ -1,3 +1,5 @@
+connect to instance with certificate: 
+    ssh -i "uds.pem" ubuntu@ec2-16-171-140-118.eu-north-1.compute.amazonaws.com
 install curl : sudo apt-get install curl
 install nodejs: 
     1: curl -sL https://deb.nodesource.com/setup_16.x | sudo -E bash -
