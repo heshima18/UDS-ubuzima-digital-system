@@ -2,14 +2,15 @@ import query from './query.controller'
 import errorMessage from './response.message.controller'
 import authenticateToken from './token.verifier.controller';
 import { checkInventory } from '../utils/check.inventory.controller';
+import id from "./randomInt.generator.controller";
 export const addInventory = async (req,res)=>{
   try {
     let {medicine,quantity,token} = req.body
       token = authenticateToken(token)
       token = token.token
       let hospital = token.hospital
-      let uid = id()
-      let obj = JSON.stringify({id: medicine, quantity: quantity})
+      let uid = id();
+      let obj = JSON.stringify({id: medicine, quantity: parseInt(quantity)})
       var avai = await checkInventory(hospital)
       avai = avai[0]
       var insert
@@ -38,36 +39,25 @@ export const getInventory = async (req,res)=>{
       token = authenticateToken(token)
       token = token.token
       let hospital = token.hospital
-      var select = await query(` WITH RECURSIVE indexes AS (
-        SELECT 0 AS idx
-        UNION ALL
-        SELECT idx + 1
-        FROM indexes
-        WHERE idx < JSON_LENGTH((SELECT medicines FROM inventories WHERE hospital = ?)) - 1
-      )
+      var select = await query(`
       SELECT
-        CONCAT(
-          '[',
-          GROUP_CONCAT(
-            CONCAT(
-              '{"id": "', m.id, '","name": "', m.name, '", "quantity": "', JSON_UNQUOTE(JSON_EXTRACT(i.medicines, CONCAT('$[', indexes.idx, '].quantity'))), '"}'
-            )
-            ORDER BY m.id
-            SEPARATOR ','
-          ),
-          ']'
-        ) AS medicines
+      i.medicines as raw_medicines,
+      CONCAT('[', GROUP_CONCAT(DISTINCT CONCAT('{"id": "', m.id, '","name": "', m.name, '"}')), ']') AS medicines
       FROM inventories AS i
       INNER JOIN medicines AS m ON JSON_CONTAINS(i.medicines, JSON_OBJECT('id', m.id), '$')
-      CROSS JOIN indexes
       WHERE i.hospital = ?
       GROUP BY i.hospital;`,[hospital,hospital])  
       if (!select) {
         return res.status(500).send({success:false, message: errorMessage.is_error})
       }
-      for (const inventory of select) {
-        select[select.indexOf(inventory)].medicines = JSON.parse(inventory.medicines)
+      if(select.length == 0)return res.send({success: true, message: select})
+      select = select[0]
+      select.medicines = JSON.parse(select.medicines)
+      select.raw_medicines = JSON.parse(select.raw_medicines)
+      for (const medicine of select.medicines) {
+        Object.assign(select.medicines[select.medicines.indexOf(medicine)],{quantity: select.raw_medicines[select.medicines.indexOf(medicine)].quantity})
       }
+      delete select.raw_medicines
       res.send({success: true, message: select})
     
   } catch (error) {

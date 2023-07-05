@@ -5,7 +5,6 @@ import sendmail from "./2FA.sender.controller";
 
 const login = async (req, res) => {
   let { username, password } = req.body;
-
   try {
     let select;
     select = await query(`
@@ -19,7 +18,7 @@ const login = async (req, res) => {
     }
 
     if (select.length === 0) {
-      res.status(404).send({ success: false, message: errorMessage.lgIn_error_message });
+      res.status(401).send({ success: false, message: errorMessage.lgIn_error_message });
       return;
     }
 

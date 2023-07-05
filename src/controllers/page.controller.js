@@ -1,5 +1,5 @@
 import fs from "fs";
-import  render  from "./page.scraper.controller";
+// import  render  from "./page.scraper.controller";
 import  path  from "path";
 let page = (req,res)=>{
 	const { filename } = req.params;
@@ -13,6 +13,12 @@ let page = (req,res)=>{
             break;
         case 'app/':
             file = path.join(__dirname,'..','pages', 'dashboard.html') 
+            break;
+        case 'login/':
+            file = path.join(__dirname,'..','pages', 'login.html') 
+            break;
+        case 'auth/':
+            file = path.join(__dirname,'..','pages', 'verify.html') 
             break;
         default:
                 file = 'N/A'
@@ -39,7 +45,7 @@ let page = (req,res)=>{
             'Content-Type': "text/html",
             'Content-Length': data.length
         });
-        data = render(data)
+        // data = render(data)
         res.end(data);
     });
 }

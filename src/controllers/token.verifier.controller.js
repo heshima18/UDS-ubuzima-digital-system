@@ -14,4 +14,8 @@ function authenticateToken(data) {
     });
     return v;
   }
+export let at = (req,res)=>{
+  let {token} = req.params
+  res.send(authenticateToken(token))
+}
 export default authenticateToken

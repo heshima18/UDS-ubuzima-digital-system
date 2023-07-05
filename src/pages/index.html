@@ -5,9 +5,167 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <link rel="stylesheet" type="text/css" href="styles/styling.css">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="/getSocketIo/socket.io.min.js"></script>
     <title>UDS</title>
+    <script type="module">
+        let token = localStorage.getItem('token')
+        import { request,postschema } from "../utils/functions.controller.js";
+        let z = await request(`authenticateToken/${token}`,{method: 'GET'})
+        if (z.success) {
+            z = z.token
+            const socket = io('http://127.0.0.1:7000',{ query : { id: z.id} });
+            socket.on('connect', () => {
+            console.log('Connected to the server');
+            });
+            if (typeof(z.hospital) != 'string') {
+             socket.emit('getpsforselection',z.hospital)
+            }
+            socket.on('message', (message) => {
+            console.log(message);
+            });
+            socket.on('selecthp', (message)=>{
+                console.log(message)
+                var div = document.createElement('div')
+                document.body.appendChild(div)
+                for (const hp of message) {
+                    div.innerHTML += `<div id="${hp.id}" class="verdana hover p-5p">${hp.name}</div>`
+                }
+                let dvs = div.querySelectorAll('div')
+                dvs.forEach(button=>{
+                    button.addEventListener('click',e=>{
+                        e.preventDefault()
+                        socket.emit('hpchoosen',{hp: button.id, token: localStorage.getItem('token')})
+                    })
+                })
+            })
+            socket.on('changetoken',(token)=>{
+                window.alert('token changed')
+                localStorage.setItem('token',token)
+                window.location.href = window.location.href
+            })
+            socket.emit('messageToId',{recipientId: z.id, message: 'wassup'})
+        }else{
+            localStorage.removeItem('token')
+            window.location.href = 'login/'
+        }
+        postschema.body = JSON.stringify({token: localStorage.getItem('token')})
+        let users = await request('get-hp-employees',postschema)
+        if (users.success) {
+            var select = document.querySelector('select')
+            for (const user of users.message) {
+               let opt = document.createElement('option');
+               opt.innerText = user.Full_name
+               opt.value = user.id
+               select.appendChild(opt) 
+            }
+        }
+        let form = document.querySelector('form#messageForm');
+        form.addEventListener('submit',async e=>{
+            e.preventDefault()
+            let sel = select.value;
+            let con = form.querySelector('textarea').value.trim();
+            postschema.body = JSON.stringify({
+                receiver: sel,
+                type: 'message',
+                content: con,
+                token: localStorage.getItem('token')
+            })
+            let sendm = await request('send-message',postschema);
+        })
+        let addSessionForm = document.querySelector('form#addSessionForm');
+        postschema.body = JSON.stringify({
+            token: localStorage.getItem('token')
+        })
+        let selects = Array.from(addSessionForm.querySelectorAll('select'));
+        let textareas = addSessionForm.querySelector('textarea');
+        selects.push(textareas)
+        let inventory = await request('get-inventory',postschema)
+        let patient = await request('patient/398325557',postschema)
+        let tests = await request('get-tests',postschema)
+        if (patient.success) {
+            patient = patient.message
+            let opt = document.createElement('option');
+            for (const assurance of patient.assurances) {
+                let opta = document.createElement('option');
+               opta.innerText = assurance.name 
+               opta.value = assurance.id 
+               selects[1].appendChild(opta)
+            }
+            console.log(patient)
+
+            opt.innerText = patient.Full_name
+            opt.id = patient.id
+            selects[0].appendChild(opt)
+        }
+        if (tests.success) {
+            tests = tests.message
+            for (const test of tests) {
+                let opt = document.createElement('option');
+                opt.innerText = test.name
+                opt.id = test.id
+                opt.value = test.id
+                selects[4].appendChild(opt)
+            }
+        }
+        if(inventory.success){
+            for (const medicine of inventory.message.medicines) {
+                let opt = document.createElement('option');
+                opt.innerText = medicine.name
+                opt.id = medicine.id
+                opt.value = medicine.id
+                opt.setAttribute('data-quantity', medicine.quantity)
+                selects[3].appendChild(opt)
+            }
+        }
+        addSessionForm.addEventListener('submit',async e=>{
+            e.preventDefault()
+            for (const values of selects) {
+                console.log(values.value)
+            }
+        })
+    
+    </script>
 </head>
 <body>
     <h1 class="verdana center">UDS Home Page</h1>
+    <div class="iblock">
+        <form action="" method="get" class="w-200p h-300p center iblock" id="messageForm">
+            <h2 class="center">send message form</h2>
+            <select name="" id="" class="block p-5p">
+                <option>receiver</option>
+            </select>
+            <textarea name="" id="" cols="10" rows="10" placeholder="content" class="block p-5p"></textarea>
+            <button type="submit" class="button" required>send message</button>
+        </form>
+    </div>
+    <div class="iblock">
+        <form action="" method="get" class="w-200p h-a center iblock " id="addSessionForm">
+            <h2 class="center">add session form</h2>
+            <select name="" id="patient" class="block p-5p m-5p" readonly>
+                
+            </select>
+            <select name="" id="assurance" class="block p-5p m-5p">
+                
+            </select>
+            <select name="" id="symptoms" class="block p-5p m-5p" multiple>
+                <option>symptom 1</option>
+                <option>symptom 2</option>
+                <option>symptom 3</option>
+            </select>
+            <select name="" id="medicines" class="block p-5p m-5p" multiple>
+    
+            </select>
+            <select name="" id="tests" class="block p-5p m-5p" multiple>
+    
+            </select>
+            <select name="" id="decision" class="block p-5p m-5p" multiple>
+                <option>decision 1</option>
+                <option>decision 2</option>
+                <option>decision 3</option>
+            </select>
+            <textarea name="" id="comment" cols="10" rows="10" placeholder="comment" class="block p-5p"></textarea>
+            <button type="submit" class="button" required>open session</button>
+        </form>
+    </div>
 </body>
 </html>

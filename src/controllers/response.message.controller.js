@@ -1,6 +1,7 @@
 const errorMessage = {
     is_error: 'there was en error while processing your request',
     uc_message:'user created successfully',
+    uc_added_to_hp_message:'user was added to the facility successfully',
     mc_message:'medicine recorded successfully',
     tc_message:'test recorded successfully',
     ms_message:'message sent successfully',

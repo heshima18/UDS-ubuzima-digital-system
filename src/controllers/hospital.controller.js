@@ -125,3 +125,31 @@ export const searchHP = async (req,res)=>{
     res.status(500).send({success:false, message: errorMessage.is_error})
   }
 }
+export async function getCustomHps (ids){
+  let s = ''
+  for (const hpid of ids) {
+    if (ids.indexOf(hpid) == ids.length-1) {
+      s+= `id = '${hpid}'`
+    }else{
+      s+= `id = '${hpid}' OR `
+
+    }
+  }
+  try {
+      let response = await query(`SELECT
+      hospitals.name AS name,
+      hospitals.id AS id
+    FROM
+      hospitals
+    WHERE ${s}
+    GROUP BY
+      hospitals.id,
+      hospitals.name;
+          
+    `,[])
+      return response
+  } catch (error) {
+    console.log(error)
+    return []
+  }
+}

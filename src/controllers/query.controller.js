@@ -1,4 +1,4 @@
-import connection from "../../app";
+import {connection} from "../../app";
 async function query(query,params) {
     try {
       const res = await new Promise((resolve, reject) => {

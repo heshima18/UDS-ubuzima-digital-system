@@ -38,13 +38,11 @@ export const getPatient = async (req,res)=>{
         }
         if (select.length == 0) return res.send({success: true, message: []})
         select = select[0]
-        console.log(select)
         select.assurances = JSON.parse(select.assurances)
         select.raw_assurances = JSON.parse(select.raw_assurances)
         for (const assurance of select.assurances) {
             for (const raw_assurance of select.raw_assurances) {
                 if (raw_assurance.id == assurance.id) {
-                    console.log(raw_assurance)
                     Object.assign(select.assurances[select.assurances.indexOf(assurance)],{eligibility: raw_assurance.status})
                 }
             }
