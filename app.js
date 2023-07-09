@@ -8,7 +8,7 @@ export let connection =  mysql.createPool({
     host : process.env.DB_HOST,
     user : process.env.DB_USER,
     password : process.env.DB_PASS,
-    database : 'uds'
+    database : process.env.DB_NAME
 });
 try {
     connection.getConnection((err, connection) => {

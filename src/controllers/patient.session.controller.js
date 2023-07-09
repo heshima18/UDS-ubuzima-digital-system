@@ -18,7 +18,8 @@ export const addSession = async (req,res)=>{
       imt = 0
       for (const test of tests) {
         var t = await query(`select price from tests where id = ?`, [test.id]);
-        [t] = t
+        if(t.length == 0)  return res.status(500).send({success:false, message: errorMessage._err_test_404})
+        t = t[0]
         itt +=t.price
       }
       let meds = await query(`select medicines from inventories where hospital = ?`, [hp]);
@@ -31,8 +32,9 @@ export const addSession = async (req,res)=>{
               Object.assign(medicines[medicines.indexOf(medicine)],{servedOut: true})
             }else{
               var m = await query(`select price from medicines where id = ?`, [medicine.id]);
-              [m] = m
-              imt +=(m.price * medicine.qty)
+              if(m.length == 0)  return res.status(500).send({success:false, message: errorMessage._err_med_404})
+              m = m[0]
+              imt +=(m.price * medicine.quantity)
               Object.assign(medicines[medicines.indexOf(medicine)],{servedOut: false})
               meds[meds.indexOf(medic)].quantity = parseInt(meds[meds.indexOf(medic)].quantity) - parseInt(medicine.quantity)
             }
@@ -87,7 +89,7 @@ export const getUsessions = async (req,res)=>{
         response[response.indexOf(mh)].raw_tests = JSON.parse(mh.raw_tests);
         response[response.indexOf(mh)].raw_medicines = JSON.parse(mh.raw_medicines)    
         for (const medicine of mh.medicines) {
-            Object.assign(response[response.indexOf(mh)].medicines[mh.medicines.indexOf(medicine)],{qty: response[response.indexOf(mh)].raw_medicines[mh.medicines.indexOf(medicine)].qty, servedOut: response[response.indexOf(mh)].raw_medicines[mh.medicines.indexOf(medicine)].servedOut})
+            Object.assign(response[response.indexOf(mh)].medicines[mh.medicines.indexOf(medicine)],{quantity: response[response.indexOf(mh)].raw_medicines[mh.medicines.indexOf(medicine)].quantity, servedOut: response[response.indexOf(mh)].raw_medicines[mh.medicines.indexOf(medicine)].servedOut})
         }
         for (const tests of mh.tests) {
           try {
@@ -103,7 +105,119 @@ export const getUsessions = async (req,res)=>{
     
   } catch (error) {
     console.log(error)
+    res.status(500).send({success:false, message: errorMessage.is_error})
+  }
+}
+export const getHpsessions = async (req,res)=>{
+  try { 
+      let {token} = req.body
+      let decoded = authenticateToken(token)
+      let hp = decoded.token.hospital
+      if (!hp) {hp = req.body.hospital}
+      let response = await query(`SELECT 
+      mh.id AS session_id,
+      mh.tests as raw_tests,
+      mh.comment as comment,
+      mh.status as status,
+      patients.Full_name as patient_name,
+      patients.id as patient_id,
+      mh.medicines as raw_medicines,
+      payments.amount as payment_amount,
+      payments.status as payment_status,
+      mh.decision as decision,
+      CONCAT('[', GROUP_CONCAT(DISTINCT CONCAT('{"name": "', m.name, '"}')), ']') AS medicines,
+      COALESCE( CONCAT('[', GROUP_CONCAT(DISTINCT CONCAT('{"name": "', t.name, '"}')), ']'), '[]') AS tests
+    FROM
+      medical_history mh
+      INNER JOIN payments ON mh.id = payments.session
+      INNER JOIN patients ON mh.patient = patients.id
+      INNER JOIN medicines AS m ON JSON_CONTAINS(mh.medicines, JSON_OBJECT('id', m.id), '$')
+      LEFT JOIN tests AS t ON JSON_CONTAINS(mh.tests, JSON_OBJECT('id', t.id), '$')
+    WHERE mh.hospital = ?
+    GROUP BY
+    mh.id;
+    `,[hp])
+      if(!response) return res.status(500).send({success: false, message: errorMessage.is_error})
+      for (const mh of response) {
+        response[response.indexOf(mh)].medicines = JSON.parse(mh.medicines);
+        response[response.indexOf(mh)].decision = JSON.parse(mh.decision);
+        response[response.indexOf(mh)].tests = JSON.parse(mh.tests)
+        response[response.indexOf(mh)].raw_tests = JSON.parse(mh.raw_tests);
+        response[response.indexOf(mh)].raw_medicines = JSON.parse(mh.raw_medicines)    
+        for (const medicine of mh.medicines) {
+            Object.assign(response[response.indexOf(mh)].medicines[mh.medicines.indexOf(medicine)],{quantity: response[response.indexOf(mh)].raw_medicines[mh.medicines.indexOf(medicine)].quantity, servedOut: response[response.indexOf(mh)].raw_medicines[mh.medicines.indexOf(medicine)].servedOut})
+        }
+        for (const tests of mh.tests) {
+          try {
+            Object.assign(response[response.indexOf(mh)].tests[mh.tests.indexOf(tests)],{result: response[response.indexOf(mh)].raw_tests[mh.tests.indexOf(tests)].result,tester: response[response.indexOf(mh)].raw_tests[mh.tests.indexOf(tests)].tester})
+          } catch (error) {
+            
+          }
+        }
+        delete response[response.indexOf(mh)].raw_tests
+        delete response[response.indexOf(mh)].raw_medicines
+      }
+      res.send({success: true, message: response})
     
+  } catch (error) {
+    console.log(error)
+    res.status(500).send({success:false, message: errorMessage.is_error})
+  }
+}
+export const getHc_pSessions = async (req,res)=>{
+  try { 
+      let {token} = req.body
+      let decoded = authenticateToken(token)
+      let hcp = decoded.token.id
+      if (!hcp) {hcp = req.body.id}
+      let response = await query(`SELECT 
+      mh.id AS session_id,
+      mh.tests as raw_tests,
+      mh.comment as comment,
+      mh.status as status,
+      mh.medicines as raw_medicines,
+      payments.amount as payment_amount,
+      patients.Full_name as patient_name,
+      patients.id as patient_id,
+      payments.status as payment_status,
+      mh.decision as decision,
+      CONCAT('[', GROUP_CONCAT(DISTINCT CONCAT('{"name": "', m.name, '"}')), ']') AS medicines,
+      COALESCE( CONCAT('[', GROUP_CONCAT(DISTINCT CONCAT('{"name": "', t.name, '"}')), ']'), '[]') AS tests
+    FROM
+      medical_history mh
+      INNER JOIN payments ON mh.id = payments.session
+      INNER JOIN patients ON mh.patient = patients.id
+      INNER JOIN medicines AS m ON JSON_CONTAINS(mh.medicines, JSON_OBJECT('id', m.id), '$')
+      LEFT JOIN tests AS t ON JSON_CONTAINS(mh.tests, JSON_OBJECT('id', t.id), '$')
+    WHERE mh.hcp_provider = ?
+    GROUP BY
+    mh.id;
+    `,[hcp])
+      if(!response) return res.status(500).send({success: false, message: errorMessage.is_error})
+      for (const mh of response) {
+        response[response.indexOf(mh)].medicines = JSON.parse(mh.medicines);
+        response[response.indexOf(mh)].decision = JSON.parse(mh.decision);
+        response[response.indexOf(mh)].tests = JSON.parse(mh.tests)
+        response[response.indexOf(mh)].raw_tests = JSON.parse(mh.raw_tests);
+        response[response.indexOf(mh)].raw_medicines = JSON.parse(mh.raw_medicines)    
+        for (const medicine of mh.medicines) {
+            Object.assign(response[response.indexOf(mh)].medicines[mh.medicines.indexOf(medicine)],{quantity: response[response.indexOf(mh)].raw_medicines[mh.medicines.indexOf(medicine)].quantity, servedOut: response[response.indexOf(mh)].raw_medicines[mh.medicines.indexOf(medicine)].servedOut})
+        }
+        for (const tests of mh.tests) {
+          try {
+            Object.assign(response[response.indexOf(mh)].tests[mh.tests.indexOf(tests)],{result: response[response.indexOf(mh)].raw_tests[mh.tests.indexOf(tests)].result,tester: response[response.indexOf(mh)].raw_tests[mh.tests.indexOf(tests)].tester})
+          } catch (error) {
+            
+          }
+        }
+        delete response[response.indexOf(mh)].raw_tests
+        delete response[response.indexOf(mh)].raw_medicines
+      }
+      res.send({success: true, message: response})
+    
+  } catch (error) {
+    console.log(error)
+    res.status(500).send({success:false, message: errorMessage.is_error})
   }
 }
 export const session = async (req,res)=>{
@@ -152,7 +266,7 @@ export const session = async (req,res)=>{
         response[response.indexOf(mh)].raw_tests = JSON.parse(mh.raw_tests);
         response[response.indexOf(mh)].raw_medicines = JSON.parse(mh.raw_medicines)    
         for (const medicine of mh.medicines) {
-            Object.assign(response[response.indexOf(mh)].medicines[mh.medicines.indexOf(medicine)],{qty: response[response.indexOf(mh)].raw_medicines[mh.medicines.indexOf(medicine)].qty})
+            Object.assign(response[response.indexOf(mh)].medicines[mh.medicines.indexOf(medicine)],{quantity: response[response.indexOf(mh)].raw_medicines[mh.medicines.indexOf(medicine)].quantity})
         }
         for (const tests of mh.tests) {
             Object.assign(response[response.indexOf(mh)].tests[mh.tests.indexOf(tests)],{result: response[response.indexOf(mh)].raw_tests[mh.tests.indexOf(tests)].result,tester: response[response.indexOf(mh)].raw_tests[mh.tests.indexOf(tests)].tester})
@@ -227,10 +341,10 @@ export const addSessionMedicine = async (req,res)=>{
            for (const medic of meds) {
             if (medic.id == medicine.id) {
               if (medic.quantity < medicine.quantity) {
-                query(`update medical_history set medicines =  JSON_ARRAY_APPEND(medicines, '$', JSON_OBJECT("id", ?, "qty", ?, "servedOut", ?)) where id = ? and status != ? AND hc_provider = ?`,[medicine.id,medicine.quantity,true,session,'closed',hc_provider])
+                query(`update medical_history set medicines =  JSON_ARRAY_APPEND(medicines, '$', JSON_OBJECT("id", ?, "quantity", ?, "servedOut", ?)) where id = ? and status != ? AND hc_provider = ?`,[medicine.id,medicine.quantity,true,session,'closed',hc_provider])
               }else{
                 itt += (m.price * medicine.quantity)
-                query(`update medical_history set medicines =  JSON_ARRAY_APPEND(medicines, '$', JSON_OBJECT("id", ?, "qty", ?, "servedOut", ?)) where id = ? and status != ? AND hc_provider = ?`,[medicine.id,medicine.quantity,false,session,'closed',hc_provider])
+                query(`update medical_history set medicines =  JSON_ARRAY_APPEND(medicines, '$', JSON_OBJECT("id", ?, "quantity", ?, "servedOut", ?)) where id = ? and status != ? AND hc_provider = ?`,[medicine.id,medicine.quantity,false,session,'closed',hc_provider])
                 meds[meds.indexOf(medic)].quantity = parseInt(meds[meds.indexOf(medic)].quantity) - parseInt(medicine.quantity)
               }
             }

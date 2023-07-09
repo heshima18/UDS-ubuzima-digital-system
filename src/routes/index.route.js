@@ -11,7 +11,7 @@ import { authorizeRole } from '../middlewares/roles.authorizer.middleware';
 import { authorizeAdmin, authorizeCashier, authorizeHc_provider, authorizeHcp_ptnt, authorizeLaboratory_scientist, authorizePatient, authorizePatientToken, authorizePharmacist } from '../middlewares/users.authoriser.middleware';
 import {addEmployeetoHp, addemployee, getHpEmployees} from '../controllers/employee.controller';
 import { getHP, getHPs, searchHP,addhospital } from '../controllers/hospital.controller';
-import {addSession, addSessionDecision, addSessionMedicine, addSessionTests, approvePayment, closeSession, getUsessions, session } from '../controllers/patient.session.controller';
+import {addSession, addSessionDecision, addSessionMedicine, addSessionTests, approvePayment, closeSession, getHc_pSessions, getHpsessions, getUsessions, session } from '../controllers/patient.session.controller';
 import {addmedicine, getMed, getMeds, searchMed} from '../controllers/medicine.controller';
 import addDepartment from '../controllers/add.department.controller';
 import {addtest,getTests} from '../controllers/tests.controller';
@@ -24,7 +24,7 @@ import {getInventory,addInventory} from '../controllers/inventory.controller';
 import sendMessage from '../controllers/message.sender.controller';
 import { authorizeAppointmentAccess } from '../middlewares/appointment.authorizer.middleware';
 import { authorizeSession } from '../middlewares/session.authorizer.middleware';
-import { addUserAssurance, getPatient, getPatients } from '../controllers/patients.controller';
+import { addUserAssurance, getPatient, getPatients, searchPatient } from '../controllers/patients.controller';
 import { addAssurance, getAssurances } from '../controllers/assurance.controller';
 import { authorizeUserAssurance } from '../middlewares/assurance.authorizer.middleware';
 import { at } from '../controllers/token.verifier.controller';
@@ -32,6 +32,8 @@ import { io } from '../socket.io/connector.socket.io';
 const router = express.Router({ strict: true });
 router.post('/verify',verification)
 router.post('/get-user-medical-history/:userid',authorizeRole,authorizeHcp_ptnt,getUsessions)
+router.post('/get-hospital-medical-history',authorizeRole,getHpsessions)
+router.post('/get-hcp-sessions',authorizeRole,authorizeHc_provider,getHc_pSessions)
 router.post('/session/:session',authorizeRole,authorizeHcp_ptnt,session)
 router.post('/addhealthpost',authorizeRole,authorizeAdmin,addhospital)
 router.post('/add-appointment',authorizeRole,authorizePatientToken,CheckAppointmentTimer,addAppointment)
@@ -66,7 +68,7 @@ router.post('/getmeds',authorizeRole,authorizeAdmin,getMeds);
 router.post('/approve-appointment',authorizeRole,authorizeHc_provider,approveAppointment);
 router.post('/decline-appointment',authorizeRole,authorizeHc_provider,declineAppointment);
 router.post('/send-message',authorizeRole,sendMessage);
-router.post('/get-inventory',authorizeRole,authorizePharmacist,getInventory);
+router.post('/get-inventory',authorizeRole,getInventory);
 router.post('/gethospitals',authorizeRole,getHPs)
 router.post('/hospital/:hospital',authorizeRole,getHP)
 router.post('/search-hospital/:hospital',authorizeRole,searchHP)
@@ -80,6 +82,7 @@ router.get('/addadmin',addSuperAdmin);
 router.post('/approve-payment',authorizeRole,authorizeCashier,approvePayment);
 router.post('/get-patients',authorizeRole,authorizeAdmin,getPatients);
 router.post('/patient/:patient',authorizeRole,getPatient);
+router.post('/search-patient/',authorizeRole,searchPatient);
 router.post('/close-session',authorizeRole,authorizeHc_provider,closeSession);
 router.get('/',homeController);
 router.post('/user-login',login);

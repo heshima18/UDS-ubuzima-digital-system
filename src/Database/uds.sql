@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 5.2.0
+-- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Jun 15, 2023 at 10:27 AM
--- Server version: 10.4.27-MariaDB
--- PHP Version: 8.2.0
+-- Generation Time: Jul 05, 2023 at 04:37 PM
+-- Server version: 10.4.28-MariaDB
+-- PHP Version: 8.2.4
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -43,10 +43,30 @@ CREATE TABLE `appointments` (
 --
 
 INSERT INTO `appointments` (`id`, `patient`, `hc_provider`, `time`, `subject`, `message`, `status`, `dateadded`) VALUES
-('1457909009', '398325557', '1576841100', '2023-06-08 23:15:49', 'demo subject', 'demo message', 'new', '2023-06-09 08:32:13'),
-('1613492818', '398325557', '157787752', '2023-06-09 17:10:49', 'demo subject', 'demo message', 'new', '2023-06-13 17:31:28'),
+('1457909009', '398325557', '157787752', '2023-06-08 23:15:49', 'demo subject', 'demo message', 'declined', '2023-06-27 15:46:37'),
+('1613492818', '398325557', '157787752', '2023-06-09 17:10:49', 'demo subject', 'demo message', 'declined', '2023-06-27 15:36:56'),
 ('2031050098', '398325557', '1576841100', '2023-06-09 17:55:50', 'demo subject', 'demo message', 'new', '2023-06-09 09:04:32'),
 ('513630610', '398325557', '157787752', '2023-06-09 16:15:49', 'demo subject', 'demo message', 'new', '2023-06-13 17:31:40');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `assurances`
+--
+
+CREATE TABLE `assurances` (
+  `id` varchar(255) NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `percentage_coverage` float NOT NULL,
+  `dateadded` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `assurances`
+--
+
+INSERT INTO `assurances` (`id`, `name`, `percentage_coverage`, `dateadded`) VALUES
+('148528122', 'demo assurance', 85.5, '2023-06-30 13:50:25');
 
 -- --------------------------------------------------------
 
@@ -77,6 +97,7 @@ INSERT INTO `cells` (`id`, `name`, `sector`, `dateadded`) VALUES
 CREATE TABLE `departments` (
   `id` varchar(255) NOT NULL,
   `name` varchar(255) NOT NULL,
+  `title` varchar(255) NOT NULL,
   `dateadded` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -84,10 +105,10 @@ CREATE TABLE `departments` (
 -- Dumping data for table `departments`
 --
 
-INSERT INTO `departments` (`id`, `name`, `dateadded`) VALUES
-('1211191958', 'demo department', '2023-06-07 14:12:47'),
-('1790485192', 'demo department 2', '2023-06-07 14:23:28'),
-('260211734', 'demo department 2', '2023-06-07 14:52:53');
+INSERT INTO `departments` (`id`, `name`, `title`, `dateadded`) VALUES
+('1211191958', 'demo department', '', '2023-06-07 14:12:47'),
+('1790485192', 'pharmacy', '', '2023-07-04 08:26:50'),
+('260211734', 'laboratory', 'Laboratory Scientist', '2023-06-30 11:11:46');
 
 -- --------------------------------------------------------
 
@@ -140,7 +161,7 @@ CREATE TABLE `hospitals` (
 
 INSERT INTO `hospitals` (`id`, `name`, `type`, `phone`, `departments`, `employees`, `province`, `district`, `sector`, `cell`, `dependency`, `date added`) VALUES
 ('1992110766', 'Gacuba Hp', 'health post', '239238445595', '[\"1211191958\",\"1790485192\"]', '[\"157787752\", \"1576841100\", \"2144513620\"]', '675870110', '1111292838', '1346978638', '21352415', 'public', '2023-06-13 12:15:16'),
-('631462486', 'Gisenyi Hospital', 'General Hospital', '239238445595', '[\"1211191958\",\"1790485192\"]', '[\"73077013\"]', '675870110', '1111292838', '209352040', '21352415', 'public', '2023-06-13 12:16:15');
+('631462486', 'Gisenyi Hospital', 'General Hospital', '239238445595', '[\"1211191958\",\"1790485192\"]', '[\"73077013\", \"1283472625\", \"1175423310\", \"1576841100\", \"157787752\"]', '675870110', '1111292838', '209352040', '21352415', 'public', '2023-07-04 12:45:10');
 
 -- --------------------------------------------------------
 
@@ -160,8 +181,8 @@ CREATE TABLE `inventories` (
 --
 
 INSERT INTO `inventories` (`id`, `hospital`, `medicines`, `dateadded`) VALUES
-(1079999049, '631462486', '[{\"id\":\"28674416\",\"quantity\":\"101\"}]', '2023-06-13 12:18:34'),
-(1263092970, '1992110766', '[{\"id\":\"28674416\",\"quantity\":93}]', '2023-06-13 13:53:29');
+(452697071, '631462486', '[{\"id\":\"645475106\",\"quantity\":\"101\"}]', '2023-07-03 14:58:42'),
+(1263092970, '1992110766', '[{\"id\":\"28674416\",\"quantity\":999},{\"id\":\"645475106\",\"quantity\":\"101\"}]', '2023-07-05 08:46:40');
 
 -- --------------------------------------------------------
 
@@ -175,6 +196,7 @@ CREATE TABLE `medical_history` (
   `hospital` varchar(255) NOT NULL,
   `departments` varchar(255) NOT NULL,
   `hc_provider` varchar(255) NOT NULL,
+  `assurance` varchar(255) DEFAULT NULL,
   `symptoms` varchar(255) NOT NULL,
   `tests` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL CHECK (json_valid(`tests`)),
   `medicines` longtext NOT NULL,
@@ -188,40 +210,8 @@ CREATE TABLE `medical_history` (
 -- Dumping data for table `medical_history`
 --
 
-INSERT INTO `medical_history` (`id`, `patient`, `hospital`, `departments`, `hc_provider`, `symptoms`, `tests`, `medicines`, `decision`, `comment`, `status`, `date`) VALUES
-('1017943130', '398325557', '1992110766', '[\"department 1\",\"department 2\"]', '157787752', '[\"symptom 1\",\"symptom 2\",\"symptom 3\"]', '[{\"id\":\"796832866\",\"result\":\"test result\"}]', '[{\"id\":\"28674416\",\"qty\":2}]', '[\"decision 1\",\"decision 2\"]', 'demo comment', 'open', '2023-06-13 13:50:54'),
-('1051478701', '398325557', '1992110766', '[\"department 1\",\"department 2\"]', '157787752', '[\"symptom 1\",\"symptom 2\",\"symptom 3\"]', '[{\"id\":\"796832866\",\"result\":\"test result\"}]', '[{\"id\":\"28674416\",\"qty\":2}]', '[\"decision 1\",\"decision 2\"]', 'demo comment', 'open', '2023-06-13 12:39:41'),
-('1075905886', '398325557', '1992110766', '[\"department 1\",\"department 2\"]', '157787752', '[\"symptom 1\",\"symptom 2\",\"symptom 3\"]', '[{\"id\":\"796832866\",\"result\":\"test result\"}]', '[{\"id\":\"28674416\",\"qty\":2}]', '[\"decision 1\",\"decision 2\"]', 'demo comment', 'open', '2023-06-13 13:52:28'),
-('1100008191', '398325557', '1992110766', '[\"department 1\",\"department 2\"]', '157787752', '[\"symptom 1\",\"symptom 2\",\"symptom 3\"]', '[{\"id\":\"796832866\",\"result\":\"test result\"}]', '[{\"id\":\"28674416\",\"qty\":2}]', '[\"decision 1\",\"decision 2\"]', 'demo comment', 'open', '2023-06-13 13:45:48'),
-('1128757597', '398325557', '1992110766', '[\"department 1\",\"department 2\"]', '157787752', '[\"symptom 1\",\"symptom 2\",\"symptom 3\"]', '[{\"id\":\"796832866\",\"result\":\"test result\"}]', '[{\"id\":\"28674416\",\"qty\":2}]', '[\"decision 1\",\"decision 2\"]', 'demo comment', 'open', '2023-06-13 13:34:07'),
-('1147742402', '398325557', '1992110766', '[\"department 1\",\"department 2\"]', '157787752', '[\"symptom 1\",\"symptom 2\",\"symptom 3\"]', '[{\"id\":\"796832866\",\"result\":\"test result\"}]', '[{\"id\":\"28674416\",\"qty\":2}]', '[\"decision 1\",\"decision 2\"]', 'demo comment', 'open', '2023-06-13 13:53:29'),
-('1150111620', '398325557', '1992110766', '[\"department 1\",\"department 2\"]', '157787752', '[\"symptom 1\",\"symptom 2\",\"symptom 3\"]', '[{\"id\":\"796832866\",\"result\":\"test result\"}]', '[{\"id\":\"28674416\",\"qty\":2}]', '[\"decision 1\",\"decision 2\"]', 'demo comment', 'open', '2023-06-13 13:38:34'),
-('116573754', '398325557', '1992110766', '[\"department 1\",\"department 2\"]', '157787752', '[\"symptom 1\",\"symptom 2\",\"symptom 3\"]', '[{\"id\":\"796832866\",\"result\":\"test result\"}]', '[{\"id\":\"28674416\",\"qty\":2}]', '[\"decision 1\",\"decision 2\"]', 'demo comment', 'open', '2023-06-13 13:33:34'),
-('1204251125', '398325557', '1992110766', '[\"1211191958\",\"1790485192\"]', '157787752', '[\"symptom 1\",\"symptom 2\",\"symptom 3\"]', '[{\"id\":\"796832866\",\"result\":\"test result\"}]', '[{\"id\":\"862363307\",\"qty\":2},{\"id\":\"645475106\",\"qty\":3}]', '[\"decision 1\",\"decision 2\"]', 'demo comment', 'open', '2023-06-08 10:05:38'),
-('1323978279', '398325557', '1992110766', '[\"department 1\",\"department 2\"]', '157787752', '[\"symptom 1\",\"symptom 2\",\"symptom 3\"]', '[{\"id\":\"796832866\",\"result\":\"test result\"}]', '[{\"id\":\"28674416\",\"qty\":2}]', '[\"decision 1\",\"decision 2\"]', 'demo comment', 'open', '2023-06-13 13:51:37'),
-('1380009276', '398325557', '1992110766', '[\"department 1\",\"department 2\"]', '157787752', '[\"symptom 1\",\"symptom 2\",\"symptom 3\"]', '[{\"id\":\"796832866\",\"result\":\"test result\"}]', '[{\"id\":\"28674416\",\"qty\":2}]', '[\"decision 1\",\"decision 2\"]', 'demo comment', 'open', '2023-06-13 13:42:51'),
-('1410595476', '398325557', '1992110766', '[\"department 1\",\"department 2\"]', '157787752', '[\"symptom 1\",\"symptom 2\",\"symptom 3\"]', '[{\"id\":\"796832866\",\"result\":\"test result\"}]', '[{\"id\":\"28674416\",\"qty\":2}]', '[\"decision 1\",\"decision 2\"]', 'demo comment', 'open', '2023-06-13 13:40:03'),
-('1588388953', '398325557', '1992110766', '[\"department 1\",\"department 2\"]', '157787752', '[\"symptom 1\",\"symptom 2\",\"symptom 3\"]', '[{\"id\":\"796832866\",\"result\":\"test result\"}]', '[{\"id\":\"28674416\",\"qty\":2}]', '[\"decision 1\",\"decision 2\"]', 'demo comment', 'open', '2023-06-13 13:40:31'),
-('1676723272', '398325557', '1992110766', '[\"department 1\",\"department 2\"]', '157787752', '[\"symptom 1\",\"symptom 2\",\"symptom 3\"]', '[{\"id\":\"796832866\",\"result\":\"test result\"}]', '[{\"id\":\"28674416\",\"qty\":2}]', '[\"decision 1\",\"decision 2\"]', 'demo comment', 'open', '2023-06-13 12:38:46'),
-('1706594301', '398325557', '1992110766', '[\"department 1\",\"department 2\"]', '157787752', '[\"symptom 1\",\"symptom 2\",\"symptom 3\"]', '[{\"id\":\"796832866\",\"result\":\"test result\"}]', '[{\"id\":\"28674416\",\"qty\":2}]', '[\"decision 1\",\"decision 2\"]', 'demo comment', 'open', '2023-06-13 12:58:35'),
-('1786789162', '398325557', '1992110766', '[\"department 1\",\"department 2\"]', '157787752', '[\"symptom 1\",\"symptom 2\",\"symptom 3\"]', '[{\"id\":\"796832866\",\"result\":\"test result\"}]', '[{\"id\":\"28674416\",\"qty\":2}]', '[\"decision 1\",\"decision 2\"]', 'demo comment', 'open', '2023-06-13 12:48:55'),
-('1947834183', '398325557', '1992110766', '[\"department 1\",\"department 2\"]', '157787752', '[\"symptom 1\",\"symptom 2\",\"symptom 3\"]', '[{\"id\":\"796832866\",\"result\":\"test result\"}]', '[{\"id\":\"28674416\",\"qty\":2}]', '[\"decision 1\",\"decision 2\"]', 'demo comment', 'open', '2023-06-13 13:47:19'),
-('1992509697', '398325557', '1992110766', '[\"department 1\",\"department 2\"]', '157787752', '[\"symptom 1\",\"symptom 2\",\"symptom 3\"]', '[{\"id\":\"796832866\",\"result\":\"test result\"}]', '[{\"id\":\"28674416\",\"qty\":2}]', '[\"decision 1\",\"decision 2\"]', 'demo comment', 'open', '2023-06-13 12:56:22'),
-('2093029651', '398325557', '1992110766', '[\"department 1\",\"department 2\"]', '157787752', '[\"symptom 1\",\"symptom 2\",\"symptom 3\"]', '[{\"id\":\"796832866\",\"result\":\"test result\"}]', '[{\"id\":\"28674416\",\"qty\":2}]', '[\"decision 1\",\"decision 2\"]', 'demo comment', 'open', '2023-06-13 13:40:53'),
-('217816201', '398325557', '1992110766', '[\"department 1\",\"department 2\"]', '157787752', '[\"symptom 1\",\"symptom 2\",\"symptom 3\"]', '[{\"id\":\"796832866\",\"result\":\"test result\"}]', '[{\"id\":\"28674416\",\"qty\":2}]', '[\"decision 1\",\"decision 2\"]', 'demo comment', 'open', '2023-06-13 13:37:58'),
-('349122820', '398325557', '1992110766', '[\"department 1\",\"department 2\"]', '157787752', '[\"symptom 1\",\"symptom 2\",\"symptom 3\"]', '[{\"id\":\"796832866\",\"result\":\"test result\"}]', '[{\"id\":\"28674416\",\"qty\":2}]', '[\"decision 1\",\"decision 2\"]', 'demo comment', 'open', '2023-06-13 13:52:46'),
-('448847493', '398325557', '1992110766', '[\"department 1\",\"department 2\"]', '157787752', '[\"symptom 1\",\"symptom 2\",\"symptom 3\"]', '[{\"id\":\"796832866\",\"result\":\"test result\"}]', '[{\"id\":\"28674416\",\"qty\":2}]', '[\"decision 1\",\"decision 2\"]', 'demo comment', 'open', '2023-06-13 13:03:13'),
-('449318993', '398325557', '1992110766', '[\"department 1\",\"department 2\"]', '157787752', '[\"symptom 1\",\"symptom 2\",\"symptom 3\"]', '[{\"id\":\"796832866\",\"result\":\"test result\"}]', '[{\"id\":\"28674416\",\"qty\":2}]', '[\"decision 1\",\"decision 2\"]', 'demo comment', 'open', '2023-06-13 13:43:08'),
-('507126787', '398325557', '1992110766', '[\"department 1\",\"department 2\"]', '157787752', '[\"symptom 1\",\"symptom 2\",\"symptom 3\"]', '[{\"id\":\"796832866\",\"result\":\"test result\"}]', '[{\"id\":\"28674416\",\"qty\":2}]', '[\"decision 1\",\"decision 2\"]', 'demo comment', 'open', '2023-06-13 13:46:33'),
-('560761030', '398325557', '1992110766', '[\"department 1\",\"department 2\"]', '157787752', '[\"symptom 1\",\"symptom 2\",\"symptom 3\"]', '[{\"id\":\"796832866\",\"result\":\"test result\"}]', '[{\"id\":\"28674416\",\"qty\":2}]', '[\"decision 1\",\"decision 2\"]', 'demo comment', 'open', '2023-06-13 13:43:39'),
-('643388474', '398325557', '1992110766', '[\"department 1\",\"department 2\"]', '157787752', '[\"symptom 1\",\"symptom 2\",\"symptom 3\"]', '[{\"id\":\"796832866\",\"result\":\"test result\"}]', '[{\"id\":\"28674416\",\"qty\":2}]', '[\"decision 1\",\"decision 2\"]', 'demo comment', 'open', '2023-06-13 13:44:17'),
-('691819114', '398325557', '1992110766', '[\"department 1\",\"department 2\"]', '157787752', '[\"symptom 1\",\"symptom 2\",\"symptom 3\"]', '[{\"id\":\"796832866\",\"result\":\"test result\"}]', '[{\"id\":\"28674416\",\"qty\":2}]', '[\"decision 1\",\"decision 2\"]', 'demo comment', 'open', '2023-06-13 13:49:53'),
-('711233214', '398325557', '1992110766', '[\"department 1\",\"department 2\"]', '157787752', '[\"symptom 1\",\"symptom 2\",\"symptom 3\"]', '[{\"id\":\"796832866\",\"result\":\"test result\"}]', '[{\"id\":\"28674416\",\"qty\":2}]', '[\"decision 1\",\"decision 2\"]', 'demo comment', 'open', '2023-06-13 13:35:09'),
-('743803407', '398325557', '1992110766', '[\"department 1\",\"department 2\"]', '157787752', '[\"symptom 1\",\"symptom 2\",\"symptom 3\"]', '[{\"id\":\"796832866\",\"result\":\"test result\"}]', '[{\"id\":\"28674416\",\"qty\":2}]', '[\"decision 1\",\"decision 2\"]', 'demo comment', 'open', '2023-06-13 13:17:22'),
-('780917139', '398325557', '1992110766', '[\"department 1\",\"department 2\"]', '157787752', '[\"symptom 1\",\"symptom 2\",\"symptom 3\"]', '[{\"id\":\"796832866\",\"result\":\"test result\"}]', '[{\"id\":\"28674416\",\"qty\":2}]', '[\"decision 1\",\"decision 2\"]', 'demo comment', 'open', '2023-06-13 13:49:15'),
-('827677529', '398325557', '1992110766', '[\"department 1\",\"department 2\"]', '157787752', '[\"symptom 1\",\"symptom 2\",\"symptom 3\"]', '[{\"id\":\"796832866\",\"result\":\"test result\"}]', '[{\"id\":\"28674416\",\"qty\":2}]', '[\"decision 1\",\"decision 2\"]', 'demo comment', 'open', '2023-06-13 12:50:16'),
-('872090157', '398325557', '1992110766', '[\"department 1\",\"department 2\"]', '157787752', '[\"symptom 1\",\"symptom 2\",\"symptom 3\"]', '[{\"id\":\"796832866\",\"result\":\"test result\"}]', '[{\"id\":\"28674416\",\"qty\":2}]', '[\"decision 1\",\"decision 2\"]', 'demo comment', 'open', '2023-06-13 13:48:25'),
-('947981932', '398325557', '1992110766', '[\"department 1\",\"department 2\"]', '157787752', '[\"symptom 1\",\"symptom 2\",\"symptom 3\"]', '[{\"id\":\"796832866\",\"result\":\"test result\"}]', '[{\"id\":\"28674416\",\"qty\":2}]', '[\"decision 1\",\"decision 2\"]', 'demo comment', 'open', '2023-06-13 12:50:55');
+INSERT INTO `medical_history` (`id`, `patient`, `hospital`, `departments`, `hc_provider`, `assurance`, `symptoms`, `tests`, `medicines`, `decision`, `comment`, `status`, `date`) VALUES
+('1677645420', '398325557', '1992110766', '[\"1211191958\",\"1790485192\"]', '157787752', '148528122', '[\"symptom 1\",\"symptom 2\",\"symptom 3\"]', '[]', '[{\"id\": \"28674416\", \"quantity\": 200, \"servedOut\": true}, {\"id\": \"28674416\", \"qty\": 1, \"servedOut\": false}]', '[\"decision 1\",\"decision 2\"]', 'demo comment', 'open', '2023-07-03 14:51:11');
 
 -- --------------------------------------------------------
 
@@ -243,7 +233,7 @@ CREATE TABLE `medicines` (
 
 INSERT INTO `medicines` (`id`, `name`, `price`, `unit`, `dateadded`) VALUES
 ('28674416', 'paracetamol', 80.05, 'demo unit', '2023-06-13 10:00:57'),
-('645475106', 'demo medicine name 2', 0.05, 'demo unit', '2023-06-08 00:33:46'),
+('645475106', 'demo medicine name 2', 101.05, 'demo unit', '2023-07-01 08:06:36'),
 ('862363307', 'demo medicine name 1', 80.05, 'demo unit', '2023-06-07 15:29:24');
 
 -- --------------------------------------------------------
@@ -258,6 +248,8 @@ CREATE TABLE `messages` (
   `receiver` varchar(255) NOT NULL,
   `type` varchar(255) NOT NULL,
   `content` varchar(1000) NOT NULL,
+  `addins` varchar(255) DEFAULT NULL,
+  `status` varchar(255) NOT NULL DEFAULT 'new',
   `dateadded` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -265,9 +257,20 @@ CREATE TABLE `messages` (
 -- Dumping data for table `messages`
 --
 
-INSERT INTO `messages` (`id`, `user`, `receiver`, `type`, `content`, `dateadded`) VALUES
-('2074231021', '157787752', '1576841100', 'messagez', 'your hospital is good', '2023-06-12 11:30:37'),
-('770703628', '157787752', '', '', '', '2023-06-12 11:01:03');
+INSERT INTO `messages` (`id`, `user`, `receiver`, `type`, `content`, `addins`, `status`, `dateadded`) VALUES
+('1097413225', '1576841100', '2144513620', 'message', 'asdfgh', NULL, 'new', '2023-07-04 17:57:26'),
+('1128583820', '1576841100', '1576841100', 'message', 'wert', NULL, 'new', '2023-07-04 18:02:48'),
+('114797415', '157787752', 'receiver', 'message', '', NULL, 'new', '2023-07-05 13:17:43'),
+('1463649022', '1576841100', '1576841100', 'message', 'sdfgh', NULL, 'new', '2023-07-04 18:03:52'),
+('1605751978', '1576841100', '1576841100', 'message', 'werthj', NULL, 'new', '2023-07-04 17:52:06'),
+('2074231021', '157787752', '1576841100', 'messagez', 'your hospital is good', NULL, '', '2023-06-12 11:30:37'),
+('2097386522', '1576841100', '2144513620', 'message', 'sdfgh', NULL, 'new', '2023-07-05 08:13:07'),
+('2101672357', '1576841100', '157787752', 'message', 'sdfgh', NULL, 'new', '2023-07-04 18:03:43'),
+('339849371', '1576841100', '2144513620', 'message', 'sdfgh', NULL, 'new', '2023-07-05 08:13:08'),
+('42317766', '2144513620', '1576841100', 'message', 'sdfghuj', NULL, 'new', '2023-07-04 17:57:11'),
+('668291941', '1576841100', '1576841100', 'message', 'werthj', NULL, 'new', '2023-07-04 17:51:25'),
+('770703628', '157787752', '', '', '', NULL, '', '2023-06-12 11:01:03'),
+('802990804', '1576841100', '2144513620', 'message', 'sdfgh', NULL, 'new', '2023-07-04 18:04:57');
 
 -- --------------------------------------------------------
 
@@ -289,6 +292,7 @@ CREATE TABLE `patients` (
   `resident_sector` varchar(30) NOT NULL,
   `resident_cell` varchar(30) NOT NULL,
   `role` varchar(255) NOT NULL DEFAULT 'patient',
+  `assurances` varchar(255) DEFAULT '[]',
   `last_diagnosed` date DEFAULT NULL,
   `FA` int(255) DEFAULT NULL,
   `status` varchar(255) NOT NULL,
@@ -299,8 +303,8 @@ CREATE TABLE `patients` (
 -- Dumping data for table `patients`
 --
 
-INSERT INTO `patients` (`id`, `NID`, `Full_name`, `email`, `phone`, `username`, `password`, `DOB`, `resident_province`, `resident_district`, `resident_sector`, `resident_cell`, `role`, `last_diagnosed`, `FA`, `status`, `dateadded`) VALUES
-('398325557', '12004815443305', 'dummy user', 'hesh.teo@gmail.com', '078086182', 'dummy.ser', '123', '2022-07-30', 'west', 'rubavu', 'gisenyi', 'umuganda', 'patient', NULL, NULL, 'active', '2023-06-08 15:33:15');
+INSERT INTO `patients` (`id`, `NID`, `Full_name`, `email`, `phone`, `username`, `password`, `DOB`, `resident_province`, `resident_district`, `resident_sector`, `resident_cell`, `role`, `assurances`, `last_diagnosed`, `FA`, `status`, `dateadded`) VALUES
+('398325557', '12004815443305', 'dummy user', 'hesh.teo@gmail.com', '078086182', 'dummy.ser', '123', '2022-07-30', 'west', 'rubavu', 'gisenyi', 'umuganda', 'patient', '[{\"id\": \"148528122\", \"status\": \"eligible\"}]', '2023-07-03', 137160, 'active', '2023-07-04 18:00:31');
 
 -- --------------------------------------------------------
 
@@ -310,9 +314,12 @@ INSERT INTO `patients` (`id`, `NID`, `Full_name`, `email`, `phone`, `username`, 
 
 CREATE TABLE `payments` (
   `id` int(30) NOT NULL,
+  `type` varchar(255) DEFAULT NULL,
   `user` varchar(255) NOT NULL,
   `session` varchar(255) NOT NULL,
   `amount` float NOT NULL,
+  `assurance_amount` float NOT NULL DEFAULT 0,
+  `approver` int(255) DEFAULT NULL,
   `status` varchar(255) NOT NULL,
   `date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -321,34 +328,8 @@ CREATE TABLE `payments` (
 -- Dumping data for table `payments`
 --
 
-INSERT INTO `payments` (`id`, `user`, `session`, `amount`, `status`, `date`) VALUES
-(88038458, '398325557', '827677529', 1160.15, 'awaiting payment', '2023-06-13 12:50:16'),
-(222786140, '398325557', '560761030', 1160.15, 'awaiting payment', '2023-06-13 13:43:39'),
-(291014309, '398325557', '1786789162', 1160.15, 'awaiting payment', '2023-06-13 12:48:55'),
-(298573617, '398325557', '217816201', 1160.15, 'awaiting payment', '2023-06-13 13:37:58'),
-(322587165, '398325557', '349122820', 1160.15, 'awaiting payment', '2023-06-13 13:52:46'),
-(457820676, '398325557', '1075905886', 1160.15, 'awaiting payment', '2023-06-13 13:52:28'),
-(866539522, '398325557', '1676723272', 1160.15, 'awaiting payment', '2023-06-13 12:38:46'),
-(866652732, '398325557', '1017943130', 1160.15, 'awaiting payment', '2023-06-13 13:50:54'),
-(883798083, '398325557', '1204251125', 1160.15, 'awaiting payment', '2023-06-07 23:14:32'),
-(974788121, '398325557', '1128757597', 1160.15, 'awaiting payment', '2023-06-13 13:34:07'),
-(1231595233, '398325557', '1147742402', 1160.15, 'awaiting payment', '2023-06-13 13:53:29'),
-(1238032025, '398325557', '1150111620', 1160.15, 'awaiting payment', '2023-06-13 13:38:34'),
-(1381577310, '398325557', '1323978279', 1160.15, 'awaiting payment', '2023-06-13 13:51:37'),
-(1387272939, '398325557', '1588388953', 1160.15, 'awaiting payment', '2023-06-13 13:40:31'),
-(1420561651, '398325557', '448847493', 1160.15, 'awaiting payment', '2023-06-13 13:03:13'),
-(1545510919, '398325557', '1051478701', 1160.15, 'awaiting payment', '2023-06-13 12:39:41'),
-(1576396893, '398325557', '691819114', 1160.15, 'awaiting payment', '2023-06-13 13:49:53'),
-(1618743056, '398325557', '780917139', 1160.15, 'awaiting payment', '2023-06-13 13:49:15'),
-(1657775567, '398325557', '872090157', 1160.15, 'awaiting payment', '2023-06-13 13:48:25'),
-(1678022537, '398325557', '947981932', 1160.15, 'awaiting payment', '2023-06-13 12:50:55'),
-(1680215448, '398325557', '1706594301', 1160.15, 'awaiting payment', '2023-06-13 12:58:35'),
-(1748152475, '398325557', '1947834183', 1160.15, 'awaiting payment', '2023-06-13 13:47:19'),
-(1750914507, '398325557', '1992509697', 1160.15, 'awaiting payment', '2023-06-13 12:56:22'),
-(1834011169, '398325557', '711233214', 1160.15, 'awaiting payment', '2023-06-13 13:35:09'),
-(2017631421, '398325557', '643388474', 1160.15, 'awaiting payment', '2023-06-13 13:44:18'),
-(2093869166, '398325557', '743803407', 1160.15, 'awaiting payment', '2023-06-13 13:17:22'),
-(2122915664, '398325557', '2093029651', 1160.15, 'awaiting payment', '2023-06-13 13:40:53');
+INSERT INTO `payments` (`id`, `type`, `user`, `session`, `amount`, `assurance_amount`, `approver`, `status`, `date`) VALUES
+(756216864, NULL, '398325557', '1677645420', 11.6073, 68.4427, NULL, 'awaiting payment', '2023-07-03 14:51:11');
 
 -- --------------------------------------------------------
 
@@ -435,8 +416,10 @@ CREATE TABLE `users` (
   `password` varchar(255) NOT NULL,
   `FA` int(11) DEFAULT NULL,
   `role` varchar(30) NOT NULL,
+  `department` varchar(255) DEFAULT NULL,
   `title` varchar(255) DEFAULT NULL,
   `status` varchar(30) NOT NULL,
+  `online` tinyint(1) NOT NULL DEFAULT 0,
   `ll_atmpt` date NOT NULL DEFAULT current_timestamp(),
   `date added` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -445,12 +428,14 @@ CREATE TABLE `users` (
 -- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`id`, `NID`, `email`, `phone`, `Full_name`, `username`, `password`, `FA`, `role`, `title`, `status`, `ll_atmpt`, `date added`) VALUES
-('1576841100', '23454323234', 'hesheo@gmail.com', '0790862884', 'dummy director general', 'dummy.directo.general', '123', 167346, 'director_general', NULL, 'unverified', '2023-06-05', '2023-06-12 12:00:42'),
-('157787752', '232323434343434', 'hesfheo@gmail.com', '07908618843', 'dummy health care provider', 'dummy.hcp', '123', NULL, 'hc_provider', NULL, 'active', '2023-06-05', '2023-06-11 11:59:58'),
-('2144513620', '345432345432345400', 'hesh.teo@gmail.com', '0790861884', 'dummy pharmacist', 'dummy.pharmacist', '123', NULL, 'pharmacist', 'Pharmacist', 'active', '2023-06-11', '2023-06-11 09:44:25'),
-('684025588', '0', 'heshteo@gmail.com', '0123456789', 'Super admin', 'admin', 'admin', NULL, 'Admin', NULL, 'active', '2023-06-01', '2023-06-12 12:42:51'),
-('73077013', 'wefcserfcs', 'hesteo@gmail.com', '0790841884', 'dummy pharmacist 2', 'dummy.pharmacist2', '123', NULL, 'pharmacist', 'Pharmacist', 'active', '2023-06-13', '2023-06-13 12:17:30');
+INSERT INTO `users` (`id`, `NID`, `email`, `phone`, `Full_name`, `username`, `password`, `FA`, `role`, `department`, `title`, `status`, `online`, `ll_atmpt`, `date added`) VALUES
+('1175423310', '923565432', 'dummyCashier@gmail.com', '0790899844', 'dummy cashier', 'dummy.cashier', '123', NULL, 'cashier', 'cashier', '', 'active', 0, '2023-06-27', '2023-06-27 07:14:35'),
+('1283472625', '123565432', 'dummy@gmail.com', '0780899844', 'dummy Laboratory worker', 'dummy.laboratory.worker', '123', NULL, 'laboratory_scientist', '260211734', '', 'active', 0, '2023-06-18', '2023-07-04 11:10:34'),
+('1576841100', '23454323234', 'hesheo@gmail.com', '0790862884', 'dummy director general', 'dummy.directo.general', '123', NULL, 'director_general', NULL, 'director general', 'active', 0, '2023-06-05', '2023-07-05 08:13:24'),
+('157787752', '232323434343434', 'hesfheo@gmail.com', '07908618843', 'dummy health care provider', 'dummy.hcp', '123', NULL, 'hc_provider', 'Health care  provider', 'nurse', 'active', 1, '2023-06-05', '2023-07-05 14:20:19'),
+('2144513620', '345432345432345400', 'hesh.teo@gmail.com', '0790861884', 'dummy pharmacist', 'dummy.pharmacist', '123', NULL, 'pharmacist', '1790485192', 'Pharmacist', 'active', 1, '2023-06-11', '2023-07-05 14:20:18'),
+('684025588', '0', 'heshteo@gmail.com', '0123456789', 'Super admin', 'admin', 'admin', NULL, 'Admin', NULL, '', 'active', 0, '2023-06-01', '2023-06-12 12:42:51'),
+('73077013', 'wefcserfcs', 'hesteo@gmail.com', '0790841884', 'dummy pharmacist 2', 'dummy.pharmacist2', '123', NULL, 'pharmacist', '1790485192', 'Pharmacist', 'active', 0, '2023-06-13', '2023-07-04 08:30:23');
 
 --
 -- Indexes for dumped tables
@@ -463,6 +448,12 @@ ALTER TABLE `appointments`
   ADD PRIMARY KEY (`id`),
   ADD KEY `patient` (`patient`),
   ADD KEY `hc_provider` (`hc_provider`);
+
+--
+-- Indexes for table `assurances`
+--
+ALTER TABLE `assurances`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indexes for table `cells`
@@ -616,14 +607,7 @@ ALTER TABLE `medical_history`
 -- Constraints for table `payments`
 --
 ALTER TABLE `payments`
-  ADD CONSTRAINT `payments_ibfk_2` FOREIGN KEY (`user`) REFERENCES `patients` (`id`),
-  ADD CONSTRAINT `payments_ibfk_3` FOREIGN KEY (`session`) REFERENCES `medical_history` (`id`);
-
---
--- Constraints for table `sectors`
---
-ALTER TABLE `sectors`
-  ADD CONSTRAINT `sectors_ibfk_1` FOREIGN KEY (`district`) REFERENCES `districts` (`id`);
+  ADD CONSTRAINT `payments_ibfk_2` FOREIGN KEY (`user`) REFERENCES `patients` (`id`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
