@@ -34,11 +34,11 @@ export const getPatient = async (req,res)=>{
              cells.name as cell,
              patients.status
             FROM patients
-             left join assurances on JSON_CONTAINS(patients.assurances, JSON_OBJECT('id',assurances.id), '$')
-             INNER JOIN provinces on patients.resident_province = provinces.id
-             INNER JOIN districts on patients.resident_district = districts.id
-             INNER JOIN sectors on patients.resident_sector = sectors.id
-             INNER JOIN cells on patients.resident_cell = cells.id
+             LEFT join assurances on JSON_CONTAINS(patients.assurances, JSON_OBJECT('id',assurances.id), '$')
+             LEFT JOIN provinces on patients.resident_province = provinces.id
+             LEFT JOIN districts on patients.resident_district = districts.id
+             LEFT JOIN sectors on patients.resident_sector = sectors.id
+             LEFT JOIN cells on patients.resident_cell = cells.id
             where patients.id = ?
             group by patients.id
         `,[patient])

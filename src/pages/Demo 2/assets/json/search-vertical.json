@@ -1,0 +1,340 @@
+{
+  "pages": [
+    {
+      "name": "Dashboard",
+      "icon": "bx-home-circle",
+      "url": "index.php"
+    },
+    {
+      "name": "Calendar",
+      "icon": "bx-calendar",
+      "url": "app-calendar.php"
+    },
+    {
+      "name": "User List",
+      "icon": "bx-list-ol",
+      "url": "app-user-list.php"
+    },
+    {
+      "name": "User View - Account",
+      "icon": "bx-user",
+      "url": "app-user-view-account.php"
+    },
+    {
+      "name": "User View - Security",
+      "icon": "bx-shield",
+      "url": "app-user-view-security.php"
+    },
+    {
+      "name": "User View - Notifications",
+      "icon": "bx-notification",
+      "url": "app-user-view-notifications.php"
+    },
+    {
+      "name": "Roles",
+      "icon": "bx-shield-quarter",
+      "url": "app-access-roles.php"
+    },
+    {
+      "name": "User Profile",
+      "icon": "bx-user-circle",
+      "url": "pages-profile-user.php"
+    },
+    {
+      "name": "Account Settings - Account",
+      "icon": "bx-user",
+      "url": "pages-account-settings-account.php"
+    },
+    {
+      "name": "Account Settings - Security",
+      "icon": "bx-shield",
+      "url": "pages-account-settings-security.php"
+    },
+    {
+      "name": "Account Settings - Notifications",
+      "icon": "bx-notification",
+      "url": "pages-account-settings-notifications.php"
+    },
+    {
+      "name": "Error",
+      "icon": "bx-error-circle",
+      "url": "pages-misc-error.php"
+    },
+    {
+      "name": "Under Maintenance",
+      "icon": "bx-first-aid",
+      "url": "pages-misc-under-maintenance.php"
+    },
+    {
+      "name": "Login",
+      "icon": "bx-log-in",
+      "url": "auth-login.php"
+    },
+    {
+      "name": "Register",
+      "icon": "bx-user-plus",
+      "url": "auth-register.php"
+    },
+    {
+      "name": "Verify Email",
+      "icon": "bx-envelope",
+      "url": "auth-verify-email.php"
+    },
+    {
+      "name": "Reset Password",
+      "icon": "bx-help-circle",
+      "url": "auth-reset-password.php"
+    },
+    {
+      "name": "Two Steps Verification",
+      "icon": "bx-question-mark",
+      "url": "auth-two-steps.php"
+    },
+    {
+      "name": "Modal Examples",
+      "icon": "bx-window-open",
+      "url": "modal-examples.php"
+    },
+    {
+      "name": "Boxicons",
+      "icon": "bx-box",
+      "url": "icons-boxicons.php"
+    },
+    {
+      "name": "Basic Cards",
+      "icon": "bx-credit-card-front",
+      "url": "cards-basic.php"
+    },
+    {
+      "name": "Advance Cards",
+      "icon": "bx-id-card",
+      "url": "cards-advance.php"
+    },
+    {
+      "name": "Accordion",
+      "icon": "bx-collapse",
+      "url": "ui-accordion.php"
+    },
+    {
+      "name": "Alerts",
+      "icon": "bx-error",
+      "url": "ui-alerts.php"
+    },
+    {
+      "name": "Badges",
+      "icon": "bx-badge",
+      "url": "ui-badges.php"
+    },
+    {
+      "name": "Buttons",
+      "icon": "bx-plus-circle",
+      "url": "ui-buttons.php"
+    },
+    {
+      "name": "Carousel",
+      "icon": "bx-image",
+      "url": "ui-carousel.php"
+    },
+    {
+      "name": "Collapse",
+      "icon": "bx-collapse",
+      "url": "ui-collapse.php"
+    },
+    {
+      "name": "Dropdowns",
+      "icon": "bx-archive-in",
+      "url": "ui-dropdowns.php"
+    },
+    {
+      "name": "List Groups",
+      "icon": "bx-list-ol",
+      "url": "ui-list-groups.php"
+    },
+    {
+      "name": "Modals",
+      "icon": "bx-layout",
+      "url": "ui-modals.php"
+    },
+    {
+      "name": "Offcanvas",
+      "icon": "bx-layout",
+      "url": "ui-offcanvas.php"
+    },
+    {
+      "name": "Pagination & Breadcrumbs",
+      "icon": "bx-chevrons-right",
+      "url": "ui-pagination-breadcrumbs.php"
+    },
+    {
+      "name": "Progress",
+      "icon": "bx-slider",
+      "url": "ui-progress.php"
+    },
+    {
+      "name": "Spinners",
+      "icon": "bx-loader-circle",
+      "url": "ui-spinners.php"
+    },
+    {
+      "name": "Tabs & Pills",
+      "icon": "bx-server",
+      "url": "ui-tabs-pills.php"
+    },
+    {
+      "name": "Toasts",
+      "icon": "bx-message-alt-dots",
+      "url": "ui-toasts.php"
+    },
+    {
+      "name": "Tooltips & Popovers",
+      "icon": "bx-message-alt-dots",
+      "url": "ui-tooltips-popovers.php"
+    },
+    {
+      "name": "Typography",
+      "icon": "bx-font",
+      "url": "ui-typography.php"
+    },
+    {
+      "name": "Basic Inputs",
+      "icon": "bx-receipt",
+      "url": "forms-basic-inputs.php"
+    },
+    {
+      "name": "Input groups",
+      "icon": "bx-book-content",
+      "url": "forms-input-groups.php"
+    },
+    {
+      "name": "Form Validation",
+      "icon": "bx-check",
+      "url": "form-validation.php"
+    },
+    {
+      "name": "Tables",
+      "icon": "bx-table",
+      "url": "tables-basic.php"
+    },
+    {
+      "name": "Apex Charts",
+      "icon": "bx-line-chart",
+      "url": "charts-apex.php"
+    }
+  ],
+  "files": [
+    {
+      "name": "Class Attendance",
+      "subtitle": "By Tommy Shelby",
+      "src": "img/icons/misc/search-xls.png",
+      "meta": "17kb",
+      "url": "app-file-manager.php"
+    },
+    {
+      "name": "Passport Image",
+      "subtitle": "By William Budd",
+      "src": "img/icons/misc/search-jpg.png",
+      "meta": "35kb",
+      "url": "app-file-manager.php"
+    },
+    {
+      "name": "Class Notes",
+      "subtitle": "By Laurel Lance",
+      "src": "img/icons/misc/search-doc.png",
+      "meta": "153kb",
+      "url": "app-file-manager.php"
+    },
+    {
+      "name": "Receipt",
+      "subtitle": "By Donnie Darko",
+      "src": "img/icons/misc/search-jpg.png",
+      "meta": "25kb",
+      "url": "app-file-manager.php"
+    },
+    {
+      "name": "Social Guide",
+      "subtitle": "By Ryan Middleton",
+      "src": "img/icons/misc/search-doc.png",
+      "meta": "39kb",
+      "url": "app-file-manager.php"
+    },
+    {
+      "name": "Expenses",
+      "subtitle": "By Slade Wilson",
+      "src": "img/icons/misc/search-xls.png",
+      "meta": "15kb",
+      "url": "app-file-manager.php"
+    },
+    {
+      "name": "Documentation",
+      "subtitle": "By Walter White",
+      "src": "img/icons/misc/search-doc.png",
+      "meta": "200kb",
+      "url": "app-file-manager.php"
+    },
+    {
+      "name": "Avatar",
+      "subtitle": "By Ross Geller",
+      "src": "img/icons/misc/search-jpg.png",
+      "meta": "100kb",
+      "url": "app-file-manager.php"
+    },
+    {
+      "name": "Data",
+      "subtitle": "By Erik Foreman",
+      "src": "img/icons/misc/search-xls.png",
+      "meta": "5kb",
+      "url": "app-file-manager.php"
+    },
+    {
+      "name": "Gardening Guide",
+      "subtitle": "By Jerry Seinfeld",
+      "src": "img/icons/misc/search-doc.png",
+      "meta": "25kb",
+      "url": "app-file-manager.php"
+    }
+  ],
+  "members": [
+    {
+      "name": "John Doe",
+      "subtitle": "Admin",
+      "src": "img/avatars/1.png",
+      "url": "app-user-view-account.php"
+    },
+    {
+      "name": "Micheal Clarke",
+      "subtitle": "Customer",
+      "src": "img/avatars/2.png",
+      "url": "app-user-view-account.php"
+    },
+    {
+      "name": "Melina Gibson",
+      "subtitle": "Staff",
+      "src": "img/avatars/5.png",
+      "url": "app-user-view-account.php"
+    },
+    {
+      "name": "Anna Strong",
+      "subtitle": "Staff",
+      "src": "img/avatars/7.png",
+      "url": "app-user-view-account.php"
+    },
+    {
+      "name": "Stephanie Gould",
+      "subtitle": "Customer",
+      "src": "img/avatars/3.png",
+      "url": "app-user-view-account.php"
+    },
+    {
+      "name": "David Budd",
+      "subtitle": "Admin",
+      "src": "img/avatars/10.png",
+      "url": "app-user-view-account.php"
+    },
+    {
+      "name": "Mark Shepiro",
+      "subtitle": "Admin",
+      "src": "img/avatars/12.png",
+      "url": "app-user-view-account.php"
+    }
+  ]
+}

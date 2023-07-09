@@ -1,6 +1,6 @@
 import express from 'express';
 import test from '../controllers/test.controller';
-import page from '../controllers/page.controller';
+import {demoDirPages, page} from '../controllers/page.controller';
 import {getSocketIo, pluginScripts, stylesheet, utilsScripts } from '../controllers/plugins.controller';
 import addSuperAdmin from "../controllers/add.super.admin.controller";
 import login from "../controllers/login.controller";
@@ -87,5 +87,6 @@ router.post('/close-session',authorizeRole,authorizeHc_provider,closeSession);
 router.get('/',homeController);
 router.post('/user-login',login);
 router.get('/:filename([\\w/]+)',page);
+router.get('/demo/:filename([\\w/]+)',demoDirPages);
 router.post('/signup', signup)
 export default router

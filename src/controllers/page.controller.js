@@ -1,7 +1,7 @@
 import fs from "fs";
 // import  render  from "./page.scraper.controller";
 import  path  from "path";
-let page = (req,res)=>{
+export let page = (req,res)=>{
 	const { filename } = req.params;
     let file
     switch (filename) {
@@ -24,6 +24,35 @@ let page = (req,res)=>{
                 file = 'N/A'
             break;
     }
+    fs.readFile(file, (err, data) => {
+        if (err) {
+            file = path.join(__dirname,'..','pages', '404.html') 
+            fs.readFile(file, (err, errorPageData) => {
+                if (err) {
+                  res.status(500).send('Internal Server Error');
+                  return;
+                }
+        
+                res.writeHead(404, {
+                  'Content-Type': 'text/html',
+                  'Content-Length': errorPageData.length
+                });
+                res.end(errorPageData);
+            })
+            return 0;
+        }
+        res.writeHead(200, {
+            'Content-Type': "text/html",
+            'Content-Length': data.length
+        });
+        // data = render(data)
+        res.end(data);
+    });
+}
+export let demoDirPages = (req,res)=>{
+	const { filename } = req.params;
+    let file  = path.join(__dirname,'..','pages', filename)
+    
     fs.readFile(file, (err, data) => {
         if (err) {
             file = path.join(__dirname,'..','pages', '404.html') 

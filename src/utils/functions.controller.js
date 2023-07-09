@@ -1,6 +1,6 @@
 export async function request(url,options){
     try {
-      let z = await fetch('http://127.0.0.1:7000/'+url,options);
+      let z = await fetch(geturl() +url,options);
       let y = await z.json();
       return y;
     } catch (error) {
@@ -26,4 +26,8 @@ export const getschema =  {
       'accept': '*/*'
 
     }
+}
+export function geturl() {
+  let i = new URL(window.location.href)
+  return i.origin+'/'
 }

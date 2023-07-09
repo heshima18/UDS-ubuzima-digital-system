@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en" class="light-style layout-navbar-fixed layout-menu-fixed" data-theme="theme-default"
+    data-assets-path="../assets/">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
+    <title>Demo | UI Design</title>
+    <link rel="icon" type="image/x-icon" href="../assets/svg/logo.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&amp;display=swap"
+        rel="stylesheet" />
+
+    <link rel="stylesheet" href="../assets/vendor/fonts/boxicons.css" />
+    <link rel="stylesheet" href="../assets/vendor/fonts/fontawesome.css" />
+
+    <!-- Core CSS -->
+    <link rel="stylesheet" href="../assets/vendor/css/core.css" class="template-customizer-core-css" />
+    <link rel="stylesheet" href="../assets/vendor/css/theme-default.css" class="template-customizer-theme-css" />
+    <link rel="stylesheet" href="../assets/css/demo.css" />
+
+    <!-- Vendors CSS -->
+    <link rel="stylesheet" href="../assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.css" />
+    <link rel="stylesheet" href="../assets/vendor/libs/typeahead-js/typeahead.css" />
+
+    <link rel="stylesheet" href="../assets/vendor/libs/datatables-bs5/datatables.bootstrap5.css" />
+    <link rel="stylesheet" href="../assets/vendor/libs/datatables-responsive-bs5/responsive.bootstrap5.css" />
+    <link rel="stylesheet" href="../assets/vendor/libs/datatables-buttons-bs5/buttons.bootstrap5.css" />
+    <link rel="stylesheet" href="../assets/vendor/libs/datatables-checkboxes-jquery/datatables.checkboxes.css" />
+
+    <link rel="stylesheet" href="../assets/vendor/libs/select2/select2.css" />
+    <link rel="stylesheet" href="../assets/vendor/libs/formvalidation/dist/css/formValidation.min.css" />
+    <link rel="stylesheet" href="../assets/vendor/libs/apex-charts/apex-charts.css" />
+    <link rel="stylesheet" href="../assets/vendor/libs/fullcalendar/fullcalendar.css" />
+    <link rel="stylesheet" href="../assets/vendor/libs/flatpickr/flatpickr.css" />
+    <link rel="stylesheet" href="../assets/vendor/libs/quill/editor.css" />
+    <link rel="stylesheet" href="../assets/vendor/libs/animate-css/animate.css" />
+    <link rel="stylesheet" href="../assets/vendor/libs/sweetalert2/sweetalert2.css" />
+    <link rel="stylesheet" href="../assets/vendor/libs/swiper/swiper.css" />
+    <link rel="stylesheet" href="../assets/vendor/libs/spinkit/spinkit.css" />
+    <link rel="stylesheet" href="../assets/vendor/libs/toastr/toastr.css" />
+    <link rel="stylesheet" href="../assets/vendor/libs/tagify/tagify.css" />
+
+    <!-- App Configurations -->
+    <script src="../assets/vendor/js/helpers.js"></script>
+    <script src="../assets/js/config.js"></script>
+</head>
+
+<body>
+    <div class="layout-wrapper layout-content-navbar">
+        <div class="layout-container">
+            <aside id="layout-menu" class="layout-menu menu-vertical menu bg-menu-theme">
+                <div class="app-brand demo">
+                    <a href="index.html" class="app-brand-link">
+                        <span class="app-brand-logo demo">
+                            <img src="../assets/svg/logo.svg" alt="" />
+                        </span>
+                        <span class="app-brand-text demo menu-text fw-bolder ms-2">Demo</span>
+                    </a>
+                    <a href="javascript:void(0);" class="layout-menu-toggle menu-link text-large ms-auto">
+                        <i class="bx bx-chevron-left bx-sm align-middle"></i>
+                    </a>
+                </div>
+                <div class="menu-inner-shadow"></div>
+                <ul class="menu-inner py-1">
+                    <li class="menu-item active open">
+                        <a href="javascript:void(0);" class="menu-link menu-toggle">
+                            <i class="menu-icon tf-icons bx bx-user"></i>
+                            <div>Super Admin</div>
+                        </a>
+                        <ul class="menu-sub">
+                            <li class="menu-item">
+                                <a href="admin-health-posts.html" class="menu-link">
+                                    <div>Health Posts</div>
+                                </a>
+                            </li>
+                            <li class="menu-item active">
+                                <a href="admin-employees.html" class="menu-link">
+                                    <div>Employees</div>
+                                </a>
+                            </li>
+                            <li class="menu-item">
+                                <a href="admin-medicines.html" class="menu-link">
+                                    <div>Medicines</div>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="menu-item">
+                        <a href="javascript:void(0);" class="menu-link menu-toggle">
+                            <i class="menu-icon tf-icons bx bx-lock-open-alt"></i>
+                            <div>Authentications</div>
+                        </a>
+                        <ul class="menu-sub">
+                            <li class="menu-item">
+                                <a href="auth-login.html" class="menu-link" target="_blank">
+                                    <div>Login</div>
+                                </a>
+                            </li>
+                            <li class="menu-item">
+                                <a href="auth-register.html" class="menu-link" target="_blank">
+                                    <div>Register</div>
+                                </a>
+                            </li>
+                            <li class="menu-item">
+                                <a href="auth-verify-email.html" class="menu-link" target="_blank">
+                                    <div>Verify Email</div>
+                                </a>
+                            </li>
+                            <li class="menu-item">
+                                <a href="auth-reset-password.html" class="menu-link" target="_blank">
+                                    <div>Reset Password</div>
+                                </a>
+                            </li>
+                            <li class="menu-item">
+                                <a href="auth-forgot-password.html" class="menu-link" target="_blank">
+                                    <div>Forgot Password</div>
+                                </a>
+                            </li>
+                            <li class="menu-item">
+                                <a href="auth-two-steps.html" class="menu-link" target="_blank">
+                                    <div>Two Steps</div>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="menu-header small text-uppercase">
+                        <span class="menu-header-text">Account</span>
+                    </li>
+                    <li class="menu-item">
+                        <a href="pages-user-profile.html" class="menu-link">
+                            <i class="menu-icon tf-icons bx bx-user"></i>
+                            <div>My Profile</div>
+                        </a>
+                    </li>
+                    <li class="menu-item">
+                        <a href="pages-account-settings.html" class="menu-link">
+                            <i class="menu-icon tf-icons bx bx-cog"></i>
+                            <div>Settings</div>
+                        </a>
+                    </li>
+                    <li class="menu-item">
+                        <a href="auth-login.html" class="menu-link">
+                            <i class="menu-icon tf-icons bx bx-power-off"></i>
+                            <div>Logout</div>
+                        </a>
+                    </li>
+                </ul>
+            </aside>
+            <div class="layout-page pt-0">
+                <div class="content-wrapper">
+                    <div class="container-xxl flex-grow-1 container-p-y">
+                        <div class="card">
+                            <div class="card-header border-bottom">
+                                <h5 class="card-title">Health Post Employees</h5>
+                                <div class="d-flex justify-content-between align-items-center row py-3 gap-3 gap-md-0">
+                                    <div class="col-md-4 employee_position"></div>
+                                    <div class="col-md-4 employee_status"></div>
+                                    <div class="col-md-4 employee_hp"></div>
+                                </div>
+                            </div>
+                            <div class="card-datatable table-responsive">
+                                <table class="datatables-employees table border-top">
+                                    <thead>
+                                        <tr>
+                                            <th></th>
+                                            <th>Employee</th>
+                                            <th>NID</th>
+                                            <th>Position</th>
+                                            <th>Status</th>
+                                            <th>Health Post</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                </table>
+                            </div>
+                            <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasAddEmployee"
+                                aria-labelledby="offcanvasAddEmployeeLabel">
+                                <div class="offcanvas-header">
+                                    <h5 id="offcanvasAddEmployeeLabel" class="offcanvas-title">
+                                        Add Employee
+                                    </h5>
+                                    <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas"
+                                        aria-label="Close"></button>
+                                </div>
+                                <div class="offcanvas-body mx-0 flex-grow-0">
+                                    <form class="add-new-employee pt-0" id="addNewEmployeeForm" onsubmit="return false">
+                                        <div class="mb-3">
+                                            <label class="form-label" for="add-employee-names">Names</label>
+                                            <input type="text" class="form-control" id="add-employee-names"
+                                                placeholder="John Doe" name="employeeNames" />
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label" for="add-employee-email">Email</label>
+                                            <input type="text" id="add-employee-email" class="form-control"
+                                                placeholder="john.doe@example.com" name="employeeEmail" />
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label" for="add-employee-nid">Nation ID</label>
+                                            <input type="text" id="add-employee-nid" class="form-control"
+                                                placeholder="XXXXXXXXXXXX" name="nid" />
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label" for="employee-position">Position</label>
+                                            <select id="employee-position" class="form-select">
+                                                <option value="doctor">Doctor</option>
+                                                <option value="manager">Manager</option>
+                                                <option value="director">Director</option>
+                                                <option value="receptionist">Receptionist</option>
+                                                <option value="pharmacist">Pharmacist</option>
+                                            </select>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label" for="employee-hp">Health Post</label>
+                                            <select id="employee-hp" class="form-select">
+                                                <option value="nhc">Nyakinama Health Center</option>
+                                            </select>
+                                        </div>
+                                        <button type="submit" class="btn btn-primary me-sm-3 me-1 data-submit">
+                                            Submit
+                                        </button>
+                                        <button type="reset" class="btn btn-label-secondary"
+                                            data-bs-dismiss="offcanvas">
+                                            Cancel
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="modal fade" id="editEmployee" tabindex="-1" aria-hidden="true">
+                            <div class="modal-dialog modal-lg modal-simple modal-edit-employee">
+                                <div class="modal-content p-3 p-md-5">
+                                    <div class="modal-body">
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                            aria-label="Close"></button>
+                                        <div class="text-center mb-4">
+                                            <h3>Edit Employee Information</h3>
+                                            <p>
+                                                Updating employee details will receive a privacy
+                                                audit.
+                                            </p>
+                                        </div>
+                                        <form id="editEmployee  Form" class="row g-3" onsubmit="return false">
+                                            <div class="col-12">
+                                                <label class="form-label" for="add-employee-names">Names</label>
+                                                <input type="text" class="form-control" id="add-employee-names"
+                                                    placeholder="John Doe" name="employeeNames" />
+                                            </div>
+                                            <div class="col-12">
+                                                <label class="form-label" for="add-employee-email">Email</label>
+                                                <input type="text" id="add-employee-email" class="form-control"
+                                                    placeholder="john.doe@example.com" name="employeeEmail" />
+                                            </div>
+                                            <div class="col-12">
+                                                <label class="form-label" for="add-employee-nid">Nation ID</label>
+                                                <input type="text" id="add-employee-nid" class="form-control"
+                                                    placeholder="XXXXXXXXXXXX" name="nid" />
+                                            </div>
+                                            <div class="col-12">
+                                                <label class="form-label" for="employee-position">Position</label>
+                                                <select id="employee-position" class="form-select">
+                                                    <option value="doctor">Doctor</option>
+                                                    <option value="manager">Manager</option>
+                                                    <option value="director">Director</option>
+                                                    <option value="receptionist">Receptionist</option>
+                                                    <option value="pharmacist">Pharmacist</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-12">
+                                                <label class="form-label" for="employee-hp">Health Post</label>
+                                                <select id="employee-hp" class="form-select">
+                                                    <option value="nhc">Nyakinama Health Center</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-12 text-center">
+                                                <button type="submit" class="btn btn-primary me-sm-3 me-1">
+                                                    Submit
+                                                </button>
+                                                <button type="reset" class="btn btn-label-secondary"
+                                                    data-bs-dismiss="modal" aria-label="Close">
+                                                    Cancel
+                                                </button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="modal fade" id="viewEmployee" tabindex="-1" aria-hidden="true">
+                            <div class="modal-dialog modal-lg modal-simple modal-edit-user">
+                                <div class="modal-content p-3 p-md-5">
+                                    <div class="modal-body">
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                            aria-label="Close"></button>
+                                        <div class="user-avatar-section">
+                                            <div class="d-flex align-items-center flex-column">
+                                                <img class="img-fluid rounded my-4" src="../assets/img/avatars/1.png"
+                                                    height="110" width="110" alt="User avatar" />
+                                                <div class="user-info text-center">
+                                                    <h4 class="mb-2">Galen Slixby</h4>
+                                                    <span class="badge bg-label-secondary">Doctor</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <h5 class="pb-2 border-bottom mb-4">Details</h5>
+                                        <div class="info-container">
+                                            <ul class="list-unstyled">
+                                                <li class="mb-3">
+                                                    <span class="fw-bold me-2">Email:</span>
+                                                    <span>s.galen@email.hp</span>
+                                                </li>
+                                                <li class="mb-3">
+                                                    <span class="fw-bold me-2">Status:</span>
+                                                    <span class="badge bg-label-success">Active</span>
+                                                </li>
+                                                <li class="mb-3">
+                                                    <span class="fw-bold me-2">Position:</span>
+                                                    <span>Docotr</span>
+                                                </li>
+                                                <li class="mb-3">
+                                                    <span class="fw-bold me-2">NID:</span>
+                                                    <span>4823401293574923</span>
+                                                </li>
+                                                <li class="mb-3">
+                                                    <span class="fw-bold me-2">Contact:</span>
+                                                    <span>+250 7XX XXX XXX</span>
+                                                </li>
+                                                <li class="mb-3">
+                                                    <span class="fw-bold me-2">Languages:</span>
+                                                    <span>English</span>
+                                                </li>
+                                                <li class="mb-3">
+                                                    <span class="fw-bold me-2">Country:</span>
+                                                    <span>Rwanda</span>
+                                                </li>
+                                            </ul>
+                                            <div class="d-flex justify-content-center pt-3">
+                                                <a href="javascript:;" class="btn btn-primary me-3"
+                                                    data-bs-target="#editEmployee" data-bs-toggle="modal">Edit</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <footer class="content-footer footer bg-footer-theme">
+                        <div
+                            class="container-xxl d-flex flex-wrap justify-content-between py-2 flex-md-row flex-column">
+                            <div class="mb-2 mb-md-0">
+                                &copy;
+                                <script>
+                                    document.write(new Date().getFullYear());
+                                </script>
+                                <strong>Demo</strong>
+                            </div>
+                            <div>All Rights Reserved</div>
+                        </div>
+                    </footer>
+                    <div class="content-backdrop fade"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="layout-overlay layout-menu-toggle"></div>
+        <div class="drag-target"></div>
+    </div>
+
+    <!-- Core JS -->
+    <!-- build:js assets/vendor/js/core.js -->
+    <script src="../assets/vendor/libs/jquery/jquery.js"></script>
+    <script src="../assets/vendor/libs/popper/popper.js"></script>
+    <script src="../assets/vendor/js/bootstrap.js"></script>
+    <script src="../assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.js"></script>
+
+    <script src="../assets/vendor/libs/hammer/hammer.js"></script>
+    <script src="../assets/vendor/libs/typeahead-js/typeahead.js"></script>
+
+    <script src="../assets/vendor/js/menu.js"></script>
+    <!-- endbuild -->
+
+    <!-- Vendors JS -->
+    <script src="../assets/vendor/libs/fullcalendar/fullcalendar.js"></script>
+
+    <script src="../assets/vendor/libs/formvalidation/dist/js/FormValidation.min.js"></script>
+    <script src="../assets/vendor/libs/formvalidation/dist/js/plugins/Bootstrap5.min.js"></script>
+    <script src="../assets/vendor/libs/formvalidation/dist/js/plugins/AutoFocus.min.js"></script>
+
+    <script src="../assets/vendor/libs/select2/select2.js"></script>
+    <script src="../assets/vendor/libs/flatpickr/flatpickr.js"></script>
+    <script src="../assets/vendor/libs/moment/moment.js"></script>
+    <script src="../assets/vendor/libs/apex-charts/apexcharts.js"></script>
+    <script src="../assets/vendor/libs/datatables-bs5/datatables-bootstrap5.js"></script>
+
+    <script src="../assets/vendor/libs/sweetalert2/sweetalert2.js"></script>
+    <script src="../assets/vendor/libs/masonry/masonry.js"></script>
+    <script src="../assets/vendor/libs/swiper/swiper.js"></script>
+    <script src="../assets/vendor/js/dropdown-hover.js"></script>
+    <script src="../assets/vendor/libs/toastr/toastr.js"></script>
+    <script src="../assets/vendor/libs/tagify/tagify.js"></script>
+
+    <!-- Main JS -->
+    <script src="../assets/js/main.js"></script>
+    <!-- Page JS -->
+    <script src="../assets/js/admin-employees-list.js"></script>
+</body>
+
+</html>
