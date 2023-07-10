@@ -52,7 +52,12 @@ document.addEventListener("DOMContentLoaded", function (e) {
                     submitButton.removeAttribute('disabled')
                     submitButton.innerText = 'signin'
                     if (res.success) {
-                        
+                        for (const input of inputs) {
+                            if(input.getAttribute('data-field-name') = 'username'){
+                                localStorage.setItem('userid',input.value.trim())
+                            }
+                        }
+                        window.location.href = '../auth/'
                     }else{
                         alertMessage(res.message)
                     }
