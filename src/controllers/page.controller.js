@@ -15,10 +15,16 @@ export let page = (req,res)=>{
             file = path.join(__dirname,'..','pages', 'dashboard.html') 
             break;
         case 'login/':
-            file = path.join(__dirname,'..','pages', 'login.html') 
+            file = path.join(__dirname,'..','pages', 'auth-login.html') 
+            break;
+        case 'signup/':
+            file = path.join(__dirname,'..','pages', 'auth-register.html') 
             break;
         case 'auth/':
-            file = path.join(__dirname,'..','pages', 'verify.html') 
+            file = path.join(__dirname,'..','pages', 'auth-two-steps.html') 
+            break;
+        case 'reset/':
+            file = path.join(__dirname,'..','pages', 'auth-forgot-password.html') 
             break;
         default:
                 file = 'N/A'
@@ -49,33 +55,5 @@ export let page = (req,res)=>{
         res.end(data);
     });
 }
-export let demoDirPages = (req,res)=>{
-	const { filename } = req.params;
-    let file  = path.join(__dirname,'..','pages', filename)
-    
-    fs.readFile(file, (err, data) => {
-        if (err) {
-            file = path.join(__dirname,'..','pages', '404.html') 
-            fs.readFile(file, (err, errorPageData) => {
-                if (err) {
-                  res.status(500).send('Internal Server Error');
-                  return;
-                }
-        
-                res.writeHead(404, {
-                  'Content-Type': 'text/html',
-                  'Content-Length': errorPageData.length
-                });
-                res.end(errorPageData);
-            })
-            return 0;
-        }
-        res.writeHead(200, {
-            'Content-Type': "text/html",
-            'Content-Length': data.length
-        });
-        // data = render(data)
-        res.end(data);
-    });
-}
+
 export default page

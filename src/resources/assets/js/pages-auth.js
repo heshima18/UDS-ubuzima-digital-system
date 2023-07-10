@@ -1,8 +1,13 @@
 "use strict";
+
+import { alertMessage, postschema, request } from "../../../utils/functions.controller.js";
+
 const formAuthentication = document.querySelector("#formAuthentication");
+const submitButton = formAuthentication.querySelector('button[type="submit"]')
+console.log(submitButton)
 document.addEventListener("DOMContentLoaded", function (e) {
     var t;
-    formAuthentication &&
+
         FormValidation.formValidation(formAuthentication, {
             fields: {
                 username: { validators: { notEmpty: { message: "Please enter username" }, stringLength: { min: 6, message: "Username must be more than 6 characters" } } },
@@ -27,14 +32,33 @@ document.addEventListener("DOMContentLoaded", function (e) {
                 trigger: new FormValidation.plugins.Trigger(),
                 bootstrap5: new FormValidation.plugins.Bootstrap5({ eleValidClass: "", rowSelector: ".mb-3" }),
                 submitButton: new FormValidation.plugins.SubmitButton(),
-                defaultSubmit: new FormValidation.plugins.DefaultSubmit(),
                 autoFocus: new FormValidation.plugins.AutoFocus(),
             },
             init: (e) => {
                 e.on("plugins.message.placed", function (e) {
                     e.element.parentElement.classList.contains("input-group") && e.element.parentElement.insertAdjacentElement("afterend", e.messageElement);
                 });
+                e.on("core.form.valid",  async (f)=>{
+                    submitButton.setAttribute('disabled',true)
+                    submitButton.innerText = 'signing in...'
+                    let inputs = f.formValidation.form.querySelectorAll('input')
+                    let o = {}
+                    for (const input of inputs) {
+                        Object.assign(o,{[input.getAttribute('data-field-name')]: input.value})
+                    }
+                    postschema.body = JSON.stringify(o)
+
+                    let res = await request('user-login',postschema)
+                    submitButton.removeAttribute('disabled')
+                    submitButton.innerText = 'signin'
+                    if (res.success) {
+                        
+                    }else{
+                        alertMessage(res.message)
+                    }
+                });
             },
+            
         }),
         (t = document.querySelectorAll(".numeral-mask")).length &&
         t.forEach((e) => {

@@ -18,7 +18,7 @@ const login = async (req, res) => {
     }
 
     if (select.length === 0) {
-      res.status(401).send({ success: false, message: errorMessage.lgIn_error_message });
+      res.status(200).send({ success: false, message: errorMessage.lgIn_error_message });
       return;
     }
 

@@ -77,4 +77,39 @@ export let getSocketIo = (req, res) => {
     res.end(data);
   });
 };
+export let assets = (req, res) => {
+  const  filename  = req.params[0];
+  const file = path.join(__dirname, '..', 'resources', 'assets', filename);
+
+  fs.readFile(file, (err, data) => {
+    if (err) {
+      res.status(404).send('File not Found');
+      return;
+    }
+    let ext = file.substring((file.lastIndexOf('.')+1))
+    let header
+
+    switch (ext) {
+      case 'js':
+        header = 'text/javascript'
+        break;
+      case 'css':
+        header = 'text/css'
+        break;
+      case 'svg':
+        header = 'image/svg+xml'
+        break;
+      default:
+        header = 'text/html'
+        break;
+    }
+    const contentLength = data.length;
+
+    res.writeHead(200, {
+      'Content-Type': header,
+      'Content-Length': contentLength,
+    });
+    res.end(data);
+  });
+};
 
