@@ -4,7 +4,6 @@ import { alertMessage, postschema, request } from "../../../utils/functions.cont
 
 const formAuthentication = document.querySelector("#formAuthentication");
 const submitButton = formAuthentication.querySelector('button[type="submit"]')
-console.log(submitButton)
 document.addEventListener("DOMContentLoaded", function (e) {
     var t;
 
@@ -53,7 +52,7 @@ document.addEventListener("DOMContentLoaded", function (e) {
                     submitButton.innerText = 'signin'
                     if (res.success) {
                         for (const input of inputs) {
-                            if(input.getAttribute('data-field-name') = 'username'){
+                            if(input.getAttribute('data-field-name') == 'username'){
                                 localStorage.setItem('userid',input.value.trim())
                             }
                         }

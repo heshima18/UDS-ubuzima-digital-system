@@ -26,6 +26,9 @@ export let page = (req,res)=>{
         case 'reset/':
             file = path.join(__dirname,'..','pages', 'auth-forgot-password.html') 
             break;
+        case 'employees/':
+            file = path.join(__dirname,'..','pages', 'admin-employees.html') 
+            break;
         default:
                 file = 'N/A'
             break;

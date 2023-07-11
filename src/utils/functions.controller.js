@@ -74,3 +74,16 @@ export function alertMessage(message){
 		closetab(q,thebody);
 	});
 }
+export function getdata(item){
+  let v
+  try {
+    v = JSON.parse(localStorage.getItem(item));
+    return v
+  } catch (error) {
+    v = localStorage.getItem(item);
+    if (v) {
+      return v
+    }
+    return null 
+  }
+}
