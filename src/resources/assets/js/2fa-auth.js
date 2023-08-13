@@ -2,7 +2,8 @@ import { alertMessage, getdata, getschema, postschema, request } from "../../../
 
 let form = document.querySelector('form#twoStepsForm')
 let codein = Array.from(form.querySelectorAll('input.code-hol'))
-let subbut = form.querySelector('button[type="submit"]')
+let subbut = form.querySelector('button[type="submit"]');
+const resend_link = form.querySelector('a#resend-link');
 for (const code_field of codein) {
     code_field.addEventListener('keyup',e=>{
         e.preventDefault();
@@ -54,18 +55,36 @@ form.addEventListener('submit', async e=>{
     subbut.innerText = 'Verify'
 
     if (res.success) {
-        localStorage.removeItem('userid')
-        localStorage.setItem('token',res.message)
-
+        localStorage.removeItem('userid') 
         let z = await request(`authenticateToken/${res.message}`,getschema)
         if (z.success) {
             z = z.token
-            if (z.role == 'admin') {
-                window.location.href = '../employees/'
+            localStorage.setItem('token',res.message)
+            if (z.role == 'Admin') {
+                window.location.href = '../admin/employees/'
             }
         }
     }else{
         alertMessage(res.message)
     }
-    console.log(val)
+   
+})
+resend_link.addEventListener('click',async e =>{
+    e.preventDefault();
+    console.log('ddd')
+    if (!getdata('userid')) {
+        return alertMessage('user not found')
+    }
+    subbut.setAttribute('disabled',true)
+    subbut.innerText = 'Sending Code'
+    let userid  = getdata('userid')
+    postschema.body = JSON.stringify(
+        {
+            username: userid
+        }
+        )
+    let res = await request('resend-2FA',postschema)
+    subbut.removeAttribute('disabled')
+    subbut.innerText = 'Verify'
+    alertMessage(res.message)
 })

@@ -53,32 +53,14 @@ document.getElementById("layout-menu") && (isHorizontalLayout = document.getElem
                 this.querySelector(".ps__thumb-y").offsetTop ? (o.style.display = "block") : (o.style.display = "none");
             });
         t = document.querySelector(".style-switcher-toggle");
-        
+
         var r = document.querySelector(".dropdown-notifications-all");
         function c(e) {
             "show.bs.collapse" == e.type || "show.bs.collapse" == e.type ? e.target.closest(".accordion-item").classList.add("active") : e.target.closest(".accordion-item").classList.remove("active");
         }
-        const d = document.querySelectorAll(".dropdown-notifications-read");
-        r &&
-            r.addEventListener("click", (e) => {
-                d.forEach((e) => {
-                    e.closest(".dropdown-notifications-item").classList.add("marked-as-read");
-                });
-            }),
-            d &&
-            d.forEach((t) => {
-                t.addEventListener("click", (e) => {
-                    t.closest(".dropdown-notifications-item").classList.toggle("marked-as-read");
-                });
-            }),
-            document.querySelectorAll(".dropdown-notifications-archive").forEach((t) => {
-                t.addEventListener("click", (e) => {
-                    t.closest(".dropdown-notifications-item").remove();
-                });
-            }),
-            [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]')).map(function (e) {
-                return new bootstrap.Tooltip(e);
-            });
+        [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]')).map(function (e) {
+            return new bootstrap.Tooltip(e);
+        });
         [].slice.call(document.querySelectorAll(".accordion")).map(function (e) {
             e.addEventListener("show.bs.collapse", c), e.addEventListener("hide.bs.collapse", c);
         });
@@ -113,136 +95,27 @@ document.getElementById("layout-menu") && (isHorizontalLayout = document.getElem
                     "false" !== localStorage.getItem("templateCustomizer-" + templateName + "--LayoutCollapsed") &&
                     window.Helpers.setCollapsed("true" === localStorage.getItem("templateCustomizer-" + templateName + "--LayoutCollapsed"), !1);
             } catch (e) { }
-    })(),
-    "undefined" != typeof $ &&
-    $(function () {
-        window.Helpers.initSidebarToggle();
-        var t,
-            n,
-            e,
-            o = $(".search-toggler"),
-            s = $(".search-input-wrapper"),
-            a = $(".search-input"),
-            l = $(".content-backdrop");
-        o.length &&
-            o.on("click", function () {
-                s.length && (s.toggleClass("d-none"), a.focus());
-            }),
-            $(document).on("keydown", function (e) {
-                var t = e.ctrlKey,
-                    e = 191 === e.which;
-                t && e && s.length && (s.toggleClass("d-none"), a.focus());
-            }),
-            a.on("focus", function () {
-                s.hasClass("container-xxl") && s.find(".twitter-typeahead").addClass("container-xxl");
-            }),
-            a.length &&
-            ((t = function (o) {
-                return function (t, e) {
-                    let n;
-                    (n = []),
-                        o.filter(function (e) {
-                            if (e.name.toLowerCase().startsWith(t.toLowerCase())) n.push(e);
-                            else {
-                                if (e.name.toLowerCase().startsWith(t.toLowerCase()) || !e.name.toLowerCase().includes(t.toLowerCase())) return [];
-                                n.push(e),
-                                    n.sort(function (e, t) {
-                                        return t.name < e.name ? 1 : -1;
-                                    });
-                            }
-                        }),
-                        e(n);
-                };
-            }),
-                (o = "search-vertical.json"),
-                $("#layout-menu").hasClass("menu-horizontal") && (o = "search-horizontal.json"),
-                (n = $.ajax({ url: assetsPath + "json/" + o, dataType: "json", async: !1 }).responseJSON),
-                a.each(function () {
-                    var e = $(this);
-                    a
-                        .typeahead(
-                            { hint: !1, classNames: { menu: "tt-menu navbar-search-suggestion", cursor: "active", suggestion: "suggestion d-flex justify-content-between px-3 py-2 w-100" } },
-                            {
-                                name: "pages",
-                                display: "name",
-                                limit: 5,
-                                source: t(n.pages),
-                                templates: {
-                                    header: '<h6 class="suggestions-header text-primary mb-0 mx-3 mt-3 pb-2">Pages</h6>',
-                                    suggestion: function ({ url: e, icon: t, name: n }) {
-                                        return '<a href="' + e + '"><div><i class="bx ' + t + ' me-2"></i><span class="align-middle">' + n + "</span></div></a>";
-                                    },
-                                    notFound: '<div class="not-found px-3 py-2"><h6 class="suggestions-header text-primary mb-2">Pages</h6><p class="py-2 mb-0"><i class="bx bx-error-circle bx-xs me-2"></i> No Results Found</p></div>',
-                                },
-                            },
-                            {
-                                name: "files",
-                                display: "name",
-                                limit: 4,
-                                source: t(n.files),
-                                templates: {
-                                    header: '<h6 class="suggestions-header text-primary mb-0 mx-3 mt-3 pb-2">Files</h6>',
-                                    suggestion: function ({ src: e, name: t, subtitle: n, meta: o }) {
-                                        return (
-                                            '<a href="javascript:;"><div class="d-flex w-50"><img class="me-3" src="' +
-                                            assetsPath +
-                                            e +
-                                            '" alt="' +
-                                            t +
-                                            '" height="32"><div class="w-75"><h6 class="mb-0">' +
-                                            t +
-                                            '</h6><small class="text-muted">' +
-                                            n +
-                                            '</small></div></div><small class="text-muted">' +
-                                            o +
-                                            "</small></a>"
-                                        );
-                                    },
-                                    notFound: '<div class="not-found px-3 py-2"><h6 class="suggestions-header text-primary mb-2">Files</h6><p class="py-2 mb-0"><i class="bx bx-error-circle bx-xs me-2"></i> No Results Found</p></div>',
-                                },
-                            },
-                            {
-                                name: "members",
-                                display: "name",
-                                limit: 4,
-                                source: t(n.members),
-                                templates: {
-                                    header: '<h6 class="suggestions-header text-primary mb-0 mx-3 mt-3 pb-2">Members</h6>',
-                                    suggestion: function ({ name: e, src: t, subtitle: n }) {
-                                        return (
-                                            '<a href="app-user-view-account.html"><div class="d-flex align-items-center"><img class="rounded-circle me-3" src="' +
-                                            assetsPath +
-                                            t +
-                                            '" alt="' +
-                                            e +
-                                            '" height="32"><div class="user-info"><h6 class="mb-0">' +
-                                            e +
-                                            '</h6><small class="text-muted">' +
-                                            n +
-                                            "</small></div></div></a>"
-                                        );
-                                    },
-                                    notFound: '<div class="not-found px-3 py-2"><h6 class="suggestions-header text-primary mb-2">Members</h6><p class="py-2 mb-0"><i class="bx bx-error-circle bx-xs me-2"></i> No Results Found</p></div>',
-                                },
-                            }
-                        )
-                        .bind("typeahead:render", function () {
-                            l.addClass("show").removeClass("fade");
-                        })
-                        .bind("typeahead:select", function (e, t) {
-                            t.url && (window.location = t.url);
-                        })
-                        .bind("typeahead:close", function () {
-                            a.val(""), e.typeahead("val", ""), s.addClass("d-none"), l.addClass("fade").removeClass("show");
-                        }),
-                        a.on("keyup", function () {
-                            "" == a.val() && l.addClass("fade").removeClass("show");
-                        });
-                }),
-                $(".navbar-search-suggestion").each(function () {
-                    e = new PerfectScrollbar($(this)[0], { wheelPropagation: !1, suppressScrollX: !0 });
-                }),
-                a.on("keyup", function () {
-                    e.update();
-                }));
+    })()
+
+var o = $(".select2");
+o.length && o.each(function () {
+    $(this).wrap('<div class="position-relative"></div>').select2({
+        placeholder: "Choose...",
+        dropdownParent: $(this).parent(),
     });
+});
+
+(function ($) {
+    var validationForms = $(".needs-validation");
+    validationForms.each(function () {
+        $(this).on("submit", e => {
+            e.preventDefault();
+            if (this.checkValidity()) {
+                console.log("Submitted!");
+            } else {
+                e.stopPropagation();
+            }
+            $(this).addClass("was-validated");
+        });
+    });
+})(jQuery);

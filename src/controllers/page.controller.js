@@ -1,7 +1,7 @@
 import fs from "fs";
 // import  render  from "./page.scraper.controller";
 import  path  from "path";
-export let page = (req,res)=>{
+export function page (req,res,user){
 	const { filename } = req.params;
     let file
     switch (filename) {
@@ -17,17 +17,51 @@ export let page = (req,res)=>{
         case 'login/':
             file = path.join(__dirname,'..','pages', 'auth-login.html') 
             break;
+        case 'login':
+            file = path.join(__dirname,'..','pages', 'auth-login.html') 
+            break;
         case 'signup/':
+            file = path.join(__dirname,'..','pages', 'auth-register.html') 
+            break;
+        case 'signup':
             file = path.join(__dirname,'..','pages', 'auth-register.html') 
             break;
         case 'auth/':
             file = path.join(__dirname,'..','pages', 'auth-two-steps.html') 
             break;
-        case 'reset/':
+        case 'auth':
+            file = path.join(__dirname,'..','pages', 'auth-two-steps.html') 
+            break;
+           
+        case 'forgot-password/':
             file = path.join(__dirname,'..','pages', 'auth-forgot-password.html') 
+            break;
+        case 'forgot-password':
+            file = path.join(__dirname,'..','pages', 'auth-forgot-password.html') 
+            break;
+        case 'reset-password/':
+            file = path.join(__dirname,'..','pages', 'auth-reset-password.html') 
+            break;
+        case 'reset-password':
+            file = path.join(__dirname,'..','pages', 'auth-reset-password.html') 
             break;
         case 'employees/':
             file = path.join(__dirname,'..','pages', 'admin-employees.html') 
+            break;
+        case 'employees':
+            file = path.join(__dirname,'..','pages', 'admin-employees.html') 
+            break;
+        case 'health-posts/':
+            file = path.join(__dirname,'..','pages', 'admin-health-posts.html') 
+            break;
+        case 'health-posts':
+            file = path.join(__dirname,'..','pages', 'admin-health-posts.html') 
+            break;
+        case 'medicines/':
+            file = path.join(__dirname,'..','pages', 'admin-medicines.html') 
+            break;
+        case 'medicines':
+            file = path.join(__dirname,'..','pages', 'admin-medicines.html') 
             break;
         default:
                 file = 'N/A'

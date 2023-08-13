@@ -50,12 +50,40 @@ export const getHpEmployees = async (req,res)=>{
            users.Full_name,
            users.phone,
            users.email,
-           users.title
+           users.title,
+           COALESCE(departments.name, 'N/A')  as department
           FROM 
            users inner join hospitals on JSON_CONTAINS(hospitals.employees, JSON_QUOTE(users.id), '$')
+           left join departments on users.department = departments.id
           WHERE 
            hospitals.id = ?
       `,[hospital])
+      if (!select) {
+          return res.status(500).send({success:false, message: errorMessage.is_error})
+      }
+      res.send({success: true, message: select})
+  } catch (error) {
+      console.log(error)
+      return res.status(500).send({success:false, message: errorMessage.is_error})
+  }
+}
+export const getEmployees = async (req,res)=>{
+  try {
+      let select = await query(`
+          SELECT
+           users.id,
+           users.Full_name as names,
+           users.phone,
+           users.email,
+           users.title as position,
+           users.nid,
+           users.status,
+           hospitals.name as hp,
+           COALESCE(departments.name, 'N/A')  as department
+          FROM 
+           users inner join hospitals on JSON_CONTAINS(hospitals.employees, JSON_QUOTE(users.id), '$')
+           left join departments on users.department = departments.id
+      `,[])
       if (!select) {
           return res.status(500).send({success:false, message: errorMessage.is_error})
       }

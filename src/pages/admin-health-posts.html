@@ -1,62 +1,51 @@
 <!DOCTYPE html>
 <html lang="en" class="light-style layout-navbar-fixed layout-menu-fixed" data-theme="theme-default"
-    data-assets-path="../assets/">
+    data-assets-path="/assets/">
 
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport"
-        content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
-    <title>Demo | UI Design</title>
-    <link rel="icon" type="image/x-icon" href="../assets/svg/logo.svg" />
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
-    <link
-        href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&amp;display=swap"
-        rel="stylesheet">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport"
+            content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
+        <title>Demo | UI Design</title>
+        <link rel="icon" type="image/x-icon" href="/assets/svg/logo.svg" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&amp;display=swap"
+            rel="stylesheet" />
+    
+        <link rel="stylesheet" href="/assets/vendor/fonts/boxicons.css" />
+        <link rel="stylesheet" href="/assets/vendor/fonts/fontawesome.css" />
+    
+        <!-- Core CSS -->
+        <link rel="stylesheet" href="/assets/vendor/css/core.css" class="template-customizer-core-css" />
+        <link rel="stylesheet" href="/assets/vendor/css/theme-default.css" class="template-customizer-theme-css" />
+        <link rel="stylesheet" href="/assets/css/demo.css" />
+    
+        <!-- Vendors CSS -->
+        <link rel="stylesheet" href="/assets/vendor/libs/datatables-bs5/datatables.bootstrap5.css" />
+        <link rel="stylesheet" href="/assets/vendor/libs/datatables-responsive-bs5/responsive.bootstrap5.css" />
+        <link rel="stylesheet" href="/assets/vendor/libs/datatables-buttons-bs5/buttons.bootstrap5.css" />
+        <link rel="stylesheet" href="/assets/vendor/libs/datatables-checkboxes-jquery/datatables.checkboxes.css" />
+    
+        <link rel="stylesheet" href="/assets/vendor/libs/select2/select2.css" />
+        <link rel="stylesheet" href="/assets/vendor/libs/formvalidation/dist/css/formValidation.min.css" />
+        <link rel="stylesheet" type="text/css" href="/styles/styling.css">
 
-    <link rel="stylesheet" href="../assets/vendor/fonts/boxicons.css" />
-    <link rel="stylesheet" href="../assets/vendor/fonts/fontawesome.css" />
-
-    <!-- Core CSS -->
-    <link rel="stylesheet" href="../assets/vendor/css/core.css" class="template-customizer-core-css" />
-    <link rel="stylesheet" href="../assets/vendor/css/theme-default.css" class="template-customizer-theme-css" />
-    <link rel="stylesheet" href="../assets/css/demo.css" />
-
-    <!-- Vendors CSS -->
-    <link rel="stylesheet" href="../assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.css" />
-    <link rel="stylesheet" href="../assets/vendor/libs/typeahead-js/typeahead.css" />
-
-    <link rel="stylesheet" href="../assets/vendor/libs/datatables-bs5/datatables.bootstrap5.css">
-    <link rel="stylesheet" href="../assets/vendor/libs/datatables-responsive-bs5/responsive.bootstrap5.css">
-    <link rel="stylesheet" href="../assets/vendor/libs/datatables-buttons-bs5/buttons.bootstrap5.css">
-    <link rel="stylesheet" href="../assets/vendor/libs/datatables-checkboxes-jquery/datatables.checkboxes.css">
-
-    <link rel="stylesheet" href="../assets/vendor/libs/select2/select2.css" />
-    <link rel="stylesheet" href="../assets/vendor/libs/formvalidation/dist/css/formValidation.min.css" />
-    <link rel="stylesheet" href="../assets/vendor/libs/apex-charts/apex-charts.css" />
-    <link rel="stylesheet" href="../assets/vendor/libs/fullcalendar/fullcalendar.css" />
-    <link rel="stylesheet" href="../assets/vendor/libs/flatpickr/flatpickr.css" />
-    <link rel="stylesheet" href="../assets/vendor/libs/quill/editor.css" />
-    <link rel="stylesheet" href="../assets/vendor/libs/animate-css/animate.css" />
-    <link rel="stylesheet" href="../assets/vendor/libs/sweetalert2/sweetalert2.css" />
-    <link rel="stylesheet" href="../assets/vendor/libs/swiper/swiper.css" />
-    <link rel="stylesheet" href="../assets/vendor/libs/spinkit/spinkit.css" />
-    <link rel="stylesheet" href="../assets/vendor/libs/toastr/toastr.css" />
-    <link rel="stylesheet" href="../assets/vendor/libs/tagify/tagify.css" />
-
-    <!-- App Configurations -->
-    <script src="../assets/vendor/js/helpers.js"></script>
-    <script src="../assets/js/config.js"></script>
-</head>
+    
+        <!-- App Configurations -->
+        <script src="/assets/vendor/js/helpers.js"></script>
+        <script src="/assets/js/config.js"></script>
+    </head>
 
 <body>
-    <div class="layout-wrapper layout-content-navbar">
-        <div class="layout-container">
+    <div class="layout-wrapper layout-content-navbar cont">
+        <div class="layout-container" id="body">
             <aside id="layout-menu" class="layout-menu menu-vertical menu bg-menu-theme">
                 <div class="app-brand demo">
                     <a href="index.html" class="app-brand-link">
                         <span class="app-brand-logo demo">
-                            <img src="../assets/svg/logo.svg" alt="">
+                            <img src="/assets/svg/logo.svg" alt="">
                         </span>
                         <span class="app-brand-text demo menu-text fw-bolder ms-2">Demo</span>
                     </a>
@@ -73,17 +62,17 @@
                         </a>
                         <ul class="menu-sub">
                             <li class="menu-item active">
-                                <a href="admin-health-posts.html" class="menu-link">
+                                <a href="../health-posts/" class="menu-link">
                                     <div>Health Posts</div>
                                 </a>
                             </li>
                             <li class="menu-item">
-                                <a href="admin-employees.html" class="menu-link">
+                                <a href="../employees/" class="menu-link">
                                     <div>Employees</div>
                                 </a>
                             </li>
                             <li class="menu-item">
-                                <a href="admin-medicines.html" class="menu-link">
+                                <a href="../medicines/" class="menu-link">
                                     <div>Medicines</div>
                                 </a>
                             </li>
@@ -151,198 +140,272 @@
                 </ul>
             </aside>
             <div class="layout-page pt-0">
+                <nav class="layout-navbar container-xxl navbar navbar-expand-xl navbar-detached align-items-center bg-navbar-theme" id="layout-navbar">
+                    <div class="layout-menu-toggle navbar-nav align-items-xl-center me-3 me-xl-0   d-xl-none ">
+                        <a class="nav-item nav-link px-0 me-xl-4" href="javascript:void(0)">
+                            <i class="bx bx-menu bx-sm"></i>
+                        </a>
+                    </div>
+                    <div class="navbar-nav-right d-flex align-items-center" id="navbar-collapse">
+                        <ul class="navbar-nav flex-row align-items-center ms-auto">
+                            <li class="nav-item me-2 me-xl-0">
+                                <a class="nav-link style-switcher-toggle hide-arrow" href="javascript:void(0);">
+                                    <i class="bx bx-sm"></i>
+                                </a>
+                            </li>
+                            <li class="nav-item navbar-dropdown dropdown-user dropdown">
+                                <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown">
+                                    <div class="avatar avatar-online">
+                                        <img src="../../assets/img/avatar-1.png" alt="" class="w-px-40 h-auto rounded-circle">
+                                    </div>
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-end">
+                                    <li>
+                                        <a class="dropdown-item" href="pages-account-settings-account.html">
+                                            <div class="d-flex">
+                                                <div class="flex-shrink-0 me-3">
+                                                    <div class="avatar avatar-online">
+                                                        <img src="../../assets/img/avatar-1.png" alt="" class="w-px-40 h-auto rounded-circle">
+                                                    </div>
+                                                </div>
+                                                <div class="flex-grow-1">
+                                                    <span class="fw-semibold d-block">John Doe</span>
+                                                    <small class="text-muted">Admin</small>
+                                                </div>
+                                            </div>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <div class="dropdown-divider"></div>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" href="pages-profile-user.html">
+                                            <i class="bx bx-user me-2"></i>
+                                            <span class="align-middle">My Profile</span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" href="pages-account-settings-account.html">
+                                            <i class="bx bx-cog me-2"></i>
+                                            <span class="align-middle">Settings</span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <div class="dropdown-divider"></div>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" href="auth-login.html" target="_blank">
+                                            <i class="bx bx-power-off me-2"></i>
+                                            <span class="align-middle">Log Out</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="navbar-search-wrapper search-input-wrapper d-none">
+                        <input type="text" name="search" class="form-control search-input container-xxl border-0" placeholder="Search..." aria-label="Search...">
+                        <i class="bx bx-x bx-sm search-toggler cursor-pointer"></i>
+                    </div>
+                </nav>
                 <div class="content-wrapper">
                     <div class="container-xxl flex-grow-1 container-p-y">
                         <div class="card">
-                            <div class="card-header d-flex justify-content-between align-items-center">
-                                <h5 class="mb-0">Health posts</h5>
-                                <button class="btn btn-primary" data-bs-toggle="offcanvas"
-                                    data-bs-target="#addNewHealthPost">Add new</button>
+                            <div class="card-header border-bottom text-center">
+                                <h5 class="card-title text-uppercase">Health Posts Management</h5>
+                                <div class="d-flex justify-content-between align-items-center row pt-3 gap-3 gap-md-0">
+                                    <div class="col-md-4 health-post-type"></div>
+                                </div>
                             </div>
-                            <div class="card-body">
-                                <div class="table-responsive text-nowrap" id="myTable">
-                                    <table class="table table-bordered">
-                                        <thead>
-                                            <tr>
-                                                <th>Name</th>
-                                                <th>Address</th>
-                                                <th>Type</th>
-                                                <th>Employees</th>
-                                                <th>Action</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr>
-                                                <td>Nyakimana Health Post</td>
-                                                <td>Northern, Musanze, Nkotsi, Nyakinama</td>
-                                                <td>Health Post</td>
-                                                <td>
-                                                    <ul
-                                                        class="list-unstyled users-list m-0 avatar-group d-flex align-items-center">
-                                                        <li data-bs-toggle="tooltip" data-popup="tooltip-custom"
-                                                            data-bs-placement="top" class="avatar avatar-xs pull-up"
-                                                            title="Manzi Shakuru">
-                                                            <img src="../assets/img/avatars/1.png" alt=""
-                                                                class="rounded-circle">
-                                                        </li>
-                                                        <li data-bs-toggle="tooltip" data-popup="tooltip-custom"
-                                                            data-bs-placement="top" class="avatar avatar-xs pull-up"
-                                                            title="Mutesi Ketia">
-                                                            <img src="../assets/img/avatars/2.png" alt=""
-                                                                class="rounded-circle">
-                                                        </li>
-                                                        <li data-bs-toggle="tooltip" data-popup="tooltip-custom"
-                                                            data-bs-placement="top" class="avatar avatar-xs pull-up"
-                                                            title="Iranzi Prince">
-                                                            <img src="../assets/img/avatars/3.png" alt=""
-                                                                class="rounded-circle">
-                                                        </li>
-                                                    </ul>
-                                                </td>
-                                                <td>
-                                                    <a href="#" data-bs-toggle="offcanvas"
-                                                        data-bs-target="#updateHealthPost"
-                                                        class="btn btn-sm btn-icon item-edit"><i
-                                                            class="bx bxs-edit"></i></a>
-                                                    <a href="#"
-                                                        onclick="return confirm('Are you sure you want to delete this health post?');"
-                                                        class="btn btn-sm btn-icon item-delete"><i
-                                                            class="bx bxs-trash"></i></a>
-                                                </td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
+                            <div class="card-datatable mb-3 table-responsive">
+                                <table class="datatables datatables-health-posts my-3 table border-top"></table>
+                            </div>
+                        </div>
+                        <div class="modal fade" id="view-health-post" data-bs-backdrop="static">
+                            <div class="modal-dialog modal-fullscreen">
+                                <div class="modal-content p-3 p-md-5">
+                                    <div class="modal-header">
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                    </div>
                                 </div>
                             </div>
                         </div>
-
-                        <div class="offcanvas offcanvas-end" tabindex="-1" id="addNewHealthPost">
-                            <div class="offcanvas-header border-bottom">
-                                <h5 class="offcanvas-title">New Health Post</h5>
-                                <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas"
-                                    aria-label="Close"></button>
-                            </div>
-                            <div class="offcanvas-body flex-grow-1">
-                                <form class="pt-0 row g-3 needs-validation" novalidate id="formValidationExamples"
-                                    onsubmit="return false">
-                                    <div class="col-sm-12">
-                                        <label class="form-label" for="healthPostName">Health Post Name</label>
-                                        <input type="text" id="healthPostName" class="form-control"
-                                            name="healthPostName" placeholder="Butaro Health Center" required />
-                                        <div class="valid-feedback"> Looks good! </div>
-                                        <div class="invalid-feedback"> Please enter health post name. </div>
+                        <div class="modal fade" id="update-health-post" data-bs-backdrop="static">
+                            <div class="modal-dialog modal-lg modal-dialog-centered">
+                                <div class="modal-content p-3 p-md-5">
+                                    <div class="modal-header text-uppercase">
+                                        <h3>Update Health Post</h3>
                                     </div>
-                                    <div class="col-sm-12">
-                                        <label class="form-label" for="province">Province</label>
-                                        <input type="text" id="province" class="form-control" name="province"
-                                            placeholder="Western">
+                                    <div class="modal-body">
+                                        <form id="update-health-post-form" class="row g-3 needs-validation" novalidate="">
+                                            <div class="col-md-6">
+                                                <label for="uhp-name" class="form-label">Health post name</label>
+                                                <input type="text" name="healthPostName" id="uhp-name" class="form-control" placeholder="Kacyiru Health Centre">
+                                                <small class="fs-14p"></small>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label for="uhp-type" class="form-label">Health post type</label>
+                                                <select name="healthPostType" id="uhp-type" class="form-select">
+                                                    <option value="">Choose...</option>
+                                                    <option value="hospital">Hospital</option>
+                                                    <option value="health-center">Health Center</option>
+                                                    <option value="health-clinic">Health Clinic</option>
+                                                    <option value="health-post">Health Post</option>
+                                                </select>
+                                                <small class="fs-14p"></small>
+                                            </div>
+                                            <div class="col-md-12">
+                                                <div class="divider">
+                                                    <div class="divider-text">Location</div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label for="uhp-location-province" class="form-label">Province</label>
+                                                <select name="province" id="uhp-location-province" class="form-select">
+                                                    <option value="">Select Province</option>
+                                                    <option value="kigali">Kigali City</option>
+                                                    <option value="north">Northern Province</option>
+                                                    <option value="south">Southern Province</option>
+                                                    <option value="east">Eastern Province</option>
+                                                    <option value="west">Western Province</option>
+                                                </select>
+                                                <small class="fs-14p"></small>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label for="uhp-location-district" class="form-label">District</label>
+                                                <select name="district" id="uhp-location-district" class="form-select">
+                                                    <option value="">Select District</option>
+                                                </select>
+                                                <small class="fs-14p"></small>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label for="uhp-location-sector" class="form-label">Sector</label>
+                                                <select name="sector" id="uhp-location-sector" class="form-select">
+                                                    <option value="">Select Sector</option>
+                                                </select>
+                                                <small class="fs-14p"></small>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label for="uhp-location-cell" class="form-label">Cell</label>
+                                                <select name="cell" id="uhp-location-cell" class="form-select">
+                                                    <option value="">Select Cell</option>
+                                                </select>
+                                                <small class="fs-14p"></small>
+                                            </div>
+                                            <div class="col-12 text-center d-flex gap-3 justify-content-end">
+                                                <button type="reset" class="btn btn-label-secondary" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
+                                                <button type="submit" class="btn btn-primary">Save Changes</button>
+                                            </div>
+                                        </form>
                                     </div>
-                                    <div class="col-sm-12">
-                                        <label class="form-label" for="district">District</label>
-                                        <input type="text" id="district" class="form-control" name="district"
-                                            placeholder="Rwamagana">
-                                    </div>
-                                    <div class="col-sm-12">
-                                        <label class="form-label" for="cell">Sector</label>
-                                        <input type="text" id="sector" class="form-control" name="sector"
-                                            placeholder="Nkotsi">
-                                    </div>
-                                    <div class="col-sm-12">
-                                        <label class="form-label" for="cell">Cell</label>
-                                        <input type="text" id="cell" class="form-control" name="cell"
-                                            placeholder="Murambi">
-                                    </div>
-                                    <div class="col-sm-12">
-                                        <label class="form-label" for="type">Type</label>
-                                        <select id="type" class="form-control form-control-select" name="type">
-                                            <option value="">Choose...</option>
-                                            <option value="hospital">Hospital</option>
-                                            <option value="health-center">Health Center</option>
-                                            <option value="health-Post">Health Post</option>
-                                        </select>
-                                    </div>
-                                    <div class="col-sm-12">
-                                        <button type="submit" class="btn btn-primary me-sm-3 me-1">
-                                            Submit
-                                        </button>
-                                        <button type="reset" class="btn btn-outline-secondary"
-                                            data-bs-dismiss="offcanvas">
-                                            Cancel
-                                        </button>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-
-                        <div class="offcanvas offcanvas-end" tabindex="-1" id="updateHealthPost">
-                            <div class="offcanvas-header border-bottom">
-                                <h5 class="offcanvas-title">Edit Health Post</h5>
-                                <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas"
-                                    aria-label="Close"></button>
-                            </div>
-                            <div class="offcanvas-body flex-grow-1">
-                                <form class="add-new-record pt-0 row g-3" id="form-add-new-record"
-                                    onsubmit="return false" novalidate="novalidate">
-                                    <div class="col-sm-12">
-                                        <label class="form-label" for="healthPostName">Health Post Name</label>
-                                        <input type="text" id="healthPostName" class="form-control"
-                                            name="healthPostName" placeholder="Butaro Health Center"
-                                            value="Nyakimana Health Post">
-                                    </div>
-                                    <div class="col-sm-12">
-                                        <label class="form-label" for="province">Province</label>
-                                        <input type="text" id="province" class="form-control" name="province"
-                                            placeholder="Western" value="Northern">
-                                    </div>
-                                    <div class="col-sm-12">
-                                        <label class="form-label" for="district">District</label>
-                                        <input type="text" id="district" class="form-control" name="district"
-                                            placeholder="Rwamagana" value="Musanze">
-                                    </div>
-                                    <div class="col-sm-12">
-                                        <label class="form-label" for="sector">Sector</label>
-                                        <input type="text" id="sector" class="form-control" name="sector"
-                                            placeholder="Nkotsi" value="Nkotsi">
-                                    </div>
-                                    <div class="col-sm-12">
-                                        <label class="form-label" for="cell">Cell</label>
-                                        <input type="text" id="cell" class="form-control" name="cell"
-                                            placeholder="Murambi" value="Nyakinama">
-                                    </div>
-                                    <div class="col-sm-12">
-                                        <label class="form-label" for="type">Type</label>
-                                        <select id="type" class="form-control form-control-select" name="type">
-                                            <option value="">Choose...</option>
-                                            <option value="hospital" selected>Hospital</option>
-                                            <option value="health-center">Health Center</option>
-                                            <option value="health-Post">Health Post</option>
-                                        </select>
-                                    </div>
-                                    <div class="col-sm-12">
-                                        <button type="submit" class="btn btn-primary me-sm-3 me-1">Update</button>
-                                        <button type="reset" class="btn btn-outline-secondary"
-                                            data-bs-dismiss="offcanvas">Cancel</button>
-                                    </div>
-                                </form>
+                                </div>
                             </div>
                         </div>
+                        <div class="modal fade" id="add-health-post" data-bs-backdrop="static">
+                            <div class="modal-dialog modal-lg modal-dialog-centered">
+                                <div class="modal-content p-3 p-md-5">
+                                    <div class="modal-header text-uppercase">
+                                        <h3>Add new health post</h3>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form id="add-health-post-form" class="row g-3">
+                                            <div class="col-md-6">
+                                                <label for="ahp-name" class="form-label">Health post name</label>
+                                                <input type="text" name="name" id="ahp-name" class="form-control" placeholder="Kacyiru Health Centre">
+                                                <small class="fs-14p"></small>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label for="ahp-type" class="form-label">Health post type</label>
+                                                <select name="type" id="ahp-type" class="form-select">
+                                                    <option value="">Choose...</option>
+                                                    <option value="hospital">Hospital</option>
+                                                    <option value="health-center">Health Center</option>
+                                                    <option value="health-clinic">Health Clinic</option>
+                                                    <option value="health-post">Health Post</option>
+                                                </select>
+                                                <small class="fs-14p"></small>
+                                            </div>
+                                            <div class="col-md-12 p-r">
+                                                <label for="departments" class="form-label">departments</label>
+                                                <input name="departments" type="text" id="departments" class="form-control chips-check" placeholder="Departments">
+                                                <small class="fs-14p"></small>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label for="dependency" class="form-label">Select a dependency</label>
+                                                <select name="dependency" id="dependency" class="form-select">
+                                                    <option value="">Select a dependency</option>
+                                                    <option value="public">Public</option>
+                                                    <option value="private">Private</option>
 
+                                                </select>
+                                                <small class="fs-14p"></small>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label for="phone" class="form-label">Phone</label>
+                                                <input name="phone" id="phone" class="form-control phone-number-mask" >
+                                                <small class="fs-14p"></small>
+                                            </div>
+                                            <div class="col-md-12">
+                                                <div class="divider">
+                                                    <div class="divider-text">Location</div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label for="ahp-location-province" class="form-label">Province</label>
+                                                <select name="province" id="ahp-location-province" class="address-field form-select">
+                                                    <option value="">Select Province</option>
+                                                </select>
+                                                <small class="fs-14p"></small>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label for="ahp-location-district" class="form-label">District</label>
+                                                <select name="district" id="ahp-location-district" class="address-field form-select">
+                                                    <option value="">Select District</option>
+                                                </select>
+                                                <small class="fs-14p"></small>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label for="ahp-location-sector" class="form-label">Sector</label>
+                                                <select name="sector" id="ahp-location-sector" class="address-field form-select">
+                                                    <option value="">Select Sector</option>
+                                                </select>
+                                                <small class="fs-14p"></small>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label for="ahp-location-cell" class="form-label">Cell</label>
+                                                <select name="cell" id="ahp-location-cell" class="address-field form-select">
+                                                    <option value="">Select Cell</option>
+                                                </select>
+                                                <small class="fs-14p"></small>
+                                            </div>
+                                            <div class="col-12 text-center d-flex gap-3 justify-content-end">
+                                                <button type="reset" class="btn btn-label-secondary" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
+                                                <button type="submit" class="btn btn-primary">Submit</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <footer class="content-footer footer bg-footer-theme">
-                        <div
-                            class="container-xxl d-flex flex-wrap justify-content-between py-2 flex-md-row flex-column">
-                            <div class="mb-2 mb-md-0">
-                                &copy;
-                                <script>
-                                    document.write(new Date().getFullYear())
-                                </script>
-                                <strong>Demo</strong>
-                            </div>
-                            <div>All Rights Reserved</div>
-                        </div>
-                    </footer>
-                    <div class="content-backdrop fade"></div>
                 </div>
+                <footer class="content-footer footer bg-footer-theme">
+                    <div class="container-xxl d-flex flex-wrap justify-content-between py-3 flex-md-row flex-column">
+                        <div class="mb-2 mb-md-0 text-uppercase">
+                            &copy;
+                            <script>
+                                document.write(new Date().getFullYear())
+                            </script>
+                            <strong>UDS</strong>
+                        </div>
+                        <div>
+                           Powered by <a href="https://prtlfo.vercel.app/" target="_blank"
+                                class="footer-link fw-bolder">#_himself</a>
+                        </div>
+                    </div>
+                </footer>
             </div>
         </div>
 
@@ -352,40 +415,24 @@
 
     <!-- Core JS -->
     <!-- build:js assets/vendor/js/core.js -->
-    <script src="../assets/vendor/libs/jquery/jquery.js"></script>
-    <script src="../assets/vendor/libs/popper/popper.js"></script>
-    <script src="../assets/vendor/js/bootstrap.js"></script>
-    <script src="../assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.js"></script>
-
-    <script src="../assets/vendor/libs/hammer/hammer.js"></script>
-    <script src="../assets/vendor/libs/typeahead-js/typeahead.js"></script>
-
-    <script src="../assets/vendor/js/menu.js"></script>
+    <script src="/assets/vendor/libs/jquery/jquery.js"></script>
+    <script src="/assets/vendor/js/bootstrap.js"></script>
+    <script src="/assets/vendor/js/menu.js"></script>
     <!-- endbuild -->
 
     <!-- Vendors JS -->
-    <script src="../assets/vendor/libs/fullcalendar/fullcalendar.js"></script>
 
-    <script src="../assets/vendor/libs/formvalidation/dist/js/FormValidation.min.js"></script>
-    <script src="../assets/vendor/libs/formvalidation/dist/js/plugins/Bootstrap5.min.js"></script>
-    <script src="../assets/vendor/libs/formvalidation/dist/js/plugins/AutoFocus.min.js"></script>
-
-    <script src="../assets/vendor/libs/select2/select2.js"></script>
-    <script src="../assets/vendor/libs/flatpickr/flatpickr.js"></script>
-    <script src="../assets/vendor/libs/moment/moment.js"></script>
-    <script src="../assets/vendor/libs/apex-charts/apexcharts.js"></script>
-    <script src="../assets/vendor/libs/datatables-bs5/datatables-bootstrap5.js"></script>
-
-    <script src="../assets/vendor/libs/sweetalert2/sweetalert2.js"></script>
-    <script src="../assets/vendor/libs/masonry/masonry.js"></script>
-    <script src="../assets/vendor/libs/swiper/swiper.js"></script>
-    <script src="../assets/vendor/js/dropdown-hover.js"></script>
-    <script src="../assets/vendor/libs/toastr/toastr.js"></script>
-    <script src="../assets/vendor/libs/tagify/tagify.js"></script>
-
+    <script src="/assets/vendor/libs/formvalidation/dist/js/FormValidation.min.js"></script>
+    <script src="/assets/vendor/libs/formvalidation/dist/js/plugins/Bootstrap5.min.js"></script>
+    <script src="/assets/vendor/libs/formvalidation/dist/js/plugins/AutoFocus.min.js"></script>
+    <script src="/assets/vendor/libs/datatables-bs5/datatables-bootstrap5.js"></script>
+    <script src="/assets/vendor/libs/cleavejs/cleave.js"></script>
+    <script src="/assets/vendor/libs/cleavejs/cleave-phone.rw.js"></script>
     <!-- Main JS -->
-    <script src="../assets/js/main.js"></script><!-- Page JS -->
-    <script src="../assets/js/form-validation.js"></script>
+    <script src="/assets/js/main.js"></script><!-- Page JS -->
+    <script src="/assets/js/admin-health-posts.js" type="module"></script>
+
+
 </body>
 
 </html>

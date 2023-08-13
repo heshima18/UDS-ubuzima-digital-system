@@ -1,43 +1,17 @@
-// Import the Employees from 'constants.js'
-import { Employees } from './constants.js';
-import { alertMessage, getdata, getschema, postschema, request, initializeCleave } from "../../../utils/functions.controller.js";
+import { HealthPosts, cellsBySector, districtsByProvince, sectorsByDistrict } from "./constants.js";
 
-
-
-// Wait for the document to be ready
-$(document).ready(async function () {
-    let t, a, n, u, z, v, d;
-    u = getdata('token')
-    postschema.body = JSON.stringify({
-        token: u
-    })
-    v = await request('get-employees',postschema)
-    if (!v.success) return alertMessage(v.message)
-    for (const employee of v.message) {
-        Object.assign( v.message[v.message.indexOf(employee)],{image: ""})
-        // if (employee.status == 'active') {
-        //     v.message[v.message.indexOf(employee)].status = 2
-            
-        // }else if (employee.status == 'Unverified') {
-        //     v.message[v.message.indexOf(employee)].status = 1            
-        // }
-    }
-    console.log(v.message,Employees)
-    // Initialize DataTable
-    var table = $('.datatables-employees'),
+$(document).ready(function () {
+    var table = $('.datatables-health-posts'),
         e = table.DataTable({
             // Define the structure of the table
             dom: '<"row mx-2"<"col-md-2"<"me-3"l>><"col-md-10"<"dt-action-buttons text-xl-end text-lg-start text-md-end text-start d-flex align-items-center justify-content-end flex-md-row flex-column mb-3 mb-md-0"fB>>>t<"row mx-2"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>',
             language: { sLengthMenu: "_MENU_", search: "", searchPlaceholder: "Search..." },
             columns: [
                 { data: "" }, // Responsive Control column
-                { data: "names", title: "Names" },
-                { data: "nid", title: "NID" },
-                { data: "position", title: "Position" },
-                { data: "hp", title: "Health Post" },
-                { data: "department", title: "Department" },
-                { data: "status", title: "Status" },
-                { data: "action", title: "Action", }
+                { data: "name", title: "Health post name" },
+                { data: "type", title: "Type" },
+                { data: "location", title: "Location" },
+                { data: "", title: "Action", }
             ],
             columnDefs: [
                 // Define column properties and rendering functions
@@ -52,16 +26,36 @@ $(document).ready(async function () {
                     },
                 },
                 {
+                    targets: 1,
+                    searchable: 1,
+                    orderable: 1,
+                    render: function (e, t, a, n) {
+                        return (
+                            `<span class='d-block fw-semibold'>${e}</span>`
+                        );
+                    },
+                },
+                {
+                    targets: 3,
+                    searchable: 1,
+                    orderable: !1,
+                    render: function (e, t, a, n) {
+                        return (
+                            `<span>${e.district} District</span>`
+                        );
+                    },
+                },
+                {
                     targets: -1,
                     searchable: !1,
                     orderable: !1,
                     render: function (e, t, a, n) {
                         return (
                             `<div class="d-inline-block text-nowrap">
-                            <button class="btn btn-sm btn-icon" data-bs-toggle="modal" data-bs-target="#view-employee"><i class="bx bx-show-alt"></i></button>
-                            <button class="btn btn-sm btn-icon" data-bs-toggle="modal" data-bs-target="#update-employee"><i class="bx bx-edit"></i></button>
-                            <button class="btn btn-sm btn-icon delete-employee"><i class="bx bx-trash"></i></button>
-                        </div>`
+                                <button class="btn btn-sm btn-icon" data-bs-toggle="modal" data-bs-target="#view-health-post"><i class="bx bx-show-alt"></i></button>
+                                <button class="btn btn-sm btn-icon" data-bs-toggle="modal" data-bs-target="#update-health-post"><i class="bx bx-edit"></i></button>
+                                <button class="btn btn-sm btn-icon delete-health-post"><i class="bx bx-trash"></i></button>
+                            </div>`
                         );
                     },
                 },
@@ -69,7 +63,7 @@ $(document).ready(async function () {
             order: [[1, "asc"]], // Initial sorting
 
             // Provide the data from the imported Employees
-            data: v.message,
+            data: HealthPosts,
 
             // Define buttons for exporting and adding new employees
             buttons: [
@@ -98,7 +92,7 @@ $(document).ready(async function () {
                 {
                     text: '<i class="bx bx-plus me-0 me-sm-1"></i><span class="d-none d-sm-inline-block">Add New</span>',
                     className: "add-new btn btn-primary",
-                    attr: { "data-bs-toggle": "modal", "data-bs-target": "#add-employee" },
+                    attr: { "data-bs-toggle": "modal", "data-bs-target": "#add-health-post" },
                 },
             ],
 
@@ -123,61 +117,67 @@ $(document).ready(async function () {
             // Initialize filters for position, health post, and status
             initComplete: function () {
                 // Filter by Position
-                this.api().columns(3).every(function () {
+                this.api().columns(2).every(function () {
                     var t = this,
-                        a = $('<select class="form-select text-capitalize"><option value=""> Select Position </option></select>')
-                            .appendTo(".employee-position")
+                        a = $('<select class="form-select text-capitalize"><option value=""> Select Type </option></select>')
+                            .appendTo(".health-post-type")
                             .on("change", function () {
                                 var e = $.fn.dataTable.util.escapeRegex($(this).val());
                                 t.search(e ? "^" + e + "$" : "", !0, !1).draw();
                             });
                     t.data().unique().sort().each(function (e, t) {
                         a.append('<option value="' + e + '">' + e + "</option>");
-                    });
-                });
-
-                // Filter by Health Post
-                this.api().columns(4).every(function () {
-                    var t = this,
-                        a = $('<select class="form-select text-capitalize"><option value=""> Select Health Post </option></select>')
-                            .appendTo(".employee-hp")
-                            .on("change", function () {
-                                var e = $.fn.dataTable.util.escapeRegex($(this).val());
-                                t.search(e ? "^" + e + "$" : "", !0, !1).draw();
-                            });
-                    t.data().unique().sort().each(function (e, t) {
-                        a.append('<option value="' + e + '">' + e + "</option>");
-                    });
-                });
-
-                // Filter by Department
-                this.api().columns(5).every(function () {
-                    var t = this,
-                        a = $(`<select class="form-select text-capitalize"><option value=""> Select Department </option></select>`)
-                            .appendTo(".employee-department").on("change", function () {
-                                var e = $.fn.dataTable.util.escapeRegex($(this).val());
-                                t.search(e ? "^" + e + "$" : "", !0, !1).draw();
-                            });
-                    t.data().unique().sort().each(function (e, t) {
-                        a.append('<option value="' + e.toLowerCase() + '" class="text-capitalize">' + e + "</option>");
                     });
                 });
             }
         });
-    // Delete employee when delete icon clicked
-    table.find("tbody").on("click", ".delete-employee", function () {
-        if (confirm("Are you sure you want to delete this employee?")) {
-            console.log(e.row($(this)))
+    table.find("tbody").on("click", ".delete-health-post", function () {
+        if (confirm("Are you sure you want to delete this health post?")) {
             e.row($(this).parents("tr")).remove().draw();
         }
     }), setTimeout(() => {
         $(".dataTables_filter .form-control").removeClass("form-control-sm");
         $(".dataTables_length .form-select").removeClass("form-select-sm");
-    }, 0), $('#update-employee, #add-employee').on('shown.bs.modal', function () {
-        const $modal = $(this);
-        initializeCleave(
-            $modal.find('.phone-number-mask'),
-            $modal.find('.national-id-no-musk')
-        );
+    }), $('#add-health-post').on('shown.bs.modal', () => {
+        $('#ahp-location-province').on('change', function () {
+            const selectedProvince = $(this).val();
+            const districts = districtsByProvince[selectedProvince];
+
+            $('#ahp-location-district').empty().append('<option value="">Select District</option>');
+            $('#ahp-location-sector').empty().append('<option value="">Select Sector</option>');
+            $('#ahp-location-cell').empty().append('<option value="">Select Cell</option>');
+
+            $.each(districts, function (index, district) {
+                $('#ahp-location-district').append($('<option>', {
+                    value: district.toLowerCase(),
+                    text: district
+                }));
+            });
+        }), $('#ahp-location-district').on('change', function () {
+            const selectedDistrict = $(this).val();
+            const sectors = sectorsByDistrict[selectedDistrict];
+
+            $('#ahp-location-sector').empty().append('<option value="">Select Sector</option>');
+            $('#ahp-location-cell').empty().append('<option value="">Select Cell</option>');
+
+            $.each(sectors, function (index, sector) {
+                $('#ahp-location-sector').append($('<option>', {
+                    value: sector.toLowerCase(),
+                    text: sector
+                }));
+            });
+        }), $('#ahp-location-sector').on('change', function () {
+            const selectedSector = $(this).val();
+            const cells = cellsBySector[selectedSector];
+
+            $('#ahp-location-cell').empty().append('<option value="">Select Cell</option>');
+
+            $.each(cells, function (index, cell) {
+                $('#ahp-location-cell').append($('<option>', {
+                    value: cell.toLowerCase(),
+                    text: cell
+                }));
+            });
+        });
     });
 });

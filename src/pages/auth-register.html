@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
-    <title>Demo | UI Design</title>
+    <title>Signup | UDS</title>
     <link rel="icon" type="image/x-icon" href="../assets/svg/logo.svg" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
@@ -12,6 +12,8 @@
 
     <link rel="stylesheet" href="../assets/vendor/fonts/boxicons.css" />
     <link rel="stylesheet" href="../assets/vendor/fonts/fontawesome.css" />
+    <link rel="stylesheet" type="text/css" href="../styles/styling.css">
+
 
     <!-- Core CSS -->
     <link rel="stylesheet" href="../assets/vendor/css/core.css" class="template-customizer-core-css" />
@@ -45,74 +47,124 @@
     <script src="../assets/js/config.js"></script>
 </head>
 
-<body><!-- Page -->
+<body class="ovxh"><!-- Page -->
 <link rel="stylesheet" href="../assets/vendor/css/pages/page-auth.css">
-<div class="container-xxl">
-    <div class="authentication-wrapper authentication-basic container-p-y">
-        <div class="authentication-inner">
-            <div class="card">
-                <div class="card-body">
-                    <div class="app-brand justify-content-center">
-                        <a href="index.html" class="app-brand-link gap-2">
-                            <span class="app-brand-logo demo">
-                                <img src="../assets/svg/logo.svg" alt="Demo">
-                            </span>
-                            <span class="app-brand-text demo text-body fw-bolder">Demo</span>
-                        </a>
+<div class="cont">
+        <div class="authentication-wrapper authentication-basic container-p-y" id="body">
+            <div class="authentication-inner ">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="app-brand justify-content-center">
+                            <a href="../" class="app-brand-link gap-2">
+                                <span class="app-brand-logo demo">
+                                    <img src="../assets/svg/logo.svg" alt="Demo">
+                                </span>
+                                <span class="app-brand-text demo text-body fw-bolder">UDS</span>
+                            </a>
+                        </div>
+                        <h4 class="mb-2">Adventure starts here 🚀</h4>
+                        <p class="mb-4">Make your app management easy and fun!</p>
+    
+                        <form id="formAuthentication" class="mb-2" action="../" method="POST">
+                            <div class="flex">
+                                <div class="mb-2 block pl-5p pr-5p">
+                                    <label for="firstname" class="form-label">Firstname</label>
+                                    <input type="text" class="form-control" id="firstname" name="firstname" placeholder="Enter your Firstname" autofocus>
+                                    <small class="hidden w-100 red pl-3p verdana"></small>
+                                </div>
+                                <div class="mb-2 block pl-5p pr-5p">
+                                    <label for="lastname" class="form-label">Lastname</label>
+                                    <input type="text" class="form-control" id="lastname" name="lastname" placeholder="Enter your Lastname" autofocus>
+                                    <small class="hidden w-100 red pl-3p verdana"></small>
+                                </div>
+                            </div>
+                            <div class="mb-2">
+                                <label for="NID" class="form-label">NID</label>
+                                <input type="text" class="form-control" id="nid" name="nid" placeholder="Enter your NID">
+                                <small class="hidden w-100 red pl-3p verdana"></small>
+                            </div>
+                            <div class="mb-2">
+                                <label for="DOB" class="form-label">DOB</label>
+                                <input type="date" class="form-control" id="dob" name="dob" placeholder="Enter your DOB">
+                                <small class="hidden w-100 red pl-3p verdana"></small>
+                            </div>
+                            <div class="mb-2">
+                                <label for="Assurances" class="form-label">Assurances</label>
+                                <input type="text" class="form-control" id="assurances" name="assurances" placeholder="Select your Assurances">
+                                <small class="hidden w-100 red pl-3p verdana"></small>
+                            </div>
+                            <div class="mb-2 ">
+                                <label for="address" class="form-label">Address</label>
+                                <div class="flex">
+                                    <div class="iblock w-100 p-5p bsbb">
+                                        <select class="address-field form-control" id="province" name="province" placeholder="Province">
+                                            <option value="">Province...</option>
+                                        </select>
+                                    </div>
+                                    <div class="iblock w-100 p-5p bsbb">
+                                        <select class="address-field form-control" id="district" name="district" placeholder="District">
+                                            <option value="">District...</option>
+                                        </select>
+                                    </div>
+                                    <div class="iblock w-100 p-5p bsbb">
+                                        <select class="address-field form-control" id="sector" name="sector" placeholder="Sector">
+                                            <option value="">Sector...</option>
+                                        </select>
+                                    </div>
+                                    <div class="iblock w-100 p-5p bsbb">
+                                        <select class="address-field form-control" id="cell" name="cell" placeholder="Cell">
+                                            <option value="">Cell...</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <small class="hidden w-100 red pl-3p verdana"></small>
+                            </div>
+                            <div class="mb-2">
+                                <label for="email" class="form-label">Email</label>
+                                <input type="text" class="form-control" id="email" name="email" placeholder="Enter your email">
+                                <small class="hidden w-100 red pl-3p verdana"></small>
+                            </div>
+                            <div class="mb-2">
+                                <label for="phone" class="form-label">phone</label>
+                                <input type="text" class="form-control" id="phone" name="phone" placeholder="Enter your Phone Number">
+                                <small class="hidden w-100 red pl-3p verdana"></small>
+                            </div>
+                            <div class="mb-2 form-password-toggle">
+                                <label class="form-label" for="password">Password</label>
+                                <div class="input-group input-group-merge">
+                                    <input type="password" id="password" class="form-control" name="password" placeholder="&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;" aria-describedby="password" />
+                                    <span class="input-group-text cursor-pointer"><i class="bx bx-hide"></i></span>
+                                    <small class="hidden w-100 red pl-3p verdana"></small>
+                                </div>
+                            </div>
+                            <div class="mb-2">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="terms-conditions" name="terms" checked>
+
+                                    <label class="form-check-label" for="terms-conditions">
+                                        I agree to
+                                        <a href="javascript:void(0);">privacy policy & terms</a>
+                                    </label>
+                                    <small class="hidden w-100 red pl-3p verdana"></small>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary d-grid w-100">
+                                Sign up
+                            </button>
+                        </form>
+    
+                        <p class="text-center">
+                            <span>Already have an account?</span>
+                            <a href="../login/">
+                                <span>Sign in instead</span>
+                            </a>
+                        </p>
                     </div>
-                    <h4 class="mb-2">Adventure starts here 🚀</h4>
-                    <p class="mb-4">Make your app management easy and fun!</p>
-
-                    <form id="formAuthentication" class="mb-3" action="index.html" method="POST">
-                        <div class="mb-3">
-                            <label for="username" class="form-label">Username</label>
-                            <input type="text" class="form-control" id="username" name="username" placeholder="Enter your username" autofocus>
-                        </div>
-                        <div class="mb-3">
-                            <label for="email" class="form-label">Email</label>
-                            <input type="text" class="form-control" id="email" name="email" placeholder="Enter your email">
-                        </div>
-                        <div class="mb-3 form-password-toggle">
-                            <label class="form-label" for="password">Password</label>
-                            <div class="input-group input-group-merge">
-                                <input type="password" id="password" class="form-control" name="password" placeholder="&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;" aria-describedby="password" />
-                                <span class="input-group-text cursor-pointer"><i class="bx bx-hide"></i></span>
-                            </div>
-                        </div>
-
-                        <div class="mb-3">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" id="terms-conditions" name="terms">
-                                <label class="form-check-label" for="terms-conditions">
-                                    I agree to
-                                    <a href="javascript:void(0);">privacy policy & terms</a>
-                                </label>
-                            </div>
-                        </div>
-                        <button type="submit" class="btn btn-primary d-grid w-100">
-                            Sign up
-                        </button>
-                    </form>
-
-                    <p class="text-center">
-                        <span>Already have an account?</span>
-                        <a href="../login/">
-                            <span>Sign in instead</span>
-                        </a>
-                    </p>
                 </div>
             </div>
         </div>
-    </div>
-</div>
-<div class="content-backdrop fade"></div>
-</div>
-</div>
 </div>
 
-<div class="layout-overlay layout-menu-toggle"></div>
-<div class="drag-target"></div>
-</div>
 
 <!-- Core JS -->
 <!-- build:js assets/vendor/js/core.js -->
@@ -149,4 +201,4 @@
 
 <!-- Main JS -->
 <script src="../assets/js/main.js"></script><!-- Page JS -->
-<script src="../assets/js/pages-auth.js"></script>
+<script src="../assets/js/signup.controller.js" type="module"></script>

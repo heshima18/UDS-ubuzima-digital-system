@@ -9,11 +9,11 @@ import homeController from '../controllers/home.controller';
 import signup from '../controllers/signup.controller';
 import { authorizeRole } from '../middlewares/roles.authorizer.middleware';
 import { authorizeAdmin, authorizeCashier, authorizeHc_provider, authorizeHcp_ptnt, authorizeLaboratory_scientist, authorizePatient, authorizePatientToken, authorizePharmacist } from '../middlewares/users.authoriser.middleware';
-import {addEmployeetoHp, addemployee, getHpEmployees} from '../controllers/employee.controller';
+import {addEmployeetoHp, addemployee, getEmployees, getHpEmployees} from '../controllers/employee.controller';
 import { getHP, getHPs, searchHP,addhospital } from '../controllers/hospital.controller';
 import {addSession, addSessionDecision, addSessionMedicine, addSessionTests, approvePayment, closeSession, getHc_pSessions, getHpsessions, getUsessions, session } from '../controllers/patient.session.controller';
 import {addmedicine, getMed, getMeds, searchMed} from '../controllers/medicine.controller';
-import addDepartment from '../controllers/add.department.controller';
+import {addDepartment, getDepartments} from '../controllers/departments.controller';
 import {addtest,getTests} from '../controllers/tests.controller';
 import {addAppointment, appointment, approveAppointment, declineAppointment, hcpAppointments, myAppointments} from '../controllers/appointment.controller';
 import { CheckAppointmentTimer } from '../middlewares/time.authorizer.middleware';
@@ -29,7 +29,8 @@ import { addAssurance, getAssurances } from '../controllers/assurance.controller
 import { authorizeUserAssurance } from '../middlewares/assurance.authorizer.middleware';
 import { at } from '../controllers/token.verifier.controller';
 import { io } from '../socket.io/connector.socket.io';
-const router = express.Router({ strict: true });
+import { resend2FA } from '../controllers/2FA.resender.controller';
+const router = express.Router({ strict: false });
 router.post('/verify',verification)
 router.post('/get-user-medical-history/:userid',authorizeRole,authorizeHcp_ptnt,getUsessions)
 router.post('/get-hospital-medical-history',authorizeRole,getHpsessions)
@@ -53,6 +54,7 @@ router.post("/add-cell",authorizeRole,authorizeAdmin,addCell)
 router.post('/addemployee',authorizeRole,authorizeAdmin,authorizeHospital,addemployee)
 router.post('/add-employee-to-hp',authorizeRole,authorizeAdmin,authorizeHospital,addEmployeetoHp)
 router.post('/get-hp-employees',authorizeRole,authorizeHospital,getHpEmployees)
+router.post('/get-employees',authorizeRole,authorizeAdmin,getEmployees)
 router.post('/addsession',authorizeRole,authorizeHc_provider,authorizePatient,authorizeUserAssurance,addSession)
 router.get('/api/test',test);
 router.get('/get-map',getMap);
@@ -73,6 +75,7 @@ router.post('/gethospitals',authorizeRole,getHPs)
 router.post('/hospital/:hospital',authorizeRole,getHP)
 router.post('/search-hospital/:hospital',authorizeRole,searchHP)
 router.post('/add-department',authorizeRole,authorizeAdmin,addDepartment)
+router.post('/get-departments',authorizeRole,authorizeAdmin,getDepartments)
 router.get('/styles/:filename',stylesheet);
 router.get('/plugins/:filename',pluginScripts);
 router.get('/utils/:filename',utilsScripts);
@@ -86,7 +89,9 @@ router.post('/search-patient/',authorizeRole,searchPatient);
 router.post('/close-session',authorizeRole,authorizeHc_provider,closeSession);
 router.get('/',homeController);
 router.post('/user-login',login);
-router.get('/:filename([\\w/]+)',page);
 router.get('/assets/*',assets);
-router.post('/signup', signup)
+router.post('/api/signup', signup)
+router.post('/resend-2FA',resend2FA)
+router.get('/admin/:filename*', (req, res) => page(req, res, 'admin'));
+router.get('/:filename*',(req, res)=> page(req, res, 'home'));
 export default router

@@ -42,9 +42,8 @@
                 window.location.href = window.location.href
             })
             socket.emit('messageToId',{recipientId: z.id, message: 'wassup'})
-            if (typeof(z.hospital) != 'string') {
+            if (typeof(z.hospital) != 'string' && typeof(z.hospital) == 'object' && z.hospital.length > 0) {
                 socket.emit('getpsforselection',z.hospital)
-                exit()
             }
         }else{
             localStorage.removeItem('token')

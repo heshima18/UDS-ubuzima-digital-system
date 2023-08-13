@@ -70,7 +70,7 @@ export const authorizeHc_provider = async (req, res, next) => {
       if (q.length == 0) return res.status(404).send({ message: errorMessage._err_u_404, success: false });
 
       [q] = q
-      if (q.role != 'hc_provider') return res.status(401).send({ message: errorMessage._err_forbidden, success: false });
+      if (q.role != 'hc_provider' || q.role != 'Admin') return res.status(401).send({ message: errorMessage._err_forbidden, success: false });
       next();
   } catch (error) {
     console.log(error)
@@ -90,7 +90,7 @@ export const authorizePharmacist = async (req, res, next) => {
       
       if (q.length == 0) return res.status(404).send({ message: errorMessage._err_u_404, success: false });
       [q] = q
-      if (q.role != 'pharmacist' && q.role != 'hc_provider') return res.status(401).send({ message: errorMessage._err_forbidden, success: false });
+      if (q.role != 'pharmacist' && q.role != 'hc_provider' && q.role != 'Admin') return res.status(401).send({ message: errorMessage._err_forbidden, success: false });
       next();
   } catch (error) {
     console.log(error)
@@ -110,7 +110,7 @@ export const authorizeLaboratory_scientist = async (req, res, next) => {
       
       if (q.length == 0) return res.status(404).send({ message: errorMessage._err_u_404, success: false });
       [q] = q
-      if (q.role != 'laboratory_scientist') return res.status(401).send({ message: errorMessage._err_forbidden, success: false });
+      if (q.role != 'laboratory_scientist' && q.role != 'Admin') return res.status(401).send({ message: errorMessage._err_forbidden, success: false });
       next();
   } catch (error) {
     console.log(error)
@@ -138,7 +138,7 @@ export const authorizeHcp_ptnt = async (req, res, next) => {
       if (q.length == 0) return res.status(404).send({ message: errorMessage._err_u_404, success: false });
 
       [q] = q
-      if (q.role != 'hc_provider' && q.role != 'patient' && q.role != 'pharmacist') return res.status(401).send({ message: errorMessage._err_forbidden, success: false });
+      if (q.role != 'hc_provider' && q.role != 'patient' && q.role != 'pharmacist' && q.role != 'Admin') return res.status(401).send({ message: errorMessage._err_forbidden, success: false });
       next();
   } catch (error) {
     console.log(error)
@@ -158,7 +158,7 @@ export const authorizeCashier = async (req, res, next) => {
       
       if (q.length == 0) return res.status(404).send({ message: errorMessage._err_u_404, success: false });
       [q] = q
-      if (q.role != 'cashier') return res.status(401).send({ message: errorMessage._err_forbidden, success: false });
+      if (q.role != 'cashier' && q.role != 'Admin') return res.status(401).send({ message: errorMessage._err_forbidden, success: false });
       next();
   } catch (error) {
     console.log(error)

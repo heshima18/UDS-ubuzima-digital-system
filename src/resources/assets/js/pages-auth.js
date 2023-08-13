@@ -10,6 +10,9 @@ document.addEventListener("DOMContentLoaded", function (e) {
         FormValidation.formValidation(formAuthentication, {
             fields: {
                 username: { validators: { notEmpty: { message: "Please enter username" }, stringLength: { min: 6, message: "Username must be more than 6 characters" } } },
+                firstname: { validators: { notEmpty: { message: "Please enter name" }, stringLength: { min:4, message: "name must be more than 4 characters" } } },
+                lastname: { validators: { notEmpty: { message: "Please enter name" }, stringLength: { min:4, message: "name must be more than 4 characters" } } },
+                DOB: { validators: { notEmpty: { message: "Please enter age" } } },
                 email: { validators: { notEmpty: { message: "Please enter your email" }, emailAddress: { message: "Please enter valid email address" } } },
                 "email-username": { validators: { notEmpty: { message: "Please enter email / username" }, stringLength: { min: 6, message: "Username must be more than 6 characters" } } },
                 password: { validators: { notEmpty: { message: "Please enter your password" }, stringLength: { min: 6, message: "Password must be more than 6 characters" } } },
