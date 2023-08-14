@@ -61,7 +61,7 @@ form.addEventListener('submit', async e=>{
             z = z.token
             localStorage.setItem('token',res.message)
             if (z.role == 'Admin') {
-                window.location.href = '../admin/employees/'
+                window.location.href = '../admin/home/'
             }else if (z.role == 'patient') {
                 window.location.href = '../patient/home/'
                 
