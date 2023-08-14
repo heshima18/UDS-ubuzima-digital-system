@@ -5,7 +5,7 @@ m = await request('get-map',getschema)
 q = await request('get-assurances',getschema)
 try {
     if (m.success && q.success) {
-        [m] = m.message
+        m = m.message
         f = document.querySelector('form#formAuthentication')
         s = Array.from(f.querySelectorAll('select.address-field'));
         i = Array.from(f.querySelectorAll('.form-control'))
@@ -17,7 +17,8 @@ try {
             i.push(sele)
         }
         b = f.querySelector('button[type="submit"]')
-        for (const province of m.provinces) {
+        for (let province of m) {
+            province = province.provinces[0]
             o = document.createElement('option');
             s[0].appendChild(o)
             o.innerText = province.name
@@ -32,7 +33,8 @@ try {
             select.addEventListener('change',e=>{
                 e.preventDefault();
                 if (select.name == 'province') {
-                    for (const province of m.provinces) {
+                    for (let province of m) {
+                        province = province.provinces[0]
                         if (province.id == select.value) {
                             s[2].innerHTML =  '<option value="">Choose...</option>'
                             s[3].innerHTML =  '<option value="">Choose...</option>'
@@ -45,7 +47,8 @@ try {
                     }
                 }
                 if (select.name == 'district') {
-                    for (const province of m.provinces) {
+                    for (let province of m) {
+                        province = province.provinces[0]
                         for (const district of province.districts) {
                             if (district.id == select.value) {
                                 s[3].innerHTML =  '<option value="">Choose...</option>'
@@ -58,7 +61,8 @@ try {
                     }
                 }
                 if (select.name == 'sector') {
-                    for (const province of m.provinces) {
+                    for (let province of m) {
+                        province = province.provinces[0]
                         for (const district of province.districts) {
                             for (const sector of district.sectors) {
                                 if (sector.id == select.value) {
@@ -95,9 +99,16 @@ try {
                }else if(input.classList.contains('chips-check')){
                   z = checkEmpty(input)
                   if (z) {
-                      Object.assign(b,{[input.name]: getchips(input.parentNode.querySelector('div.chipsholder'))})
-                      console.log(getchips(input.parentNode.querySelector('div.chipsholder')))
-                  }
+                      if (input.name == 'assurances') {
+                        q = []
+                        for (const assurance of getchips(input.parentNode.querySelector('div.chipsholder'))) {
+                            q.push({id : assurance, status : 'eligible'})
+                        } 
+                        Object.assign(b,{[input.name]: q})
+                      }else{
+                          Object.assign(b,{[input.name]: getchips(input.parentNode.querySelector('div.chipsholder'))})
+                      }
+                  }   
                }else{
                   Object.assign(b,{[input.name]: input.value})
                }
@@ -105,6 +116,7 @@ try {
             if (v) {
                 Object.assign(b,{ Full_name: n})
                 Object.assign(b,{ username: u})
+                console.log(b)
                 postschema.body = JSON.stringify(b)
                 console.log(b)
                 r = await request('api/signup',postschema);

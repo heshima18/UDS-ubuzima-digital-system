@@ -3,8 +3,8 @@ import errorMessage from './response.message.controller'
 import id from "./randomInt.generator.controller";
 export const addAssurance = async (req,res)=>{
     try {
-        let { name } = req.body
-        let insert = await query(`insert into assurances(id,name)values(?,?)`,[id(), name])
+        let { name,percentage } = req.body
+        let insert = await query(`insert into assurances(id,name,percentage_coverage)values(?,?,?)`,[id(), name, percentage])
         if (!insert) {
             res.status(500).send({success:false, message: errorMessage.is_error})
             return

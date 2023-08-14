@@ -92,6 +92,6 @@ router.post('/user-login',login);
 router.get('/assets/*',assets);
 router.post('/api/signup', signup)
 router.post('/resend-2FA',resend2FA)
-router.get('/admin/:filename*', (req, res) => page(req, res, 'admin'));
-router.get('/:filename*',(req, res)=> page(req, res, 'home'));
+router.get('/:user/:filename*', (req, res) => page(req, res, 'admin'));
+router.get('/:filename*',(req, res)=> page(req, res, null));
 export default router

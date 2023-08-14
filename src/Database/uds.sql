@@ -2,8 +2,8 @@
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
--- Host: localhost
--- Generation Time: Jul 05, 2023 at 04:37 PM
+-- Host: 127.0.0.1
+-- Generation Time: Aug 15, 2023 at 12:12 AM
 -- Server version: 10.4.28-MariaDB
 -- PHP Version: 8.2.4
 
@@ -66,7 +66,8 @@ CREATE TABLE `assurances` (
 --
 
 INSERT INTO `assurances` (`id`, `name`, `percentage_coverage`, `dateadded`) VALUES
-('148528122', 'demo assurance', 85.5, '2023-06-30 13:50:25');
+('148528122', 'SORAS', 85.5, '2023-08-14 22:10:02'),
+('794092683', 'RSSB RAMA', 92, '2023-08-14 22:10:21');
 
 -- --------------------------------------------------------
 
@@ -86,6 +87,7 @@ CREATE TABLE `cells` (
 --
 
 INSERT INTO `cells` (`id`, `name`, `sector`, `dateadded`) VALUES
+('1343985199', 'mukoni', '1972004867', '2023-08-14 20:34:11'),
 ('21352415', 'umuganda', '209352040', '2023-06-10 11:06:40');
 
 -- --------------------------------------------------------
@@ -108,7 +110,13 @@ CREATE TABLE `departments` (
 INSERT INTO `departments` (`id`, `name`, `title`, `dateadded`) VALUES
 ('1211191958', 'demo department', '', '2023-06-07 14:12:47'),
 ('1790485192', 'pharmacy', '', '2023-07-04 08:26:50'),
-('260211734', 'laboratory', 'Laboratory Scientist', '2023-06-30 11:11:46');
+('23rtyuhwdsaz', 'qqwert', 'wertyhgfdsqwerf', '2023-08-12 20:43:27'),
+('260211734', 'laboratory', 'Laboratory Scientist', '2023-06-30 11:11:46'),
+('iyhgfds', 'gfds', 'ytrewsa', '2023-08-12 20:44:01'),
+('qwerth', 'qwertyugfds', 'q2345y6ytrew', '2023-08-12 20:43:27'),
+('t6rewqds', 'trewqfdsa', 'trewqfdqa', '2023-08-12 20:44:16'),
+('tredwsqarfd', 'trewfxsza', 'tgfedwsrewq', '2023-08-12 20:44:16'),
+('tresxgtres', '76543wasx', '7ytres', '2023-08-12 20:44:01');
 
 -- --------------------------------------------------------
 
@@ -129,6 +137,7 @@ CREATE TABLE `districts` (
 
 INSERT INTO `districts` (`id`, `name`, `province`, `dateadded`) VALUES
 ('1111292838', 'rubavu', '675870110', '2023-06-10 10:43:20'),
+('1605027708', 'huye', '1317705434', '2023-08-14 17:24:13'),
 ('366917655', 'karongi', '675870110', '2023-06-10 10:58:38'),
 ('490998868', 'nyabihu', '675870110', '2023-06-10 10:58:33'),
 ('738010423', 'rutsiro', '675870110', '2023-06-10 10:58:23'),
@@ -160,8 +169,9 @@ CREATE TABLE `hospitals` (
 --
 
 INSERT INTO `hospitals` (`id`, `name`, `type`, `phone`, `departments`, `employees`, `province`, `district`, `sector`, `cell`, `dependency`, `date added`) VALUES
+('1144411332', 'kacyiru health post', 'health-center', '+250798006656', '[\"1790485192\"]', '[\"2023379819\", \"1269462869\", \"886612966\"]', '675870110', '1111292838', '209352040', '21352415', 'public', '2023-08-13 20:51:25'),
 ('1992110766', 'Gacuba Hp', 'health post', '239238445595', '[\"1211191958\",\"1790485192\"]', '[\"157787752\", \"1576841100\", \"2144513620\"]', '675870110', '1111292838', '1346978638', '21352415', 'public', '2023-06-13 12:15:16'),
-('631462486', 'Gisenyi Hospital', 'General Hospital', '239238445595', '[\"1211191958\",\"1790485192\"]', '[\"73077013\", \"1283472625\", \"1175423310\", \"1576841100\", \"157787752\"]', '675870110', '1111292838', '209352040', '21352415', 'public', '2023-07-04 12:45:10');
+('631462486', 'Gisenyi Hospital', 'General Hospital', '239238445595', '[\"1211191958\",\"1790485192\"]', '[\"73077013\", \"1283472625\", \"234760266\"]', '675870110', '1111292838', '209352040', '21352415', 'public', '2023-08-13 20:55:14');
 
 -- --------------------------------------------------------
 
@@ -304,7 +314,8 @@ CREATE TABLE `patients` (
 --
 
 INSERT INTO `patients` (`id`, `NID`, `Full_name`, `email`, `phone`, `username`, `password`, `DOB`, `resident_province`, `resident_district`, `resident_sector`, `resident_cell`, `role`, `assurances`, `last_diagnosed`, `FA`, `status`, `dateadded`) VALUES
-('398325557', '12004815443305', 'dummy user', 'hesh.teo@gmail.com', '078086182', 'dummy.ser', '123', '2022-07-30', 'west', 'rubavu', 'gisenyi', 'umuganda', 'patient', '[{\"id\": \"148528122\", \"status\": \"eligible\"}]', '2023-07-03', 137160, 'active', '2023-07-04 18:00:31');
+('1105890406', '1234567898765432', 'heshima herbert', 'hesh.teo@gmail.com', '+250790861884', 'heshima084.herbert229', '123456', '2023-08-09', '1317705434', '1605027708', '1972004867', '1343985199', 'patient', '[{\"id\":\"148528122\",\"eligibility\":\"eligible\"}]', NULL, NULL, 'active', '2023-08-14 21:08:15'),
+('398325557', '12004815443305', 'dummy user', 'heshteo@gmail.com', '078086182', 'dummy.ser', '123456', '2022-07-30', 'west', 'rubavu', 'gisenyi', 'umuganda', 'patient', '[{\"id\": \"148528122\", \"status\": \"eligible\"}]', '2023-07-03', 137160, 'active', '2023-08-14 21:06:21');
 
 -- --------------------------------------------------------
 
@@ -348,6 +359,7 @@ CREATE TABLE `provinces` (
 --
 
 INSERT INTO `provinces` (`id`, `name`, `dateadded`) VALUES
+('1317705434', 'south', '2023-08-14 16:32:01'),
 ('675870110', 'west', '2023-06-10 10:43:00');
 
 -- --------------------------------------------------------
@@ -373,6 +385,7 @@ INSERT INTO `sectors` (`id`, `name`, `district`, `dateadded`) VALUES
 ('1153354270', 'muhoza', '636894418', '2023-06-10 08:28:07'),
 ('1346978638', 'gisenyi', '1775546739', '2023-06-10 09:48:02'),
 ('1644208413', 'rugerero', '1775546739', '2023-06-10 09:48:34'),
+('1972004867', 'tumba', '1605027708', '2023-08-14 20:22:15'),
 ('209352040', 'gisenyi', '1111292838', '2023-06-10 11:01:35'),
 ('270114803', 'rubavu', '1775546739', '2023-06-10 09:48:07'),
 ('3442920', 'nyakiriba', '1111292838', '2023-06-10 11:01:40'),
@@ -429,13 +442,15 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `NID`, `email`, `phone`, `Full_name`, `username`, `password`, `FA`, `role`, `department`, `title`, `status`, `online`, `ll_atmpt`, `date added`) VALUES
-('1175423310', '923565432', 'dummyCashier@gmail.com', '0790899844', 'dummy cashier', 'dummy.cashier', '123', NULL, 'cashier', 'cashier', '', 'active', 0, '2023-06-27', '2023-06-27 07:14:35'),
-('1283472625', '123565432', 'dummy@gmail.com', '0780899844', 'dummy Laboratory worker', 'dummy.laboratory.worker', '123', NULL, 'laboratory_scientist', '260211734', '', 'active', 0, '2023-06-18', '2023-07-04 11:10:34'),
-('1576841100', '23454323234', 'hesheo@gmail.com', '0790862884', 'dummy director general', 'dummy.directo.general', '123', NULL, 'director_general', NULL, 'director general', 'active', 0, '2023-06-05', '2023-07-05 08:13:24'),
-('157787752', '232323434343434', 'hesfheo@gmail.com', '07908618843', 'dummy health care provider', 'dummy.hcp', '123', NULL, 'hc_provider', 'Health care  provider', 'nurse', 'active', 1, '2023-06-05', '2023-07-05 14:20:19'),
-('2144513620', '345432345432345400', 'hesh.teo@gmail.com', '0790861884', 'dummy pharmacist', 'dummy.pharmacist', '123', NULL, 'pharmacist', '1790485192', 'Pharmacist', 'active', 1, '2023-06-11', '2023-07-05 14:20:18'),
-('684025588', '0', 'heshteo@gmail.com', '0123456789', 'Super admin', 'admin', 'admin', NULL, 'Admin', NULL, '', 'active', 0, '2023-06-01', '2023-06-12 12:42:51'),
-('73077013', 'wefcserfcs', 'hesteo@gmail.com', '0790841884', 'dummy pharmacist 2', 'dummy.pharmacist2', '123', NULL, 'pharmacist', '1790485192', 'Pharmacist', 'active', 0, '2023-06-13', '2023-07-04 08:30:23');
+('1175423310', '923565432', 'dummyCashier@gmail.com', '0790899844', 'dummy cashier', 'dummy.cashier', '123456', NULL, 'cashier', 'cashier', '', 'active', 0, '2023-06-27', '2023-08-01 21:06:17'),
+('1283472625', '123565432', 'dummy@gmail.com', '0780899844', 'dummy Laboratory worker', 'dummy.laboratory.worker', '123456', NULL, 'laboratory_scientist', '260211734', '', 'active', 0, '2023-06-18', '2023-08-01 21:06:17'),
+('1576841100', '23454323234', 'hesheo@gmail.com', '0790862884', 'dummy director general', 'dummy.directo.general', '123456', NULL, 'director_general', NULL, 'director general', 'active', 0, '2023-06-05', '2023-08-01 21:06:17'),
+('157787752', '232323434343434', 'hesfheo@gmail.com', '07908618843', 'dummy health care provider', 'dummy.hcp', '123456', 172489, 'hc_provider', 'Health care  provider', 'nurse', 'active', 1, '2023-06-05', '2023-08-01 16:06:16'),
+('2144513620', '345432345432345400', 'hesh.teo@gmail.com', '0790861884', 'dummy pharmacist', 'dummy.pharmacist', '123456', NULL, 'pharmacist', '1790485192', 'Pharmacist', 'active', 1, '2023-06-11', '2023-08-01 21:06:17'),
+('234760266', '1234527898765432', 'itzone@gmail.com', '+250791861884', 'itzine', 'itzine80', '123456', 132955, 'pharmacist', '1790485192', 'Pharmacist', 'unverified', 0, '2023-08-13', '2023-08-13 20:55:14'),
+('684025588', '0', 'heshteo@gmail.com', '0123456789', 'Super admin', '_admin', '123456', NULL, 'Admin', NULL, '', 'active', 0, '2023-06-01', '2023-08-14 21:09:08'),
+('73077013', 'wefcserfcs', 'hesteo@gmail.com', '0790841884', 'dummy pharmacist 2', 'dummy.pharmacist2', '123456', NULL, 'pharmacist', '1790485192', 'Pharmacist', 'active', 0, '2023-06-13', '2023-08-01 21:06:17'),
+('886612966', '1234567898765432', 'elyse@gmail.com', '+250790861884', 'heshima herbert', 'heshima.herbert67', '123456', 851555, 'cashier', '1211191958', 'Cashier', 'unverified', 0, '2023-08-13', '2023-08-13 20:51:25');
 
 --
 -- Indexes for dumped tables
@@ -535,7 +550,8 @@ ALTER TABLE `payments`
 -- Indexes for table `provinces`
 --
 ALTER TABLE `provinces`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `name` (`name`);
 
 --
 -- Indexes for table `sectors`

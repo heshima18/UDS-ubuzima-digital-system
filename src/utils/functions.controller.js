@@ -261,3 +261,13 @@ export function deletechild(element,parent) {
     
   }
 }
+export function cdcts(entries,field,type) {
+  field.innerHTML = `<option value="">Select ${type}</option>`
+  for (const entry of entries) {
+      o = document.createElement('option')
+      o.innerText = entry.name
+      o.value = entry.id
+      o.setAttribute('data-id',entry.id)
+      field.appendChild(o)    
+  }
+}
