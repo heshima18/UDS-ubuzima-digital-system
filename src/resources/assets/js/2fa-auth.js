@@ -62,6 +62,36 @@ form.addEventListener('submit', async e=>{
             localStorage.setItem('token',res.message)
             if (z.role == 'Admin') {
                 window.location.href = '../admin/employees/'
+            }else if (z.role == 'patient') {
+                window.location.href = '../patient/home/'
+                
+            }else if (z.role == 'hc_provider') {
+                window.location.href = '../hcp/home/'
+                
+            }else if (z.role == 'pharmacist') {
+                window.location.href = '../pharmacist/home/'
+                
+            }else if (z.role == 'cashier') {
+                window.location.href = '../cashier/home/'
+                
+            }else if (z.role == 'Receptionist') {
+                window.location.href = '../Receptionist/home/'
+                
+            }else if (z.role == 'director_general') {
+                window.location.href = '../dg/home/'
+                
+            }else if (z.role == 'Director of finance') {
+                window.location.href = '../dof/home/'
+                
+            }else if (z.role == 'Ministry of health staff') {
+                window.location.href = '../mhs/home/'
+                
+            }else if (z.role == 'Human resource manager') {
+                window.location.href = '../hrm/home/'
+                
+            }else if (z.role == 'laboratory_scientist') {
+                window.location.href = '../laboratory_scientist/home/'
+                
             }
         }
     }else{

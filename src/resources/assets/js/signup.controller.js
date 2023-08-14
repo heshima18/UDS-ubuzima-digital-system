@@ -1,14 +1,21 @@
-import { alertMessage, getdata, getschema, postschema, request, checkEmpty } from "../../../utils/functions.controller.js";
+import { alertMessage, getdata, getschema, postschema, request, checkEmpty, initializeCleave,showRecs, getchips } from "../../../utils/functions.controller.js";
 
 let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,z,x,c,v,b,n,m
 m = await request('get-map',getschema)
-
+q = await request('get-assurances',getschema)
 try {
-    if (m.success) {
+    if (m.success && q.success) {
         [m] = m.message
         f = document.querySelector('form#formAuthentication')
         s = Array.from(f.querySelectorAll('select.address-field'));
         i = Array.from(f.querySelectorAll('.form-control'))
+        initializeCleave(
+            f.querySelector('input.phone-number-mask'),
+            f.querySelector('input.national-id-no-mask')
+        );
+        for (const sele of s) {
+            i.push(sele)
+        }
         b = f.querySelector('button[type="submit"]')
         for (const province of m.provinces) {
             o = document.createElement('option');
@@ -17,6 +24,10 @@ try {
             o.value = province.id
             o.setAttribute('data-id',province.id)
         }
+        let departments = f.querySelector('input#assurances')
+        departments.addEventListener('focus', function (e) {
+            showRecs(this,q.message,'assurances')
+        })
         for (const select of s) {
             select.addEventListener('change',e=>{
                 e.preventDefault();
@@ -66,29 +77,43 @@ try {
             n = '';
             u = '';
             b = {}
+            v = 1
             e.preventDefault();
             for (const input of i) {
                a =  checkEmpty(input);
-               if(a == 0){ 
-                return 0
+               if(!a){ 
+                v = 0
                }
-               if (input.name == 'firstname') {
+               if (input.name == 'phone' || input.name == 'nid') {
+                 Object.assign(b,{[input.name]:  input.value.replace(/ /g, "")})   
+               }else if (input.name == 'firstname') {
                   u+= `${input.value + Math.floor(Math.random() * 999).toString().padStart(3, '0')}.`
                   n+= `${input.value} `
                }else if(input.name == 'lastname'){
                   u+= `${input.value + Math.floor(Math.random() * 999).toString().padStart(3, '0')}`
                   n+= `${input.value}`
+               }else if(input.classList.contains('chips-check')){
+                  z = checkEmpty(input)
+                  if (z) {
+                      Object.assign(b,{[input.name]: getchips(input.parentNode.querySelector('div.chipsholder'))})
+                      console.log(getchips(input.parentNode.querySelector('div.chipsholder')))
+                  }
                }else{
-                   Object.assign(b,{[input.name]: input.value})
+                  Object.assign(b,{[input.name]: input.value})
                }
             }
-            b.assurances = [b.assurances]
-            Object.assign(b,{ Full_name: n})
-            Object.assign(b,{ username: u})
-            console.log(a,b)
-            postschema.body = JSON.stringify(b)
-            r = await request('api/signup',postschema);
-            alertMessage(r.message)
+            if (v) {
+                Object.assign(b,{ Full_name: n})
+                Object.assign(b,{ username: u})
+                postschema.body = JSON.stringify(b)
+                console.log(b)
+                r = await request('api/signup',postschema);
+                alertMessage(r.message)
+                if (r.success) {
+                    localStorage.setItem('userid',b.username)
+                    window.location.href = '../auth'
+                }
+            }
         }) 
     }else{
         alertMessage(m.message)

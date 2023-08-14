@@ -303,8 +303,8 @@
                                             <div class="col-md-6">
                                                 <label for="ee-form-names" class="form-label">Full Names</label>
                                                 <input type="text" id="ee-form-names" class="form-control"
-                                                    placeholder="John Doe" value="Galen Slixby" required />
-                                                <div class="invalid-feedback">Please enter the names</div>
+                                                    placeholder="John Doe" value="Galen Slixby" />
+                                                <small class="fs-14p red"></small>
                                             </div>
                                             <div class="col-md-6">
                                                 <label for="ee-form-national-id" class="form-label">Nation
@@ -312,29 +312,29 @@
                                                 <input type="text" id="ee-form-national-id"
                                                     class="form-control national-id-no-musk"
                                                     placeholder="X XXXX X XXXXXXX X XX" value="4823401293574923"
-                                                    required />
-                                                <div class="invalid-feedback">National ID is required</div>
+                                                 />
+                                                <small class="fs-14p red"></small>
                                             </div>
                                             <div class="col-md-6">
                                                 <label class="form-label" for="ee-form-email-address">Email
                                                     address</label>
                                                 <input type="text" id="ee-form-email-address" class="form-control"
                                                     placeholder="someone@example.com" value="s.galen@email.hp"
-                                                    required />
-                                                <div class="invalid-feedback">Please enter the email address</div>
+                                                 />
+                                                <small class="fs-14p red"></small>
                                             </div>
                                             <div class="col-md-6">
                                                 <label class="form-label" for="ee-form-phone-number">Phone
                                                     Number</label>
                                                 <input type="text" id="ee-form-phone-number"
                                                     class="form-control phone-number-mask" value=""
-                                                    required />
-                                                <div class="invalid-feedback">Please enter the phone number</div>
+                                                 />
+                                                <small class="fs-14p red"></small>
                                             </div>
                                             <div class="col-md-6">
                                                 <label class="form-label" for="ee-form-health-post">Health
                                                     Post</label>
-                                                <select id="ee-form-health-post" class="form-select select2" required>
+                                                <select id="ee-form-health-post" class="form-select select2">
                                                     <option value="">Choose...</option>
                                                     <option value="hp-01" selected>Kacyiru Health Centre</option>
                                                     <option value="hp-02">Ruhengeri Hospital</option>
@@ -342,11 +342,11 @@
                                                     <option value="hp-04">Butaro District Hospital</option>
                                                     <option value="hp-05">Rwamagana Provincial Hospital</option>
                                                 </select>
-                                                <div class="invalid-feedback">Please select health post</div>
+                                                <small class="fs-14p red"></small>
                                             </div>
                                             <div class="col-md-6">
                                                 <label class="form-label" for="ee-form-department">Department</label>
-                                                <select id="ee-form-department" class="form-select" required>
+                                                <select id="ee-form-department" class="form-select">
                                                     <option value="">Choose...</option>
                                                     <option value="medical-services" selected>Medical Services</option>
                                                     <option value="nursing">Nursing</option>
@@ -356,11 +356,11 @@
                                                     <option value="Patient Care">Patient Care</option>
                                                     <option value="Radiology">Radiology</option>
                                                 </select>
-                                                <div class="invalid-feedback">Please select employee's department</div>
+                                                <small class="fs-14p red"></small>
                                             </div>
                                             <div class="col-12">
                                                 <label for="ee-form-position" class="form-label">Position</label>
-                                                <select id="ee-form-position" class="form-select" required>
+                                                <select id="ee-form-position" class="form-select">
                                                     <option value="">Choose...</option>
                                                     <option value="doctor" selected>Doctor</option>
                                                     <option value="manager">Manager</option>
@@ -368,7 +368,7 @@
                                                     <option value="receptionist">Receptionist</option>
                                                     <option value="pharmacist">Pharmacist</option>
                                                 </select>
-                                                <div class="invalid-feedback">Please select employee's postion</div>
+                                                <small class="fs-14p red"></small>
                                             </div>
                                             <div class="col-12 text-center d-flex gap-3 justify-content-end">
                                                 <button type="reset" class="btn btn-label-secondary"
@@ -387,80 +387,63 @@
                                         <h3>Add new employee</h3>
                                     </div>
                                     <div class="modal-body">
-                                        <form id="add-employee-form" class="row g-3 needs-validation" novalidate>
+                                        <form id="add-employee-form" class="row g-3">
                                             <div class="col-md-6">
                                                 <label for="add-employee-names" class="form-label">Full Names</label>
-                                                <input type="text" id="add-employee-names" class="form-control"
-                                                    placeholder="John Doe" required />
-                                                <div class="invalid-feedback">Please enter the names</div>
+                                                <input type="text" id="add-employee-names" name="Full_name" class="form-control"
+                                                    placeholder="John Doe" />
+                                                <small class="fs-14p red"></small>
                                             </div>
                                             <div class="col-md-6">
                                                 <label for="add-employee-national-id" class="form-label">Nation
                                                     ID</label>
                                                 <input type="text" id="add-employee-national-id"
-                                                    class="form-control national-id-no-musk"
-                                                    placeholder="X XXXX X XXXXXXX X XX" required />
-                                                <div class="invalid-feedback">National ID is required</div>
+                                                    class="form-control national-id-no-musk" name="nid"
+                                                    placeholder="X XXXX X XXXXXXX X XX" />
+                                                <small class="fs-14p red"></small>
                                             </div>
                                             <div class="col-md-6">
                                                 <label class="form-label" for="add-employee-email-address">Email
                                                     address</label>
                                                 <input type="text" id="add-employee-email-address" class="form-control"
-                                                    placeholder="someone@example.com" required />
-                                                <div class="invalid-feedback">Please enter the email address</div>
+                                                    placeholder="someone@example.com" name="email"/>
+                                                <small class="fs-14p red"></small>
                                             </div>
                                             <div class="col-md-6">
                                                 <label class="form-label" for="add-employee-phone-number">Phone
                                                     Number</label>
                                                 <input type="text" id="add-employee-phone-number"
-                                                    class="form-control phone-number-mask" required />
-                                                <div class="invalid-feedback">Please enter the phone number</div>
+                                                    class="form-control phone-number-mask" name="phone" />
+                                                <small class="fs-14p red"></small>
                                             </div>
-                                            <div class="col-md-6">
+                                            <div class="col-md-6 p-r">
                                                 <label class="form-label" for="add-employee-health-post">Health
                                                     Post</label>
-                                                <select id="add-employee-health-post" class="form-select select2"
-                                                    required>
-                                                    <option value="">Choose...</option>
-                                                    <option value="hp-01">Kacyiru Health Centre</option>
-                                                    <option value="hp-02">Ruhengeri Hospital</option>
-                                                    <option value="hp-03">Kanombe Military Hospital</option>
-                                                    <option value="hp-04">Butaro District Hospital</option>
-                                                    <option value="hp-05">Rwamagana Provincial Hospital</option>
-                                                </select>
-                                                <div class="invalid-feedback">Please select health post</div>
+                                                    <input name="hospital" type="text" id="hospital" class="form-control bevalue" placeholder="Hospital">
+                                                    <small class="fs-14p"></small>
                                             </div>
-                                            <div class="col-md-6">
+                                            <div class="col-md-6 p-r">
                                                 <label class="form-label"
                                                     for="add-employee-department">Department</label>
-                                                <select id="add-employee-department" class="form-select" required>
-                                                    <option value="">Choose...</option>
-                                                    <option value="medical-services">Medical Services</option>
-                                                    <option value="nursing">Nursing</option>
-                                                    <option value="laboratory">Laboratory</option>
-                                                    <option value="pharmacy">Pharmacy</option>
-                                                    <option value="Administration">Administration</option>
-                                                    <option value="Patient Care">Patient Care</option>
-                                                    <option value="Radiology">Radiology</option>
-                                                </select>
-                                                <div class="invalid-feedback">Please select employee's department</div>
+                                                <input id="department" class="form-control bevalue" name="department" placeholder="department">
+                                                <small class="fs-14p red"></small>
                                             </div>
                                             <div class="col-12">
                                                 <label for="add-employee-position" class="form-label">Position</label>
-                                                <select id="add-employee-position" class="form-select" required>
+                                                <select id="add-employee-position" class="form-select" name="title">
                                                     <option value="">Choose...</option>
                                                     <option value="doctor">Doctor</option>
                                                     <option value="Director general">Director general</option>
                                                     <option value="manager">Manager</option>
                                                     <option value="Medical doctor">Medical doctor</option>
                                                     <option value="receptionist">Receptionist</option>
-                                                    <option value="pharmacist">Pharmacist</option>
+                                                    <option value="Pharmacist">Pharmacist</option>
                                                     <option value="Laboratory Scientist">Laboratory Scientist</option>
                                                     <option value="Cashier">Cashier</option>
                                                     <option value="Nurse">Nurse</option>
                                                     <option value="Director of finance">Director of finance</option>
                                                 </select>
-                                                <div class="invalid-feedback">Please select employee's postion</div>
+                                                <small class="fs-14p red"></small>
                                             </div>
                                             <div class="col-12 text-center d-flex gap-3 justify-content-end">
                                                 <button type="reset" class="btn btn-label-secondary"

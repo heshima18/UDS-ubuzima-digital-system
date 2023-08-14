@@ -52,7 +52,7 @@
 <div class="cont">
         <div class="authentication-wrapper authentication-basic container-p-y" id="body">
             <div class="authentication-inner ">
-                <div class="card">
+                <div class="card w-450p">
                     <div class="card-body">
                         <div class="app-brand justify-content-center">
                             <a href="../" class="app-brand-link gap-2">
@@ -80,7 +80,7 @@
                             </div>
                             <div class="mb-2">
                                 <label for="NID" class="form-label">NID</label>
-                                <input type="text" class="form-control" id="nid" name="nid" placeholder="Enter your NID">
+                                <input type="text" class="form-control national-id-no-mask" id="nid" name="nid" placeholder="Enter your NID">
                                 <small class="hidden w-100 red pl-3p verdana"></small>
                             </div>
                             <div class="mb-2">
@@ -88,36 +88,38 @@
                                 <input type="date" class="form-control" id="dob" name="dob" placeholder="Enter your DOB">
                                 <small class="hidden w-100 red pl-3p verdana"></small>
                             </div>
-                            <div class="mb-2">
+                            <div class="mb-2 p-r">
                                 <label for="Assurances" class="form-label">Assurances</label>
-                                <input type="text" class="form-control" id="assurances" name="assurances" placeholder="Select your Assurances">
+                                <input type="text" class="form-control chips-check" id="assurances" name="assurances" placeholder="Select your Assurances">
                                 <small class="hidden w-100 red pl-3p verdana"></small>
                             </div>
-                            <div class="mb-2 ">
-                                <label for="address" class="form-label">Address</label>
-                                <div class="flex">
-                                    <div class="iblock w-100 p-5p bsbb">
-                                        <select class="address-field form-control" id="province" name="province" placeholder="Province">
-                                            <option value="">Province...</option>
-                                        </select>
-                                    </div>
-                                    <div class="iblock w-100 p-5p bsbb">
-                                        <select class="address-field form-control" id="district" name="district" placeholder="District">
-                                            <option value="">District...</option>
-                                        </select>
-                                    </div>
-                                    <div class="iblock w-100 p-5p bsbb">
-                                        <select class="address-field form-control" id="sector" name="sector" placeholder="Sector">
-                                            <option value="">Sector...</option>
-                                        </select>
-                                    </div>
-                                    <div class="iblock w-100 p-5p bsbb">
-                                        <select class="address-field form-control" id="cell" name="cell" placeholder="Cell">
-                                            <option value="">Cell...</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <small class="hidden w-100 red pl-3p verdana"></small>
+                            <div class="col-md-6 mr-5p iblock">
+                                <label for="ahp-location-province" class="form-label">Province</label>
+                                <select name="province" id="ahp-location-province" class="address-field form-select">
+                                    <option value="">Select Province</option>
+                                </select>
+                                <small class="fs-14p"></small>
+                            </div>
+                            <div class="col-md-5 ml-5p iblock">
+                                <label for="ahp-location-district" class="form-label">District</label>
+                                <select name="district" id="ahp-location-district" class="address-field form-select">
+                                    <option value="">Select District</option>
+                                </select>
+                                <small class="fs-14p"></small>
+                            </div>
+                            <div class="col-md-6 mr-5p iblock">
+                                <label for="ahp-location-sector" class="form-label">Sector</label>
+                                <select name="sector" id="ahp-location-sector" class="address-field form-select">
+                                    <option value="">Select Sector</option>
+                                </select>
+                                <small class="fs-14p"></small>
+                            </div>
+                            <div class="col-md-5 ml-5p iblock">
+                                <label for="ahp-location-cell" class="form-label">Cell</label>
+                                <select name="cell" id="ahp-location-cell" class="address-field form-select">
+                                    <option value="">Select Cell</option>
+                                </select>
+                                <small class="fs-14p"></small>
                             </div>
                             <div class="mb-2">
                                 <label for="email" class="form-label">Email</label>
@@ -126,7 +128,7 @@
                             </div>
                             <div class="mb-2">
                                 <label for="phone" class="form-label">phone</label>
-                                <input type="text" class="form-control" id="phone" name="phone" placeholder="Enter your Phone Number">
+                                <input type="text" class="form-control phone-number-mask" id="phone" name="phone" placeholder="Enter your Phone Number">
                                 <small class="hidden w-100 red pl-3p verdana"></small>
                             </div>
                             <div class="mb-2 form-password-toggle">
@@ -198,6 +200,8 @@
 <script src="../assets/vendor/js/dropdown-hover.js"></script>
 <script src="../assets/vendor/libs/toastr/toastr.js"></script>
 <script src="../assets/vendor/libs/tagify/tagify.js"></script>
+<script src="/assets/vendor/libs/cleavejs/cleave.js"></script>
+<script src="/assets/vendor/libs/cleavejs/cleave-phone.rw.js"></script>
 
 <!-- Main JS -->
 <script src="../assets/js/main.js"></script><!-- Page JS -->

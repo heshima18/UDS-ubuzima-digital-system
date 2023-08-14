@@ -5,9 +5,20 @@ import generate2FAcode from './2FA.code.generator.controller'
 import sendmail from "./2FA.sender.controller";
 import {checkEmail, checkNID, checku_name} from './credentials.verifier.controller';
 import authenticateToken from './token.verifier.controller';
+import { titles } from '../utils/titles.controller';
+import { roles } from '../utils/roles.controller';
+
 export const addemployee = async (req,res)=>{
   try {
-    let {username,password,Full_name,email,phone,nid,role,hospital,department} = req.body
+      let {Full_name,email,phone,nid,hospital,department,title} = req.body
+      let role,password = '123456',username = Full_name.replace(/ /gi,".");
+      username+= id().substring(2,4);
+      for (const tit of titles) {
+        if (title == Object.keys(tit)[0]) {
+          let key = tit[Object.keys(tit)[0]]
+          role = roles[key]
+        }
+      }
       let uid = id()
       let des = await checkEmail(email,phone,'users')
       if(!des) return res.status(500).send({success: false, message : errorMessage.is_error});
@@ -23,7 +34,7 @@ export const addemployee = async (req,res)=>{
       let update = await query(`UPDATE hospitals SET employees = JSON_ARRAY_APPEND(employees, '$', ?) where hospitals.id = ?`,[uid,hospital]);
       if (!update) return res.status(500).send({success:false, message: errorMessage.is_error})
       if (!update.affectedRows) return res.status(404).send({success:false, message: errorMessage._err_hc_404})
-      let insert = await query(`insert into users(id,NID,email,phone,Full_name,username,password,role,department,status)values(?,?,?,?,?,?,?,?,?,?)`,[uid,nid,email,phone,Full_name,username,password,role,department,'unverified'])
+      let insert = await query(`insert into users(id,NID,email,phone,Full_name,username,password,role,department,status,title)values(?,?,?,?,?,?,?,?,?,?,?)`,[uid,nid,email,phone,Full_name,username,password,role,department,'unverified',title])
       let FAcode = generate2FAcode()
       if (!insert) {
         return res.status(500).send({success:false, message: errorMessage.is_error})

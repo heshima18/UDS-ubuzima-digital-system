@@ -1,18 +1,120 @@
 // Import the Employees from 'constants.js'
-import { Employees } from './constants.js';
-import { alertMessage, getdata, getschema, postschema, request, initializeCleave } from "../../../utils/functions.controller.js";
+import { alertMessage, getdata, getschema, postschema, request, initializeCleave,checkEmpty,showRecs } from "../../../utils/functions.controller.js";
 
 
 
 // Wait for the document to be ready
 $(document).ready(async function () {
-    let t, a, n, u, z, v, d;
+    let t, a, n, u, z, v, d, h, f, i, s, b, x, c;
     u = getdata('token')
+    if(!u){
+        window.location.href = '../login'
+    }
     postschema.body = JSON.stringify({
         token: u
     })
     v = await request('get-employees',postschema)
-    if (!v.success) return alertMessage(v.message)
+    n = await request('get-departments',postschema)
+    h =  await request('gethospitals',postschema)
+    try{
+        f = document.querySelector('form#add-employee-form')
+        s = Array.from(f.querySelectorAll('select.address-field'));
+        i = Array.from(f.querySelectorAll('.form-control'))
+        z = Array.from(f.querySelectorAll('.form-select'))
+        for (const sele of z) {
+         i.push(sele)
+        }
+        b = f.querySelector('button[type="submit"]')
+        for (const select of s) {
+            select.addEventListener('change',e=>{
+                e.preventDefault();
+                if (select.name == 'province') {
+                    for (const province of m.provinces) {
+                        if (province.id == select.value) {
+                            s[2].innerHTML =  '<option value="">Select Sector</option>'
+                            s[3].innerHTML =  '<option value="">Select Cell</option>'
+                            cdcts(province.districts,s[1],'District')
+                        }else if(select.value == ''){
+                            s[1].innerHTML =  '<option value="">Select District</option>'
+                            s[2].innerHTML =  '<option value="">Select Sector</option>'
+                            s[3].innerHTML =  '<option value="">Select Cell</option>'
+                        }
+                    }
+                }
+                if (select.name == 'district') {
+                    for (const province of m.provinces) {
+                        for (const district of province.districts) {
+                            if (district.id == select.value) {
+                                s[3].innerHTML =  '<option value="">Select Cell</option>'
+                                cdcts(district.sectors,s[2],'Sector')
+                            }else if(select.value == ''){
+                                s[2].innerHTML =  '<option value="">Select Sector</option>'
+                                s[3].innerHTML =  '<option value="">Select Cell</option>'
+                            }
+                        }
+                    }
+                }
+                if (select.name == 'sector') {
+                    for (const province of m.provinces) {
+                        for (const district of province.districts) {
+                            for (const sector of district.sectors) {
+                                if (sector.id == select.value) {
+                                    cdcts(sector.cells,s[3],'Cell')
+                                }else if(select.value == ''){
+                                    s[3].innerHTML =  '<option value="">Choose...</option>'
+                                }
+                            }
+                        }
+                    }
+                }
+            })
+        }
+    } catch (error) {
+    console.log(error)  
+    }
+    f.addEventListener('submit', async e =>{
+        e.preventDefault();
+        v = 1
+        for (const input of i) {
+        n =  checkEmpty(input);
+            if (!n) {
+            v = 0 
+            }
+        }
+        if(v){
+            x = {}
+            for (const input of i) {
+                if (!input.classList.contains('chips-check')) {
+                    if (input.name == 'phone' || input.name == 'nid') {
+                        Object.assign(x,{[input.name]:  input.value.replace(/ /g, "")})   
+                    }else if (input.classList.contains('bevalue')) {
+                        Object.assign(x,{[input.name]: input.getAttribute('data-id')})
+                    }else{
+                        Object.assign(x,{[input.name]: input.value})
+
+                    }
+                }else{
+                    c = getchips(input.parentNode.querySelector('div.chipsholder'));
+                    Object.assign(x,{[input.name]: c})
+                }
+            }
+            Object.assign(x,{token: getdata('token')})
+            postschema.body = JSON.stringify(x)
+            b.setAttribute('disabled', true)
+            b.textContent = `Recording employee...`
+
+            a = await request('addemployee',postschema);
+            b.removeAttribute('disabled')
+            b.textContent = `Submit`
+            if (a.success) {
+                alertMessage(a.message)
+                f.reset()
+            }else{
+                alertMessage(a.message)
+            }
+        }
+    })
+    if (!v.success || !n.success || !h.success) return alertMessage(v.message)
     for (const employee of v.message) {
         Object.assign( v.message[v.message.indexOf(employee)],{image: ""})
         // if (employee.status == 'active') {
@@ -22,7 +124,6 @@ $(document).ready(async function () {
         //     v.message[v.message.indexOf(employee)].status = 1            
         // }
     }
-    console.log(v.message,Employees)
     // Initialize DataTable
     var table = $('.datatables-employees'),
         e = table.DataTable({
@@ -167,7 +268,6 @@ $(document).ready(async function () {
     // Delete employee when delete icon clicked
     table.find("tbody").on("click", ".delete-employee", function () {
         if (confirm("Are you sure you want to delete this employee?")) {
-            console.log(e.row($(this)))
             e.row($(this).parents("tr")).remove().draw();
         }
     }), setTimeout(() => {
@@ -175,6 +275,14 @@ $(document).ready(async function () {
         $(".dataTables_length .form-select").removeClass("form-select-sm");
     }, 0), $('#update-employee, #add-employee').on('shown.bs.modal', function () {
         const $modal = $(this);
+        let hospital = f.querySelector('input#hospital')
+        let department = f.querySelector('input#department')
+        hospital.addEventListener('focus', function (e) {
+            showRecs(this,h.message,'hospital')
+        })
+        department.addEventListener('focus', function (e) {
+            showRecs(this,n.message,'department')
+        })
         initializeCleave(
             $modal.find('.phone-number-mask'),
             $modal.find('.national-id-no-musk')

@@ -154,55 +154,67 @@ export async function initializeCleave(phoneElement, idElement) {
     });
   }
 }
-export function showRecs(input, data) {
-  let div =  document.createElement('div');
-  let parent = input.parentNode
-  let chipsHolder = parent.querySelector('div.chipsholder')
-  if (!chipsHolder) {
-    chipsHolder = document.createElement('div');
-    chipsHolder.className = 'chipsholder p-5p bsbb w-100'
-    chipsHolder.title = 'departments'
-    parent.insertAdjacentElement('beforeEnd',chipsHolder)
-  }
-  parent.appendChild(div)
-  div.className = `p-a w-300p h-250p bsbb card-2 zi-1000 bc-white scroll-2 ovys t-0 mt-70p br-5p`
-  div.innerHTML = `<div class="w-100 h-100 p-5p bsbb"><ul class="ls-none p-0 m-0"></ul></div>`
-  for(const info of data){
-    let item = document.createElement('li');
-    item.className = 'hover p-10p bsbb w-100 item'
-    item.textContent = info.name
-    item.setAttribute('data-id',info.id)
-    div.querySelector('ul').appendChild(item)
-  }
-  let items = div.querySelectorAll('li.item')
-  items.forEach(item =>{
-   item.addEventListener('click', (e)=>{
-    addChip({name:item.textContent, id: item.getAttribute('data-id')},chipsHolder)
-   })
-  })
-  input.onblur = function () {
-    setTimeout(e=>{parent.removeChild(div)},200)
-  }
-  input.onkeyup = function () {
-   let value = this.value.trim();
-   items.forEach(item =>{
-    console.log(item.textContent.indexOf(value))
-    if (item.textContent.indexOf(value) == -1) {
-      item.classList.add('hidden')
-    }else{
-      item.classList.remove('hidden')
-
+export function showRecs(input, data,type) {
+  try {
+    
+    let div =  document.createElement('div');
+    let parent = input.parentNode
+    let chipsHolder = parent.querySelector('div.chipsholder')
+    if (!chipsHolder) {
+      chipsHolder = document.createElement('div');
+      chipsHolder.className = 'chipsholder p-5p bsbb w-100'
+      chipsHolder.title = type
+      parent.insertAdjacentElement('beforeEnd',chipsHolder)
     }
-    console.log(item)
-   })
+    parent.appendChild(div)
+    div.className = `p-a w-300p h-250p bsbb card-2 zi-1000 bc-white scroll-2 ovys t-0 mt-70p br-5p`
+    div.innerHTML = `<div class="w-100 h-100 p-5p bsbb"><ul class="ls-none p-0 m-0"></ul></div>`
+    for(const info of data){
+      let item = document.createElement('li');
+      item.className = 'hover p-10p bsbb w-100 item'
+      item.textContent = info.name
+      item.setAttribute('data-id',info.id)
+      div.querySelector('ul').appendChild(item)
+    }
+    let items = div.querySelectorAll('li.item')
+    items.forEach(item =>{
+     item.addEventListener('click', (e)=>{
+      if (input.classList.contains('chips-check')) {
+        addChip({name:item.textContent, id: item.getAttribute('data-id')},chipsHolder)
+      }else if (input.classList.contains('bevalue')) {
+        input.value = item.textContent
+        input.setAttribute('data-id',item.getAttribute('data-id'))
+      }
+     })
+    })
+    input.onblur = function () {
+      setTimeout(e=>{parent.removeChild(div)},200)
+    }
+    input.onkeyup = function () {
+     let value = this.value.trim();
+     items.forEach(item =>{
+      if (item.textContent.indexOf(value) == -1) {
+        item.classList.add('hidden')
+      }else{
+        item.classList.remove('hidden')
+        if (input.classList.contains('bevalue') && input.value == item.textContent) {
+          input.value = item.textContent
+          input.setAttribute('data-id',item.getAttribute('data-id'))
+        }
+  
+      }
+     })
+    }
+  } catch (error) {
+    
   }
 
 }
 export function addChip(info,parent) {
   c = document.createElement('span')
-  c.className = 'w-a h-a b-1-s-gray br-2p p-5p m-5p fs-13p iblock chip verdana dgray consolas ';
+  c.className = 'w-a h-a b-1-s-gray br-2p pr-20p pt-5p pb-5p pl-5p m-5p fs-13p iblock chip p-r verdana dgray consolas  ';
   r = document.createElement('div');
-  r.className = "w-20p h-20p p-r right bc-white remove ml-5p  b-1-s-gray center br-50 hover"
+  r.className = "w-20p h-20p p-a right bc-white remove m-5p  b-1-s-gray center br-50 hover t-0 r-0"
   r.innerHTML = `<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="20px" height="20px" viewBox="0 0 64 64" enable-background="new 0 0 64 64" xml:space="preserve"><g><line fill="none" stroke="#000" stroke-width="1" stroke-miterlimit="10" x1="18.947" y1="17.153" x2="45.045" y2="43.056"></line></g><g><line fill="none" stroke="#000" stroke-width="1" stroke-miterlimit="10" x1="19.045" y1="43.153" x2="44.947" y2="17.056"></line></g></svg>`
   c.innerHTML = `<span class="p-5p bsbb consolas dgray fs-12p" data-id= "${info.id}">${info.name}</span></span> `
   c.appendChild(r)
@@ -238,9 +250,7 @@ export function getchips(parent) {
   let d
   d = []
   for (const chip of c) {
-    if (parent.title == 'departments') {
       d.push(chip.querySelector('span').getAttribute('data-id'))
-    }
   }
   return d
 }

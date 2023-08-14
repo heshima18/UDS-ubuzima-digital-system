@@ -96,12 +96,12 @@ f.addEventListener('submit', async e =>{
          }
          Object.assign(x,{token: getdata('token')})
          postschema.body = JSON.stringify(x)
-         f.querySelector('button[type="submit"]').setAttribute('disabled', true)
-         f.querySelector('button[type="submit"]').textContent = `Recording health post info...`
+         b.setAttribute('disabled', true)
+         b.textContent = `Recording health post info...`
 
          a = await request('addhealthpost',postschema);
-         f.querySelector('button[type="submit"]').removeAttribute('disabled')
-         f.querySelector('button[type="submit"]').textContent = `Submit`
+         b.removeAttribute('disabled')
+         b.textContent = `Submit`
 
 
          if (!a.success) {
@@ -322,7 +322,7 @@ $(document).ready(function () {
         const $modal = $(this);
         let departments = f.querySelector('input#departments')
         departments.addEventListener('focus', function (e) {
-            showRecs(this,d.message)
+            showRecs(this,d.message,'departments')
         })
         
         initializeCleave(

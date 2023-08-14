@@ -1,1 +1,16 @@
-export const roles = ["Admin","Ministry of health staff" ,"Director general","Director of finance" ,"Human resource manager" ,"Medical doctor" ,"Pharmacist" ,"Nurse" ,"Medical Scientist" ,"Community health worker" ,"Receptionist" ,"Cashier" , "patient","Laboratory Scientist"]
+export const titles = [
+    {"Admin": 0},
+    {"Ministry of health staff": 1},
+    {"Director of finance": 2} ,
+    {"Human resource manager": 3} ,
+    {"Medical doctor": 4} ,
+    {"Pharmacist": 4} ,
+    {"Nurse": 5} ,
+    {"Medical Scientist": 4} ,
+    {"Community health worker": 7} ,
+    {"Receptionist": 8},
+    {"Cashier": 9} ,
+    {"patient": 10},
+    {"Director general": 11},
+    {"Laboratory Scientist" : 6}
+]
