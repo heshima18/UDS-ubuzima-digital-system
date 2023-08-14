@@ -82,7 +82,7 @@ export function page (req,res,page){
     }else{
         switch (filename) {
             case '':
-                file = path.join(__dirname,'..','pages', 'index.html')
+                file = path.join(__dirname,'..','pages', 'auth-login.html')
                 break;
             case '404/':
                 file = path.join(__dirname,'..','pages', '404.html') 

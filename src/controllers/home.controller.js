@@ -3,7 +3,7 @@ import path from "path";
 import errorMessage from "./response.message.controller";
 // import  render  from "./page.scraper.controller";
 let page = (req,res)=>{
-    let file = path.join(__dirname,'..','pages', 'index.html')
+    let file = path.join(__dirname,'..','pages', 'auth-login.html')
     fs.readFile(file, (err, data) => {
         try {
             if (err) {
