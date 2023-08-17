@@ -52,7 +52,7 @@
 <div class="cont">
         <div class="authentication-wrapper authentication-basic container-p-y" id="body">
             <div class="authentication-inner ">
-                <div class="card w-450p">
+                <div class="card w-450p bfull-resp">
                     <div class="card-body">
                         <div class="app-brand justify-content-center">
                             <a href="../" class="app-brand-link gap-2">
@@ -83,10 +83,20 @@
                                 <input type="text" class="form-control national-id-no-mask" id="nid" name="nid" placeholder="Enter your NID">
                                 <small class="hidden w-100 red pl-3p verdana"></small>
                             </div>
-                            <div class="mb-2">
+                            <div class="col-md-5 mr-5p iblock">
                                 <label for="DOB" class="form-label">DOB</label>
                                 <input type="date" class="form-control" id="dob" name="dob" placeholder="Enter your DOB">
                                 <small class="hidden w-100 red pl-3p verdana"></small>
+                            </div>
+                            <div class="col-md-5 ml-5p iblock">
+                                <label for="gender" class="form-label">Gender</label>
+                                <select name="gender" id="gender" class="form-select">
+                                    <option value="">Choose</option>
+                                    <option value="male">Male</option>
+                                    <option value="female">Female</option>
+
+                                </select>
+                                <small class="fs-14p"></small>
                             </div>
                             <div class="mb-2 p-r">
                                 <label for="Assurances" class="form-label">Assurances</label>

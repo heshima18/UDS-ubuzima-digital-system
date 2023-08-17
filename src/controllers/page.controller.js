@@ -75,11 +75,50 @@ export function page (req,res,page){
             case 'assurances':
                 file = path.join(__dirname,'..','pages', 'admin-assurances.html') 
                 break;
+            case 'departments/':
+                file = path.join(__dirname,'..','pages', 'admin-departments.html') 
+                break;
+            case 'departments':
+                file = path.join(__dirname,'..','pages', 'admin-departments.html') 
+                break;
             default:
                     file = 'N/A'
                 break;
         } 
-    }else{
+    }else if (user == 'receptionist') {
+        switch (filename) {
+            case '':
+                file = path.join(__dirname,'..','pages', 'receptionist-index.html')
+                break;
+            case 'home/':
+                file = path.join(__dirname,'..','pages', 'receptionist-index.html')
+                break;
+            case 'home':
+                file = path.join(__dirname,'..','pages', 'receptionist-index.html')
+                break;
+            case 'search-patient/':
+                file = path.join(__dirname,'..','pages', 'receptionist-search-patient.html')
+                break;
+            case 'search-patient':
+                file = path.join(__dirname,'..','pages', 'receptionist-search-patient.html')
+                break;
+            case 'register-patient/':
+                file = path.join(__dirname,'..','pages', 'receptionist-register-patient.html')
+                break;
+            case 'register-patient':
+                file = path.join(__dirname,'..','pages', 'receptionist-register-patient.html')
+                break;
+            case 'my-account/':
+                file = path.join(__dirname,'..','pages', 'receptionist-my-account.html')
+                break;
+            case 'my-account':
+                file = path.join(__dirname,'..','pages', 'receptionist-my-account.html')
+                break;
+            default:
+                    file = 'N/A'
+                break;
+        } 
+    } else{
         switch (filename) {
             case '':
                 file = path.join(__dirname,'..','pages', 'auth-login.html')
@@ -120,24 +159,6 @@ export function page (req,res,page){
                 break;
             case 'reset-password':
                 file = path.join(__dirname,'..','pages', 'auth-reset-password.html') 
-                break;
-            case 'employees/':
-                file = path.join(__dirname,'..','pages', 'admin-employees.html') 
-                break;
-            case 'employees':
-                file = path.join(__dirname,'..','pages', 'admin-employees.html') 
-                break;
-            case 'health-posts/':
-                file = path.join(__dirname,'..','pages', 'admin-health-posts.html') 
-                break;
-            case 'health-posts':
-                file = path.join(__dirname,'..','pages', 'admin-health-posts.html') 
-                break;
-            case 'medicines/':
-                file = path.join(__dirname,'..','pages', 'admin-medicines.html') 
-                break;
-            case 'medicines':
-                file = path.join(__dirname,'..','pages', 'admin-medicines.html') 
                 break;
             default:
                     file = 'N/A'

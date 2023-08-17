@@ -6,7 +6,7 @@ import sendmail from "./2FA.sender.controller";
 import {checkEmail, checkNID, checku_name} from './credentials.verifier.controller';
 const signup = async (req,res)=>{
   try {
-    let {username,password,Full_name,email,phone,assurances,dob,province,district,sector,cell,nid} = req.body
+    let {username,password,Full_name,email,phone,assurances,dob,province,district,sector,cell,nid,gender} = req.body
       let uid = id()
       let des = await checkEmail(email,phone,'patients')
       if(!des) return res.status(500).send({success: false, message : errorMessage.is_error});
@@ -19,7 +19,7 @@ const signup = async (req,res)=>{
         if(!des2) return res.status(500).send({success: false, message : errorMessage.is_error});
         if (des2.length) return res.send({success: false, message : errorMessage._err_NID_avai});
       }
-      let insert = await query(`insert into patients(id,NID,email,phone,Full_name,username,password,DOB,resident_province,resident_district,resident_sector,resident_cell,status,assurances)values(?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,[uid,nid,email,phone,Full_name,username,password,dob,province,district,sector,cell,'unverified',JSON.stringify(assurances)])
+      let insert = await query(`insert into patients(id,NID,email,phone,Full_name,username,password,DOB,resident_province,resident_district,resident_sector,resident_cell,status,assurances,gender)values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,[uid,nid,email,phone,Full_name,username,password,dob,province,district,sector,cell,'unverified',JSON.stringify(assurances),gender])
       let FAcode = generate2FAcode();
       if (!insert) {
         res.send({success:false, message: errorMessage.is_error})

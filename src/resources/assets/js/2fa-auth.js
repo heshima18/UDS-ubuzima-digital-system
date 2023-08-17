@@ -55,9 +55,9 @@ form.addEventListener('submit', async e=>{
     subbut.innerText = 'Verify'
 
     if (res.success) {
-        localStorage.removeItem('userid') 
         let z = await request(`authenticateToken/${res.message}`,getschema)
         if (z.success) {
+            localStorage.removeItem('userid') 
             z = z.token
             localStorage.setItem('token',res.message)
             if (z.role == 'Admin') {
@@ -74,8 +74,8 @@ form.addEventListener('submit', async e=>{
             }else if (z.role == 'cashier') {
                 window.location.href = '../cashier/home/'
                 
-            }else if (z.role == 'Receptionist') {
-                window.location.href = '../Receptionist/home/'
+            }else if (z.role == 'receptionist') {
+                window.location.href = '../receptionist/home/'
                 
             }else if (z.role == 'director_general') {
                 window.location.href = '../dg/home/'

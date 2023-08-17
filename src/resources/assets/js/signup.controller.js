@@ -8,6 +8,7 @@ try {
         m = m.message
         f = document.querySelector('form#formAuthentication')
         s = Array.from(f.querySelectorAll('select.address-field'));
+        g = Array.from(f.querySelectorAll('select.form-select'));
         i = Array.from(f.querySelectorAll('.form-control'))
         initializeCleave(
             f.querySelector('input.phone-number-mask'),
@@ -15,6 +16,9 @@ try {
         );
         for (const sele of s) {
             i.push(sele)
+        }
+        for (const Gender of g) {
+            i.push(Gender)
         }
         b = f.querySelector('button[type="submit"]')
         for (let province of m) {

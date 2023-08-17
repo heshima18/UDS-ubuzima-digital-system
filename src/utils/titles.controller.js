@@ -8,7 +8,7 @@ export const titles = [
     {"Nurse": 5} ,
     {"Medical Scientist": 4} ,
     {"Community health worker": 7} ,
-    {"Receptionist": 8},
+    {"receptionist": 8},
     {"Cashier": 9} ,
     {"patient": 10},
     {"Director general": 11},

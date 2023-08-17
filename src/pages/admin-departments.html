@@ -47,7 +47,7 @@
                         <span class="app-brand-logo demo">
                             <img src="/assets/svg/logo.svg" alt="">
                         </span>
-                        <span class="app-brand-text demo menu-text fw-bolder ms-2">UDS</span>
+                        <span class="app-brand-text demo menu-text fw-bolder ms-2">Demo</span>
                     </a>
                     <a href="javascript:void(0);" class="layout-menu-toggle menu-link text-large ms-auto">
                         <i class="bx bx-chevron-left bx-sm align-middle"></i>
@@ -222,7 +222,7 @@
                     <div class="container-xxl flex-grow-1 container-p-y">
                         <div class="card">
                             <div class="card-header border-bottom text-center">
-                                <h5 class="card-title text-uppercase">medicines Management</h5>
+                                <h5 class="card-title text-uppercase">departments Management</h5>
                                 <div class="d-flex justify-content-between align-items-center row pt-3 gap-3 gap-md-0">
                                     <div class="col-md-4 health-post-type"></div>
                                 </div>
@@ -313,31 +313,18 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="modal fade" id="add-medicine" data-bs-backdrop="static">
+                        <div class="modal fade" id="add-department" data-bs-backdrop="static">
                             <div class="modal-dialog modal-lg modal-dialog-centered">
                                 <div class="modal-content p-3 p-md-5">
                                     <div class="modal-header text-uppercase">
-                                        <h3>Add new medicine</h3>
+                                        <h3>Add new department</h3>
                                     </div>
                                     <div class="modal-body">
-                                        <form id="add-medicine-form" class="row g-3">
+                                        <form id="add-department-form" class="row g-3">
                                             <div class="col-md-12">
-                                                <label for="ahp-name" class="form-label">medicine name</label>
-                                                <input type="text" name="name" id="name" class="form-control" placeholder="Paracetamol">
+                                                <label for="ahp-name" class="form-label">department name</label>
+                                                <input type="text" name="name" id="name" class="form-control" placeholder="Reception">
                                                 <small class="fs-14p"></small>
-                                            </div>
-                                            <div class="mb-2 col-md-12">
-                                                <label class="form-label" for="password">medicine price</label>
-                                                <div class="input-group input-group-merge">
-                                                    <input type="number" id="price" class="form-control" name="price" placeholder="price">
-                                                    <span class="input-group-text">RWF</span>
-                                                    <small class="hidden w-100 red pl-3p verdana"></small>
-                                                </div>
-                                            </div>
-                                            <div class="mb-2 col-md-12 p-r">
-                                                <label class="form-label" for="password">medicine measurement unit</label>
-                                                <input type="text" id="unit" class="form-control bevalue" name="unit" placeholder="grams">
-                                                <small class="hidden w-100 red pl-3p verdana"></small>
                                             </div>
                                             <div class="col-12 text-center d-flex gap-3 justify-content-end">
                                                 <button type="reset" class="btn btn-label-secondary" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
@@ -389,7 +376,7 @@
     <script src="/assets/vendor/libs/cleavejs/cleave-phone.rw.js"></script>
     <!-- Main JS -->
     <script src="/assets/js/main.js"></script><!-- Page JS -->
-    <script src="/assets/js/admin-medicines-list.js" type="module"></script>
+    <script src="/assets/js/admin-departments-list.js" type="module"></script>
 
 
 </body>
