@@ -4,7 +4,7 @@ import  path  from "path";
 export function page (req,res,page){
 	const { filename,user } = req.params;
     let file
-    if (user == 'admin') {
+    if (user == 'admin' || user == 'Admin') {
         switch (filename) {
             case '':
                 file = path.join(__dirname,'..','pages', 'admin-index.html')

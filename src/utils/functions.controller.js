@@ -441,3 +441,15 @@ export function addUprofile(data){
      </div>
     </div>`
 }
+export async function chSession(){
+  let token = getdata('token')
+  if (token) {
+    z = await request(`authenticateToken/${token}`,getschema)
+    if (z.success) {
+      z = z.token
+      window.location.href = `../${z.role}/home`
+      console.log(z.token)
+    }
+    console.log('found')
+  }
+}

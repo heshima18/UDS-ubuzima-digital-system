@@ -1,7 +1,7 @@
 "use strict";
 
-import { alertMessage, postschema, request } from "../../../utils/functions.controller.js";
-
+import { alertMessage, postschema, request, chSession } from "../../../utils/functions.controller.js";
+chSession();
 const formAuthentication = document.querySelector("#formAuthentication");
 const submitButton = formAuthentication.querySelector('button[type="submit"]')
 document.addEventListener("DOMContentLoaded", function (e) {
