@@ -1,54 +1,60 @@
-import { alertMessage, getdata, getschema, postschema, request,initializeCleave, checkEmpty, showRecs, getchips } from "../../../utils/functions.controller.js";
+import { alertMessage, getdata, getschema, postschema, request,initializeCleave, checkEmpty, showRecs, getchips, adcm } from "../../../utils/functions.controller.js";
 
 let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,z,x,c,v,b,n,m
-t = getdata('token');
-if (!t) {
-    alertMessage('an error occured on your browser try clearing cookies')
+u = getdata('token')
+if(!u){
+    window.location.href = '../../login'
 }
-postschema.body = JSON.stringify({token : getdata('token')})
+postschema.body = JSON.stringify({token : u})
 m = await request('get-tests',postschema)
+d = await request('get-departments',postschema)
+
 try {
     
     f = document.querySelector('form#add-test-form')
     i = Array.from(f.querySelectorAll('.form-control'))
+    j = f.querySelector('input#department')
     b = f.querySelector('button[type="submit"]')
+    j.addEventListener('focus', function () {
+        showRecs(j,d.message,'department')
+    })
+    f.addEventListener('submit', async e =>{
+        e.preventDefault();
+        v = 1
+        for (const input of i) {
+           n =  checkEmpty(input);
+            if (!n) {
+               v = 0 
+            }
+        }
+        if(v){
+            x = {}
+            for (const input of i) {
+                if (!input.classList.contains('bevalue')) {
+                    Object.assign(x,{[input.name]: input.value})
+                }else{
+                    Object.assign(x,{[input.name]: input.getAttribute('data-id')})
+                }
+             }
+             Object.assign(x,{token: getdata('token')})
+             postschema.body = JSON.stringify(x)
+             b.setAttribute('disabled', true)
+             b.textContent = `Recording test info...`
+    
+             a = await request('addtest',postschema);
+             b.removeAttribute('disabled')
+             b.textContent = `Submit`
+             if (!a.success) {
+                alertMessage(a.message)
+             }else{
+                alertMessage(a.message)
+                f.reset();
+             }
+        }
+    })
 } catch (error) {
   console.log(error)  
 }
-f.addEventListener('submit', async e =>{
-    e.preventDefault();
-    v = 1
-    for (const input of i) {
-       n =  checkEmpty(input);
-        if (!n) {
-           v = 0 
-        }
-    }
-    if(v){
-        x = {}
-        for (const input of i) {
-            if (!input.classList.contains('bevalue')) {
-                Object.assign(x,{[input.name]: input.value})
-            }else{
-                Object.assign(x,{[input.name]: input.getAttribute('data-id')})
-            }
-         }
-         Object.assign(x,{token: getdata('token')})
-         postschema.body = JSON.stringify(x)
-         b.setAttribute('disabled', true)
-         b.textContent = `Recording test info...`
-
-         a = await request('addtest',postschema);
-         b.removeAttribute('disabled')
-         b.textContent = `Submit`
-         if (!a.success) {
-            alertMessage(a.message)
-         }else{
-            alertMessage(a.message)
-            f.reset();
-         }
-    }
-})
 $(document).ready(function () {
     if (!m.success) {return alertMessage(m.message)}
     m = m.message
@@ -62,6 +68,7 @@ $(document).ready(function () {
                 { data: "" }, // Responsive Control column
                 { data: "name", title: "name" },
                 { data: "price", title: "price" },
+                { data: "department_name", title: "department" },
                 { data: "", title: "Action", }
             ],
             columnDefs: [
@@ -88,6 +95,16 @@ $(document).ready(function () {
                 },
                 {
                     targets: 2,
+                    searchable: 1,
+                    orderable: 1,
+                    render: function (e, t, a, n) {
+                        return (
+                            `<span class='d-block fw-semibold capitalize'>${adcm(e)}</span>`
+                        );
+                    },
+                },
+                {
+                    targets: 3,
                     searchable: 1,
                     orderable: 1,
                     render: function (e, t, a, n) {

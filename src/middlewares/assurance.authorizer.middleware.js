@@ -13,11 +13,14 @@ export const authorizeUserAssurance = async (req, res, next) => {
            if (assuranceinfo.status == 'eligible') {
             return next();
            }else{
-            return res.status(401).send({ message: errorMessage.assu_user_error_message, success: false });
+            console.log('not eligible for using this assurance');
+            return  res.status(401).send({ message: errorMessage.assu_user_error_message, success: false });
            }
         }
       }
-      if(assurance != null) return res.status(401).send({ message: errorMessage.assu_user_error_message, success: false });
+      if(assurance != null) {
+        console.log('this assurance is not available');
+        return res.status(401).send({ message: errorMessage.assu_user_error_message, success: false });}
       return next();
     } catch (error) {
       console.log(error)

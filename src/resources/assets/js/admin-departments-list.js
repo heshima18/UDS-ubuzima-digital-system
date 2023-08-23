@@ -1,6 +1,10 @@
 import { alertMessage, getdata, getschema, postschema, request,initializeCleave, checkEmpty, showRecs, getchips } from "../../../utils/functions.controller.js";
 
 let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,z,x,c,v,b,n,m
+u = getdata('token')
+if(!u){
+    window.location.href = '../../login'
+}
 postschema.body = JSON.stringify({token : getdata('token')})
 m = await request('get-departments',postschema)
 try {

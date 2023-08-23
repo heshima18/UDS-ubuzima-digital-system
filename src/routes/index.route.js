@@ -21,15 +21,18 @@ import { addCell, addDistrict, addProvince, addSector } from '../controllers/add
 import getMap from '../controllers/get.locations.controller';
 import { authorizeHospital } from '../middlewares/hospital.authorizer.middleware';
 import {getInventory,addInventory} from '../controllers/inventory.controller';
-import sendMessage from '../controllers/message.sender.controller';
+import { getMessages, markAsSeen, sendMessage } from '../controllers/message.controller';
 import { authorizeAppointmentAccess } from '../middlewares/appointment.authorizer.middleware';
 import { authorizeSession } from '../middlewares/session.authorizer.middleware';
-import { addUserAssurance, getPatient, getPatients, searchPatient } from '../controllers/patients.controller';
+import { addUserAssurance, getPatient, getPatients } from '../controllers/patients.controller';
 import { addAssurance, getAssurances } from '../controllers/assurance.controller';
 import { authorizeUserAssurance } from '../middlewares/assurance.authorizer.middleware';
 import { at } from '../controllers/token.verifier.controller';
 import { io } from '../socket.io/connector.socket.io';
 import { resend2FA } from '../controllers/2FA.resender.controller';
+import { addService, getServices } from '../controllers/services.controller';
+import { addOperation, getOperations } from '../controllers/operations.controller';
+import { addEquipment, getEquipments } from '../controllers/equipments.controller';
 const router = express.Router({ strict: false });
 router.post('/verify',verification)
 router.post('/get-user-medical-history/:userid',authorizeRole,authorizeHcp_ptnt,getUsessions)
@@ -40,8 +43,14 @@ router.post('/addhealthpost',authorizeRole,authorizeAdmin,addhospital)
 router.post('/add-appointment',authorizeRole,authorizePatientToken,CheckAppointmentTimer,addAppointment)
 router.post("/addmedicine",authorizeRole,authorizeAdmin,addmedicine)
 router.post("/addtest",authorizeRole,authorizeAdmin,addtest)
+router.post("/add-service",authorizeRole,authorizeAdmin,addService)
+router.post("/add-operation",authorizeRole,authorizeAdmin,addOperation)
+router.post("/add-equipment",authorizeRole,authorizeAdmin,addEquipment)
 router.post("/get-tests",authorizeRole,getTests)
 router.post("/get-test/:test",authorizeRole,getTests)
+router.post("/get-services",authorizeRole,getServices)
+router.post("/get-equipments",authorizeRole,getEquipments)
+router.post("/get-operations",authorizeRole,getOperations)
 router.post("/add-province",authorizeRole,authorizeAdmin,addProvince)
 router.post("/add-district",authorizeRole,authorizeAdmin,addDistrict)
 router.post("/add-sector",authorizeRole,authorizeAdmin,addSector)
@@ -70,6 +79,8 @@ router.post('/getmeds',authorizeRole,authorizeAdmin,getMeds);
 router.post('/approve-appointment',authorizeRole,authorizeHc_provider,approveAppointment);
 router.post('/decline-appointment',authorizeRole,authorizeHc_provider,declineAppointment);
 router.post('/send-message',authorizeRole,sendMessage);
+router.post('/get-messages',authorizeRole,getMessages);
+router.post('/mark-as-seen',authorizeRole,markAsSeen);
 router.post('/get-inventory',authorizeRole,getInventory);
 router.post('/gethospitals',authorizeRole,getHPs)
 router.post('/hospital/:hospital',authorizeRole,getHP)
@@ -85,7 +96,6 @@ router.get('/addadmin',addSuperAdmin);
 router.post('/approve-payment',authorizeRole,authorizeCashier,approvePayment);
 router.post('/get-patients',authorizeRole,authorizeAdmin,getPatients);
 router.post('/patient/:patient',authorizeRole,getPatient);
-router.post('/search-patient/',authorizeRole,searchPatient);
 router.post('/close-session',authorizeRole,authorizeHc_provider,closeSession);
 router.get('/',homeController);
 router.post('/user-login',login);

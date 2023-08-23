@@ -5,9 +5,12 @@ import authenticateToken from './token.verifier.controller';
 import { calculatePayments } from '../utils/calculate.payments.controller';
 export const addSession = async (req,res)=>{
   try {
-    let {patient,symptoms,tests,decision,departments,medicines,comment,token,assurance,close} = req.body
+    let {patient,symptoms,tests,decision,departments,medicines,comment,token,assurance,close,equipments,services,operations} = req.body
       let uid = id();
       tests = tests || []
+      equipments = equipments || []
+      services = services || []
+      operations = operations || []
       departments = departments || []
       let decoded = authenticateToken(token)
       medicines = medicines || []
@@ -47,7 +50,7 @@ export const addSession = async (req,res)=>{
       let pts = await calculatePayments(assurance,tt)
       let insertpayment = await query(`insert into payments(id,user,session,amount,assurance_amount,status)values(?,?,?,?,?,?)`,[id(),patient,uid,pts.patient_ammount,pts.assurance_ammount,'awaiting payment'])
       let insert = await query(`insert into
-       medical_history(id,patient,hospital,departments,hc_provider,symptoms,tests,medicines,decision,comment,status,assurance)values(?,?,?,?,?,?,?,?,?,?,?,?)`,[uid,patient,hp,JSON.stringify(departments),hc_provider,JSON.stringify(symptoms),JSON.stringify(tests),JSON.stringify(medicines),JSON.stringify(decision),comment,(close)? "closed" :"open",assurance])
+       medical_history(id,patient,hospital,departments,hc_provider,symptoms,tests,medicines,decision,comment,status,assurance,services,operations,equipments)values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,[uid,patient,hp,JSON.stringify(departments),hc_provider,JSON.stringify(symptoms),JSON.stringify(tests),JSON.stringify(medicines),JSON.stringify(decision),comment,(close)? "closed" :"open",assurance,services,operations,equipments])
       query(`update patients set last_diagnosed = (SELECT date FROM medical_history where id = ?) where id = ?`,[uid,patient])
       if (!insert || !insertpayment) {
         return res.status(500).send({success:false, message: errorMessage.is_error})
@@ -284,7 +287,7 @@ export const session = async (req,res)=>{
 }
 export const addSessionTests = async (req,res)=>{
   try {
-    let {session,tests,token} = req.body
+    let {session,test,token} = req.body
       let decoded = authenticateToken(token)
       let assurance = await query(`select assurance from medical_history where id = ?`,[session])
       if(!assurance) return res.status(500).send({success: false, message: errorMessage.is_error})
@@ -292,19 +295,18 @@ export const addSessionTests = async (req,res)=>{
       assurance = assurance.assurance
       let tester = decoded.token
       let itt = 0
-      for (const test of tests) {
-        var t = await query(`select price from tests where id = ?`, [test.id]);
-        if (!t) return res.status(500).send({success:false, message: errorMessage.is_error})
-        if(t.length == 0) {
-          t = {price : 0}
-        }else{
-           [t] = t
-           itt +=t.price
-           query(`update medical_history set tests =  JSON_ARRAY_APPEND(tests, '$', JSON_OBJECT("id", ?, "result", ?, "tester", ?)) where id = ?`,[test.id,test.result,tester.id,session])
-          }
+      var t = await query(`select price from tests where id = ?`, [test.id]);
+      if (!t) return res.status(500).send({success:false, message: errorMessage.is_error})
+      if(t.length == 0) {
+        t = {price : 0}
+      }else{
+         [t] = t
+         itt +=t.price
+         query(`update medical_history set tests =  JSON_ARRAY_APPEND(tests, '$', JSON_OBJECT("id", ?,"sample", ?, "result", ?, "tester", ?)) where id = ?`,[test.id,test.sample,test.result,tester.id,session])
         }
-        if (itt == 0) return res.status(403).send({success: false, message: errorMessage._err_test_404})
-        let pts = await calculatePayments(assurance,itt)
+      
+      if (itt == 0) return res.status(403).send({success: false, message: errorMessage._err_test_404})
+      let pts = await calculatePayments(assurance,itt)
       let updatepayment = await query(`update payments set amount = (SElect amount from payments where session = ?) + ?,assurance_amount = (SElect assurance_amount from payments where session = ?) + ? where session = ?`,[session,pts.patient_ammount,session,pts.assurance_ammount,session])
       query(`update medical_history set departments =  JSON_ARRAY_APPEND(departments, '$', ?) where id = ?`,[tester.department,session])
       if (!updatepayment) {
@@ -317,9 +319,111 @@ export const addSessionTests = async (req,res)=>{
     res.status(500).send({success:false, message: errorMessage.is_error})
   }
 }
+export const addSessionOperation = async (req,res)=>{
+  try {
+    let {session,operation,token} = req.body
+      let decoded = authenticateToken(token)
+      let assurance = await query(`select assurance from medical_history where id = ?`,[session])
+      if(!assurance) return res.status(500).send({success: false, message: errorMessage.is_error})
+      assurance = assurance[0]
+      assurance = assurance.assurance
+      let operator = decoded.token
+      let itt = 0
+      var t = await query(`select price from operations where id = ?`, [operation.id]);
+      if (!t) return res.status(500).send({success:false, message: errorMessage.is_error})
+      if(t.length == 0) {
+        t = {price : 0}
+      }else{
+         [t] = t
+         itt +=t.price
+         query(`update medical_history set operations =  JSON_ARRAY_APPEND(operations, '$', JSON_OBJECT("id", ?, "result", ?, "operator", ?)) where id = ?`,[operation.id,operation.result,operator.id,session])
+        }
+      
+      if (itt == 0) return res.status(403).send({success: false, message: errorMessage._err_operation_404})
+      let pts = await calculatePayments(assurance,itt)
+      let updatepayment = await query(`update payments set amount = (SElect amount from payments where session = ?) + ?,assurance_amount = (SElect assurance_amount from payments where session = ?) + ? where session = ?`,[session,pts.patient_ammount,session,pts.assurance_ammount,session])
+      let update_mh =  await query(`update medical_history set departments =  JSON_ARRAY_APPEND(departments, '$', ?) where id = ?`,[operator.department,session])
+      if (!updatepayment || !update_mh) {
+        return res.status(500).send({success:false, message: errorMessage.is_error})
+      }
+      res.send({success: true, message: errorMessage.operation_addedtosession_message})
+    
+  } catch (error) {
+    console.log(error)
+    res.status(500).send({success:false, message: errorMessage.is_error})
+  }
+}
+export const addSessionService = async (req,res)=>{
+  try {
+    let {session,service,token} = req.body
+      let decoded = authenticateToken(token)
+      let assurance = await query(`select assurance from medical_history where id = ?`,[session])
+      if(!assurance) return res.status(500).send({success: false, message: errorMessage.is_error})
+      assurance = assurance[0]
+      assurance = assurance.assurance
+      let operator = decoded.token
+      let itt = 0
+      var t = await query(`select price from services where id = ?`, [service.id]);
+      if (!t) return res.status(500).send({success:false, message: errorMessage.is_error})
+      if(t.length == 0) {
+        t = {price : 0}
+      }else{
+         [t] = t
+         itt +=(t.price * service.quantity)
+         query(`update medical_history set services =  JSON_ARRAY_APPEND(services, '$', JSON_OBJECT("id", ?, "quantity", ?)) where id = ?`,[service.id,service.quantity,session])
+        }
+      
+      if (itt == 0) return res.status(403).send({success: false, message: errorMessage._err_service_404})
+      let pts = await calculatePayments(assurance,itt)
+      let updatepayment = await query(`update payments set amount = (SElect amount from payments where session = ?) + ?,assurance_amount = (SElect assurance_amount from payments where session = ?) + ? where session = ?`,[session,pts.patient_ammount,session,pts.assurance_ammount,session])
+      let update_mh =  await query(`update medical_history set departments =  JSON_ARRAY_APPEND(departments, '$', ?) where id = ?`,[operator.department,session])
+      if (!updatepayment || !update_mh) {
+        return res.status(500).send({success:false, message: errorMessage.is_error})
+      }
+      res.send({success: true, message: errorMessage.service_addedtosession_message})
+    
+  } catch (error) {
+    console.log(error)
+    res.status(500).send({success:false, message: errorMessage.is_error})
+  }
+}
+export const addSessionEquipment = async (req,res)=>{
+  try {
+    let {session,equipment,token} = req.body
+      let decoded = authenticateToken(token)
+      let assurance = await query(`select assurance from medical_history where id = ?`,[session])
+      if(!assurance) return res.status(500).send({success: false, message: errorMessage.is_error})
+      assurance = assurance[0]
+      assurance = assurance.assurance
+      let operator = decoded.token
+      let itt = 0
+      var t = await query(`select price from equipments where id = ?`, [equipment.id]);
+      if (!t) return res.status(500).send({success:false, message: errorMessage.is_error})
+      if(t.length == 0) {
+        t = {price : 0}
+      }else{
+         [t] = t
+         itt += (t.price * equipment.quantity)
+         query(`update medical_history set equipments =  JSON_ARRAY_APPEND(equipments, '$', JSON_OBJECT("id", ?, "quantity", ?)) where id = ?`,[equipment.id,equipment.quantity,session])
+        }
+      
+      if (itt == 0) return res.status(403).send({success: false, message: errorMessage._err_equipment_404})
+      let pts = await calculatePayments(assurance,itt)
+      let updatepayment = await query(`update payments set amount = (SElect amount from payments where session = ?) + ?,assurance_amount = (SElect assurance_amount from payments where session = ?) + ? where session = ?`,[session,pts.patient_ammount,session,pts.assurance_ammount,session])
+      let update_mh =  await query(`update medical_history set departments =  JSON_ARRAY_APPEND(departments, '$', ?) where id = ?`,[operator.department,session])
+      if (!updatepayment || !update_mh) {
+        return res.status(500).send({success:false, message: errorMessage.is_error})
+      }
+      res.send({success: true, message: errorMessage.equipment_addedtosession_message})
+    
+  } catch (error) {
+    console.log(error)
+    res.status(500).send({success:false, message: errorMessage.is_error})
+  }
+}
 export const addSessionMedicine = async (req,res)=>{
   try {
-    let {session,medicines,token} = req.body
+    let {session,medicine,token} = req.body
       let decoded = authenticateToken(token)
       let assurance = await query(`select assurance from medical_history where id = ?`,[session])
       if(!assurance) return res.status(500).send({success: false, message: errorMessage.is_error})
@@ -330,27 +434,23 @@ export const addSessionMedicine = async (req,res)=>{
       let meds = await query(`select medicines from inventories where hospital = ?`, [decoded.token.hospital]);
       [meds] = meds
       meds = JSON.parse(meds.medicines)
-      
-      for (const medicine of medicines) {
-        var m = await query(`select price from medicines where id = ?`, [medicine.id]);
-        if (!m) return res.status(500).send({success:false, message: errorMessage.is_error})
-        if(m.length == 0) {
-           m = {price : 0}
-          }else{
-           [m] = m
-           for (const medic of meds) {
-            if (medic.id == medicine.id) {
-              if (medic.quantity < medicine.quantity) {
-                query(`update medical_history set medicines =  JSON_ARRAY_APPEND(medicines, '$', JSON_OBJECT("id", ?, "quantity", ?, "servedOut", ?)) where id = ? and status != ? AND hc_provider = ?`,[medicine.id,medicine.quantity,true,session,'closed',hc_provider])
-              }else{
-                itt += (m.price * medicine.quantity)
-                query(`update medical_history set medicines =  JSON_ARRAY_APPEND(medicines, '$', JSON_OBJECT("id", ?, "quantity", ?, "servedOut", ?)) where id = ? and status != ? AND hc_provider = ?`,[medicine.id,medicine.quantity,false,session,'closed',hc_provider])
-                meds[meds.indexOf(medic)].quantity = parseInt(meds[meds.indexOf(medic)].quantity) - parseInt(medicine.quantity)
-              }
+      var m = await query(`select price from medicines where id = ?`, [medicine.id]);
+      if (!m) return res.status(500).send({success:false, message: errorMessage.is_error})
+      if(m.length == 0) {
+         m = {price : 0}
+        }else{
+         [m] = m
+         for (const medic of meds) {
+          if (medic.id == medicine.id) {
+            if (medic.quantity < medicine.quantity) {
+              query(`update medical_history set medicines =  JSON_ARRAY_APPEND(medicines, '$', JSON_OBJECT("id", ?, "quantity", ?, "servedOut", ?)) where id = ? and status != ? AND hc_provider = ?`,[medicine.id,medicine.quantity,true,session,'closed',hc_provider])
+            }else{
+              itt += (m.price * medicine.quantity)
+              query(`update medical_history set medicines =  JSON_ARRAY_APPEND(medicines, '$', JSON_OBJECT("id", ?, "quantity", ?, "servedOut", ?)) where id = ? and status != ? AND hc_provider = ?`,[medicine.id,medicine.quantity,false,session,'closed',hc_provider])
+              meds[meds.indexOf(medic)].quantity = parseInt(meds[meds.indexOf(medic)].quantity) - parseInt(medicine.quantity)
             }
-           }
-
-        }
+          }
+         }
       }
       console.log(meds)
       query(`UPDATE inventories  SET medicines = ? where hospital = ?`, [JSON.stringify(meds),decoded.token.hospital])

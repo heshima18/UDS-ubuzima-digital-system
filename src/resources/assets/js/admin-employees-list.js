@@ -8,7 +8,7 @@ $(document).ready(async function () {
     let t, a, n, u, z, v, d, h, f, i, s, b, x, c;
     u = getdata('token')
     if(!u){
-        window.location.href = '../login'
+        window.location.href = '../../login'
     }
     postschema.body = JSON.stringify({
         token: u

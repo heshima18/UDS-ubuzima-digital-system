@@ -58,6 +58,7 @@ export const getHpEmployees = async (req,res)=>{
       let select = await query(`
           SELECT
            users.id,
+           users.online,
            users.Full_name,
            users.phone,
            users.email,
@@ -83,6 +84,7 @@ export const getEmployees = async (req,res)=>{
       let select = await query(`
           SELECT
            users.id,
+           users.online,
            users.Full_name as names,
            users.phone,
            users.email,

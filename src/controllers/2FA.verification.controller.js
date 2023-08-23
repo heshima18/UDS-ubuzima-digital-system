@@ -60,7 +60,7 @@ const verification = async (req,res)=>{
             }
             let token 
             if (select.role != 'patient' && select.role != 'Admin') {
-                 token = addToken({id:select.id,Full_name:select.Full_name,role: select.role,status: select.status,hospital: hospital,department: select.department})
+                 token = addToken({id:select.id,Full_name:select.Full_name,role: select.role,status: select.status,hospital: hospital,department: select.department, title: select.title})
             }else{
                  token = addToken({id:select.id,Full_name:select.Full_name,role: select.role,status: select.status})
             }

@@ -6,7 +6,7 @@
         <meta charset="utf-8" />
         <meta name="viewport"
             content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
-        <title>Demo | UI Design</title>
+        <title>Admin operations | UDS</title>
         <link rel="icon" type="image/x-icon" href="/assets/svg/logo.svg" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
@@ -227,7 +227,7 @@
                     <div class="container-xxl flex-grow-1 container-p-y">
                         <div class="card">
                             <div class="card-header border-bottom text-center">
-                                <h5 class="card-title text-uppercase">Provinces Management</h5>
+                                <h5 class="card-title text-uppercase">operations Management</h5>
                                 <div class="d-flex justify-content-between align-items-center row pt-3 gap-3 gap-md-0">
                                     <div class="col-md-4 health-post-type"></div>
                                 </div>
@@ -251,36 +251,98 @@
                             <div class="modal-dialog modal-lg modal-dialog-centered">
                                 <div class="modal-content p-3 p-md-5">
                                     <div class="modal-header text-uppercase">
-                                        <h3>Update Province</h3>
+                                        <h3>Update Health Post</h3>
                                     </div>
                                     <div class="modal-body">
-                                        <form id="update-province-form" class="row g-3">
+                                        <form id="update-health-post-form" class="row g-3 needs-validation" novalidate="">
+                                            <div class="col-md-6">
+                                                <label for="uhp-name" class="form-label">Health post name</label>
+                                                <input type="text" name="healthPostName" id="uhp-name" class="form-control" placeholder="Kacyiru Health Centre">
+                                                <small class="fs-14p"></small>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label for="uhp-type" class="form-label">Health post type</label>
+                                                <select name="healthPostType" id="uhp-type" class="form-select">
+                                                    <option value="">Choose...</option>
+                                                    <option value="hospital">Hospital</option>
+                                                    <option value="health-center">Health Center</option>
+                                                    <option value="health-clinic">Health Clinic</option>
+                                                    <option value="health-post">Health Post</option>
+                                                </select>
+                                                <small class="fs-14p"></small>
+                                            </div>
                                             <div class="col-md-12">
-                                                <label for="ahp-name" class="form-label">province name</label>
-                                                <input type="text" name="name" id="name" class="form-control" placeholder="Northern">
+                                                <div class="divider">
+                                                    <div class="divider-text">Location</div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label for="uhp-location-province" class="form-label">Province</label>
+                                                <select name="province" id="uhp-location-province" class="form-select">
+                                                    <option value="">Select Province</option>
+                                                    <option value="kigali">Kigali City</option>
+                                                    <option value="north">Northern Province</option>
+                                                    <option value="south">Southern Province</option>
+                                                    <option value="east">Eastern Province</option>
+                                                    <option value="west">Western Province</option>
+                                                </select>
+                                                <small class="fs-14p"></small>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label for="uhp-location-district" class="form-label">District</label>
+                                                <select name="district" id="uhp-location-district" class="form-select">
+                                                    <option value="">Select District</option>
+                                                </select>
+                                                <small class="fs-14p"></small>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label for="uhp-location-sector" class="form-label">Sector</label>
+                                                <select name="sector" id="uhp-location-sector" class="form-select">
+                                                    <option value="">Select Sector</option>
+                                                </select>
+                                                <small class="fs-14p"></small>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label for="uhp-location-cell" class="form-label">Cell</label>
+                                                <select name="cell" id="uhp-location-cell" class="form-select">
+                                                    <option value="">Select Cell</option>
+                                                </select>
                                                 <small class="fs-14p"></small>
                                             </div>
                                             <div class="col-12 text-center d-flex gap-3 justify-content-end">
                                                 <button type="reset" class="btn btn-label-secondary" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
-                                                <button type="submit" class="btn btn-primary">Submit</button>
+                                                <button type="submit" class="btn btn-primary">Save Changes</button>
                                             </div>
                                         </form>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="modal fade" id="add-province" data-bs-backdrop="static">
+                        <div class="modal fade" id="add-operation" data-bs-backdrop="static">
                             <div class="modal-dialog modal-lg modal-dialog-centered">
                                 <div class="modal-content p-3 p-md-5">
                                     <div class="modal-header text-uppercase">
-                                        <h3>Add new province</h3>
+                                        <h3>Add new operation</h3>
                                     </div>
                                     <div class="modal-body">
-                                        <form id="add-province-form" class="row g-3">
+                                        <form id="add-operation-form" class="row g-3">
                                             <div class="col-md-12">
-                                                <label for="ahp-name" class="form-label">province name</label>
-                                                <input type="text" name="name" id="name" class="form-control" placeholder="Northern">
+                                                <label for="ahp-name" class="form-label">operation name</label>
+                                                <input type="text" name="name" id="name" class="form-control" placeholder="Demo operation">
                                                 <small class="fs-14p"></small>
+                                            </div>
+                                            <div class="col-md-12 p-r">
+                                                <label for="ahp-name" class="form-label">Operation Department</label>
+                                                <input type="text" name="department" id="department" class="form-control bevalue" placeholder="Demo Department">
+                                                <small class="fs-14p"></small>
+                                            </div>
+                                            <div class="mb-2 col-md-12">
+                                                <label class="form-label" for="password">operation price</label>
+                                                <div class="input-group input-group-merge">
+                                                    <input type="number" id="price" class="form-control" name="price" placeholder="price">
+                                                    <span class="input-group-text">RWF</span>
+                                                    <small class="hidden w-100 red pl-3p verdana"></small>
+                                                </div>
                                             </div>
                                             <div class="col-12 text-center d-flex gap-3 justify-content-end">
                                                 <button type="reset" class="btn btn-label-secondary" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
@@ -332,7 +394,7 @@
     <script src="/assets/vendor/libs/cleavejs/cleave-phone.rw.js"></script>
     <!-- Main JS -->
     <script src="/assets/js/main.js"></script><!-- Page JS -->
-    <script src="/assets/js/admin-provinces-list.js" type="module"></script>
+    <script src="/assets/js/admin-operations-list.js" type="module"></script>
 
 
 </body>

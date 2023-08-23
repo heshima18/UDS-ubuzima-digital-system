@@ -15,7 +15,7 @@ export const io = require('socket.io')(server, {
       console.log('a client with id ',clientTid,'connected to the system')
       socket.emit('clientId',clientTid)
       socket.on('disconnect',()=>{
-          query(`update users set online = ? where id = ?`,[false,clientTid])
+          query(`update users set online = ?, last_seen = current_timestamp() where id = ?`,[false,clientTid])
           console.log('client disconnected with id', clientTid)
       })
       socket.on('getpsforselection',async (hps)=>{

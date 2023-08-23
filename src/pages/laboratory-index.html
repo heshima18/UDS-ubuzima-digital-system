@@ -32,7 +32,7 @@
         <link rel="stylesheet" type="text/css" href="/styles/styling.css">
         <link rel="stylesheet" href="/assets/vendor/fonts/boxicons.css">
         <script src="/assets/js/nav.js" type="module"></script>
-    <script src="/assets/js/hc_provider.js" type="module"></script>
+    <script src="/assets/js/laboratory.js" type="module"></script>
 	<script src="/getSocketIo/socket.io.min.js"></script>
     <script src="/assets/vendor/libs/cleavejs/cleave.js"></script>
     <script src="/assets/vendor/libs/cleavejs/cleave-phone.rw.js"></script>
@@ -151,14 +151,8 @@
 										<li class="p-5p bsbb">
 											<span class="w-100 h-100 p-10p hover-2 cpcards bsbb iblock verdana nowrap capitalize fs-13p br-5p active bb-1-s-theme bc-tr-theme theme" data-item-type="home">Home</span>
 										</li>
-										<li class="p-5p bsbb">
-											<span class="w-100 h-100 p-10p hover-2 cpcards bsbb iblock verdana nowrap capitalize fs-13p br-5p" data-item-type="search-patient">search patient</span>
-										</li>
                                         <li class="p-5p bsbb">
-											<span class="w-100 h-100 p-10p hover-2 cpcards bsbb iblock verdana nowrap capitalize fs-13p br-5p" data-item-type="create-session">create session</span>
-										</li>
-                                        <li class="p-5p bsbb">
-											<span class="w-100 h-100 p-10p hover-2 cpcards bsbb iblock verdana nowrap capitalize fs-13p br-5p" data-item-type="view-session">view session</span>
+											<span class="w-100 h-100 p-10p hover-2 cpcards bsbb iblock verdana nowrap capitalize fs-13p br-5p" data-item-type="record-tests">record tests</span>
 										</li>
 										<li class="p-5p bsbb">
 											<span class="w-100 h-100 p-10p hover-2 cpcards bsbb iblock verdana nowrap capitalize fs-13p br-5p" data-item-type="my-account">my account</span>
@@ -206,12 +200,12 @@
                                         <div class="col-md-6 col-lg-4 mb-3">
                                             <div class="card">
                                                 <div class="card-header capitalize">
-                                                    Sessions
+                                                    tests
                                                 </div>
                                                 <div class="card-body">
-                                                    <h5 class="card-title capitalize">today's pending sessions</h5>
+                                                    <h5 class="card-title capitalize">today's pending tests</h5>
                                                     <p class="card-text">
-                                                        <span class="bold-2">30</span> Sessions
+                                                        <span class="bold-2">30</span> tests
                                                     </p>
                                                     <a href="pendingApplications/" class="btn btn-primary">View</a>
                                                 </div>
@@ -220,12 +214,12 @@
                                         <div class="col-md-6 col-lg-4 mb-3">
                                             <div class="card">
                                                 <div class="card-header capitalize">
-                                                    sessions
+                                                    tests
                                                 </div>
                                                 <div class="card-body">
-                                                    <h5 class="card-title capitalize">today's total sessions</h5>
+                                                    <h5 class="card-title capitalize">today's total tests</h5>
                                                     <p class="card-text">
-                                                        <span class="bold-2">30</span> sessions
+                                                        <span class="bold-2">30</span> tests
                                                     </p>
                                                     <a href="pendingApplications/" class="btn btn-primary">View</a>
                                                 </div>
@@ -235,97 +229,41 @@
 								</div>
 							</div>
 							<!-- end of home section -->
-							<!-- search patient section -->
-							<div class="bc-white  br-5p w-100 h-100 p-a ovh l--100 t-0 tr-0-3 pagecontentsection" id="search-patient">
+                            <!-- record tests section -->
+							<div class="bc-white  br-5p w-100 h-100 p-a ovh l--100 t-0 tr-0-3 pagecontentsection" id="record-tests">
 								<div class="w-100 h-50p ">
-									<span class="theme capitalize left center bold fs-20p verdana h-100 pl-10p">Search patient</span>
+									<span class="theme capitalize left center bold fs-20p verdana h-100 pl-10p">record a test</span>
 								</div>
 								<div class="pg-cntnt w-100 h-90 p-20p bp-0-resp bsbb ovys left">
-									<div>
-										<div class="w-100 h-a p-20p bsbb bp-0-resp">
-                                            <form method="post" class="sp-form" id="sp-form" name="sp-form">
-                                                <div class="input-group input-group-merge">
-                                                    <input type="text" class="form-control" placeholder="NID, Phone number, email" aria-label="Search patient" aria-describedby="basic-addon-search31">
-                                                    <span class="input-group-text hover-2" id="basic-addon-search31">
-                                                        <button type="submit" class="btn btn-primary">
-                                                                <i class="bx bx-search h-20p w-a center"></i>
-                                                        </button>
-                                                    </span>
-                                                </div>
-                                            </form>
-										</div>
-									</div>
-								</div>
-							</div>
-							<!-- end of search patient section -->
-                            <!-- add session section -->
-							<div class="bc-white  br-5p w-100 h-100 p-a ovh l--100 t-0 tr-0-3 pagecontentsection" id="create-session">
-								<div class="w-100 h-50p ">
-									<span class="theme capitalize left center bold fs-20p verdana h-100 pl-10p">create a session</span>
-								</div>
-								<div class="pg-cntnt w-100 h-90 p-20p bp-0-resp bsbb ovys scroll-2 left">
 									<div class="w-90 m-a bfull-resp">
-										<form id="create-session-form" name="create-session-form" class="mb-2" action="../" method="POST">
+										<form id="record-test-form" name="record-test-form" class="mb-2" action="../" method="POST">
+                                            <div class="col-md-12 p-10p bsbb mb-5p">
+                                                <label for="session" class="form-label">session</label>
+                                                <input type="text" class="form-control" placeholder="Demo session" name="session" id="session" readonly>                        
+                                                <small class="hidden w-100 red pl-3p verdana"></small>
+                                            </div>
                                             <div class="col-md-12 p-10p bsbb mb-5p">
                                                 <label for="patient" class="form-label">Patient</label>
-                                                <div class="input-group">
-                                                    <input type="text" class="form-control bevalue" placeholder="NID, Phone number, email" name="patient" id="patient">
-                                                    <span class="p-5p b-1-s-dgray hidden">
-                                                        <div class="sk-grid sk-primary">
-                                                            <div class="sk-grid-cube"></div>
-                                                            <div class="sk-grid-cube"></div>
-                                                            <div class="sk-grid-cube"></div>
-                                                            <div class="sk-grid-cube"></div>
-                                                            <div class="sk-grid-cube"></div>
-                                                            <div class="sk-grid-cube"></div>
-                                                            <div class="sk-grid-cube"></div>
-                                                            <div class="sk-grid-cube"></div>
-                                                            <div class="sk-grid-cube"></div>
-                                                        </div>
-                                                    </span>
-                                                    <small class="hidden w-100 red pl-3p verdana"></small>
-                                                </div>
+                                                <input type="text" class="form-control" placeholder="NID, Phone number, email" name="patient" id="patient" readonly>                        
+                                                <small class="hidden w-100 red pl-3p verdana"></small>
                                             </div>
-                                            <div class="mb-5p col-md-12 p-10p">
-                                                <label for="symptoms" class="form-label">Symptoms</label>
+                                            <div class="col-md-12 p-10p bsbb mb-5p">
+                                                <label for="Test" class="form-label">Test</label>
+                                                <input type="text" class="form-control" placeholder="Demo Test" name="Test" id="Test" readonly>                        
+                                                <small class="hidden w-100 red pl-3p verdana"></small>
+                                            </div>
+                                            <div class="mb-5p col-md-12 p-10p p-r">
+                                                <label for="sample" class="form-label">sample taken</label>
                                                 <div class="input-group">
-                                                    <input type="text" class="form-control chips-check" placeholder="Symptoms" name="symptoms" id="symptoms">
+                                                    <input type="text" class="form-control chips-check" placeholder="sample" name="sample" id="sample">
                                                     <span class="input-group-text hover-2 us-none" id="add-symptom">add</span>
                                                     <small class="hidden w-100 red pl-3p verdana"></small>
                                                 </div>
                                             </div>
-                                            <div class="col-md-12 p-10p bsbb mb-5p p-r">
-                                                <label for="equipments" class="form-label">equipments</label>
-                                                <input type="text" class="form-control extras chips-check" id="equipments" placeholder="Demo equipment" data-optional="true" name="equipments">
-                                                <small class="hidden w-100 red pl-3p verdana"></small>
-                                            </div>
-                                            <div class="col-md-12 p-10p bsbb mb-5p p-r">
-                                                <label for="tests" class="form-label">tests</label>
-                                                <div class="input-group">
-                                                    <input type="text" class="form-control extras chips-check chips-trigger" id="tests" placeholder="Demo test" data-optional="true" name="tests" data-chips-trigger="send-for-tests">
-                                                    <span class="px-5p py-2p input-group-text hover-2 us-none hidden" id="send-for-tests" name="send-for-tests"><button type="button" class="h-30p px-8p btn btn-primary">send for testing</button></span>
-                                                    <small class="hidden w-100 red pl-3p verdana"></small>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-12 p-10p bsbb mb-5p p-r">
-                                                <label for="medicines" class="form-label">medicines</label>
-                                                <input type="text" class="form-control extras chips-check" id="medicines" placeholder="Demo medicine" name="medicines" data-optional="true">
-                                                <small class="hidden w-100 red pl-3p verdana"></small>
-                                            </div>
-                                            <div class="col-md-12 p-10p bsbb mb-5p p-r">
-                                                <label for="services" class="form-label">services</label>
-                                                <input type="text" class="form-control extras chips-check" id="services" placeholder="Demo medicine" name="services" data-optional="true">
-                                                <small class="hidden w-100 red pl-3p verdana"></small>
-                                            </div>
-                                            <div class="col-md-12 p-10p bsbb mb-5p p-r">
-                                                <label for="operations" class="form-label">operations</label>
-                                                <input type="text" class="form-control extras chips-check" id="operations" placeholder="Demo medicine" name="operations" data-optional="true">
-                                                <small class="hidden w-100 red pl-3p verdana"></small>
-                                            </div>
-                                            <div class="mb-5p col-md-12 p-10p">
+                                            <div class="mb-5p col-md-12 p-10p p-r">
                                                 <label for="results" class="form-label">results</label>
                                                 <div class="input-group">
-                                                    <input type="text" class="form-control chips-check" placeholder="results" name="results" id="results" data-optional="true">
+                                                    <input type="text" class="form-control chips-check" placeholder="results" name="results" id="results">
                                                     <span class="input-group-text hover-2 us-none" id="add-results">add</span>
                                                     <small class="hidden w-100 red pl-3p verdana"></small>
                                                 </div>
@@ -334,12 +272,7 @@
                                                 <div class="input-group">
                                                     <div class="p-5p bsbb">
                                                         <button type="submit" class="btn btn-primary d-grid" name="submit">
-                                                            create session
-                                                        </button>
-                                                    </div>
-                                                    <div class="p-5p bsbb">
-                                                        <button type="submit" class="btn btn-primary d-grid" name="create-n-submit">
-                                                            create and close session
+                                                            submit tests
                                                         </button>
                                                     </div>
                                                 </div>
@@ -348,47 +281,7 @@
 									</div>
 								</div>
 							</div>
-							<!-- end of add session section -->
-                            <!-- view session  -->
-							<div class="bc-white  br-5p w-100 h-100 p-a ovh l--100 t-0 tr-0-3 pagecontentsection" id="view-session">
-								<div class="w-100 h-50p ">
-									<span class="theme capitalize left center bold fs-20p verdana h-100 pl-10p">my account</span>
-								</div>
-								<div class="pg-cntnt w-100 h-90 p-20p bsbb ovys left">
-									<div>
-										<div class="w-100 h-a bsbb">
-											<div class="w-100 h-a center">
-												<div class="b-1-s-g p-10p">
-													<div class="header w-100 h-120p center">
-														<div class="w-100p h-100p">
-															<span class="w-100 h-100 bc-tr-theme br-50 theme fs-50p capitalize uihol courier bold-2 center n-img">a</span>
-														</div>
-													</div>
-													<div class="desc center">
-														<div class="names w-100 h-70p mt-30 center">
-															<span class="fs-15p bsbb dgray capitalize namehol verdana name">aaa aaa</span>
-															<div class="w-100 mt-10p h-a center">
-																<span class="icon-edit-icon center w-40p h-20p bc-gray br-2p p-10p bsbb verdana capitalize fs-10p dgray hover-2" data-target="names">
-																	edit
-																</span>
-															</div>
-														</div>
-														<div class="names w-100 h-70p mt-30 center">
-															<span class="fs-15p bsbb dgray capitalize namehol verdana">*********</span>
-															<div class="w-100 mt-10p h-a center">
-																<span class="icon-edit-icon center w-40p h-20p bc-gray br-2p p-10p bsbb verdana capitalize fs-10p dgray hover-2" data-target="password">
-																	edit
-																</span>
-															</div>
-														</div>
-													</div>
-												</div>
-											</div>
-										</div>
-									</div>
-								</div>
-							</div>
-							<!-- end of view session  -->
+							<!-- end of record tests section -->
 							<!-- my account section -->
 							<div class="bc-white  br-5p w-100 h-100 p-a ovh l--100 t-0 tr-0-3 pagecontentsection" id="my-account">
 								<div class="w-100 h-50p ">
@@ -452,8 +345,7 @@
                 </div>
                 <!-- end of footer section -->
 			</div>
-		</div>
-			
+		</div>		
 	</div>
 </div>
 </body>

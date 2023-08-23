@@ -1,11 +1,11 @@
 import { alertMessage, getdata, getschema, postschema, request,initializeCleave, checkEmpty, showRecs, getchips } from "../../../utils/functions.controller.js";
 
 let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,z,x,c,v,b,n,m
-t = getdata('token');
-if (!t) {
-    alertMessage('an error occured on your browser try clearing cookies')
+u = getdata('token')
+if(!u){
+    window.location.href = '../../login'
 }
-postschema.body = JSON.stringify({token : getdata('token')})
+postschema.body = JSON.stringify({token : u})
 m = await request('getmeds',postschema)
 try {
     

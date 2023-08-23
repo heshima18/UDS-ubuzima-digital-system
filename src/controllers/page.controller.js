@@ -81,6 +81,24 @@ export function page (req,res,page){
             case 'departments':
                 file = path.join(__dirname,'..','pages', 'admin-departments.html') 
                 break;
+            case 'operations/':
+                file = path.join(__dirname,'..','pages', 'admin-operations.html') 
+                break;
+            case 'operations':
+                file = path.join(__dirname,'..','pages', 'admin-operations.html') 
+                break;
+            case 'services/':
+                file = path.join(__dirname,'..','pages', 'admin-services.html') 
+                break;
+            case 'services':
+                file = path.join(__dirname,'..','pages', 'admin-services.html') 
+                break;
+            case 'equipments/':
+                file = path.join(__dirname,'..','pages', 'admin-equipments.html') 
+                break;
+            case 'equipments':
+                file = path.join(__dirname,'..','pages', 'admin-equipments.html') 
+                break;
             default:
                     file = 'N/A'
                 break;
@@ -118,7 +136,73 @@ export function page (req,res,page){
                     file = 'N/A'
                 break;
         } 
-    } else{
+    }else if (user == 'hc_provider') {
+        switch (filename) {
+            case '':
+                file = path.join(__dirname,'..','pages', 'hcp-index.html')
+                break;
+            case 'home/':
+                file = path.join(__dirname,'..','pages', 'hcp-index.html')
+                break;
+            case 'home':
+                file = path.join(__dirname,'..','pages', 'hcp-index.html')
+                break;
+            case 'search-patient/':
+                file = path.join(__dirname,'..','pages', 'hcp-search-patient.html')
+                break;
+            case 'search-patient':
+                file = path.join(__dirname,'..','pages', 'hcp-search-patient.html')
+                break;
+            case 'create-session/':
+                file = path.join(__dirname,'..','pages', 'hcp-index.html')
+                break;
+            case 'create-session':
+                file = path.join(__dirname,'..','pages', 'hcp-index.html')
+                break;
+            case 'my-account/':
+                file = path.join(__dirname,'..','pages', 'hcp-index.html')
+                break;
+            case 'my-account':
+                file = path.join(__dirname,'..','pages', 'hcp-index.html')
+                break;
+            case 'view-session/':
+                file = path.join(__dirname,'..','pages', 'hcp-index.html')
+                break;
+            case 'view-session':
+                file = path.join(__dirname,'..','pages', 'hcp-index.html')
+                break;
+            default:
+                    file = 'N/A'
+                break;
+        } 
+    }else if (user == 'laboratory_scientist') {
+        switch (filename) {
+            case '':
+                file = path.join(__dirname,'..','pages', 'laboratory-index.html')
+                break;
+            case 'home/':
+                file = path.join(__dirname,'..','pages', 'laboratory-index.html')
+                break;
+            case 'home':
+                file = path.join(__dirname,'..','pages', 'laboratory-index.html')
+                break;
+            case 'record-tests/':
+                file = path.join(__dirname,'..','pages', 'laboratory-index.html')
+                break;
+            case 'record-tests':
+                file = path.join(__dirname,'..','pages', 'laboratory-index.html')
+                break;
+            case 'my-account/':
+                file = path.join(__dirname,'..','pages', 'laboratory-index.html')
+                break;
+            case 'my-account':
+                file = path.join(__dirname,'..','pages', 'laboratory-index.html')
+                break;
+            default:
+                    file = 'N/A'
+                break;
+        } 
+    }else{
         switch (filename) {
             case '':
                 file = path.join(__dirname,'..','pages', 'auth-login.html')

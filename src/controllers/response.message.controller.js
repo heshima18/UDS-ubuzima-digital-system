@@ -4,7 +4,11 @@ const errorMessage = {
     uc_added_to_hp_message:'user was added to the facility successfully',
     mc_message:'medicine recorded successfully',
     tc_message:'test recorded successfully',
+    ec_message:'equipment recorded successfully',
+    oc_message:'operation recorded successfully',
+    sc_message:'service recorded successfully',
     ms_message:'message sent successfully',
+    me_message:'message edited successfully',
     dc_message:'department created successfully',
     appoi_appr_message:'appointment approved successfully',
     appoi_decli_message:'appointment declined successfully',
@@ -40,7 +44,10 @@ const errorMessage = {
     _err_hcp_unav: 'the selected healthcare provider  is not available in the selected time',
     session_message:'session created successfully',
     test_added_message:'test(s) added to the session successfully',
-    medicine_addedtosession_message:'medicine(s) added to the session successfully'
+    medicine_addedtosession_message:'medicine(s) added to the session successfully',
+    operation_addedtosession_message:'operation(s) added to the session successfully',
+    service_addedtosession_message:'service(s) added to the session successfully',
+    equipment_addedtosession_message:'equipment(s) added to the session successfully'
 
 
 }

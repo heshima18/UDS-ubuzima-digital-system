@@ -1,74 +1,73 @@
-import { alertMessage, getdata, getschema, postschema, request,initializeCleave, checkEmpty, showRecs, getchips } from "../../../utils/functions.controller.js";
+import { alertMessage, getdata, getschema, postschema, request,initializeCleave, checkEmpty, showRecs, getchips, adcm } from "../../../utils/functions.controller.js";
 
 let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,z,x,c,v,b,n,m
 u = getdata('token')
 if(!u){
     window.location.href = '../../login'
 }
-m = await request('get-map',getschema)
-postschema.body = JSON.stringify({token : getdata('token')})
+postschema.body = JSON.stringify({token : u})
+m = await request('get-operations',postschema)
+d = await request('get-departments',postschema)
 try {
-    if (!m.success) {alertMessage(m.message)}
-    m = m.message
-    l = []
-    for (let province of m) {
-        province = province.provinces[0]
-        for (const district of province.districts) {
-            l.push({name: district.name, province: province.name, sectors: district.sectors, id: district.id})
-        }
-    }
-    f = document.querySelector('form#add-district-form')
+    
+    f = document.querySelector('form#add-operation-form')
     i = Array.from(f.querySelectorAll('.form-control'))
     b = f.querySelector('button[type="submit"]')
+    j = f.querySelector('input#department')
+    j.addEventListener('focus', function () {
+        showRecs(j,d.message,'department')
+    })
+    f.addEventListener('submit', async e =>{
+        e.preventDefault();
+        v = 1
+        for (const input of i) {
+           n =  checkEmpty(input);
+            if (!n) {
+               v = 0 
+            }
+        }
+        if(v){
+            x = {}
+            for (const input of i) {
+                if (!input.classList.contains('bevalue')) {
+                    Object.assign(x,{[input.name]: input.value})
+                }else{
+                    Object.assign(x,{[input.name]: input.getAttribute('data-id')})
+                }
+             }
+             Object.assign(x,{token: getdata('token')})
+             postschema.body = JSON.stringify(x)
+             b.setAttribute('disabled', true)
+             b.textContent = `Recording test info...`
+    
+             a = await request('add-operation',postschema);
+             b.removeAttribute('disabled')
+             b.textContent = `Submit`
+             if (!a.success) {
+                alertMessage(a.message)
+             }else{
+                alertMessage(a.message)
+                f.reset();
+             }
+        }
+    })
 } catch (error) {
   console.log(error)  
 }
-f.addEventListener('submit', async e =>{
-    e.preventDefault();
-    v = 1
-    for (const input of i) {
-       n =  checkEmpty(input);
-        if (!n) {
-           v = 0 
-        }
-    }
-    if(v){
-        x = {}
-        for (const input of i) {
-            if (!input.classList.contains('bevalue')) {
-                Object.assign(x,{[input.name]: input.value})
-            }else{
-                Object.assign(x,{[input.name]: input.getAttribute('data-id')})
-            }
-         }
-         Object.assign(x,{token: getdata('token')})
-         postschema.body = JSON.stringify(x)
-         b.setAttribute('disabled', true)
-         b.textContent = `Recording district info...`
-
-         a = await request('add-district',postschema);
-         b.removeAttribute('disabled')
-         b.textContent = `Submit`
-         if (!a.success) {
-            alertMessage(a.message)
-         }else{
-            alertMessage(a.message)
-            f.reset();
-         }
-    }
-})
-
 $(document).ready(function () {
+    if (!m.success) {return alertMessage(m.message)}
+    m = m.message
     var table = $('.datatables-health-posts'),
         e = table.DataTable({
+            
             // Define the structure of the table
             dom: '<"row mx-2"<"col-md-2"<"me-3"l>><"col-md-10"<"dt-action-buttons text-xl-end text-lg-start text-md-end text-start d-flex align-items-center justify-content-end flex-md-row flex-column mb-3 mb-md-0"fB>>>t<"row mx-2"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>',
             language: { sLengthMenu: "_MENU_", search: "", searchPlaceholder: "Search..." },
             columns: [
                 { data: "" }, // Responsive Control column
                 { data: "name", title: "name" },
-                { data: "province", title: "province" },
-                { data: "sectors", title: "sectors" },
+                { data: "price", title: "price" },
+                { data: "department_name", title: "department" },
                 { data: "", title: "Action", }
             ],
             columnDefs: [
@@ -99,7 +98,7 @@ $(document).ready(function () {
                     orderable: 1,
                     render: function (e, t, a, n) {
                         return (
-                            `<span class='d-block fw-semibold capitalize'>${e}</span>`
+                            `<span class='d-block fw-semibold capitalize'>${adcm(e)}</span>`
                         );
                     },
                 },
@@ -109,7 +108,7 @@ $(document).ready(function () {
                     orderable: 1,
                     render: function (e, t, a, n) {
                         return (
-                            `<span class='d-block fw-semibold capitalize'>${a.sectors.length}</span>`
+                            `<span class='d-block fw-semibold capitalize'>${e}</span>`
                         );
                     },
                 },
@@ -131,7 +130,7 @@ $(document).ready(function () {
             order: [[1, "asc"]], // Initial sorting
 
             // Provide the data from the imported Health Posts
-            data: l,
+            data: m,
 
             // Define buttons for exporting and adding new  Health Posts
             buttons: [
@@ -160,7 +159,7 @@ $(document).ready(function () {
                 {
                     text: '<i class="bx bx-plus me-0 me-sm-1"></i><span class="d-none d-sm-inline-block">Add New</span>',
                     className: "add-new btn btn-primary",
-                    attr: { "data-bs-toggle": "modal", "data-bs-target": "#add-district" },
+                    attr: { "data-bs-toggle": "modal", "data-bs-target": "#add-operation" },
                 },
             ],
 
@@ -184,25 +183,17 @@ $(document).ready(function () {
 
             // Initialize filters for position, health post, and status
             initComplete: function () {
-                // Filter by Position
+                // Filter by District
+                
             }
         });
 
     table.find("tbody").on("click", ".delete-health-post", function () {
-        if (confirm("Are you sure you want to delete this health post?")) {
+        if (confirm("Are you sure you want to delete this operation?")) {
             e.row($(this).parents("tr")).remove().draw();
         }
     })
-    $('#add-district').on('shown.bs.modal', function () {
-        const $modal = $(this);
-        z = []
-        for (let province of m) {
-            province = province.provinces[0]
-            z.push(province)
-        }
-        let province = f.querySelector('input#province')
-        province.addEventListener('focus', function (e) {
-            showRecs(this,z,'province')
-        })
+    $('#add-test').on('shown.bs.modal', function () {
+
     });
 });

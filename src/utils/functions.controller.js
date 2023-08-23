@@ -32,7 +32,6 @@ export function geturl() {
   return i.origin+'/'
 }
 export function addshade(){
-  let body = document.querySelector('div#body');
   let thebody = document.querySelector('div.cont'); 
   var shaddow = document.createElement('div');
   thebody.appendChild(shaddow);
@@ -43,7 +42,6 @@ export function addshade(){
   shaddow.appendChild(close)
   close.addEventListener('click',e=>{
 	  e.preventDefault();
-   body.classList.remove('blur')
 		closetab(shaddow,thebody);
 	});
   document.body.classList.add('ovh');
@@ -85,6 +83,19 @@ export function getdata(item){
     return null 
   }
 }
+export function sessiondata(item){
+  let v
+  try {
+    v = JSON.parse(sessionStorage.getItem(item));
+    return v
+  } catch (error) {
+    v = sessionStorage.getItem(item);
+    if (v) {
+      return v
+    }
+    return null 
+  }
+}
 export function setErrorFor(input,message) {
   try{
     const rep = input.parentElement;
@@ -112,20 +123,38 @@ export function checkEmpty(input){
     if (input.classList.contains('chips-check')) {
       let chipshol = input.parentElement.querySelector('div.chipsholder');
       if (!chipshol) {
+        if (input.getAttribute('data-optional')) {
+          setSuccessFor(input)
+          return 1
+        }
         setErrorFor(input,`please ${(input.tagName == "SELECT")? 'select' : 'enter'} the ${input.name}`)
         return 0
       }
       let chips = Array.from(chipshol.querySelectorAll('span.chip'))
       if (chips.length == 0) {
+        if (input.getAttribute('data-optional')) {
+          return 1
+        }
        setErrorFor(input,`please ${(input.tagName == "SELECT")? 'select' : 'enter'} the ${input.name}`)
         return 0
       }else{
           setSuccessFor(input)
         return 1
       }
+    }else if (input.classList.contains('bevalue')) {
+      if (input.getAttribute('data-id')) {
+        setSuccessFor(input)
+        return 1
+      }else{
+        setErrorFor(input,`please ${(input.tagName == "SELECT")? 'select' : 'enter'} the ${input.name}`)
+        return 0
+      }
     }else{
       if (input.value == '' || input.value == '+250') {
-          setErrorFor(input,`please ${(input.tagName == "SELECT")? 'select' : 'enter'} the ${input.name}`)
+        if (input.getAttribute('data-optional')) {
+          return 1
+        }
+        setErrorFor(input,`please ${(input.tagName == "SELECT")? 'select' : 'enter'} the ${input.name}`)
         return 0
       }else{
           setSuccessFor(input)
@@ -155,7 +184,6 @@ export async function initializeCleave(phoneElement, idElement) {
 }
 export function showRecs(input, data,type) {
   try {
-    
     let div =  document.createElement('div');
     let parent = input.parentNode
     let chipsHolder = parent.querySelector('div.chipsholder')
@@ -179,7 +207,16 @@ export function showRecs(input, data,type) {
     items.forEach(item =>{
      item.addEventListener('click', (e)=>{
       if (input.classList.contains('chips-check')) {
-        addChip({name:item.textContent, id: item.getAttribute('data-id')},chipsHolder)
+        if (type == 'medicines' || type == 'equipments' || type == 'services') {
+          let ion =  data.filter(function (ite) {
+            return ite.id == item.getAttribute('data-id')
+          })
+          if (ion) {
+           promptin(ion,chipsHolder)
+          }
+        }else{
+          addChip({name:item.textContent, id: item.getAttribute('data-id')},chipsHolder)
+        }
       }else if (input.classList.contains('bevalue')) {
         input.value = item.textContent
         input.setAttribute('data-id',item.getAttribute('data-id'))
@@ -209,13 +246,13 @@ export function showRecs(input, data,type) {
   }
 
 }
-export function addChip(info,parent) {
+export function addChip(info,parent,extra) {
   c = document.createElement('span')
   c.className = 'w-a h-a b-1-s-gray br-2p pr-20p pt-5p pb-5p pl-5p m-5p fs-13p iblock chip p-r verdana dgray consolas  ';
   r = document.createElement('div');
   r.className = "w-20p h-20p p-a right bc-white remove m-5p  b-1-s-gray center br-50 hover t-0 r-0"
   r.innerHTML = `<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="20px" height="20px" viewBox="0 0 64 64" enable-background="new 0 0 64 64" xml:space="preserve"><g><line fill="none" stroke="#000" stroke-width="1" stroke-miterlimit="10" x1="18.947" y1="17.153" x2="45.045" y2="43.056"></line></g><g><line fill="none" stroke="#000" stroke-width="1" stroke-miterlimit="10" x1="19.045" y1="43.153" x2="44.947" y2="17.056"></line></g></svg>`
-  c.innerHTML = `<span class="p-5p bsbb consolas dgray fs-12p" data-id= "${info.id}">${info.name}</span></span> `
+  c.innerHTML = `<span class="p-5p bsbb consolas dgray fs-12p" data-id= "${info.id}" ${(extra)?`data-quantity="${info.quantity}"`: ''}>${info.name}</span></span> `
   c.appendChild(r)
   let found = 0
   for(const chip of parent.childNodes){
@@ -228,6 +265,16 @@ export function addChip(info,parent) {
   }
   (!found)? parent.appendChild(c): null
   r = Array.from(document.querySelectorAll('div.remove'));
+  if (r) {
+    let sogokuru = parent.parentNode
+    let data_tri_element = sogokuru.querySelector('.chips-trigger')
+    if (data_tri_element) {
+      data_tri_element = sogokuru.querySelector(`#${data_tri_element.getAttribute('data-chips-trigger')}`) || sogokuru.querySelector(`[name="${data_tri_element.getAttribute('data-chips-trigger')}"]`)
+      if (data_tri_element) {
+        data_tri_element.classList.remove('hidden')
+      }
+    }
+  }
   r.forEach(remove=>{
       remove.addEventListener('click',e=>{
           e.preventDefault();
@@ -236,6 +283,14 @@ export function addChip(info,parent) {
           l = Array.from(parent.querySelectorAll('span.chip'))
           if(l.length == 0){
               deletechild(parent.parentNode,parent)
+              let sogokuru = parent.parentNode
+              let data_tri_element = sogokuru.querySelector('.chips-trigger')
+              if (data_tri_element) {
+                data_tri_element = sogokuru.querySelector(`#${data_tri_element.getAttribute('data-chips-trigger')}`) || sogokuru.querySelector(`[name="${data_tri_element.getAttribute('data-chips-trigger')}"]`)
+                if (data_tri_element) {
+                  data_tri_element.classList.add('hidden')
+                }
+              }
           }
           } catch (error) {
               console.log(error)
@@ -245,6 +300,9 @@ export function addChip(info,parent) {
   })
 }
 export function getchips(parent) {
+  if (!parent) {
+    return []
+  }
   c = Array.from(parent.querySelectorAll('span.chip'))
   let d
   d = []
@@ -283,9 +341,45 @@ export function getPath(index) {
   i = i.split('/')
   // i.pop()
   i.shift()
-  console.log(i)
   return i[index]
   
+}
+function promptin(info,chipsHolder) {
+  b = addshade();
+  a = document.createElement('div');
+  b.appendChild(a)
+  info = info[0]
+  console.log(info)
+  a.className = "w-250p h-230p p-10p bsbb bc-white cntr zi-10000 br-5p" 
+  a.innerHTML = `<div class="head w-100 h-40p p-5p bsbb bb-1-s-dg">
+                                  <span class="fs-18p black capitalize igrid center h-100 verdana">enter the quantity</span>
+                              </div>
+                              <div class="body w-100 h-a p-5p grid mt-10p">
+                                  <form method="post" id="rec-quantity-form" name="rec-quantity-form">
+                                    <div class="col-md-12 p-10p">
+                                      <label for="quantity" class="form-label">quantity</label>
+                                        <div class="input-group">
+                                            <input type="number" class="form-control chips-check" placeholder="quantity" name="quantity" id="quantity">
+                                            <span class="input-group-text hover-2 us-none">${info.unit}</span>
+                                            <small class="w-100 red pl-3p verdana"></small>
+                                        </div>
+                                    </div>
+                                    <div class="center-2 my-10p px-10p bsbb">
+                                        <button type="submit" class="btn btn-primary">Proceed</button>
+                                      </div>
+                                  </form>
+                              </div>`
+  m = a.querySelector('form#rec-quantity-form')
+  v = a.querySelector('input')
+  m.addEventListener('submit', (event)=>{
+    event.preventDefault()
+    if (v.value.trim() != '') {
+      addChip({name:info.name, id: info.id , quantity: v.value},chipsHolder,'extra')
+      deletechild(b,b.parentNode)
+    }else{
+      setErrorFor(v,'enter the quantity')
+    }
+  })
 }
 export function addUprofile(data){
   e = addshade();
@@ -305,7 +399,6 @@ export function addUprofile(data){
       </li>
     `
   }
-  console.log(new Date(data.dob).getFullYear() ,new Date(data.dob).getMonth(), new Date(data.dob).getDay())
   data.dob = ` ${new Date(data.dob).getDay()}/${new Date(data.dob).getMonth()}/${new Date(data.dob).getFullYear()}`
   if (!b) b = ` <li class="ls-none flex p-5p bsbb"><span class="btn btn-sm btn-label-danger">N/A</span></li>`
   a.className = "w-80 h-80 p-20p bsbb ovh bc-white cntr zi-10000 br-10p card-5 b-mgc-resp"
@@ -440,6 +533,7 @@ export function addUprofile(data){
         </div>
      </div>
     </div>`
+  return a
 }
 export async function chSession(){
   let token = getdata('token')
@@ -450,6 +544,179 @@ export async function chSession(){
       window.location.href = `../${z.role}/home`
       console.log(z.token)
     }
-    console.log('found')
+  }
+}
+export async function showAvaiEmps(emps){
+    u = addshade();
+    a = document.createElement('div')
+    u.appendChild(a)
+    a.className = "w-50 h-55 p-10p bsbb ovh bc-white cntr zi-10000 br-10p card-5 b-mgc-resp"
+    a.innerHTML = `<div class="card-header d-flex align-items-center justify-content-between p-10p mb-10p bsbb">
+                      <h5 class="card-title m-0 me-2 capitalize">select the receiver</h5>
+                  </div>
+                  <div class="ovys w-100 h-85 scroll-2">
+                    <ul class="list-group list-group-flush the-cont">
+                    </ul>
+                  </div>
+                  `
+    c = a.querySelector('ul')
+    for (const employee of emps) {
+      d = document.createElement('li')
+      d.className = 'list-group-item list-group-item-action dropdown-notifications-item hover-2 us-none emp'
+      d.setAttribute('data-id',employee.id)
+      d.innerHTML = `
+                       <div class="d-flex">
+                            <div class="flex-shrink-0 me-3">
+                              <div class="avatar ${(employee.online)? 'avatar-online':'avatar-offline'} ">
+                                <span class="w-40p h-40p br-50 center bc-tr-theme capitalize">${employee.Full_name.substring(0,1)}</span>
+                              </div>
+                            </div>
+                            <div class="flex-grow-1">
+                                <h6 class="mb-1 capitalize">${employee.Full_name}</h6>
+                                <p class="mb-0 capitalize">${employee.title}</p>
+                                <!-- <small class="text-muted">last seen 1h ago</small> -->
+                            </div>
+                            
+                        </div>`
+      c.appendChild(d)
+    }
+   return u
+}
+export async function showAvaiAssurances(assurances){
+  u = addshade();
+  a = document.createElement('div')
+  u.appendChild(a)
+  a.className = "w-40 h-55 p-10p bsbb ovh bc-white cntr zi-10000 br-10p card-5 b-mgc-resp"
+  a.innerHTML = `<div class="card-header d-flex align-items-center justify-content-between p-10p mb-10p bsbb">
+                    <h5 class="card-title m-0 me-2 capitalize">select the applying assurance</h5>
+                </div>
+                <div class="ovys w-100 h-85 scroll-2">
+                  <ul class="list-group list-group-flush the-cont">
+                  </ul>
+                </div>
+                `
+  c = a.querySelector('ul')
+  console.log(assurances)
+  for (const assurance of assurances) {
+    d = document.createElement('li')
+    d.className = 'list-group-item list-group-item-action dropdown-notifications-item hover-2 us-none assurance'
+    d.setAttribute('data-id',assurance.id)
+    d.innerHTML = `
+                     <div class="d-flex">
+                          <div class="flex-grow-1">
+                              <h6 class="mb-1 capitalize">${assurance.name}</h6>
+                              <p class="mb-0 capitalize"><span class ="btn btn-sm ${(assurance.eligibility == 'eligible')?'btn btn-label-success':'btn-label-danger'}">${assurance.eligibility}</span></p>
+                          </div>
+                          
+                      </div>`
+    c.appendChild(d)
+  }
+  d = document.createElement('li')
+  d.className = 'list-group-item list-group-item-action dropdown-notifications-item hover-2 us-none assurance'
+  d.setAttribute('data-id',null)
+  d.innerHTML = `
+                   <div class="d-flex">
+                        <div class="flex-grow-1">
+                            <h6 class="mb-1 capitalize">Private</h6>
+                            <p class="mb-0 capitalize"><span class ="btn btn-sm btn-label-secondary">no assurance used</span></p>
+                        </div>
+                        
+                    </div>`
+  c.appendChild(d)
+ return u
+}
+export function animskel() {
+  let skel = Array.from(document.getElementsByClassName('skel'));
+  skel = shuffleArray(skel)
+  let i=0
+  skel.forEach(ele=>{
+      setTimeout(()=>{
+          ele.classList.add('anim')
+      },i)
+      i+=100;
+  })
+}
+export function shuffleArray(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
+}
+export function addsCard(message,dec) {
+  let div = document.createElement('div')
+  div.className = `w-100 h-60p center p-f t-0 zi-100`
+  let sCard = document.createElement('div');
+  let thenav
+     thenav = document.querySelector('div#cont');
+     thenav.appendChild(div);
+     div.appendChild(sCard);
+	sCard.className = "popup-card p-a nwecard";
+	c = Array.from(document.querySelectorAll('div.popup-card'));
+	if (c.length <= 1) {
+		sCard.className = "card popup-card w-a h-a bc-white br-20p p-4p zi-0 tr-0-3 bsbb ovh";
+		var scard_hol = document.createElement('div');
+		sCard.appendChild(scard_hol);
+    scard_hol.className = `w-a h-a flex`
+    if (dec) {
+      d=`<svg version="1.1" class="w-20p h-20p" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 32 32" style="fill: var(--green);" xml:space="preserve"><g><g id="check_x5F_alt"><path style="fill: var(--green);"d="M16,0C7.164,0,0,7.164,0,16s7.164,16,16,16s16-7.164,16-16S24.836,0,16,0z M13.52,23.383 L6.158,16.02l2.828-2.828l4.533,4.535l9.617-9.617l2.828,2.828L13.52,23.383z"/></g></g></svg>`
+    }else{
+      d=`<svg version="1.1" fill="#ff0000" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="30" height="30" viewBox="0 0 64 64" fill="#ff0000" enable-background="new 0 0 64 64" xml:space="preserve"><g><line fill="none" stroke="#ff0000" stroke-width="2" stroke-miterlimit="10" x1="18.947" y1="17.153" x2="45.045" y2="43.056"></line></g><g><line fill="none" stroke="#ff0000" stroke-width="2" stroke-miterlimit="10" x1="19.045" y1="43.153" x2="44.947" y2="17.056"></line></g></svg>`
+    }
+		scard_hol.innerHTML = `<span class='left center w-30p l-0 h-25p bc-white green igrid t-0  '>${d}</span><span class=' horizontal fs-14p igrid w-a  h-25p p-r black verdana mr-5p ovh'>${message}</span>`;
+		setTimeout(removecard,2000,sCard);	
+	}else{
+    c = document.querySelectorAll('div.nwecard')
+    c.forEach(card=>{
+      card.parentNode.removeChild(card)
+    })
+	}
+	
+}
+function removecard(sCard) {
+	sCard.classList.replace('popup-card','popup-card-fadding');
+	setTimeout(deleteCard,1000,sCard); 
+}
+function deleteCard(sCard) {
+  let navbar = document.querySelector('div#cont')
+	navbar.removeChild(sCard.parentElement);
+}
+export async  function cpgcntn(step,pages) {
+  try {
+    pages.map(function (page) {
+      if(pages.indexOf(page) == step){
+        page.classList.replace('l-100','l-0')
+        page.classList.replace('l--100','l-0')
+        }else if (pages.indexOf(page) > step) {
+            page.classList.replace('l--100','l-100')
+            page.classList.replace('l-0','l-100')
+        }else if (pages.indexOf(page) < step) {
+            page.classList.replace('l-100','l--100')
+            page.classList.replace('l-0','l--100')
+        }
+    })
+  } catch (error) {
+    console.log(error)
+  }
+}
+export function adcm(n) {
+  try {
+    n= Array.from(n.toString()).reverse()
+    let s = "";
+    let i = 0;
+    for(const t of n ){
+      if(i % 3 == 0 && i!= 0){
+        s+=`p${t}`
+      }else{
+        s+=t
+      }
+      i++
+    }
+    s= Array.from(s).reverse().toString().replace(/,/gi,"")
+    s=s.replace(/p/gi,",")
+    return (s)
+    
+  } catch (error) {
+    return n
   }
 }

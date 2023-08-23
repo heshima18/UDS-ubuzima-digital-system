@@ -39,10 +39,11 @@ export const getInventory = async (req,res)=>{
       token = authenticateToken(token)
       token = token.token
       let hospital = token.hospital
+      if (!hospital) return res.status(403).send({ message: errorMessage._err_forbidden,success: false });
       var select = await query(`
       SELECT
       i.medicines as raw_medicines,
-      CONCAT('[', GROUP_CONCAT(DISTINCT CONCAT('{"id": "', m.id, '","name": "', m.name, '"}')), ']') AS medicines
+      CONCAT('[', GROUP_CONCAT(DISTINCT CONCAT('{"id": "', m.id, '","name": "', m.name, '","unit": "', m.unit, '"}')), ']') AS medicines
       FROM inventories AS i
       INNER JOIN medicines AS m ON JSON_CONTAINS(i.medicines, JSON_OBJECT('id', m.id), '$')
       WHERE i.hospital = ?

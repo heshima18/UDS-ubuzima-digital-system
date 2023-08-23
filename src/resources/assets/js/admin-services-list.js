@@ -1,23 +1,15 @@
-import { alertMessage, getdata, getschema, postschema, request,initializeCleave, checkEmpty, showRecs, getchips } from "../../../utils/functions.controller.js";
+import { alertMessage, getdata, getschema, postschema, request,initializeCleave, checkEmpty, showRecs, getchips, adcm } from "../../../utils/functions.controller.js";
 
 let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,z,x,c,v,b,n,m
 u = getdata('token')
 if(!u){
     window.location.href = '../../login'
 }
-m = await request('get-map',getschema)
-postschema.body = JSON.stringify({token : getdata('token')})
+postschema.body = JSON.stringify({token : u})
+m = await request('get-services',postschema)
 try {
-    if (!m.success) {alertMessage(m.message)}
-    m = m.message
-    l = []
-    for (let province of m) {
-        province = province.provinces[0]
-        for (const district of province.districts) {
-            l.push({name: district.name, province: province.name, sectors: district.sectors, id: district.id})
-        }
-    }
-    f = document.querySelector('form#add-district-form')
+    
+    f = document.querySelector('form#add-service-form')
     i = Array.from(f.querySelectorAll('.form-control'))
     b = f.querySelector('button[type="submit"]')
 } catch (error) {
@@ -44,9 +36,9 @@ f.addEventListener('submit', async e =>{
          Object.assign(x,{token: getdata('token')})
          postschema.body = JSON.stringify(x)
          b.setAttribute('disabled', true)
-         b.textContent = `Recording district info...`
+         b.textContent = `Recording service info...`
 
-         a = await request('add-district',postschema);
+         a = await request('add-service',postschema);
          b.removeAttribute('disabled')
          b.textContent = `Submit`
          if (!a.success) {
@@ -57,18 +49,20 @@ f.addEventListener('submit', async e =>{
          }
     }
 })
-
 $(document).ready(function () {
+    if (!m.success) {return alertMessage(m.message)}
+    m = m.message
     var table = $('.datatables-health-posts'),
         e = table.DataTable({
+            
             // Define the structure of the table
             dom: '<"row mx-2"<"col-md-2"<"me-3"l>><"col-md-10"<"dt-action-buttons text-xl-end text-lg-start text-md-end text-start d-flex align-items-center justify-content-end flex-md-row flex-column mb-3 mb-md-0"fB>>>t<"row mx-2"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>',
             language: { sLengthMenu: "_MENU_", search: "", searchPlaceholder: "Search..." },
             columns: [
                 { data: "" }, // Responsive Control column
                 { data: "name", title: "name" },
-                { data: "province", title: "province" },
-                { data: "sectors", title: "sectors" },
+                { data: "price", title: "price" },
+                { data: "unit", title: "unit" },
                 { data: "", title: "Action", }
             ],
             columnDefs: [
@@ -99,7 +93,7 @@ $(document).ready(function () {
                     orderable: 1,
                     render: function (e, t, a, n) {
                         return (
-                            `<span class='d-block fw-semibold capitalize'>${e}</span>`
+                            `<span class='d-block fw-semibold capitalize'>${adcm(e)}</span>`
                         );
                     },
                 },
@@ -108,8 +102,9 @@ $(document).ready(function () {
                     searchable: 1,
                     orderable: 1,
                     render: function (e, t, a, n) {
+                        
                         return (
-                            `<span class='d-block fw-semibold capitalize'>${a.sectors.length}</span>`
+                            `<span class='d-block fw-semibold capitalize'>${e}</span>`
                         );
                     },
                 },
@@ -131,7 +126,7 @@ $(document).ready(function () {
             order: [[1, "asc"]], // Initial sorting
 
             // Provide the data from the imported Health Posts
-            data: l,
+            data: m,
 
             // Define buttons for exporting and adding new  Health Posts
             buttons: [
@@ -160,7 +155,7 @@ $(document).ready(function () {
                 {
                     text: '<i class="bx bx-plus me-0 me-sm-1"></i><span class="d-none d-sm-inline-block">Add New</span>',
                     className: "add-new btn btn-primary",
-                    attr: { "data-bs-toggle": "modal", "data-bs-target": "#add-district" },
+                    attr: { "data-bs-toggle": "modal", "data-bs-target": "#add-service" },
                 },
             ],
 
@@ -184,7 +179,19 @@ $(document).ready(function () {
 
             // Initialize filters for position, health post, and status
             initComplete: function () {
-                // Filter by Position
+                // Filter by District
+                this.api().columns(3).every(function () {
+                    var t = this,
+                        a = $('<select class="form-select text-capitalize"><option value=""> Select Unit </option></select>')
+                            .appendTo(".health-post-type")
+                            .on("change", function () {
+                                var e = $.fn.dataTable.util.escapeRegex($(this).val());
+                                t.search(e ? "^" + e + "$" : "", !0, !1).draw();
+                            });
+                    t.data().unique().sort().each(function (e, t) {
+                    a.append('<option value="' + e + '">' + e + "</option>");
+                    });
+                });
             }
         });
 
@@ -193,16 +200,11 @@ $(document).ready(function () {
             e.row($(this).parents("tr")).remove().draw();
         }
     })
-    $('#add-district').on('shown.bs.modal', function () {
+    $('#add-service').on('shown.bs.modal', function () {
         const $modal = $(this);
-        z = []
-        for (let province of m) {
-            province = province.provinces[0]
-            z.push(province)
-        }
-        let province = f.querySelector('input#province')
-        province.addEventListener('focus', function (e) {
-            showRecs(this,z,'province')
+        let unit = f.querySelector('input#unit')
+        unit.addEventListener('focus', function (e) {
+            showRecs(this,[{id: 'days', name: 'days'},{id: 'hours', name: 'hours'},{id: 'kilometers', name: 'kilometers'},{id: 'meters', name: 'meters'}],'unit')
         })
     });
 });

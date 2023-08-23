@@ -66,7 +66,7 @@ form.addEventListener('submit', async e=>{
                 window.location.href = '../patient/home/'
                 
             }else if (z.role == 'hc_provider') {
-                window.location.href = '../hcp/home/'
+                window.location.href = '../hc_provider/home/'
                 
             }else if (z.role == 'pharmacist') {
                 window.location.href = '../pharmacist/home/'
