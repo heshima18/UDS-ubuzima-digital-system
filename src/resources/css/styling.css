@@ -275,11 +275,31 @@
 
 }
 @media screen and (max-width: 750px){
-.w-700p{
-  width: 100%;
-}
+  .w-700p{
+    width: 100%;
+  }
+  .bp-y-10p-resp{
+    padding-top: 10px;
+    padding-bottom: 10px;
+  }
   .bm-a-resp{
       margin: auto;
+  }
+  .bm-y-10p-resp{
+    margin-top: 10px;
+    margin-bottom: 10px;
+  }
+  .bm-x-0-resp{
+    margin-left: 0;
+    margin-right: 0;
+  }
+  .bm-x-5p-resp{
+    margin-left: 5px;
+    margin-right: 5px;
+  }
+  .bm-x-10p-resp{
+    margin-left: 10px;
+    margin-right: 10px;
   }
   .bmb-10p-resp{
       margin: 0;

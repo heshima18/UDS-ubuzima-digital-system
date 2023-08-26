@@ -1,4 +1,4 @@
-import { alertMessage, getdata, getschema, postschema, request,deletechild, checkEmpty, showRecs, getchips,getPath, addUprofile,addsCard,cpgcntn, geturl,sessiondata,addChip, showAvaiAssurances } from "../../../utils/functions.controller.js";
+import { alertMessage, getdata, getschema, postschema, request,deletechild, checkEmpty, showRecs, getchips,getPath, addUprofile,addsCard,cpgcntn, geturl,sessiondata,addChip, showAvaiAssurances, adcm, addshade } from "../../../utils/functions.controller.js";
 import {pushNotifs, userinfo} from "./nav.js";
 
 let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z
@@ -117,9 +117,8 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z
             }))
         })
     })
-    function gsd(page) {
+    async function gsd(page) {
         try {
-            console.log(page)
             x = page.id
             if (x == 'search-patient') {
             f = page.querySelector('form[name="sp-form"]');
@@ -157,12 +156,17 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z
                     f = document.querySelector('form#create-session-form')
                     i = Array.from(f.querySelectorAll('.form-control'))
                     let asb = f.querySelector('span#add-symptom');
-                    let arb = f.querySelector('span#add-results');
+                    let arb = f.querySelector('span#add-decisions');
                     let extras_input = Array.from(f.querySelectorAll('input.extras'));
+                    let op_input = f.querySelector('input[name="operations"]');
                     extras_input.map(function (input) {
                       input.addEventListener('focus', event=>{
                         showRecs(input,extra[input.id],input.id)
                       })
+                    })
+                    op_input.addEventListener('focus', event=>{
+                      showRecs(op_input,extra[op_input.id],op_input.id)
+                    
                     })
                     asb.addEventListener('click',e=>{
                       let parent = asb.parentNode
@@ -175,7 +179,7 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z
                           chipsHolder.title = 'symptoms'
                           parent.insertAdjacentElement('beforeEnd',chipsHolder)
                         }
-                        addChip({name:inp.value.trim(), id: inp.value.trim()},chipsHolder)
+                        addChip({name:inp.value.trim(), id: inp.value.trim()},chipsHolder,['id'])
                         inp.value = null
                       }
                     })
@@ -190,60 +194,66 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z
                           chipsHolder.title = 'results'
                           parent.insertAdjacentElement('beforeEnd',chipsHolder)
                         }
-                        addChip({name:inp.value.trim(), id: inp.value.trim()},chipsHolder)
+                        addChip({name:inp.value.trim(), id: inp.value.trim()},chipsHolder,['id'])
                         inp.value = null
                       }
                     })
                     n = i.find(function (e) {return e.id == 'patient'})
-                    n.addEventListener('keyup', async f=>{
-                      if (n.value) {
-                        n.parentNode.querySelector('span').classList.replace('hidden','center-2')
-                        postschema.body = JSON.stringify({token: getdata('token')})
-                        const p = await request(`patient/${n.value.trim()}`,postschema)
-                        if (!p.success) {
-                         return n.parentNode.querySelector('span').classList.replace('center-2','hidden')
-                        }
-                        n.parentNode.querySelector('span').classList.replace('center-2','hidden')
-                        n.value = p.message.Full_name
-                        n.setAttribute('data-id',p.message.id)
-                        let a = await showAvaiAssurances(p.message.assurances)
-                        l = Array.from(a.querySelectorAll('li.assurance'))
-                        for (const lis of l) {
-                          lis.addEventListener('click',async function(event){
-                            console.log(p)
-                              event.preventDefault();
-                              this.classList.add('selected')
-                              let assurance = this.getAttribute('data-id');
-                              if (assurance == "null") {
-                                assurance = null
-                              }
-                              sessionStorage.setItem('pinfo',JSON.stringify({patient:p.message.id,name:p.message.Full_name,assurance,nid:p.message.nid}))
-                              deletechild(a,a.parentNode)
-                              addsCard('Assurance Selected',true)
-                            });
-                        }
-                        
-                      }else{
-                        n.parentNode.querySelector('span').classList.replace('center-2','hidden')
-                      }
-                    })
                     if (sessiondata('pinfo')) {
                       n.value = sessiondata('pinfo').name
                       n.setAttribute('data-id',sessiondata('pinfo').patient)
                     }
+                    let val
                     n.addEventListener('focus',()=>{
                         if (sessiondata('pinfo')) {
                             n.value = sessiondata('pinfo').nid
                             n.setAttribute('data-id',sessiondata('pinfo').patient)
-                          }
+                        }
+                        val = n.value
                     })
-                    n.addEventListener('blur',()=>{
+                    n.addEventListener('blur',async ()=>{
+                        if (n.value != val) {
+                         v = await upPatInfo(n)
+                        }
                         if (sessiondata('pinfo')) {
                             n.value = sessiondata('pinfo').name
                             n.setAttribute('data-id',sessiondata('pinfo').patient)
                         }
                     })
-                    b = f.querySelector('button[type="submit"]')
+                    async function upPatInfo(n) {
+                        if (n.value) {
+                            n.parentNode.querySelector('span').classList.replace('hidden','center-2')
+                            postschema.body = JSON.stringify({token: getdata('token')})
+                            const p = await request(`patient/${n.value.trim()}`,postschema)
+                            if (!p.success) {
+                             sessionStorage.removeItem('pinfo');
+                             n.removeAttribute('data-id');
+                             return n.parentNode.querySelector('span').classList.replace('center-2','hidden')
+                            }
+                            n.parentNode.querySelector('span').classList.replace('center-2','hidden')
+                            n.value = p.message.Full_name
+                            n.setAttribute('data-id',p.message.id)
+                            let a = await showAvaiAssurances(p.message.assurances)
+                            l = Array.from(a.querySelectorAll('li.assurance'))
+                            for (const lis of l) {
+                              lis.addEventListener('click',async function(event){
+                                  event.preventDefault();
+                                  this.classList.add('selected')
+                                  let assurance = this.getAttribute('data-id');
+                                  if (assurance == "null") {
+                                    assurance = null
+                                  }
+                                  sessionStorage.setItem('pinfo',JSON.stringify({patient:p.message.id,name:p.message.Full_name,assurance,nid:p.message.nid}))
+                                  deletechild(a,a.parentNode)
+                                  addsCard('Assurance Selected',true)
+                                });
+                            }
+                            
+                          }else{
+                            n.parentNode.querySelector('span').classList.replace('center-2','hidden')
+                          }
+                    }
+                    let button = f.querySelector('button[type="submit"]')
                     f.addEventListener('submit', async e =>{
                         let a,b,n,u,r;
                         n = '';
@@ -256,32 +266,459 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z
                         if(!a){ 
                             v = 0
                         }
-                            if(input.classList.contains('chips-check')){
-                                Object.assign(b,{[input.name]: getchips(input.parentNode.querySelector('div.chipsholder'))})
-                            }else if (input.classList.contains('bevalue')) {
-                                Object.assign(b,{[input.name]: input.getAttribute('data-id')})
+                        if(input.classList.contains('chips-check')){
+                            if (input.name == "tests") {
+                                Object.assign(b,{[input.name]: getchips(input.parentNode.querySelector('div.chipsholder'),['id','sample','result'])})
+                            }else if (input.classList.contains('extras')) {
+                                Object.assign(b,{[input.name]: getchips(input.parentNode.querySelector('div.chipsholder'),['id','quantity'])})     
+                            }else if (input.name == "operations") {
+                                Object.assign(b,{[input.name]: getchips(input.parentNode.querySelector('div.chipsholder'),['id','operator'])})
                             }else{
-                                Object.assign(b,{[input.name]: input.value})
+                                Object.assign(b,{[input.name]: getchips(input.parentNode.querySelector('div.chipsholder'))})
                             }
+                        }else if (input.classList.contains('bevalue')) {
+                            Object.assign(b,{[input.name]: input.getAttribute('data-id')})
+                        }else{
+                            Object.assign(b,{[input.name]: input.value})
+                        }
                         }
                         if (v) {
                             Object.assign(b,{ assurance: sessiondata('pinfo').assurance})
                             Object.assign(b,{ token: getdata('token')})
                             postschema.body = JSON.stringify(b)
+                            button.setAttribute('disabled',true)
+                            button.textContent = 'recording session info...'
                             r = await request('addsession',postschema);
+                            button.removeAttribute('disabled',true)
+                            button.textContent = 'create session'
                             alertMessage(r.message)
                         }
                     }) 
                 } catch (error) {
                 console.log(error)  
                 }
-            } 
+            }else if (x == 'view-session') {
+              let session = getPath(2)
+              if (session) {
+                postschema.body = JSON.stringify({token: getdata('token')})
+                let sessiondata =  await request(`session/${session}`,postschema)
+                if (!sessiondata.success) return alertMessage(sessiondata.message)
+                let session_input = page.querySelector('input#session-id');
+                session_input.value = session
+                sessiondata = sessiondata.message
+                Object.assign(sessiondata.payment_info,{total_amount: Number(sessiondata.payment_info.a_amount) + Number(sessiondata.payment_info.p_amount)})
+                const dataHolders = Array.from(document.querySelectorAll('span[name="info-hol"]'))
+                const loopingDataHolders = Array.from(document.querySelectorAll('ul[name="looping-info"]'))
+                for (const element of loopingDataHolders) {
+                    let dataToHold = element.getAttribute('data-hold');
+                    let dataToShow = sessiondata[dataToHold]
+                    for (const data of dataToShow) {
+                        Object.assign(data,{total_amount: Number(data.price) * Number(data.quantity)})
+                       let clonedNode = element.cloneNode(true);
+                       let dataHolders = clonedNode.querySelectorAll('[name="looping-info-hol"]')
+                       for (const dataHolder of dataHolders) {
+                        if (dataHolder.getAttribute('data-hold').indexOf('price') != -1 || dataHolder.getAttribute('data-hold').indexOf('amount') != -1) {
+                            dataHolder.innerText = adcm(data[dataHolder.getAttribute('data-hold')])
+                        }else if (dataHolder.getAttribute('data-hold').indexOf('result') != -1) {
+                            if (data[dataHolder.getAttribute('data-hold')] == "positive" || data[dataHolder.getAttribute('data-hold')] == "positif") {
+                                dataHolder.classList.add('green')
+                            }else{
+                                dataHolder.classList.add('red')
+                            }
+                            dataHolder.innerText = data[dataHolder.getAttribute('data-hold')]
+                        }else{
+                            dataHolder.innerText = data[dataHolder.getAttribute('data-hold')]
+                        }
+                       }
+                       element.parentNode.appendChild(clonedNode)
+                    }
+                    element.parentNode.removeChild(element)
+
+                }
+                for (const holder of dataHolders) {
+                        let objectId = holder.getAttribute('data-hold')
+                        if (objectId.indexOf('.') != -1) {
+                            objectId = objectId.split('.')
+                            if (objectId[1].indexOf('amount') != -1) {
+                                holder.innerText = adcm(sessiondata[objectId[0]][objectId[1]])
+                            }else{
+                                holder.innerText = sessiondata[objectId[0]][objectId[1]]
+                            }
+                        }else{
+                            if (holder.getAttribute('data-hold').indexOf('status') != -1) {
+                                if (sessiondata[holder.getAttribute('data-hold')] == "open") {
+                                    holder.classList.replace('btn-label-secondary','btn-label-success')
+                                }
+                            }
+                            holder.innerText = sessiondata[objectId]
+                        }
+                }
+                let Modals = new popups(sessiondata.session_id)
+                const dataButtons = Array.from(page.querySelectorAll('span.data-buttons'))
+                dataButtons.map(function (button) {
+                    button.addEventListener('click', e=>{
+                        e.preventDefault();
+                        let role = button.getAttribute('data-role');
+                        if (role == 'test') {
+                            Modals.test(f.message)
+                        }else if (role == 'medication') {
+                            Modals.medication(q.message)
+                        }else if (role == 'equipment') {
+                            Modals.equipment(l.message)
+                        }else if (role == 'service') {
+                            Modals.service(k.message)
+                        }else if (role == 'operation') {
+                            Modals.operation(j.message)
+                        }else if (role == 'comment') {
+                            Modals.comment()
+                        }
+                    })
+                })
+
+              }
+            }
             
           } catch (error) {
             console.log(error)
           }
     }
 })();
+class popups{
+    constructor(sessionData){
+        this.session = sessionData
+    }
+    test(data){
+        let testsP = addshade();
+        a = document.createElement('div');
+        testsP.appendChild(a)
+        a.className = "w-350p h-a p-10p bsbb bc-white cntr zi-10000 br-5p b-mgc-resp card" 
+        a.innerHTML  =`<div class="head w-100 h-50p py-10p px-15p bsbb">
+                            <span class="fs-17p dgray capitalize igrid h-100 verdana card-title">add a test to session</span>
+                        </div>
+                        <div class="body w-100 h-a p-5p grid">
+                            <form method="post" id="req-test-info-form" name="req-test-info-form">
+                                <div class="col-md-12 px-10p py-6p bsbb p-r">
+                                    <label for="test" class="form-label">test taken</label>
+                                    <input type="text" class="form-control bevalue" id="test" placeholder="Demo test" name="test">
+                                    <small class="w-100 red pl-3p verdana"></small>
+                                </div>
+                                <div class="col-md-12 px-10p py-6p bsbb p-r">
+                                    <label for="sample" class="form-label">sample taken</label>
+                                    <input type="text" class="form-control" id="sample" placeholder="Demo sample" name="sample">
+                                    <small class="w-100 red pl-3p verdana"></small>
+                                </div>
+                                <div class="col-md-12 px-10p py-6p bsbb mb-5p p-r">
+                                    <label for="result" class="form-label">results found</label>
+                                    <input type="text" class="form-control" id="result" placeholder="Demo results" name="result">
+                                    <small class="w-100 red pl-3p verdana"></small>
+                                </div>
+                                <div class="wrap center-2 my-15p bsbb bblock-resp">
+                                    <button type="submit" class="btn btn-primary mx-10p bfull-resp bm-a-resp bmy-10p-resp">Proceed</button>
+                                    <button type="button" class="btn btn-label-primary mx-10p capitalize bfull-resp bm-a-resp bmy-10p-resp">Request for tesing</button>
+                                </div>
+                            </form>
+                        </div>`
+        let form = a.querySelector("form");
+        let inputs = Array.from(form.querySelectorAll('input'))
 
+        let extra_input = inputs.find(function (ins) {return ins.classList.contains('bevalue') })
+        extra_input.addEventListener('focus', (event)=>{
+            showRecs(extra_input,data,extra_input.id)
+        })
+        
+        form.addEventListener('submit', event=>{
+            event.preventDefault();
+            l = 1
+            for (const input of inputs) {
+                v = checkEmpty(input);
+                if (!v) {
+                    l = 0
+                }
+            }
+            if (l) {
+                let values = {}
+                for (const input of inputs) {
+                    Object.assign(values,{[input.name]: (input.classList.contains('bevalue'))? input.getAttribute('data-id') : input.value })
+                } 
+                console.log(values)
+            }
+        })
+    }
+    medication(data){
+        data = data.medicines
+        let medicinesP = addshade();
+        a = document.createElement('div');
+        medicinesP.appendChild(a)
+        a.className = "w-350p h-a p-10p bsbb bc-white cntr zi-10000 br-5p b-mgc-resp card" 
+        a.innerHTML  =`<div class="head w-100 h-50p py-10p px-15p bsbb">
+                            <span class="fs-17p dgray capitalize igrid h-100 verdana card-title">add a medication to session</span>
+                        </div>
+                        <div class="body w-100 h-a p-5p grid">
+                            <form method="post" id="req-test-info-form" name="req-test-info-form">
+                                <div class="col-md-12 px-10p py-6p bsbb p-r">
+                                    <label for="medicine" class="form-label">medication</label>
+                                    <input type="text" class="form-control bevalue" id="medicine" placeholder="Demo medicine" name="medicine">
+                                    <small class="w-100 red pl-3p verdana"></small>
+                                </div>
+                                <div class="col-md-12 px-10p py-6p bsbb p-r">
+                                    <label for="quantity" class="form-label">quantity</label>
+                                    <input type="number" class="form-control" id="quantity" placeholder="Demo quantity" name="quantity">
+                                    <span class="p-a t-0 t-0 mx-20p r-0 mt-42p capitalize" name="unit-hol"></span>
+                                    <small class="w-100 red pl-3p verdana"></small>
+                                </div>
+                                <div class="wrap center-2 my-15p bsbb bblock-resp">
+                                    <button type="submit" class="btn btn-primary mx-10p bfull-resp bm-a-resp bmy-10p-resp">Proceed</button>
+                                </div>
+                            </form>
+                        </div>`
+        let form = a.querySelector("form");
+        let inputs = Array.from(form.querySelectorAll('input'))
+        let extra_input = inputs.find(function (ins) {return ins.classList.contains('bevalue') })
+        extra_input.addEventListener('focus', (event)=>{
+            showRecs(extra_input,data,extra_input.id)
+        })
+       extra_input.addEventListener('blur',async ()=>{
+        let unit = form.querySelector('span[name="unit-hol"]')
+        let val =  await new Promise((resolve, reject) => {
+                    setTimeout(() => {
+                    resolve(extra_input.getAttribute('data-id'));
+                    }, 200);
+                });
+        let datauint = data.find(function (obj) {
+            return obj.id = val
+        })
+        unit.innerText = datauint.unit
+       })
+        form.addEventListener('submit', event=>{
+            event.preventDefault();
+            l = 1
+            for (const input of inputs) {
+                v = checkEmpty(input);
+                if (!v) {
+                    l = 0
+                }
+            }
+            if (l) {
+                let values = {}
+                for (const input of inputs) {
+                    Object.assign(values,{[input.name]: (input.classList.contains('bevalue'))? input.getAttribute('data-id') : input.value })
+                } 
+                console.log(values)
+            }
+        })
+    }
+    operation(data){
+        let operationsP = addshade();
+        a = document.createElement('div');
+        operationsP.appendChild(a)
+        a.className = "w-350p h-a p-10p bsbb bc-white cntr zi-10000 br-5p b-mgc-resp card" 
+        a.innerHTML  =`<div class="head w-100 h-50p py-10p px-15p bsbb">
+                            <span class="fs-17p dgray capitalize igrid h-100 verdana card-title">add an operation to session</span>
+                        </div>
+                        <div class="body w-100 h-a p-5p grid">
+                            <form method="post" id="req-test-info-form" name="req-test-info-form">
+                                <div class="col-md-12 px-10p py-6p bsbb p-r">
+                                    <label for="test" class="form-label">operation name</label>
+                                    <input type="text" class="form-control bevalue" id="operation" placeholder="Demo operation" name="operation">
+                                    <small class="w-100 red pl-3p verdana"></small>
+                                </div>
+                                <div class="wrap center-2 my-15p bsbb bblock-resp">
+                                    <button type="submit" class="btn btn-primary mx-10p bfull-resp bm-a-resp bmy-10p-resp">Proceed</button>
+                                    <button type="button" class="btn btn-label-primary mx-10p capitalize bfull-resp bm-a-resp bmy-10p-resp">Request for tesing</button>
+                                </div>
+                            </form>
+                        </div>`
+        let form = a.querySelector("form");
+        let inputs = Array.from(form.querySelectorAll('input'))
+
+        let extra_input = inputs.find(function (ins) {return ins.classList.contains('bevalue') })
+        extra_input.addEventListener('focus', (event)=>{
+            showRecs(extra_input,data,extra_input.id)
+        })
+        
+        form.addEventListener('submit', event=>{
+            event.preventDefault();
+            l = 1
+            for (const input of inputs) {
+                v = checkEmpty(input);
+                if (!v) {
+                    l = 0
+                }
+            }
+            if (l) {
+                let values = {}
+                for (const input of inputs) {
+                    Object.assign(values,{[input.name]: (input.classList.contains('bevalue'))? input.getAttribute('data-id') : input.value })
+                } 
+                console.log(values)
+            }
+        })
+    }
+    service(data){
+        let servicesP = addshade();
+        a = document.createElement('div');
+        servicesP.appendChild(a)
+        a.className = "w-350p h-a p-10p bsbb bc-white cntr zi-10000 br-5p b-mgc-resp card" 
+        a.innerHTML  =`<div class="head w-100 h-50p py-10p px-15p bsbb">
+                            <span class="fs-17p dgray capitalize igrid h-100 verdana card-title">add a service to session</span>
+                        </div>
+                        <div class="body w-100 h-a p-5p grid">
+                            <form method="post" id="add-service-info-form" name="add-service-info-form">
+                                <div class="col-md-12 px-10p py-6p bsbb p-r">
+                                    <label for="service" class="form-label">service name</label>
+                                    <input type="text" class="form-control bevalue" id="service" placeholder="Demo service" name="service">
+                                    <small class="w-100 red pl-3p verdana"></small>
+                                </div>
+                                <div class="col-md-12 px-10p py-6p bsbb p-r">
+                                    <label for="quantity" class="form-label">quantity</label>
+                                    <input type="number" class="form-control" id="quantity" placeholder="Demo quantity" name="quantity">
+                                    <span class="p-a t-0 t-0 mx-20p r-0 mt-42p capitalize" name="unit-hol"></span>
+                                    <small class="w-100 red pl-3p verdana"></small>
+                                </div>
+                                <div class="wrap center-2 my-15p bsbb bblock-resp">
+                                    <button type="submit" class="btn btn-primary mx-10p bfull-resp bm-a-resp bmy-10p-resp">Proceed</button>
+                                </div>
+                            </form>
+                        </div>`
+        let form = a.querySelector("form");
+        let inputs = Array.from(form.querySelectorAll('input'))
+        let extra_input = inputs.find(function (ins) {return ins.classList.contains('bevalue') })
+        extra_input.addEventListener('focus', (event)=>{
+            showRecs(extra_input,data,extra_input.id)
+        })
+       extra_input.addEventListener('blur',async ()=>{
+        let unit = form.querySelector('span[name="unit-hol"]')
+        let val =  await new Promise((resolve, reject) => {
+                    setTimeout(() => {
+                    resolve(extra_input.getAttribute('data-id'));
+                    }, 200);
+                });
+        let datauint = data.find(function (obj) {
+            return obj.id = val
+        })
+        unit.innerText = datauint.unit
+       })
+        form.addEventListener('submit', event=>{
+            event.preventDefault();
+            l = 1
+            for (const input of inputs) {
+                v = checkEmpty(input);
+                if (!v) {
+                    l = 0
+                }
+            }
+            if (l) {
+                let values = {}
+                for (const input of inputs) {
+                    Object.assign(values,{[input.name]: (input.classList.contains('bevalue'))? input.getAttribute('data-id') : input.value })
+                } 
+                console.log(values)
+            }
+        })
+    }
+    equipment(data){
+        let equipmentsP = addshade();
+        a = document.createElement('div');
+        equipmentsP.appendChild(a)
+        a.className = "w-350p h-a p-10p bsbb bc-white cntr zi-10000 br-5p b-mgc-resp card" 
+        a.innerHTML  =`<div class="head w-100 h-50p py-10p px-15p bsbb">
+                            <span class="fs-17p dgray capitalize igrid h-100 verdana card-title">add as equipment to session</span>
+                        </div>
+                        <div class="body w-100 h-a p-5p grid">
+                            <form method="post" id="equipment-info-form" name="equipment-info-form">
+                                <div class="col-md-12 px-10p py-6p bsbb p-r">
+                                    <label for="service" class="form-label">service name</label>
+                                    <input type="text" class="form-control bevalue" id="service" placeholder="Demo service" name="service">
+                                    <small class="w-100 red pl-3p verdana"></small>
+                                </div>
+                                <div class="col-md-12 px-10p py-6p bsbb p-r">
+                                    <label for="quantity" class="form-label">quantity</label>
+                                    <input type="number" class="form-control" id="quantity" placeholder="Demo quantity" name="quantity">
+                                    <span class="p-a t-0 t-0 mx-20p r-0 mt-42p capitalize" name="unit-hol"></span>
+                                    <small class="w-100 red pl-3p verdana"></small>
+                                </div>
+                                <div class="wrap center-2 my-15p bsbb bblock-resp">
+                                    <button type="submit" class="btn btn-primary mx-10p bfull-resp bm-a-resp bmy-10p-resp">Proceed</button>
+                                </div>
+                            </form>
+                        </div>`
+        let form = a.querySelector("form");
+        let inputs = Array.from(form.querySelectorAll('input'))
+        let extra_input = inputs.find(function (ins) {return ins.classList.contains('bevalue') })
+        extra_input.addEventListener('focus', (event)=>{
+            showRecs(extra_input,data,extra_input.id)
+        })
+       extra_input.addEventListener('blur',async ()=>{
+        let unit = form.querySelector('span[name="unit-hol"]')
+        let val =  await new Promise((resolve, reject) => {
+                    setTimeout(() => {
+                    resolve(extra_input.getAttribute('data-id'));
+                    }, 200);
+                });
+        let datauint = data.find(function (obj) {
+            return obj.id = val
+        })
+        unit.innerText = datauint.unit
+       })
+        form.addEventListener('submit', event=>{
+            event.preventDefault();
+            l = 1
+            for (const input of inputs) {
+                v = checkEmpty(input);
+                if (!v) {
+                    l = 0
+                }
+            }
+            if (l) {
+                let values = {}
+                for (const input of inputs) {
+                    Object.assign(values,{[input.name]: (input.classList.contains('bevalue'))? input.getAttribute('data-id') : input.value })
+                } 
+                console.log(values)
+            }
+        })
+    }
+    comment(){
+        let commentsP = addshade();
+        a = document.createElement('div');
+        commentsP.appendChild(a)
+        a.className = "w-350p h-a p-10p bsbb bc-white cntr zi-10000 br-5p b-mgc-resp card" 
+        a.innerHTML  =`<div class="head w-100 h-50p py-10p px-15p bsbb">
+                            <span class="fs-17p dgray capitalize igrid h-100 verdana card-title">add an operation to session</span>
+                        </div>
+                        <div class="body w-100 h-a p-5p grid">
+                            <form method="post" id="req-test-info-form" name="req-test-info-form">
+                                <div class="col-md-12 px-10p py-6p bsbb p-r">
+                                    <label for="test" class="form-label">comment</label>
+                                    <textarea class="form-control bevalue" id="comment" placeholder="Demo comment" name="comment"></textarea>
+                                    <small class="w-100 red pl-3p verdana"></small>
+                                </div>
+                                <div class="wrap center-2 my-15p bsbb bblock-resp">
+                                    <button type="submit" class="btn btn-primary mx-10p bfull-resp bm-a-resp bmy-10p-resp">Proceed</button>
+                                    <button type="button" class="btn btn-label-primary mx-10p capitalize bfull-resp bm-a-resp bmy-10p-resp">Request for tesing</button>
+                                </div>
+                            </form>
+                        </div>`
+        let form = a.querySelector("form");
+        let inputs = Array.from(form.querySelectorAll('.form-control'))
+        form.addEventListener('submit', event=>{
+            event.preventDefault();
+            l = 1
+            for (const input of inputs) {
+                v = checkEmpty(input);
+                if (!v) {
+                    l = 0
+                }
+            }
+            if (l) {
+                let values = {}
+                for (const input of inputs) {
+                    Object.assign(values,{[input.name]: (input.classList.contains('bevalue'))? input.getAttribute('data-id') : input.value })
+                } 
+                console.log(values)
+            }
+        })
+    }   
+}
  
 

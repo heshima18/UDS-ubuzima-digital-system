@@ -24,6 +24,8 @@ export const authorizeAdmin = async (req, res, next) => {
     }
 };
 export const authorizePatient = async (req, res, next) => {
+  console.log('body for patientcheck check')
+
   try {
     const patient = req.body.patient
     if (!patient) return res.status(403).send({ message: errorMessage._err_p_404, success: false });
@@ -31,7 +33,7 @@ export const authorizePatient = async (req, res, next) => {
 
     if (!q) return res.status(500).send({ message: errorMessage.is_error, success: false });
     
-    if (q.length == 0) return console.log('not patient'); res.status(404).send({ message: errorMessage._err_p_404, success: false });
+    if (q.length == 0) {console.log('not patient'); return res.status(404).send({ message: errorMessage._err_p_404, success: false });}
     next();
   } catch (error) {
     console.log(error)
@@ -59,6 +61,7 @@ export const authorizePatientToken = async (req, res, next) => {
 export const authorizeHc_provider = async (req, res, next) => {
   try {
     const {token} = req.body;
+      console.log('body for assurance check')
       const decoded = authenticateToken(token);
       if (!decoded.success) return res.status(500).send({ message: errorMessage.is_error, success: false });
 
@@ -70,7 +73,9 @@ export const authorizeHc_provider = async (req, res, next) => {
       if (q.length == 0) return res.status(404).send({ message: errorMessage._err_u_404, success: false });
 
       [q] = q
-      if (q.role != 'hc_provider') console.log('not hc_provider'); return res.status(401).send({ message: errorMessage._err_forbidden, success: false });
+      if (q.role != 'hc_provider') {
+        console.log('not hc_provider');
+        return res.status(401).send({ message: errorMessage._err_forbidden, success: false });}
       next();
   } catch (error) {
     console.log(error)
@@ -138,7 +143,11 @@ export const authorizeHcp_ptnt = async (req, res, next) => {
       if (q.length == 0) return res.status(404).send({ message: errorMessage._err_u_404, success: false });
 
       [q] = q
-      if (q.role != 'hc_provider' && q.role != 'patient' && q.role != 'pharmacist' && q.role != 'Admin') console.log('not admin pharmacist patient or hc_provider'); return res.status(401).send({ message: errorMessage._err_forbidden, success: false });
+      if (q.role != 'hc_provider' && q.role != 'patient' && q.role != 'pharmacist' && q.role != 'Admin'){
+         console.log('not admin pharmacist patient or hc_provider');
+          return res.status(401).send({ message: errorMessage._err_forbidden, success: false });
+        }
+        console.log(`you are ${q.role}`);
       next();
   } catch (error) {
     console.log(error)

@@ -186,14 +186,6 @@ export function showRecs(input, data,type) {
   try {
     let div =  document.createElement('div');
     let parent = input.parentNode
-    let chipsHolder = parent.querySelector('div.chipsholder')
-    if (!chipsHolder) {
-      chipsHolder = document.createElement('div');
-      chipsHolder.className = 'chipsholder p-5p bsbb w-100'
-      chipsHolder.title = type
-      parent.insertAdjacentElement('beforeEnd',chipsHolder)
-    }
-    parent.appendChild(div)
     div.className = `p-a w-300p h-250p bsbb card-2 zi-1000 bc-white scroll-2 ovys t-0 mt-70p br-5p`
     div.innerHTML = `<div class="w-100 h-100 p-5p bsbb"><ul class="ls-none p-0 m-0"></ul></div>`
     for(const info of data){
@@ -203,6 +195,16 @@ export function showRecs(input, data,type) {
       item.setAttribute('data-id',info.id)
       div.querySelector('ul').appendChild(item)
     }
+    let chipsHolder = parent.querySelector('div.chipsholder')
+    if (!chipsHolder) {
+      chipsHolder = document.createElement('div');
+      chipsHolder.className = 'chipsholder p-5p bsbb w-100'
+      chipsHolder.title = type
+      if (input.classList.contains('chips-check')) {
+        parent.insertAdjacentElement('beforeEnd',chipsHolder)
+      }
+    }
+    parent.appendChild(div)
     let items = div.querySelectorAll('li.item')
     items.forEach(item =>{
      item.addEventListener('click', (e)=>{
@@ -214,8 +216,22 @@ export function showRecs(input, data,type) {
           if (ion) {
            promptin(ion,chipsHolder)
           }
+        }else if (type == 'tests') {
+          let ion =  data.filter(function (ite) {
+            return ite.id == item.getAttribute('data-id')
+          })
+          if (ion) {
+            promptTestsPopup(ion,chipsHolder)
+          }
+        }else if (type == 'operations') {
+          let ion =  data.filter(function (ite) {
+            return ite.id == item.getAttribute('data-id')
+          })
+          if (ion) {
+            promptOperationPopup(ion,chipsHolder)
+          }
         }else{
-          addChip({name:item.textContent, id: item.getAttribute('data-id')},chipsHolder)
+          addChip({name:item.textContent, id: item.getAttribute('data-id')},chipsHolder,['id'])
         }
       }else if (input.classList.contains('bevalue')) {
         input.value = item.textContent
@@ -246,13 +262,19 @@ export function showRecs(input, data,type) {
   }
 
 }
-export function addChip(info,parent,extra) {
+export function addChip(info,parent,datatoadd) {
   c = document.createElement('span')
   c.className = 'w-a h-a b-1-s-gray br-2p pr-20p pt-5p pb-5p pl-5p m-5p fs-13p iblock chip p-r verdana dgray consolas  ';
   r = document.createElement('div');
   r.className = "w-20p h-20p p-a right bc-white remove m-5p  b-1-s-gray center br-50 hover t-0 r-0"
   r.innerHTML = `<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="20px" height="20px" viewBox="0 0 64 64" enable-background="new 0 0 64 64" xml:space="preserve"><g><line fill="none" stroke="#000" stroke-width="1" stroke-miterlimit="10" x1="18.947" y1="17.153" x2="45.045" y2="43.056"></line></g><g><line fill="none" stroke="#000" stroke-width="1" stroke-miterlimit="10" x1="19.045" y1="43.153" x2="44.947" y2="17.056"></line></g></svg>`
-  c.innerHTML = `<span class="p-5p bsbb consolas dgray fs-12p" data-id= "${info.id}" ${(extra)?`data-quantity="${info.quantity}"`: ''}>${info.name}</span></span> `
+  d = document.createElement('span')
+  d.className = `p-5p bsbb consolas dgray fs-12p`
+  d.innerText = info.name
+  for (const item of datatoadd) {
+    d.setAttribute(`data-${item}`,info[item])
+  }
+  c.appendChild(d)
   c.appendChild(r)
   let found = 0
   for(const chip of parent.childNodes){
@@ -265,16 +287,6 @@ export function addChip(info,parent,extra) {
   }
   (!found)? parent.appendChild(c): null
   r = Array.from(document.querySelectorAll('div.remove'));
-  if (r) {
-    let sogokuru = parent.parentNode
-    let data_tri_element = sogokuru.querySelector('.chips-trigger')
-    if (data_tri_element) {
-      data_tri_element = sogokuru.querySelector(`#${data_tri_element.getAttribute('data-chips-trigger')}`) || sogokuru.querySelector(`[name="${data_tri_element.getAttribute('data-chips-trigger')}"]`)
-      if (data_tri_element) {
-        data_tri_element.classList.remove('hidden')
-      }
-    }
-  }
   r.forEach(remove=>{
       remove.addEventListener('click',e=>{
           e.preventDefault();
@@ -283,14 +295,6 @@ export function addChip(info,parent,extra) {
           l = Array.from(parent.querySelectorAll('span.chip'))
           if(l.length == 0){
               deletechild(parent.parentNode,parent)
-              let sogokuru = parent.parentNode
-              let data_tri_element = sogokuru.querySelector('.chips-trigger')
-              if (data_tri_element) {
-                data_tri_element = sogokuru.querySelector(`#${data_tri_element.getAttribute('data-chips-trigger')}`) || sogokuru.querySelector(`[name="${data_tri_element.getAttribute('data-chips-trigger')}"]`)
-                if (data_tri_element) {
-                  data_tri_element.classList.add('hidden')
-                }
-              }
           }
           } catch (error) {
               console.log(error)
@@ -299,7 +303,7 @@ export function addChip(info,parent,extra) {
       })
   })
 }
-export function getchips(parent) {
+export function getchips(parent,datatoget) {
   if (!parent) {
     return []
   }
@@ -307,7 +311,17 @@ export function getchips(parent) {
   let d
   d = []
   for (const chip of c) {
-      d.push(chip.querySelector('span').getAttribute('data-id'))
+    if (!datatoget) {
+      d.push(chip.querySelector('span').getAttribute(`data-id`))
+    }else if (datatoget.length == 1) {
+      d.push(chip.querySelector('span').getAttribute(`data-${datatoget[0]}`))
+    }else if (datatoget.length > 1) {
+      v = {}
+      for (const data of datatoget) {
+        Object.assign(v,{[data]: chip.querySelector('span').getAttribute(`data-${data}`)})
+      }
+      d.push(v)
+    }
   }
   return d
 }
@@ -341,6 +355,9 @@ export function getPath(index) {
   i = i.split('/')
   // i.pop()
   i.shift()
+  if (!index) {
+    return i
+  }
   return i[index]
   
 }
@@ -349,12 +366,11 @@ function promptin(info,chipsHolder) {
   a = document.createElement('div');
   b.appendChild(a)
   info = info[0]
-  console.log(info)
-  a.className = "w-250p h-230p p-10p bsbb bc-white cntr zi-10000 br-5p" 
-  a.innerHTML = `<div class="head w-100 h-40p p-5p bsbb bb-1-s-dg">
-                                  <span class="fs-18p black capitalize igrid center h-100 verdana">enter the quantity</span>
+  a.className = "w-300p h-230p p-10p bsbb bc-white cntr zi-10000 br-5p" 
+  a.innerHTML = `<div class="head w-100 h-50p py-10p px-15p bsbb">
+                                  <span class="fs-17p dgray capitalize igrid h-100 verdana">enter the quantity of ${info.name}</span>
                               </div>
-                              <div class="body w-100 h-a p-5p grid mt-10p">
+                              <div class="body w-100 h-a p-5p grid">
                                   <form method="post" id="rec-quantity-form" name="rec-quantity-form">
                                     <div class="col-md-12 p-10p">
                                       <label for="quantity" class="form-label">quantity</label>
@@ -374,10 +390,109 @@ function promptin(info,chipsHolder) {
   m.addEventListener('submit', (event)=>{
     event.preventDefault()
     if (v.value.trim() != '') {
-      addChip({name:info.name, id: info.id , quantity: v.value},chipsHolder,'extra')
+      addChip({name:info.name, id: info.id , quantity: v.value},chipsHolder,['id','quantity'])
       deletechild(b,b.parentNode)
     }else{
       setErrorFor(v,'enter the quantity')
+    }
+  })
+}
+function promptTestsPopup(info,chipsHolder) {
+  b = addshade();
+  a = document.createElement('div');
+  b.appendChild(a)
+  info = info[0]
+  a.className = "w-350p h-350p p-10p bsbb bc-white cntr zi-10000 br-5p" 
+  a.innerHTML = `<div class="head w-100 h-50p py-10p px-15p bsbb">
+                                  <span class="fs-17p dgray capitalize igrid h-100 verdana">${info.name}'s required information</span>
+                              </div>
+                              <div class="body w-100 h-a p-5p grid">
+                                  <form method="post" id="req-test-info-form" name="req-test-info-form">
+                                  <div class="col-md-12 px-10p py-6p bsbb p-r">
+                                    <label for="sample" class="form-label">sample taken</label>
+                                    <input type="text" class="form-control" id="sample" placeholder="Demo sample" name="sample">
+                                    <small class="w-100 red pl-3p verdana"></small>
+                                  </div>
+                                  <div class="col-md-12 px-10p py-6p bsbb mb-5p p-r">
+                                    <label for="result" class="form-label">results found</label>
+                                    <input type="text" class="form-control" id="result" placeholder="Demo results" name="result">
+                                    <small class="w-100 red pl-3p verdana"></small>
+                                  </div>
+                                  <div class="center-2 my-15p px-10p bsbb">
+                                      <button type="submit" class="btn btn-primary mx-10p">Proceed</button>
+                                      <button type="button" class="btn btn-label-primary mx-10p capitalize">Send for tesing</button>
+                                    </div>
+                                  </form>
+                              </div>`
+  m = a.querySelector('form#req-test-info-form')
+  v = Array.from(a.querySelectorAll('input'))
+  m.addEventListener('submit', (event)=>{
+    event.preventDefault();
+    l = 1
+    i = []
+    s = {}
+    for (const input of v) {
+      k = checkEmpty(input);
+      if (!k) {
+        l = 0
+      }
+      if (k) {
+        Object.assign(s,{[input.name]: input.value})
+        i.push(input.name)
+      }
+    }
+    if (l) {
+      Object.assign(s,{id: info.id,name:info.name})
+      i.push('id')
+      addChip(s,chipsHolder,i)
+      deletechild(b,b.parentNode)
+    }
+  })
+}
+function promptOperationPopup(info,chipsHolder) {
+  b = addshade();
+  a = document.createElement('div');
+  b.appendChild(a)
+  info = info[0]
+  a.className = "w-350p h-290p p-10p bsbb bc-white cntr zi-10000 br-5p" 
+  a.innerHTML = `<div class="head w-100 h-50p py-10p px-15p bsbb">
+                                  <span class="fs-17p dgray capitalize igrid h-100 verdana">${info.name}'s required information</span>
+                              </div>
+                              <div class="body w-100 h-a p-5p grid">
+                                  <form method="post" id="req-operation-info-form" name="req-operation-info-form">
+                                    <div class="col-md-12 px-10p py-6p bsbb mb-5p p-r">
+                                      <label for="operator" class="form-label">operator</label>
+                                      <input type="text" class="form-control bc-gray" id="operator" placeholder="Demo operator" value="${getdata('userinfo').Full_name}" name="operator" readonly>
+                                      <small class="w-100 red pl-3p verdana"></small>
+                                    </div>
+                                    <div class="center-2 my-15p px-10p bsbb">
+                                      <button type="submit" class="btn btn-primary mx-10p">Proceed</button>
+                                      <button type="button" class="btn btn-label-primary mx-10p capitalize">request for operation</button>
+                                    </div>
+                                  </form>
+                              </div>`
+  m = a.querySelector('form#req-operation-info-form')
+  v = Array.from(a.querySelectorAll('input'))
+  m.addEventListener('submit', (event)=>{
+    event.preventDefault();
+    l = 1
+    i = []
+    s = {}
+    for (const input of v) {
+      k = checkEmpty(input);
+      if (!k) {
+        l = 0
+      }
+      if (k) {
+        Object.assign(s,{[input.name]: input.value})
+        i.push(input.name)
+      }
+    }
+    if (l) {
+      Object.assign(s,{id: info.id,name:info.name})
+      i.push('id')
+      addChip(s,chipsHolder,i)
+      deletechild(b,b.parentNode)
     }
   })
 }
@@ -701,7 +816,8 @@ export async  function cpgcntn(step,pages) {
 }
 export function adcm(n) {
   try {
-    n= Array.from(n.toString()).reverse()
+    d = n.toString().split('.')
+    n= Array.from(n.toString().split('.')[0]).reverse()
     let s = "";
     let i = 0;
     for(const t of n ){
@@ -714,6 +830,9 @@ export function adcm(n) {
     }
     s= Array.from(s).reverse().toString().replace(/,/gi,"")
     s=s.replace(/p/gi,",")
+    if (d[1]) {
+      s+=`.${d[1]}`
+    }
     return (s)
     
   } catch (error) {

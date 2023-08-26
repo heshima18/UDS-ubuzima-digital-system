@@ -12,16 +12,23 @@ export const addSession = async (req,res)=>{
       services = services || []
       operations = operations || []
       departments = departments || []
+      decision = decision || []
       let decoded = authenticateToken(token)
       medicines = medicines || []
-      let hc_provider = decoded.token.id 
+      let hc_provider = decoded.token.id
+      departments.push(decoded.token.department)
       let hp = decoded.token.hospital
-      let itt,imt
+      let itt,imt,iet,iot,ist
       itt = 0
       imt = 0
+      iot = 0
+      iet = 0
+      ist = 0
       for (const test of tests) {
         var t = await query(`select price from tests where id = ?`, [test.id]);
+        Object.assign(tests[tests.indexOf(test)],{tester: hc_provider})
         if(t.length == 0)  return res.status(500).send({success:false, message: errorMessage._err_test_404})
+        console.log(tests)
         t = t[0]
         itt +=t.price
       }
@@ -31,13 +38,13 @@ export const addSession = async (req,res)=>{
       for (const medicine of medicines) {
         for (const medic of meds) {
           if (medic.id == medicine.id) {
-            if (medic.quantity < medicine.quantity) {
+            if (medic.quantity < parseInt(medicine.quantity)) {
               Object.assign(medicines[medicines.indexOf(medicine)],{servedOut: true})
             }else{
               var m = await query(`select price from medicines where id = ?`, [medicine.id]);
               if(m.length == 0)  return res.status(500).send({success:false, message: errorMessage._err_med_404})
               m = m[0]
-              imt +=(m.price * medicine.quantity)
+              imt +=(m.price * parseInt(medicine.quantity))
               Object.assign(medicines[medicines.indexOf(medicine)],{servedOut: false})
               meds[meds.indexOf(medic)].quantity = parseInt(meds[meds.indexOf(medic)].quantity) - parseInt(medicine.quantity)
             }
@@ -45,18 +52,36 @@ export const addSession = async (req,res)=>{
         }
        
       }
+      for (const equipment of equipments) {
+        var m = await query(`select price from equipments where id = ?`, [equipment.id]);
+        if(m.length == 0)  return res.status(404).send({success:false, message: errorMessage._err_equipment_404})
+        m = m[0]
+        iet +=(m.price * parseInt(equipment.quantity))
+      }
+      for (const service of services) {
+        var m = await query(`select price from services where id = ?`, [service.id]);
+        if(m.length == 0)  return res.status(404).send({success:false, message: errorMessage._err_service_404})
+        m = m[0]
+        ist +=(m.price * parseInt(service.quantity))
+      }
+      for (const operation of operations) {
+        Object.assign(operations[operations.indexOf(operation)],{operator: hc_provider})
+        var m = await query(`select price from operations where id = ?`, [operation.id]);
+        if(m.length == 0)  return res.status(404).send({success:false, message: errorMessage._err_operation_404})
+        m = m[0]
+        iot +=m.price
+      }
       query(`UPDATE inventories  SET medicines = ? where hospital = ?`, [JSON.stringify(meds),hp])
-      let tt = itt+imt
+      let tt = itt+imt+iot+ist+iet;
       let pts = await calculatePayments(assurance,tt)
       let insertpayment = await query(`insert into payments(id,user,session,amount,assurance_amount,status)values(?,?,?,?,?,?)`,[id(),patient,uid,pts.patient_ammount,pts.assurance_ammount,'awaiting payment'])
       let insert = await query(`insert into
-       medical_history(id,patient,hospital,departments,hc_provider,symptoms,tests,medicines,decision,comment,status,assurance,services,operations,equipments)values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,[uid,patient,hp,JSON.stringify(departments),hc_provider,JSON.stringify(symptoms),JSON.stringify(tests),JSON.stringify(medicines),JSON.stringify(decision),comment,(close)? "closed" :"open",assurance,services,operations,equipments])
+       medical_history(id,patient,hospital,departments,hc_provider,symptoms,tests,medicines,decision,comment,status,assurance,services,operations,equipments)values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,[uid,patient,hp,JSON.stringify(departments),hc_provider,JSON.stringify(symptoms),JSON.stringify(tests),JSON.stringify(medicines),JSON.stringify(decision),comment,(close)? "closed" :"open",assurance,JSON.stringify(services),JSON.stringify(operations),JSON.stringify(equipments)])
       query(`update patients set last_diagnosed = (SELECT date FROM medical_history where id = ?) where id = ?`,[uid,patient])
       if (!insert || !insertpayment) {
         return res.status(500).send({success:false, message: errorMessage.is_error})
       }
-      res.send({success: true, message: errorMessage.session_message})
-    
+      res.send({success: true, message: errorMessage.session_message, id: uid})
   } catch (error) {
     console.log(error)
     res.status(500).send({success:false, message: errorMessage.is_error})
@@ -230,32 +255,93 @@ export const session = async (req,res)=>{
       p.full_name AS patient_name,
       mh.id AS session_id,
       mh.tests as raw_tests,
+      mh.equipments as raw_equipments,
+      mh.services as raw_services,
+      mh.operations as raw_operations,
       mh.comment as comment,
-      assurances.name as assurance,
       mh.status as status,
       mh.medicines as raw_medicines,
-      payments.amount as payment_amount,
-      payments.id as payment_id,
-      payments.status as payment_status,
-      mh.decision as decision,
-      GROUP_CONCAT(DISTINCT JSON_OBJECT('id', users.id, 'name', users.Full_name)) AS hcp_info,
-      GROUP_CONCAT(DISTINCT JSON_OBJECT('id', mh.hospital, 'name', hospitals.name)) AS hp_info,
-      CONCAT('[', GROUP_CONCAT(DISTINCT CONCAT('{"name": "', m.name, '","id": "', m.id, '"}')), ']') AS medicines,
-      COALESCE( CONCAT('[', GROUP_CONCAT(DISTINCT CONCAT('{"name": "', t.name, '"}')), ']'), '[]') AS tests,
-      CONCAT('[', GROUP_CONCAT(DISTINCT JSON_OBJECT('id', d.id, 'name', d.name)), ']') AS departments
-    FROM
+      mh.decision as decisions,
+      mh.date as dateadded,
+      GROUP_CONCAT(
+        DISTINCT 
+        JSON_OBJECT('id', p.id, 'name', p.Full_name, 'dob', p.dob,'phone', p.phone, 'location', 
+          CONCAT(
+            (SELECT name From Provinces Where id = p.resident_province),' , ',
+            (SELECT name From districts Where id = p.resident_district),' , ',
+            (SELECT name From sectors Where id = p.resident_sector),' , ',
+            (SELECT name From cells Where id = p.resident_cell)
+          )
+        )
+      ) AS p_info,
+      GROUP_CONCAT(DISTINCT JSON_OBJECT('id', users.id, 'name', users.Full_name, 'title', users.title)) AS hcp_info,
+      GROUP_CONCAT(
+        DISTINCT
+         JSON_OBJECT('id', mh.hospital,'phone', hospitals.phone, 'name', hospitals.name, 'location', 
+            CONCAT(
+              (SELECT name From Provinces Where id = hospitals.province),' , ',
+              (SELECT name From districts Where id = hospitals.district),' , ',
+              (SELECT name From sectors Where id = hospitals.sector),' , ',
+              (SELECT name From cells Where id = hospitals.cell)
+            )
+        )
+      ) AS hp_info,
+      GROUP_CONCAT(DISTINCT JSON_OBJECT('id', a.id, 'name', a.name,'percentage', a.percentage_coverage)) AS assurance_info,
+      GROUP_CONCAT(
+        DISTINCT
+         JSON_OBJECT('id', pm.id, 'status', pm.status, 'a_amount', pm.assurance_amount, 'p_amount', pm.amount)
+        ) AS payment_info,
+      COALESCE(
+        CONCAT('[',
+          GROUP_CONCAT(
+            DISTINCT JSON_OBJECT('id', m.id, 'name', m.name,'unit', m.unit, 'price', (SELECT price FROM medicines where id = m.id))
+          ),
+        ']'),
+      '[]') AS medicines,
+      COALESCE(
+        CONCAT('[',
+         GROUP_CONCAT(
+          DISTINCT JSON_OBJECT('id', eq.id, 'name', eq.name,'unit', eq.unit, 'price', (SELECT price FROM equipments where id = eq.id))
+         ),
+        ']'), 
+      '[]') AS equipments,
+      COALESCE(
+        CONCAT('[',
+          GROUP_CONCAT(DISTINCT JSON_OBJECT('id', s.id, 'name', s.name,'unit', s.unit, 'price', (SELECT price FROM services where id = s.id))
+          ),
+        ']'),
+      '[]') AS services,
+      COALESCE(
+        CONCAT('[',
+          GROUP_CONCAT(DISTINCT JSON_OBJECT('id', t.id, 'name', t.name, 'price', (SELECT price FROM tests where id = t.id))
+          ),
+        ']'),
+      '[]') AS tests,
+      COALESCE(
+        CONCAT('[',
+          GROUP_CONCAT(
+            DISTINCT JSON_OBJECT('id', o.id, 'name', o.name, 'price', (SELECT price FROM operations where id = o.id))
+          ),
+        ']'),
+      '[]') AS operations,
+      COALESCE( CONCAT('[', GROUP_CONCAT(DISTINCT JSON_OBJECT('id', d.id, 'name', d.name)), ']'), '[]') AS departments
+
+  FROM
       medical_history mh
       INNER JOIN patients p ON mh.patient = p.id
       INNER JOIN users ON mh.Hc_provider = users.id
       INNER JOIN hospitals ON mh.hospital = hospitals.id
-      INNER JOIN payments ON mh.id = payments.session
+      INNER JOIN payments as pm ON mh.id = pm.session
       INNER JOIN medicines AS m ON JSON_CONTAINS(mh.medicines, JSON_OBJECT('id', m.id), '$')
+      INNER JOIN equipments as eq ON JSON_CONTAINS(mh.equipments, JSON_OBJECT('id', eq.id), '$')
+      INNER JOIN services as s ON JSON_CONTAINS(mh.services, JSON_OBJECT('id', s.id), '$')
+      INNER JOIN operations as o ON JSON_CONTAINS(mh.operations, JSON_OBJECT('id', o.id), '$')
       LEFT JOIN tests AS t ON JSON_CONTAINS(mh.tests, JSON_OBJECT('id', t.id), '$')
-      INNER JOIN departments as d ON JSON_CONTAINS(mh.departments, JSON_QUOTE(d.id), '$')
-      left join assurances on mh.assurance = assurances.id
-    WHERE mh.id = ?
-    GROUP BY
-    mh.id;
+      LEFT JOIN departments as d ON JSON_CONTAINS(mh.departments, JSON_QUOTE(d.id), '$')
+      left join assurances as a on mh.assurance = a.id
+  WHERE mh.id = ?
+  GROUP BY mh.id;
+  
     `,[session])
       if(!response) return res.status(500).send({success: false, message: errorMessage.is_error})
       if (response.length == 0) return res.status(404).send({success: false, message: errorMessage._err_sess_404})
@@ -263,18 +349,41 @@ export const session = async (req,res)=>{
         response[response.indexOf(mh)].medicines = JSON.parse(mh.medicines);
         response[response.indexOf(mh)].hp_info = JSON.parse(mh.hp_info);
         response[response.indexOf(mh)].hcp_info = JSON.parse(mh.hcp_info);
+        response[response.indexOf(mh)].assurance_info = JSON.parse(mh.assurance_info);
         response[response.indexOf(mh)].departments = JSON.parse(mh.departments);
-        response[response.indexOf(mh)].decision = JSON.parse(mh.decision);
+        response[response.indexOf(mh)].decisions = JSON.parse(mh.decisions);
         response[response.indexOf(mh)].tests = JSON.parse(mh.tests)
+        response[response.indexOf(mh)].services = JSON.parse(mh.services)
+        response[response.indexOf(mh)].equipments = JSON.parse(mh.equipments)
+        response[response.indexOf(mh)].operations = JSON.parse(mh.operations)
+        response[response.indexOf(mh)].p_info = JSON.parse(mh.p_info)
+        response[response.indexOf(mh)].payment_info = JSON.parse(mh.payment_info)
         response[response.indexOf(mh)].raw_tests = JSON.parse(mh.raw_tests);
-        response[response.indexOf(mh)].raw_medicines = JSON.parse(mh.raw_medicines)    
+        response[response.indexOf(mh)].raw_services = JSON.parse(mh.raw_services);
+        response[response.indexOf(mh)].raw_operations = JSON.parse(mh.raw_operations);
+        response[response.indexOf(mh)].raw_equipments = JSON.parse(mh.raw_equipments);
+        response[response.indexOf(mh)].raw_medicines = JSON.parse(mh.raw_medicines)  
+        response[response.indexOf(mh)].dateadded = `${new Date(mh.dateadded).getDay()}-${new Date(mh.dateadded).getMonth()}-${new Date(mh.dateadded).getFullYear()}`
         for (const medicine of mh.medicines) {
-            Object.assign(response[response.indexOf(mh)].medicines[mh.medicines.indexOf(medicine)],{quantity: response[response.indexOf(mh)].raw_medicines[mh.medicines.indexOf(medicine)].quantity})
+            Object.assign(response[response.indexOf(mh)].medicines[mh.medicines.indexOf(medicine)],{quantity: response[response.indexOf(mh)].raw_medicines[mh.medicines.indexOf(medicine)].quantity,servedOut: response[response.indexOf(mh)].raw_medicines[mh.medicines.indexOf(medicine)].servedOut})
+        }
+        for (const services of mh.services) {
+          Object.assign(response[response.indexOf(mh)].services[mh.services.indexOf(services)],{quantity: response[response.indexOf(mh)].raw_services[mh.services.indexOf(services)].quantity})
+        }
+        for (const equipment of mh.equipments) {
+          Object.assign(response[response.indexOf(mh)].equipments[mh.equipments.indexOf(equipment)],{quantity: response[response.indexOf(mh)].raw_equipments[mh.equipments.indexOf(equipment)].quantity})
         }
         for (const tests of mh.tests) {
-            Object.assign(response[response.indexOf(mh)].tests[mh.tests.indexOf(tests)],{result: response[response.indexOf(mh)].raw_tests[mh.tests.indexOf(tests)].result,tester: response[response.indexOf(mh)].raw_tests[mh.tests.indexOf(tests)].tester})
+            Object.assign(response[response.indexOf(mh)].tests[mh.tests.indexOf(tests)],{result: response[response.indexOf(mh)].raw_tests[mh.tests.indexOf(tests)].result,tester: response[response.indexOf(mh)].raw_tests[mh.tests.indexOf(tests)].tester,sample: response[response.indexOf(mh)].raw_tests[mh.tests.indexOf(tests)].sample})
+        }
+        for (const operations of mh.operations) {
+          Object.assign(response[response.indexOf(mh)].operations[mh.operations.indexOf(operations)],
+          {operator: response[response.indexOf(mh)].raw_operations[mh.operations.indexOf(operations)].operator})
         }
         delete response[response.indexOf(mh)].raw_tests
+        delete response[response.indexOf(mh)].raw_operations
+        delete response[response.indexOf(mh)].raw_services
+        delete response[response.indexOf(mh)].raw_equipments
         delete response[response.indexOf(mh)].raw_medicines
       }
       [response] = response
@@ -336,7 +445,7 @@ export const addSessionOperation = async (req,res)=>{
       }else{
          [t] = t
          itt +=t.price
-         query(`update medical_history set operations =  JSON_ARRAY_APPEND(operations, '$', JSON_OBJECT("id", ?, "result", ?, "operator", ?)) where id = ?`,[operation.id,operation.result,operator.id,session])
+         query(`update medical_history set operations =  JSON_ARRAY_APPEND(operations, '$', JSON_OBJECT("id", ?, "operator", ?)) where id = ?`,[operation.id,operator.id,session])
         }
       
       if (itt == 0) return res.status(403).send({success: false, message: errorMessage._err_operation_404})

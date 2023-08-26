@@ -3,6 +3,7 @@ import errorMessage from "../controllers/response.message.controller";
 export const authorizeUserAssurance = async (req, res, next) => {
     try {
       const {assurance,patient} = req.body
+      console.log('body for assurance check')
       if (!patient) return res.status(403).send({ message: errorMessage.assu_user_error_message, success: false });
       let q = await query(`select assurances from patients where id = ?`,[patient]);
       if (!q) return res.status(500).send({ message: errorMessage.is_error, success: false });
