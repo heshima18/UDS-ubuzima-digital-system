@@ -31,6 +31,10 @@ for (const code_field of codein) {
     //     }
     // })
 }
+if (!getdata('userid')) {
+    window.location.href = '../login/'
+
+}
 form.addEventListener('submit', async e=>{
     e.preventDefault();
     var val = ''
@@ -57,9 +61,9 @@ form.addEventListener('submit', async e=>{
     if (res.success) {
         let z = await request(`authenticateToken/${res.message}`,getschema)
         if (z.success) {
-            localStorage.removeItem('userid') 
-            z = z.token
+            localStorage.removeItem('userid')
             localStorage.setItem('token',res.message)
+            z = z.message
             if (z.role == 'Admin') {
                 window.location.href = '../admin/home/'
             }else if (z.role == 'patient') {
@@ -93,6 +97,8 @@ form.addEventListener('submit', async e=>{
                 window.location.href = '../laboratory_scientist/home/'
                 
             }
+        }else{
+            console.log()
         }
     }else{
         alertMessage(res.message)

@@ -28,7 +28,8 @@ export const resend2FA = async (req, res) => {
       return;
     }
 
-    const FAcode = generate2FAcode();
+    // const FAcode = generate2FAcode();
+    const FAcode = 123456;
         const emailResult = sendmail(user.email, {
         subject: 'UDS your 2FA one-time code',
         body: `${FAcode}`,

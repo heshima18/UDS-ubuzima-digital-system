@@ -3,27 +3,42 @@ import errorMessage from './response.message.controller'
 import authenticateToken from './token.verifier.controller';
 import { checkInventory } from '../utils/check.inventory.controller';
 import id from "./randomInt.generator.controller";
+import { checkObjectAvai } from './credentials.verifier.controller';
 export const addInventory = async (req,res)=>{
   try {
-    let {medicine,quantity,token} = req.body
+    let {medicines,token} = req.body
       token = authenticateToken(token)
       token = token.token
       let hospital = token.hospital
       let uid = id();
-      let obj = JSON.stringify({id: medicine, quantity: parseInt(quantity)})
+      let obj = JSON.stringify(medicines)
       var avai = await checkInventory(hospital)
       avai = avai[0]
       var insert
+      let found
       if (avai.total == 0) {
-        insert = await query(`insert into inventories(id,hospital,medicines)values(?,?,?)`,[uid,hospital,`[${obj}]`])
+        insert = await query(`insert into inventories(id,hospital,medicines)values(?,?,?)`,[uid,hospital,obj])
       }else{
-        insert = await query(`UPDATE inventories SET medicines = JSON_ARRAY_APPEND(medicines, '$', JSON_OBJECT("id", ?, "quantity", ?)) WHERE hospital = ?`, [medicine, quantity, hospital]);
+        for (const medicine of medicines) {
+          let objectAvai = await checkObjectAvai('inventories','medicines','id',medicine.id,'hospital',hospital)
+          if (!objectAvai) {
+            return res.status(500).send({success:false, message: errorMessage.is_error})
+          }
+          if (!objectAvai.length) {
+            insert = await query(`UPDATE inventories SET medicines = JSON_ARRAY_APPEND(medicines, '$', JSON_OBJECT("id", ?, "quantity", ?)) WHERE hospital = ?`, [medicine.id, medicine.quantity, hospital]);
+          }else{
+            found = 1
+          }
+        }
 
         // insert = await query(`update inventories set medicines = JSON_ARRAY_APPEND(medicines, '$', ?) where hospital = ?`,[obj,hospital])
       }
       
-      if (!insert) {
+      if (!insert && !found) {
         return res.status(500).send({success:false, message: errorMessage.is_error})
+      }
+      if (found) {
+        return res.send({success: true, message: errorMessage.err_entr_avai})
       }
       res.send({success: true, message: errorMessage.iu_message})
     

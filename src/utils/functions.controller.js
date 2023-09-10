@@ -44,8 +44,36 @@ export function addshade(){
 	  e.preventDefault();
 		closetab(shaddow,thebody);
 	});
-  document.body.classList.add('ovh');
   return shaddow;
+}
+export function addLoadingTab(parent) {
+  parent.classList.add('ovh')
+  var shaddow = document.createElement('div');
+  parent.insertBefore(shaddow,parent.firstChild);
+  shaddow.className = "w-100 h-100 ovh p-a bsbb bc-white t-0 blur shaddow zi-20";
+  shaddow.setAttribute('data-role','shade')	
+  var loading = document.createElement('div');
+  loading.className = "p-a cntr w-70p h-70p ovh";
+  loading.innerHTML = `<div class="sk-grid sk-primary">
+                        <div class="sk-grid-cube"></div>
+                        <div class="sk-grid-cube"></div>
+                        <div class="sk-grid-cube"></div>
+                        <div class="sk-grid-cube"></div>
+                        <div class="sk-grid-cube"></div>
+                        <div class="sk-grid-cube"></div>
+                        <div class="sk-grid-cube"></div>
+                        <div class="sk-grid-cube"></div>
+                        <div class="sk-grid-cube"></div>
+                      </div>`;
+  shaddow.appendChild(loading)
+}
+export function removeLoadingTab(parent) {
+  try {
+    var shaddow = parent.querySelector('.shaddow')
+    parent.classList.remove('ovh')
+    deletechild(shaddow,parent)
+  } catch (error) {
+  }
 }
 export function closetab(element,parent){
   try {
@@ -56,18 +84,15 @@ export function closetab(element,parent){
   }
 }
 export function alertMessage(message){
-  q =  addshade();
+  let q =  addshade();
   a = document.createElement('div')
   q.removeChild(q.firstChild)
   q.appendChild(a)
   a.className = "w-300p h-a p-20p bsbb bc-white cntr zi-10000 br-10p card-5" 
   a.innerHTML = `<div class="head w-100 h-40p p-5p bsbb bb-1-s-dg"><span class="fs-18p black capitalize igrid center h-100 verdana">message</span></div><div class="body w-100 h-a p-5p grid center mt-10p"><span class="fs-15p dgray capitalize left verdana">${message}</span></div><div class="mssg-footer w-100 h-30p mt-10p  bsbb center-2"><span class="w-60p br-2p hover-2 h-a bc-theme p-5p white capitalize verdana center accept">ok</span></div>`;
   let accept = a.querySelector('span.accept')
-  let body = document.querySelector('div#body'); 
-  let thebody = document.querySelector('div.cont'); 
   accept.addEventListener('click',e=>{
-    body.classList.remove('blur')
-		closetab(q,thebody);
+		deletechild(q,q.parentNode)
 	});
 }
 export function getdata(item){
@@ -120,6 +145,9 @@ export function setSuccessFor(input) {
 }
 export function checkEmpty(input){
   try {
+    if (input.type == 'radio' || input.type == 'checkbox') {
+      return 1
+    }
     if (input.classList.contains('chips-check')) {
       let chipshol = input.parentElement.querySelector('div.chipsholder');
       if (!chipshol) {
@@ -149,6 +177,9 @@ export function checkEmpty(input){
         setErrorFor(input,`please ${(input.tagName == "SELECT")? 'select' : 'enter'} the ${input.name}`)
         return 0
       }
+    }else if (input.classList.contains('optional')) {
+      setSuccessFor(input)
+      return 1
     }else{
       if (input.value == '' || input.value == '+250') {
         if (input.getAttribute('data-optional')) {
@@ -166,7 +197,9 @@ export function checkEmpty(input){
   }
 }
 export async function initializeCleave(phoneElement, idElement) {
-  const phoneNumber = new Cleave(phoneElement, { phone: true, phoneRegionCode: "RW", prefix: '+250' });
+  if (phoneElement) {
+    const phoneNumber = new Cleave(phoneElement, { phone: true, phoneRegionCode: "RW", prefix: '+250' });
+  }
   if (idElement) {
     const nationalID = new Cleave(idElement, {
         numericOnly: true,
@@ -190,7 +223,7 @@ export function showRecs(input, data,type) {
     div.innerHTML = `<div class="w-100 h-100 p-5p bsbb"><ul class="ls-none p-0 m-0"></ul></div>`
     for(const info of data){
       let item = document.createElement('li');
-      item.className = 'hover p-10p bsbb w-100 item'
+      item.className = 'hover p-10p bsbb w-100 item capitalize'
       item.textContent = info.name
       item.setAttribute('data-id',info.id)
       div.querySelector('ul').appendChild(item)
@@ -205,9 +238,9 @@ export function showRecs(input, data,type) {
       }
     }
     parent.appendChild(div)
-    let items = div.querySelectorAll('li.item')
+    const items = div.querySelectorAll('li.item')
     items.forEach(item =>{
-     item.addEventListener('click', (e)=>{
+     item.addEventListener('mousedown', (e)=>{
       if (input.classList.contains('chips-check')) {
         if (type == 'medicines' || type == 'equipments' || type == 'services') {
           let ion =  data.filter(function (ite) {
@@ -230,6 +263,13 @@ export function showRecs(input, data,type) {
           if (ion) {
             promptOperationPopup(ion,chipsHolder)
           }
+        }else if (type == 'assurances') {
+          let ion =  data.filter(function (ite) {
+            return ite.id == item.getAttribute('data-id')
+          })
+          if (ion) {
+           promptan(ion,chipsHolder)
+          }
         }else{
           addChip({name:item.textContent, id: item.getAttribute('data-id')},chipsHolder,['id'])
         }
@@ -240,7 +280,11 @@ export function showRecs(input, data,type) {
      })
     })
     input.onblur = function () {
-      setTimeout(e=>{parent.removeChild(div)},200)
+      try {
+        setTimeout(e=>{parent.removeChild(div)},200)
+      } catch (error) {
+        
+      }
     }
     input.onkeyup = function () {
      let value = this.value.trim();
@@ -366,7 +410,7 @@ function promptin(info,chipsHolder) {
   a = document.createElement('div');
   b.appendChild(a)
   info = info[0]
-  a.className = "w-300p h-230p p-10p bsbb bc-white cntr zi-10000 br-5p" 
+  a.className = "w-400p h-a p-10p bsbb bc-white cntr zi-10000 br-5p" 
   a.innerHTML = `<div class="head w-100 h-50p py-10p px-15p bsbb">
                                   <span class="fs-17p dgray capitalize igrid h-100 verdana">enter the quantity of ${info.name}</span>
                               </div>
@@ -375,9 +419,35 @@ function promptin(info,chipsHolder) {
                                     <div class="col-md-12 p-10p">
                                       <label for="quantity" class="form-label">quantity</label>
                                         <div class="input-group">
-                                            <input type="number" class="form-control chips-check" placeholder="quantity" name="quantity" id="quantity">
+                                            <input type="number" class="form-control" placeholder="quantity" name="quantity" id="quantity">
                                             <span class="input-group-text hover-2 us-none">${info.unit}</span>
-                                            <small class="w-100 red pl-3p verdana"></small>
+                                            <small class="w-100 red pl-3p verdana capitalize"></small>
+                                        </div>
+                                        <div class="w-100 h-a my-20p px-0 flex">
+                                          <div class="fv-plugins-icon-container fv-plugins-bootstrap5-row-valid">
+                                            <div class="form-check custom-option custom-option-icon mx-5p">
+                                                <label class="form-check-label custom-option-content" for="status1">
+                                                    <span class="custom-option-body">
+                                                        <i class="bx bx-rocket"></i>
+                                                        <span class="custom-option-title"> served </span>
+                                                        <small class="capitalize"> served drugs will not require further confirmation</small>
+                                                    </span>
+                                                    <input name="status" class="form-check-input" type="radio" value="served" id="status1">
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="fv-plugins-icon-container fv-plugins-bootstrap5-row-valid">
+                                        <div class="form-check custom-option custom-option-icon checked mx-5p">
+                                            <label class="form-check-label custom-option-content" for="status">
+                                                <span class="custom-option-body">
+                                                    <i class="bx bx-rocket"></i>
+                                                    <span class="custom-option-title"> not yet served </span>
+                                                    <small class="capitalize"> 'not yet served' drugs will require further confirmation</small>
+                                                </span>
+                                                <input name="status" class="form-check-input" type="radio" value="null" id="status" checked="">
+                                            </label>
+                                        </div>
+                                    </div>
                                         </div>
                                     </div>
                                     <div class="center-2 my-10p px-10p bsbb">
@@ -386,14 +456,59 @@ function promptin(info,chipsHolder) {
                                   </form>
                               </div>`
   m = a.querySelector('form#rec-quantity-form')
+  v = a.querySelector('input#quantity');
+  let stats = Array.from(a.querySelectorAll('input[type="radio"]'));
+  for (const status of stats) {
+    status.parentElement.addEventListener('mousedown',e=>{
+      stats.map(function (status) {
+       status.parentElement.parentElement.classList.toggle('checked') 
+      })
+    })
+}
+  v.focus()
+  m.addEventListener('submit', (event)=>{
+    event.preventDefault()
+    if (v.value.trim() != '') {
+      let cs = stats.find(function (status) {return status.checked == true})
+      addChip({name:info.name, id: info.id , quantity: v.value, status: cs.value},chipsHolder,['id','quantity','status'])
+      deletechild(b,b.parentNode)
+    }else{
+      setErrorFor(v,'enter the quantity')
+    }
+  })
+}
+function promptan(info,chipsHolder) {
+  b = addshade();
+  a = document.createElement('div');
+  b.appendChild(a)
+  info = info[0]
+  a.className = "w-330p h-230p p-10p bsbb bc-white cntr zi-10000 br-5p" 
+  a.innerHTML = `<div class="head w-100 h-50p py-10p px-15p bsbb">
+                                  <span class="fs-17p dgray capitalize igrid h-100 verdana">enter ${info.name}'s insurance number</span>
+                              </div>
+                              <div class="body w-100 h-a p-5p grid">
+                                  <form method="post" id="rec-number-form" name="rec-number-form">
+                                    <div class="col-md-12 p-10p">
+                                      <label for="number" class="form-label">Insurance number</label>
+                                        <div class="input-group">
+                                            <input type="number" class="form-control" placeholder="number" name="number" id="number">
+                                            <small class="w-100 red pl-3p verdana"></small>
+                                        </div>
+                                    </div>
+                                    <div class="center-2 my-10p px-10p bsbb">
+                                        <button type="submit" class="btn btn-primary">Proceed</button>
+                                      </div>
+                                  </form>
+                              </div>`
+  m = a.querySelector('form#rec-number-form')
   v = a.querySelector('input')
   m.addEventListener('submit', (event)=>{
     event.preventDefault()
     if (v.value.trim() != '') {
-      addChip({name:info.name, id: info.id , quantity: v.value},chipsHolder,['id','quantity'])
+      addChip({name:info.name, id: info.id , number: v.value},chipsHolder,['id','number'])
       deletechild(b,b.parentNode)
     }else{
-      setErrorFor(v,'enter the quantity')
+      setErrorFor(v,'enter the number')
     }
   })
 }
@@ -500,7 +615,8 @@ export function addUprofile(data){
   e = addshade();
   a = document.createElement('div')
   e.appendChild(a)
-  b = ``
+  b = ``;
+  q = ``
   for (const assurance of data.assurances) {
     b+= `
       <li class="ls-none flex p-5p bsbb">
@@ -514,8 +630,17 @@ export function addUprofile(data){
       </li>
     `
   }
+  for (const beneficiary of data.beneficiaries) {
+    q+= `
+      <li class="ls-none flex p-5p bsbb benef hover-6" data-id="${beneficiary.id}">
+        <span class="px-5p"><i class="bx bx-user"></i></span><span class="capitalize fw-semibold">${beneficiary.name}</span>
+      </li>
+    `
+  }
   data.dob = ` ${new Date(data.dob).getDay()}/${new Date(data.dob).getMonth()}/${new Date(data.dob).getFullYear()}`
   if (!b) b = ` <li class="ls-none flex p-5p bsbb"><span class="btn btn-sm btn-label-danger">N/A</span></li>`
+  if (!q) q = ` <li class="ls-none flex p-5p bsbb"><span class="btn btn-sm btn-label-secondary">N/A</span></li>`
+
   a.className = "w-80 h-80 p-20p bsbb ovh bc-white cntr zi-10000 br-10p card-5 b-mgc-resp"
   a.innerHTML = `
     <div class="p-5p bsbb ovys w-100 h-100">
@@ -544,6 +669,13 @@ export function addUprofile(data){
                               ${b}
                             </ul>
                              </span>
+                        </li>
+                        <li class="align-items-center mb-3">
+                          <i class="bx bx-detail"></i><span class="fw-semibold mx-2">Beneficiaries:</span> <span class="block">
+                            <ul class="px-3p">
+                              ${q}
+                            </ul>
+                            </span>
                         </li>
                         <li class="d-flex align-items-center mb-3">
                             <i class="bx bx-check"></i><span class="fw-semibold mx-2">Province:</span> <span>${data.province}</span>
@@ -655,46 +787,97 @@ export async function chSession(){
   if (token) {
     z = await request(`authenticateToken/${token}`,getschema)
     if (z.success) {
-      z = z.token
+      z = z.message
       window.location.href = `../${z.role}/home`
-      console.log(z.token)
     }
   }
 }
-export async function showAvaiEmps(emps){
+export async function showAvaiEmps(emps,extra){
     u = addshade();
     a = document.createElement('div')
     u.appendChild(a)
-    a.className = "w-50 h-55 p-10p bsbb ovh bc-white cntr zi-10000 br-10p card-5 b-mgc-resp"
+    let group = {}
+    var key;
+    if (extra) {
+      key = Object.keys(extra)[0]
+      let suba
+      if (key == 'department') {
+        suba = emps.filter(function (obj) {
+          return obj.department.id == extra[key] 
+        })
+        Object.assign(group,{ [suba[0].department.name]: suba})
+      }else{
+        suba = emps.filter(function (obj) {
+          return obj[key] == extra[key]  
+        })
+        if (suba) {
+          Object.assign(group,{ [suba[0][key]]: suba})
+        }
+      }
+    }else{
+      for (const employee of emps) {
+        let keys = Object.keys(group)
+        let f = keys.find(function (key) {
+          return key == employee.department.name  
+        })
+        if (f) {
+          group[employee.department.name].push(employee)
+        }else{
+          Object.assign(group,{[employee.department.name]: [employee]})
+        }
+      }
+    }
+    a.className = "w-40 h-55 p-10p bsbb ovh bc-white cntr zi-10000 br-10p card b-mgc-resp"
     a.innerHTML = `<div class="card-header d-flex align-items-center justify-content-between p-10p mb-10p bsbb">
                       <h5 class="card-title m-0 me-2 capitalize">select the receiver</h5>
                   </div>
-                  <div class="ovys w-100 h-85 scroll-2">
-                    <ul class="list-group list-group-flush the-cont">
+                  <div class="ovys w-100 h-85 scroll-2 menu-vertical">
+                    <ul class="menu-inner py-1 the-cont">
                     </ul>
                   </div>
                   `
     c = a.querySelector('ul')
-    for (const employee of emps) {
+    for (const department of Object.keys(group)) {
       d = document.createElement('li')
-      d.className = 'list-group-item list-group-item-action dropdown-notifications-item hover-2 us-none emp'
-      d.setAttribute('data-id',employee.id)
-      d.innerHTML = `
-                       <div class="d-flex">
-                            <div class="flex-shrink-0 me-3">
-                              <div class="avatar ${(employee.online)? 'avatar-online':'avatar-offline'} ">
-                                <span class="w-40p h-40p br-50 center bc-tr-theme capitalize">${employee.Full_name.substring(0,1)}</span>
+      d.className = 'w-100 menu-item'
+      d.innerHTML = `<a href="javascript:void(0);" class="menu-link dgray fs-18 capitalize hover-2">
+                        <div class="dep" data-id="${(extra)? (key == 'department') ?group[department][0].department.id : group[department][0][key] :group[department][0].department.id}">${department}</div>
+                        <div class="p-a drop-buttons p-10p bsbb hover-2 center r-0"><div class="right-arrow p-r tr-0-3"></div></div>
+                    </a>`
+      let ul = document.createElement('ul')
+      ul.className = 'hidden trigger-show'
+      d.appendChild(ul)
+      for (const employee of group[department]) {
+        let subm = document.createElement('li')
+        subm.className = 'menu-item my-8p px-6p bsbb'
+        subm.innerHTML = `
+                        <div class="d-flex">
+                              <div class="flex-shrink-0 me-3">
+                                <div class="avatar ${(employee.online)? 'avatar-online':'avatar-offline'} ">
+                                  <span class="w-40p h-40p br-50 center bc-tr-theme capitalize">${employee.Full_name.substring(0,1)}</span>
+                                </div>
                               </div>
-                            </div>
-                            <div class="flex-grow-1">
-                                <h6 class="mb-1 capitalize">${employee.Full_name}</h6>
-                                <p class="mb-0 capitalize">${employee.title}</p>
-                                <!-- <small class="text-muted">last seen 1h ago</small> -->
-                            </div>
-                            
-                        </div>`
+                              <div class="flex-grow-1 hover-2 emp" data-id="${employee.id}">
+                                  <h6 class="mb-1 capitalize">${employee.Full_name}</h6>
+                                  <p class="mb-0 capitalize">${employee.title}</p>
+                                  <!-- <small class="text-muted">last seen 1h ago</small> -->
+                              </div>
+                              
+                          </div>`
+        ul.appendChild(subm)
+      }
       c.appendChild(d)
     }
+    let dbuttons = Array.from(c.querySelectorAll('div.drop-buttons'))
+    dbuttons.map(function (button) {
+      button.addEventListener('mousedown', ()=>{
+        button.children[0].classList.toggle('down-arrow');
+        button.children[0].classList.toggle('left-arrow');
+        let show = button.parentElement.parentElement.querySelector('.trigger-show');
+        show.classList.toggle('hidden')
+
+      })
+    })
    return u
 }
 export async function showAvaiAssurances(assurances){
@@ -711,7 +894,6 @@ export async function showAvaiAssurances(assurances){
                 </div>
                 `
   c = a.querySelector('ul')
-  console.log(assurances)
   for (const assurance of assurances) {
     d = document.createElement('li')
     d.className = 'list-group-item list-group-item-action dropdown-notifications-item hover-2 us-none assurance'
@@ -800,14 +982,9 @@ export async  function cpgcntn(step,pages) {
   try {
     pages.map(function (page) {
       if(pages.indexOf(page) == step){
-        page.classList.replace('l-100','l-0')
-        page.classList.replace('l--100','l-0')
-        }else if (pages.indexOf(page) > step) {
-            page.classList.replace('l--100','l-100')
-            page.classList.replace('l-0','l-100')
-        }else if (pages.indexOf(page) < step) {
-            page.classList.replace('l-100','l--100')
-            page.classList.replace('l-0','l--100')
+        page.classList.replace('hidden','block')
+        }else {
+            page.classList.replace('block','hidden')
         }
     })
   } catch (error) {
@@ -816,6 +993,9 @@ export async  function cpgcntn(step,pages) {
 }
 export function adcm(n) {
   try {
+    if (!Number(n)) {
+      return n
+    }
     d = n.toString().split('.')
     n= Array.from(n.toString().split('.')[0]).reverse()
     let s = "";
@@ -838,4 +1018,39 @@ export function adcm(n) {
   } catch (error) {
     return n
   }
+}
+export function calcTime(targetTime) {
+  targetTime = new Date(targetTime)
+  let currentTime = new Date();
+  currentTime.setHours(currentTime.getHours() - 1)
+  const timeDifference = currentTime - targetTime;
+
+  const seconds = Math.floor(timeDifference / 1000);
+  const minutes = Math.floor(seconds / 60);
+  const hours = Math.floor(minutes / 60);
+  const days = Math.floor(hours / 24);
+  const weeks = Math.floor(days / 7);
+  const months = Math.floor(days / 30);
+  const years = Math.floor(days / 365);
+
+  if (years > 0) {
+      return `${years} year${years !== 1 ? 's' : ''} ago`;
+  } else if (months > 0) {
+      return `${months} month${months !== 1 ? 's' : ''} ago`;
+  } else if (weeks > 0) {
+      return `${weeks} week${weeks !== 1 ? 's' : ''} ago`;
+  } else if (days > 0) {
+      return `${days} day${days !== 1 ? 's' : ''} ago`;
+  } else if (hours > 0) {
+      return `${hours} hour${hours !== 1 ? 's' : ''} ago`;
+  } else if (minutes > 0) {
+      return `${minutes} minute${minutes !== 1 ? 's' : ''} ago`;
+  } else {
+      return `${seconds} second${seconds !== 1 ? 's' : ''} ago`;
+  }
+}
+export function fT(time) {
+  let formatedTime = new Date(time)
+  formatedTime.setHours(formatedTime.getHours() - 1)
+  return  new Intl.DateTimeFormat('en-US',{weekday: 'long',year: 'numeric',month: 'long',day: 'numeric', hour: '2-digit', minute: '2-digit'}).format(new Date(formatedTime))
 }

@@ -1,7 +1,6 @@
 "use strict";
 
-import { alertMessage, postschema, request, chSession } from "../../../utils/functions.controller.js";
-chSession();
+
 const formAuthentication = document.querySelector("#formAuthentication");
 const submitButton = formAuthentication.querySelector('button[type="submit"]')
 document.addEventListener("DOMContentLoaded", function (e) {
@@ -41,28 +40,7 @@ document.addEventListener("DOMContentLoaded", function (e) {
                     e.element.parentElement.classList.contains("input-group") && e.element.parentElement.insertAdjacentElement("afterend", e.messageElement);
                 });
                 e.on("core.form.valid",  async (f)=>{
-                    submitButton.setAttribute('disabled',true)
-                    submitButton.innerText = 'signing in...'
-                    let inputs = f.formValidation.form.querySelectorAll('input')
-                    let o = {}
-                    for (const input of inputs) {
-                        Object.assign(o,{[input.getAttribute('data-field-name')]: input.value})
-                    }
-                    postschema.body = JSON.stringify(o)
-
-                    let res = await request('user-login',postschema)
-                    submitButton.removeAttribute('disabled')
-                    submitButton.innerText = 'signin'
-                    if (res.success) {
-                        for (const input of inputs) {
-                            if(input.getAttribute('data-field-name') == 'username'){
-                                localStorage.setItem('userid',input.value.trim())
-                            }
-                        }
-                        window.location.href = '../auth/'
-                    }else{
-                        alertMessage(res.message)
-                    }
+                  
                 });
             },
             

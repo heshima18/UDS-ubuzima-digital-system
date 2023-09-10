@@ -4,15 +4,38 @@ import id from "./randomInt.generator.controller";
 import authenticateToken from './token.verifier.controller';
 export const addAppointment = async (req,res)=>{
     try {
-        let { hc_provider,subject,message,time,token } = req.body
+        let { patient,subject,message,time,token,dateadded,status,extra } = req.body
+        if (!time) {
+            return res.status(500).send({success:false, message: errorMessage.is_error})
+        }
         token = authenticateToken(token)
-        token = token.token.id
-        let insert = await query(`insert into appointments(id,patient,hc_provider,subject,message,time)values(?,?,?,?,?,?)`,[id(), token,hc_provider,subject,message,time])
+        let hc_provider = token.token.id
+        if (extra) {
+            extra = JSON.stringify(extra)
+        }else{
+            extra = null
+        }
+        let insert = await query(`insert
+         into appointments
+         (
+            id,
+            patient,
+            hc_provider,
+            subject,
+            message,
+            time,
+            dateadded,
+            status,
+            extra
+         )
+         values
+         (?,?,?,?,?,?,?,?,?)`,
+         [id(), patient,hc_provider,subject,message,time,dateadded,status, extra])
         if (!insert) {
-            res.status(500).send({success:false, message: errorMessage.is_error})
+            res.status(500).send({success: false, message: errorMessage.is_error})
             return
         }
-        res.send({success: true, message: errorMessage.ab_message})
+        res.send({success: true, message: (status == 'declined')? errorMessage.appoi_decli_message : errorMessage.ab_message})
     } catch (error) {
         res.status(500).send({success:false, message: errorMessage.is_error})
         console.log(error)
@@ -23,7 +46,22 @@ export const myAppointments = async (req,res)=>{
         let { token } = req.body
         token = authenticateToken(token)
         token = token.token.id
-        let select = await query(`Select distinct appointments.id,users.Full_name as hc_provider, appointments.subject, hospitals.name as hospital, appointments.message,appointments.time,appointments.status,appointments.dateadded as date_booked from appointments Inner join users inner join hospitals on JSON_CONTAINS(hospitals.employees, JSON_QUOTE(users.id), '$') where appointments.patient = ? group by appointments.id order by appointments.dateadded desc `,[token])
+        let select = await query(`SELECT
+            distinct appointments.id,
+            appointments.subject, 
+            hospitals.name as hospital,
+            appointments.time,
+            appointments.status,
+            appointments.dateadded as date_booked
+          FROM
+            appointments
+                Inner join users ON users.id = appointments.hc_provider
+                inner join hospitals on JSON_CONTAINS(hospitals.employees, JSON_QUOTE(users.id), '$')
+          WHERE appointments.patient = ?
+          GROUP BY
+           appointments.id
+          ORDER BY
+           appointments.dateadded desc `,[token])
         if (!select) {
             res.status(500).send({success:false, message: errorMessage.is_error})
             return
@@ -39,7 +77,22 @@ export const hcpAppointments = async (req,res)=>{
         let { token } = req.body
         token = authenticateToken(token)
         token = token.token.id
-        let select = await query(`Select distinct appointments.id,patients.Full_name as p_name, appointments.subject, appointments.message,appointments.time,appointments.status,appointments.dateadded as date_booked from appointments Inner join patients  where appointments.hc_provider = ? group by appointments.id order by appointments.dateadded desc`,[token])
+        let select = await query(`Select
+          distinct appointments.id,
+          patients.Full_name as patient,
+          hospitals.name as hospital,
+          appointments.subject,
+          appointments.message,
+          appointments.time,
+          appointments.status,
+          appointments.dateadded as date_booked
+        from
+         appointments
+            Inner join users ON users.id = appointments.hc_provider
+            Inner join patients ON patients.id = appointments.patient
+            inner join hospitals on JSON_CONTAINS(hospitals.employees, JSON_QUOTE(users.id), '$')
+        where appointments.hc_provider = ?
+        group by appointments.id order by appointments.dateadded desc`,[token])
         if (!select) {
             res.status(500).send({success:false, message: errorMessage.is_error})
             return
@@ -61,6 +114,7 @@ export const appointment = async (req,res)=>{
         hospitals.name AS hospital,
         appointments.message,
         appointments.time,
+        appointments.extra,
         appointments.dateadded AS date_booked,
         appointments.status
         FROM
@@ -69,10 +123,17 @@ export const appointment = async (req,res)=>{
         INNER JOIN patients ON appointments.patient = patients.id
         INNER JOIN hospitals ON JSON_CONTAINS(hospitals.employees, JSON_QUOTE(users.id), '$')
         WHERE
-        appointments.id = ?`,[id])
+        appointments.id = ? GROUP BY appointments.id`,[id])
         if (!select) {
             res.status(500).send({success:false, message: errorMessage.is_error})
             return
+        }
+        if (!select.length) {
+            return  res.status(404).send({success: false, message: errorMessage.err_appoi_404_message})
+        }
+        select = select[0]
+        if (select.extra) {
+            select.extra = JSON.parse(select.extra)
         }
         res.send({success: true, message: select})
     } catch (error) {

@@ -3,14 +3,14 @@ import errorMessage from './response.message.controller'
 import id from "./randomInt.generator.controller";
 import generate2FAcode from './2FA.code.generator.controller'
 import sendmail from "./2FA.sender.controller";
-import {checkEmail, checkNID, checku_name} from './credentials.verifier.controller';
+import {checkEmail, checkNID, checku_name, checkPhone} from './credentials.verifier.controller';
 import authenticateToken from './token.verifier.controller';
 import { titles } from '../utils/titles.controller';
 import { roles } from '../utils/roles.controller';
 
 export const addemployee = async (req,res)=>{
   try {
-      let {Full_name,email,phone,nid,hospital,department,title} = req.body
+      let {Full_name,email,phone,nid,hospital,department,title,license} = req.body
       let role,password = '123456',username = Full_name.replace(/ /gi,".");
       username+= id().substring(2,4);
       for (const tit of titles) {
@@ -20,21 +20,35 @@ export const addemployee = async (req,res)=>{
         }
       }
       let uid = id()
-      let des = await checkEmail(email,phone,'users')
-      if(!des) return res.status(500).send({success: false, message : errorMessage.is_error});
-      if (des.length) return res.send({success: false, message : errorMessage._err_email_phone_avai});
-      let des3 = await checku_name(username,'users')
-      if(!des3) return res.status(500).send({success: false, message : errorMessage.is_error});
-      if (des3.length) return res.send({success: false, message : errorMessage._err_uname_avai});
-      if (nid != null) {
+      if (!email) {
+        email = null
+      }else{
+        let des = await checkEmail(email,'users')
+        if(!des) return res.status(500).send({success: false, message : errorMessage.is_error});
+        if (des.length) return res.send({success: false, message : errorMessage._err_email_avai});
+      }
+      if (!phone) {
+        phone = null
+      }else{
+        let des4 = await checkPhone(phone,'users')
+        if(!des4) return res.status(500).send({success: false, message : errorMessage.is_error});
+        if (des4.length) return res.send({success: false, message : errorMessage._err_phone_avai});
+      }
+      if (!nid) {
+        nid = null
+      }else{
         let des2 = await checkNID(nid,'users')
         if(!des2) return res.status(500).send({success: false, message : errorMessage.is_error});
         if (des2.length) return res.send({success: false, message : errorMessage._err_NID_avai});
       }
+      
+      let des3 = await checku_name(username,'users')
+      if(!des3) return res.status(500).send({success: false, message : errorMessage.is_error});
+      if (des3.length) return res.send({success: false, message : errorMessage._err_uname_avai});
       let update = await query(`UPDATE hospitals SET employees = JSON_ARRAY_APPEND(employees, '$', ?) where hospitals.id = ?`,[uid,hospital]);
       if (!update) return res.status(500).send({success:false, message: errorMessage.is_error})
       if (!update.affectedRows) return res.status(404).send({success:false, message: errorMessage._err_hc_404})
-      let insert = await query(`insert into users(id,NID,email,phone,Full_name,username,password,role,department,status,title)values(?,?,?,?,?,?,?,?,?,?,?)`,[uid,nid,email,phone,Full_name,username,password,role,department,'unverified',title])
+      let insert = await query(`insert into users(id,NID,email,phone,Full_name,username,password,role,department,status,title,license)values(?,?,?,?,?,?,?,?,?,?,?,?)`,[uid,nid,email,phone,Full_name,username,password,role,department,'unverified',title,license])
       let FAcode = generate2FAcode()
       if (!insert) {
         return res.status(500).send({success:false, message: errorMessage.is_error})
@@ -63,15 +77,19 @@ export const getHpEmployees = async (req,res)=>{
            users.phone,
            users.email,
            users.title,
-           COALESCE(departments.name, 'N/A')  as department
+           GROUP_CONCAT(DISTINCT JSON_OBJECT('id', departments.id, 'name', departments.name)) AS department
           FROM 
            users inner join hospitals on JSON_CONTAINS(hospitals.employees, JSON_QUOTE(users.id), '$')
            left join departments on users.department = departments.id
           WHERE 
            hospitals.id = ?
+           GROUP BY users.id
       `,[hospital])
       if (!select) {
           return res.status(500).send({success:false, message: errorMessage.is_error})
+      }
+      for (const employee of select) {
+        select[select.indexOf(employee)].department = JSON.parse(employee.department)
       }
       res.send({success: true, message: select})
   } catch (error) {

@@ -1,13 +1,23 @@
-import { postschema, request,alertMessage, getdata,getschema, animskel, deletechild,getPath,cpgcntn} from "../../../utils/functions.controller.js"
-let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,z,x,c,v,b,n,m
+import { postschema, request,alertMessage, getdata,getschema, animskel, deletechild,getPath,cpgcntn, sessiondata, calcTime} from "../../../utils/functions.controller.js"
+let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,z,x,c,v,b,n
 const token = getdata('token');
-export var userinfo = await request(`authenticateToken/${token}`,getschema);
+export const userinfo = await request(`authenticateToken/${token}`,getschema);
+if (userinfo.message.role != getPath()[0]) {
+    let url = new URL(window.location.href);
+    url.pathname = `/`
+    window.location.href = url.toString() 
+}
+postschema.body = JSON.stringify({token})
+export let m = await request('get-messages',postschema)
+let nfPanel = document.querySelector('ul.nf-panel');
 (async function () {
+    if (!m.success) return alertMessage(m.message)
+    m = m.message
     try {
         if (!userinfo.success){ 
             return alertMessage(userinfo.message)
         }
-        y = userinfo.token
+        y = userinfo.message
         localStorage.setItem('userinfo',JSON.stringify({Full_name: y.Full_name, title: y.title}))
         animskel()
         let dropdown_button = Array.from(document.querySelectorAll('a.dropdown-toggle'))
@@ -15,12 +25,15 @@ export var userinfo = await request(`authenticateToken/${token}`,getschema);
         n = q.find(function (element) {return element.getAttribute('data-role') == 'profile-name'})
         t = q.find(function (element) {return element.getAttribute('data-role') == 'profile-title'})
         if (!userinfo.success) return alertMessage(userinfo.message)
-        z = userinfo.token
+        z = userinfo.message
         if (n && t) {
             n.innerHTML = `<span class="w-100 h-70 capitalize wrap fs-13p flex px-5p">${z.Full_name}</span>`
-            t.innerHTML = `<span class="w-100 h-70 capitalize wrap fs-12p flex px-5p">${z.title}</span>`
+            if (z.role != 'patient' && z.role != 'householder' && z.role != 'admin') {
+                t.innerHTML = `<span class="w-100 h-70 capitalize wrap fs-12p flex px-5p"><span>${z.hp_name}</span> <span class="bold-2 center mx-3p"><span class="w-5p h-5p br-50 bc-dgray"></span></span>${z.title}</span>`
+            }else{
+                t.innerHTML = null
+            }
         }
-    
         for (const button of dropdown_button) {
             button.addEventListener('click',function () {
                 let target = this.getAttribute('data-bs-toggle')
@@ -30,10 +43,6 @@ export var userinfo = await request(`authenticateToken/${token}`,getschema);
                 }
             })
         }
-        postschema.body = JSON.stringify({token})
-        m = await request('get-messages',postschema)
-        if (!m.success) return alertMessage(m.message)
-        m = m.message
         b = q.find(function (element) {return element.getAttribute('data-role') == 'notification-count-badge'})
         if (b) {
             j =  m.filter(function (elem) {  return elem.status == 'new'})
@@ -42,23 +51,35 @@ export var userinfo = await request(`authenticateToken/${token}`,getschema);
                 b.innerText = j.length        
             }
         }
-        let nfPanel = document.querySelector('ul.nf-panel');
         nfPanel.innerHTML = null
         for (const message of m) {
           let li = document.createElement('li');
-          li.className = `list-group-item list-group-item-action dropdown-notifications-item hover-2 ${(message.status == 'new')? 'bc-tr-theme' : '' }` 
-          li.setAttribute('data-message-type',message.type)
-          li.innerHTML = `<div class="d-flex capitalize left">
-                            <div class="flex-shrink-0 me-3">
+          li.className = `list-group-item list-group-item-action dropdown-notifications-item hover-2 ${(message.status == 'new')? 'bc-tr-theme' : ''}` 
+
+          let vb = 'title="message"'
+          if (message.type == 'p_message') {
+              vb = 'data-href-target = "create-session"'
+          }else if(message.type == 'req_test_message'){
+              vb = 'data-href-target = "record-tests"'
+          }else if (message.type == 'test_res_message') {
+            vb = 'data-href-target = "view-session"'
+          }else if (message.type == 'session_message') {
+            vb = 'data-href-target = "view-session"'
+          }else if (message.type == '__APPNTMNT_MSSG_') {
+            vb = 'data-href-target = "appointments"'
+          }
+          li.innerHTML = `<div class="d-flex capitalize left w-100">
+                            <div class="flex-shrink-0 me-3 ${(message.status == 'expired')? 'op-0-3': ''}">
                                 <div class="avatar">
                                     <span class="w-40p h-40p rounded-circle bc-tr-theme center bold-2">${message.sender.name.substring(0,1)}</span>
                                 </div>
                             </div>
-                            <div class="flex-grow-1 list-link" data-id='${message.id}' data-message-type = "${message.type}" ${(message.type == 'p_message') ? 'data-href-target = "create-session"' : '' } >
-                                <h6 class="mb-1">${message.title}</h6>
-                                <p class="mb-0">${message.content}</p>
-                                <p class="mb-0 fs-11p">from <b>${message.sender.name}</b></p>
-                                <small class="text-muted fs-11p">${message.dateadded}</small>
+                            <div class="flex-grow-1 list-link" data-id='${message.id}' data-message-type = "${message.type}" ${vb}>
+                                <h6 class="mb-1 ttls ${(message.status == 'expired')? 'op-0-3': ''}">${message.title}</h6>
+                                <p class="mb-0 ttls ${(message.status == 'expired')? 'op-0-3': ''}">${message.content}</p>
+                                <p class="mb-0 fs-11p ttls ${(message.status == 'expired')? 'op-0-3': ''}">from <b>${message.sender.name}</b></p>
+                                <small class="text-muted fs-11p">${calcTime(message.dateadded)}</small>
+                                ${(message.status == 'expired')? '<small class="text-muted fs-11p">(expired)</small>': ''}
                             </div>
                             <div class="flex-shrink-0 dropdown-notifications-actions">
                                 ${(message.status == 'new')? '<a href="javascript:void(0)" class="dropdown-notifications-read"><span class="badge badge-dot"></span></a>' : '' }
@@ -74,7 +95,6 @@ export var userinfo = await request(`authenticateToken/${token}`,getschema);
     }
 })()
 export function pushNotifs(message) {
-    console.log(message)
     q = Array.from(document.querySelectorAll('.data-role'));
     b = q.find(function (element) {return element.getAttribute('data-role') == 'notification-count-badge'})
     if (b) {
@@ -85,17 +105,28 @@ export function pushNotifs(message) {
     let nfPanel = document.querySelector('ul.nf-panel');
     let li = document.createElement('li');
     li.className = `list-group-item list-group-item-action dropdown-notifications-item hover-2 bc-tr-theme` 
-    li.setAttribute('data-message-type',message.type)
-    li.innerHTML = `<div class="d-flex capitalize left">
+    let vb = 'title="message"'
+    if (message.type == 'p_message') {
+        vb = 'data-href-target = "create-session"'
+    }else if(message.type == 'req_test_message'){
+        vb = 'data-href-target = "record-tests"'
+    }else if (message.type == 'test_res_message') {
+        vb = 'data-href-target = "view-session"'
+    }else if (message.type == 'session_message') {
+        vb = 'data-href-target = "view-session"'
+    }else if (message.type == '__APPNTMNT_MSSG_') {
+        vb = 'data-href-target = "appointments"'
+    }
+    li.innerHTML = `<div class="d-flex capitalize left w-100">
                       <div class="flex-shrink-0 me-3">
                           <div class="avatar">
                               <span class="w-40p h-40p rounded-circle bc-tr-theme center bold-2">${message.sender.name.substring(0,1)}</span>
                           </div>
                       </div>
-                      <div class="flex-grow-1 list-link" data-id='${message.id}' data-message-type = "${message.type}" ${(message.type == 'p_message') ? 'data-href-target = "create-session"' : '' } >
-                          <h6 class="mb-1">${message.title}</h6>
-                          <p class="mb-0">${message.content}</p>
-                          <p class="mb-0 fs-11p">from <b>${message.sender.name}</b></p>
+                      <div class="flex-grow-1 list-link" data-id='${message.id}'  data-message-type = "${message.type}" ${vb} >
+                          <h6 class="mb-1 ttls">${message.title}</h6>
+                          <p class="mb-0 ttls">${message.content}</p>
+                          <p class="mb-0 ttls fs-11p">from <b>${message.sender.name}</b></p>
                           <small class="text-muted fs-11p capitalize">just now</small>
                       </div>
                       <div class="flex-shrink-0 dropdown-notifications-actions">
@@ -117,6 +148,9 @@ function clicks(l,b,m) {
             })
         })
         element.addEventListener('click',async e=>{
+            if (!element.classList.contains('list-link')) {
+                return 0
+            }
             try {
                 v = document.querySelector(`div#${element.getAttribute('data-href-target')}`)
                 menu.classList.toggle('hidden')
@@ -131,6 +165,9 @@ function clicks(l,b,m) {
                             l = parseInt(b.innerText)
                             if (l > 0) {
                                 b.innerText = l-1
+                                if (l-1 == 0) {
+                                    b.classList.replace('center','hidden')
+                                }
                             }else{
                                 b.classList.replace('center','hidden')
                             }
@@ -139,18 +176,36 @@ function clicks(l,b,m) {
 
                     }
                 }
-                p = Array.from(v.parentElement.querySelectorAll('.pagecontentsection'))
-                h = m.find(function (message) {
-                    return message.id == element.getAttribute('data-id')
-                })
-                if (h.addins) {
-                    sessionStorage.setItem('pinfo',JSON.stringify(h.addins));
-                }else{
-                    sessionStorage.setItem('pinfo',JSON.stringify(h.extra));
-                }
                 if (v) {
-                    s = p.indexOf(v)
-                    cpgcntn(s,p)
+                    p = Array.from(v.parentElement.querySelectorAll('.pagecontentsection'))
+                    h = m.find(function (message) {
+                        return message.id == element.getAttribute('data-id')
+                    })
+                    if (h.addins) { 
+                        Object.assign(h.addins, {sender: h.sender})
+                        if (element.getAttribute('data-message-type') == 'p_message' || element.getAttribute('data-message-type') == 'req_test_message') {
+                            sessionStorage.setItem('pinfo',JSON.stringify(h.addins));
+                        }else{
+                            sessionStorage.setItem('minfo',JSON.stringify(h.addins));
+                        }
+                    }else{
+                        Object.assign(h.extra, {sender: h.sender})
+                        if (element.getAttribute('data-message-type') == 'p_message' || element.getAttribute('data-message-type') == 'req_test_message') {
+                            sessionStorage.setItem('pinfo',JSON.stringify(h.extra));
+                        }else{
+                            sessionStorage.setItem('minfo',JSON.stringify(h.extra));
+                        }
+                    }
+                    // if (v) {
+                    //     s = p.indexOf(v)
+                    //     let url = new URL(window.location.href);
+                    //     if (element.getAttribute('data-message-type') == 'test_res_message' || element.getAttribute('data-message-type') == 'session_message') {
+                    //         url.pathname = `/${getPath()[0]}/${element.getAttribute('data-href-target')}/${sessiondata('minfo').session}`;
+                    //     }else{
+                    //         url.pathname = `/${getPath()[0]}/${element.getAttribute('data-href-target')}`;
+                    //     }
+                    //     window.location.href = url.toString()
+                    // }
                 }
             } catch (error) {
               console.log(error)  
@@ -158,5 +213,43 @@ function clicks(l,b,m) {
             
         })
     }) 
+}
+export function expirateMssg(mssg_id) {
+    l = Array.from(nfPanel.querySelectorAll('div.list-link'))
+    l.map(function (linkmssg) {
+        if (linkmssg.getAttribute('data-id') == mssg_id) {
+            linkmssg.classList.remove('list-link');
+            linkmssg.classList.add('list-link');
+            v = Array.from(linkmssg.querySelectorAll('.ttls'))
+            v.forEach(el=>{
+                el.classList.add('op-0-3')
+            })
+            s = document.createElement('small');
+            linkmssg.appendChild(s)
+            s.className = `text-muted fs-11p`
+            s.textContent = `(expired)`
+            linkmssg.parentNode.parentElement.classList.toggle('bc-gray')
+            linkmssg.parentNode.parentElement.classList.remove('bc-tr-theme')
+            q = Array.from(document.querySelectorAll('.data-role'));
+            b = q.find(function (element) {return element.getAttribute('data-role') == 'notification-count-badge'})
+            if (b) {
+                b.classList.remove('hidden')
+                l = parseInt(b.innerText)
+                if (l > 0) {
+                    b.innerText = l-1
+                    if (l-1 == 0) {
+                        b.classList.replace('center','hidden')
+                    }
+                }else{
+                    b.classList.replace('center','hidden')
+                }
+            }
+        }
+    })
+
+}
+export function getNfPanelLinks() {
+    l = Array.from(nfPanel.querySelectorAll('div.list-link'))
+    return l
 }
 export default userinfo

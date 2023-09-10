@@ -14,9 +14,13 @@ try {
     f = document.querySelector('form#add-test-form')
     i = Array.from(f.querySelectorAll('.form-control'))
     j = f.querySelector('input#department')
+    k = f.querySelector('input#type')
     b = f.querySelector('button[type="submit"]')
     j.addEventListener('focus', function () {
         showRecs(j,d.message,'department')
+    })
+    k.addEventListener('focus', function () {
+        showRecs(j,{id: 'quick test', name: 'quick test', id: 'core test', name: 'core test'},'department')
     })
     f.addEventListener('submit', async e =>{
         e.preventDefault();

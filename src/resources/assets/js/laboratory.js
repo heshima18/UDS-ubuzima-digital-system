@@ -1,5 +1,5 @@
-import { alertMessage, getdata, getschema, postschema, request,initializeCleave, checkEmpty, showRecs, getchips,getPath, addUprofile,addsCard,cpgcntn, geturl } from "../../../utils/functions.controller.js";
-import {pushNotifs, userinfo} from "./nav.js";
+import { alertMessage, getdata, getschema, postschema, request,initializeCleave,sessiondata, checkEmpty, showRecs, getchips,getPath, addUprofile,addsCard,cpgcntn, geturl } from "../../../utils/functions.controller.js";
+import {expirateMssg, getNfPanelLinks, pushNotifs, userinfo} from "./nav.js";
 
 let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z
 (async function () {
@@ -13,7 +13,7 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z
         return alertMessage(z.message)
     }
     if (z.success) {
-        z = z.token
+        z = z.message
         try {
             const socket = io(geturl(),{ query : { id: z.id} });
             socket.on('connect', () => {
@@ -24,6 +24,9 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z
                 pushNotifs(message);
                 addsCard(message.title,true)
 
+            });
+            socket.on('expiratemssg', (message) => {
+                expirateMssg(message);
             });
             socket.on('selecthp', (message)=>{
                 var div = document.createElement('div')
@@ -54,15 +57,11 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z
     }
     postschema.body = JSON.stringify({token})
     let users = await request('get-hp-employees',postschema)
-    q = await request('get-inventory',postschema)
     f = await request('get-tests',postschema)
-    l = await request('get-equipments',postschema)
-    k = await request('get-services',postschema)
-    j = await request('get-operations',postschema)
-    if (!q.success || !f.success || !l.success || !k.success || !j.success || !users.success) {
-        return alertMessage(q.message)
+    if (!f.success) {
+        return alertMessage(f.message)
     }
-    let extra = {users: users.message, tests: f.message, medicines : q.message.medicines, equipments: l.message, services : k.message, operations : j.message}
+    let extra = {users: users.message, tests: f.message}
     a = getPath(1)
     c = Array.from(document.querySelectorAll('span.cpcards'))
     p = Array.from(document.querySelectorAll('div.pagecontentsection'))
@@ -75,6 +74,7 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z
                 })
                 c[t].classList.add('active','bb-1-s-theme','bc-tr-theme','theme')
                 cpgcntn(t,p,extra)
+                gsd(target)
                 return 0
             }
         })
@@ -94,12 +94,14 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z
                     })
                     c[t].classList.add('active','bb-1-s-theme','bc-tr-theme','theme')
                     cpgcntn(t,p)
+                    gsd(target)
                     return 0
                 }
             })
         }else{
             window.history.pushState('','','./home')
             cpgcntn(0,p)
+            gsd(p[0])
     
         }
     }
@@ -109,11 +111,172 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z
             cp.classList.remove('active','bb-1-s-theme','bc-tr-theme','theme')
         })
         cudstp.classList.add('active','bb-1-s-theme','bc-tr-theme','theme')
-        window.history.pushState('','',`./${cudstp.getAttribute('data-item-type')}`)
+        let url = new URL(window.location.href);
+        url.pathname = `/laboratory_scientist/${cudstp.getAttribute('data-item-type')}`;
+        window.history.pushState({},'',url.toString())
         cpgcntn(c.indexOf(cudstp),p,extra)
+        gsd(p[c.indexOf(cudstp)])
+        })
+    })
+    let notificationlinks = getNfPanelLinks()
+    notificationlinks.map((link)=>{
+        link.addEventListener(`click`, ()=>{
+            if (!link.classList.contains('list-link')) {
+                return 0
+            }
+            v = document.querySelector(`div#${link.getAttribute('data-href-target')}`)
+           if (v) {
+            p = Array.from(v.parentElement.querySelectorAll('.pagecontentsection'))
+            
+            s = p.indexOf(v)
+            let url = new URL(window.location.href);
+            if (link.getAttribute('data-message-type') == 'test_res_message' || link.getAttribute('data-message-type') == 'session_message') {
+                url.pathname = `/${getPath()[0]}/${link.getAttribute('data-href-target')}/${sessiondata('minfo').session}`;
+            }else{
+                url.pathname = `/${getPath()[0]}/${link.getAttribute('data-href-target')}`;
+            }
+            window.history.pushState({},'',url.toString())
+            cpgcntn(p.indexOf(v),p,extra)
+            gsd(v,null)
+           }
         })
     })
 })();
+async function gsd(page,extra) {
+    try {
+        x = page.id
+        if (x == 'search-patient') {
+        f = page.querySelector('form[name="sp-form"]');
+        s = f.querySelector('input[type="text"]')
+        setTimeout(e=>{s.focus()},200)
+        b = f.querySelector('button[type="submit"]')
+        f.addEventListener('submit',async e=>{
+            e.preventDefault();
+            if (!s.value) return 0
+            b.innerHTML = `<span class="spinner-border" role="status" aria-hidden="true"></span>`
+            b.setAttribute('disabled',true)
+            r = await request(`patient/${s.value}`,postschema)
+            b.innerHTML = `<i class="bx bx-search h-20p w-a center"></i>`
+            b.removeAttribute('disabled')
+            if (!r.success) return alertMessage(r.message)
+            addUprofile(r.message);
+      
+        })
+        }else if (x == 'my-account') {
+            n = page.querySelector('span.name')
+            z = getdata('userinfo')
+            n.textContent = z.Full_name
+            i = page.querySelector('span.n-img');
+            i.textContent = z.Full_name.substring(0,1)
+            let editbuts = Array.from(page.querySelectorAll('span.icon-edit-icon'))
+            for (const button of editbuts) {
+                button.addEventListener('click',()=>{
+                    l = button.getAttribute('data-target')
+                    shedtpopup(l,r);
+                })
+            }
+      
+        }else if (x == 'record-tests') {
+            try {
+                f = document.querySelector('form#record-test-form')
+                i = Array.from(f.querySelectorAll('.form-control'))
+                let extras_input = Array.from(f.querySelectorAll('input.extras'));
+                let op_input = f.querySelector('input[name="operations"]');
+                extras_input.map(function (input) {
+                  input.addEventListener('focus', event=>{
+                    showRecs(input,extra[input.id],input.id)
+                  })
+                })
+                n = i.find(function (e) {return e.id == 'patient'})
+                s = i.find(function (e) {return e.id == 'session'})
+                t = i.find(function (e) {return e.id == 'test'})
+                if (sessiondata('pinfo')) {
+                  n.value = sessiondata('pinfo').patient_name
+                  n.setAttribute('data-id',sessiondata('pinfo').patient)
+                  s.value = `${sessiondata('pinfo').patient_name}'s session`
+                  s.setAttribute('data-id',sessiondata('pinfo').session)
+                  t.value = `${sessiondata('pinfo').t_name}`
+                  t.setAttribute('data-id',sessiondata('pinfo').test)
+                }
+                let button = f.querySelector('button[type="submit"]')
+                f.addEventListener('submit', async e =>{
+                    let a,b,n,u,r;
+                    n = '';
+                    u = '';
+                    b = {}
+                    v = 1
+                    e.preventDefault();
+                    for (const input of i) {
+                    a =  checkEmpty(input);
+                    if(!a){ 
+                        v = 0
+                    }
+                    if(input.classList.contains('chips-check')){
+                        Object.assign(b,{[input.name]: getchips(input.parentNode.querySelector('div.chipsholder'))})
+                    }else if (input.classList.contains('bevalue')) {
+                        Object.assign(b,{[input.name]: input.getAttribute('data-id')})
+                    }else{
+                        Object.assign(b,{[input.name]: input.value})
+                    }
+                    }
+                    if (v) {
+                        Object.assign(b,{test: {id:b.test, result: b.result, sample: b.sample}})
+                        delete b.sample
+                        delete b.result
+                        Object.assign(b,{ token: getdata('token')})
+                        postschema.body = JSON.stringify(b)
+                        button.setAttribute('disabled',true)
+                        button.textContent = 'recording session test info...'
+                        r = await request('add-session-test',postschema);
+                        button.removeAttribute('disabled',true)
+                        button.textContent = 'submit test'
+                        alertMessage(r.message)
+                        if (r.success) {
+                            f.reset();
+                            j = {}
+                            Object.assign(j, 
+                                {
+                                    token: getdata('token'),
+                                    title:'incoming test results',
+                                    token: getdata('token'),
+                                    receiver: sessiondata('pinfo').sender.id,
+                                    type: 'test_res_message', 
+                                    content: `the results of ${sessiondata('pinfo').t_name} for  ${sessiondata('pinfo').patient_name} are ready to view`,
+                                    extra: {
+                                        test: sessiondata('pinfo').test,
+                                        t_name: sessiondata('pinfo').t_name,
+                                        session: sessiondata('pinfo').session, 
+                                        patient: sessiondata('pinfo').patient
+                                    },
+                                    controller: {
+                                        looping: false,
+                                        recipients: []
+                                    }
+                                }
+                            )
+                            sessionStorage.removeItem('pinfo')
+                            try {
+                                postschema.body = JSON.stringify(j)
+                                r =  await request('send-message',postschema)
+                                if (!r.success) {
+                                    return alertMessage(r.message)
+                                }
+                                addsCard('session owner notified !',true)
+                            } catch (error) {
+                                console.log(error)
+                            }
+                        }
+                    }
+                }) 
+            } catch (error) {
+            console.log(error)  
+            }
+        }
+        
+      } catch (error) {
+        console.log(error)
+      }
+}
 
  
 

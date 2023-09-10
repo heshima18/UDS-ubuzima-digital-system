@@ -54,7 +54,7 @@
                         <li class="nav-item navbar-dropdown dropdown p-5p bsbb mr-5p">
                             <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="notification-dropdown" data-bs-auto-close="outside">
                                 <i class="bx bx-bell bx-sm"></i>
-                                <span class="p-a bc-red br-50 w-15p h-15p fs-9p white hidden t-5p r-0  data-role" data-role="notification-count-badge"></span>
+                                <span class="p-a bc-red br-50 w-15p h-15p fs-9p white hidden t-5p r-0  data-role" data-role="notification-count-badge">0</span>
                             </a>
                             <ul class="notification-dropdown bc-white card h-400p w-390p p-0 t-80p p-f mr-20p r-0 ls-none hidden" data-bs-popper="static" name="notification-dropdown" id="notification-dropdown">
                                 <li class="dropdown-menu-header border-bottom px-10p py-5p bsbb">
@@ -146,7 +146,7 @@
 					<div class="w-100 h-100 p-10p bsbb flex bblock-resp bp-0-resp" aria-controls="cont">
 						<div class="w-30 bfull-resp h-100 bh-70p-resp p-10p bsbb the-h">
 							<div class="cont w-100 h-100">
-								<div class="the-h w-80 m-a bfull-resp bsbb h-a ovxs scroll-3">
+								<div class="the-h w-210p m-a bfull-resp bsbb h-a ovxs scroll-3">
 									<ul class="ls-none p-0 m-0 jc-sb w-100 bflex-resp">
 										<li class="p-5p bsbb">
 											<span class="w-100 h-100 p-10p hover-2 cpcards bsbb iblock verdana nowrap capitalize fs-13p br-5p active bb-1-s-theme bc-tr-theme theme" data-item-type="home">Home</span>
@@ -163,7 +163,7 @@
 						</div>
 						<div class="the-b w-100 h-90 p-r ovxh">
 							<!-- home section -->
-							<div class="bc-white  br-5p w-100 h-100 p-r ovh l-0 tr-0-3 pagecontentsection zi-10" id="home">
+							<div class="bc-white  br-5p w-100 h-100 p-r ovh block tr-0-3 pagecontentsection zi-10" id="home">
 								<div class="w-100 h-50p ">
 									<span class="theme capitalize left center bold fs-20p verdana h-100 pl-10p">Home</span>
 								</div>
@@ -230,7 +230,7 @@
 							</div>
 							<!-- end of home section -->
                             <!-- record tests section -->
-							<div class="bc-white  br-5p w-100 h-100 p-a ovh l--100 t-0 tr-0-3 pagecontentsection" id="record-tests">
+							<div class="bc-white  br-5p w-100 h-100 p-a ovh hidden t-0 tr-0-3 pagecontentsection" id="record-tests">
 								<div class="w-100 h-50p ">
 									<span class="theme capitalize left center bold fs-20p verdana h-100 pl-10p">record a test</span>
 								</div>
@@ -239,40 +239,34 @@
 										<form id="record-test-form" name="record-test-form" class="mb-2" action="../" method="POST">
                                             <div class="col-md-12 p-10p bsbb mb-5p">
                                                 <label for="session" class="form-label">session</label>
-                                                <input type="text" class="form-control" placeholder="Demo session" name="session" id="session" readonly>                        
+                                                <input type="text" class="form-control bevalue" placeholder="Demo session" name="session" id="session" readonly>                        
                                                 <small class="hidden w-100 red pl-3p verdana"></small>
                                             </div>
                                             <div class="col-md-12 p-10p bsbb mb-5p">
                                                 <label for="patient" class="form-label">Patient</label>
-                                                <input type="text" class="form-control" placeholder="NID, Phone number, email" name="patient" id="patient" readonly>                        
+                                                <input type="text" class="form-control bevalue" placeholder="NID, Phone number, email" name="patient" id="patient" readonly>                        
                                                 <small class="hidden w-100 red pl-3p verdana"></small>
                                             </div>
                                             <div class="col-md-12 p-10p bsbb mb-5p">
                                                 <label for="Test" class="form-label">Test</label>
-                                                <input type="text" class="form-control" placeholder="Demo Test" name="Test" id="Test" readonly>                        
+                                                <input type="text" class="form-control bevalue" placeholder="Demo Test" name="test" id="test" readonly>                        
                                                 <small class="hidden w-100 red pl-3p verdana"></small>
                                             </div>
                                             <div class="mb-5p col-md-12 p-10p p-r">
                                                 <label for="sample" class="form-label">sample taken</label>
-                                                <div class="input-group">
-                                                    <input type="text" class="form-control chips-check" placeholder="sample" name="sample" id="sample">
-                                                    <span class="input-group-text hover-2 us-none" id="add-symptom">add</span>
-                                                    <small class="hidden w-100 red pl-3p verdana"></small>
-                                                </div>
+                                                <input type="text" class="form-control" placeholder="sample" name="sample" id="sample">
+                                                <small class="hidden w-100 red pl-3p verdana"></small>
                                             </div>
                                             <div class="mb-5p col-md-12 p-10p p-r">
-                                                <label for="results" class="form-label">results</label>
-                                                <div class="input-group">
-                                                    <input type="text" class="form-control chips-check" placeholder="results" name="results" id="results">
-                                                    <span class="input-group-text hover-2 us-none" id="add-results">add</span>
-                                                    <small class="hidden w-100 red pl-3p verdana"></small>
-                                                </div>
+                                                <label for="result" class="form-label">result</label>
+                                                <input type="text" class="form-control" placeholder="result" name="result" id="result">
+                                                <small class="hidden w-100 red pl-3p verdana"></small>
                                             </div>
                                             <div class="col-md-12 p-10p bsbb mb-5p">
                                                 <div class="input-group">
                                                     <div class="p-5p bsbb">
                                                         <button type="submit" class="btn btn-primary d-grid" name="submit">
-                                                            submit tests
+                                                            submit test
                                                         </button>
                                                     </div>
                                                 </div>
@@ -283,7 +277,7 @@
 							</div>
 							<!-- end of record tests section -->
 							<!-- my account section -->
-							<div class="bc-white  br-5p w-100 h-100 p-a ovh l--100 t-0 tr-0-3 pagecontentsection" id="my-account">
+							<div class="bc-white  br-5p w-100 h-100 p-a ovh hidden t-0 tr-0-3 pagecontentsection" id="my-account">
 								<div class="w-100 h-50p ">
 									<span class="theme capitalize left center bold fs-20p verdana h-100 pl-10p">my account</span>
 								</div>

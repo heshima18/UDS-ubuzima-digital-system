@@ -16,11 +16,14 @@ $(document).ready(async function () {
     v = await request('get-employees',postschema)
     n = await request('get-departments',postschema)
     h =  await request('gethospitals',postschema)
+    t = await request('get-titles',postschema)
+    console.log(t)
     try{
         f = document.querySelector('form#add-employee-form')
         s = Array.from(f.querySelectorAll('select.address-field'));
         i = Array.from(f.querySelectorAll('.form-control'))
         z = Array.from(f.querySelectorAll('.form-select'))
+        
         for (const sele of z) {
          i.push(sele)
         }
@@ -277,9 +280,17 @@ $(document).ready(async function () {
         const $modal = $(this);
         let hospital = f.querySelector('input#hospital')
         let department = f.querySelector('input#department')
+        for (const title of t.message) {
+            t.message[t.message.indexOf(title)] = {id: Object.keys(title), name: Object.keys(title)}
+        }
+        let title = i.find(function (inputs) {return inputs.name == 'title'});
         hospital.addEventListener('focus', function (e) {
             showRecs(this,h.message,'hospital')
         })
+        title.addEventListener('focus', function (e) {
+            showRecs(this,t.message,'hospital')
+        })
+
         department.addEventListener('focus', function (e) {
             showRecs(this,n.message,'department')
         })

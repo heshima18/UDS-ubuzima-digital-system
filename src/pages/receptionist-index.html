@@ -33,6 +33,7 @@
         <link rel="stylesheet" href="/assets/vendor/fonts/boxicons.css">
 
     <script src="/assets/js/receptionist.js" type="module"></script>
+    <script src="/assets/js/nav.js" type="module"></script>
 	<script src="/getSocketIo/socket.io.min.js"></script>
     <script src="/assets/vendor/libs/cleavejs/cleave.js"></script>
     <script src="/assets/vendor/libs/cleavejs/cleave-phone.rw.js"></script>
@@ -51,54 +52,82 @@
                     </a>
                 </div>
                 <div class="h-54p center" id="navbar-collapse">
-                    <ul class="p-0 m-0 ls-none center-2">
-                        <li class="nav-item me-2 me-xl-0">
-                            <a class="nav-link style-switcher-toggle hide-arrow" href="javascript:void(0);">
-                                <i class="bx bx-sm"></i>
+                    <ul class="navbar-nav flex-row align-items-center ms-auto">
+                        <li class="nav-item navbar-dropdown dropdown p-5p bsbb mr-5p">
+                            <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="notification-dropdown" data-bs-auto-close="outside">
+                                <i class="bx bx-bell bx-sm"></i>
+                                <span class="p-a bc-red br-50 w-15p h-15p fs-9p white hidden t-5p r-0  data-role" data-role="notification-count-badge">0</span>
                             </a>
+                            <ul class="notification-dropdown bc-white card h-400p w-390p p-0 t-80p p-f mr-20p r-0 ls-none bw-90-500-resp bm-x-10p-resp hidden" data-bs-popper="static" name="notification-dropdown" id="notification-dropdown">
+                                <li class="dropdown-menu-header border-bottom px-10p py-5p bsbb">
+                                    <div class="dropdown-header d-flex align-items-center py-10p">
+                                        <h5 class="text-body mb-0 me-auto capitalize">Notifications</h5>
+                                        <a href="javascript:void(0)" class="dropdown-notifications-all text-body" data-bs-toggle="tooltip" data-bs-placement="top" aria-label="Mark all as read" data-bs-original-title="Mark all as read"><i class="bx fs-4 bx-envelope-open"></i></a>
+                                    </div>
+                                </li>
+                                <li class="dropdown-notifications-list scrollable-container h-80 ovys scroll-3">
+                                    <ul class="list-group list-group-flush nf-panel h-100">
+                                       <li class="w-100 h-100 center">
+                                        <div class="center">
+                                            <div class="sk-grid sk-primary">
+                                                <div class="sk-grid-cube"></div>
+                                                <div class="sk-grid-cube"></div>
+                                                <div class="sk-grid-cube"></div>
+                                                <div class="sk-grid-cube"></div>
+                                                <div class="sk-grid-cube"></div>
+                                                <div class="sk-grid-cube"></div>
+                                                <div class="sk-grid-cube"></div>
+                                                <div class="sk-grid-cube"></div>
+                                                <div class="sk-grid-cube"></div>
+                                            </div>
+                                        </div>
+                                        <div class="w-100 h-a dgray capitalize">loading...</div>
+                                       </li>
+                                    </ul>
+                                </li>
+                                <li class="dropdown-menu-footer border-top">
+                                    <a href="javascript:void(0);" class="dropdown-item d-flex justify-content-center p-3">
+                                        Mark all as seen
+                                    </a>
+                                </li>
+                            </ul>
                         </li>
-                        <li class="nav-item navbar-dropdown dropdown-user dropdown">
-                            <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown">
+                        <li class="nav-item navbar-dropdown dropdown-user dropdown ml-5p">
+                            <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="profile-dropdown">
                                 <div class="avatar avatar-online">
                                     <img src="/assets/img/avatar-1.png" alt="" class="w-px-40 h-auto rounded-circle">
                                 </div>
                             </a>
-                            <ul class="dropdown-menu dropdown-menu-end">
+                            <ul class="profile-dropdown bc-white card h-200p w-200p p-0 t-80p p-f mr-20p r-0 ls-none hidden" name="profile-dropdown">
                                 <li>
                                     <a class="dropdown-item" href="pages-account-settings-account.html">
-                                        <div class="d-flex">
-                                            <div class="flex-shrink-0 me-3">
+                                        <div class="flex px-5p py-10p bsbb">
+                                            <div class="left mx-5p">
                                                 <div class="avatar avatar-online">
                                                     <img src="/assets/img/avatar-1.png" alt="" class="w-px-40 h-auto rounded-circle">
                                                 </div>
                                             </div>
-                                            <div class="flex-grow-1">
-                                                <span class="fw-semibold d-block">John Doe</span>
-                                                <small class="text-muted">Admin</small>
+                                            <div class="left">
+                                                <span class="fw-semibold d-bloc data-role bsbb" data-role="profile-name"><span class="skel w-65p h-10p br-2p block my-5p"></span></span>
+                                                <small class="text-muted block data-role" data-role="profile-title"><span class="skel w-50p h-10p br-2p block my-5p"></span></small>
                                             </div>
                                         </div>
                                     </a>
                                 </li>
-                                <li>
+                                <li class="px-10p bsbb py-2p">
                                     <div class="dropdown-divider"></div>
                                 </li>
-                                <li>
-                                    <a class="dropdown-item" href="pages-profile-user.html">
+                                <li class="px-10p bsbb py-2p">
+                                    <a class="dropdown-item left" href="../my-account">
                                         <i class="bx bx-user me-2"></i>
-                                        <span class="align-middle">My Profile</span>
+                                        <span class="align-middle">My Account</span>
                                     </a>
                                 </li>
-                                <li>
-                                    <a class="dropdown-item" href="pages-account-settings-account.html">
-                                        <i class="bx bx-cog me-2"></i>
-                                        <span class="align-middle">Settings</span>
-                                    </a>
-                                </li>
-                                <li>
+                                <li class="px-10p bsbb py-2p">
                                     <div class="dropdown-divider"></div>
                                 </li>
-                                <li>
-                                    <a class="dropdown-item" href="auth-login.html" target="_blank">
+                                <li class="px-10p bsbb py-2p">
+                                    <a class="dropdown-item left" href="auth-login.html" target="_blank">
                                         <i class="bx bx-power-off me-2"></i>
                                         <span class="align-middle">Log Out</span>
                                     </a>
@@ -119,7 +148,7 @@
 					<div class="w-100 h-100 p-10p bsbb flex bblock-resp bp-0-resp" aria-controls="cont">
 						<div class="w-30 bfull-resp h-100 bh-70p-resp p-10p bsbb the-h">
 							<div class="cont w-100 h-100">
-								<div class="the-h w-80 m-a bfull-resp bsbb h-a ovxs scroll-3">
+								<div class="the-h w-210p m-a bfull-resp bsbb h-a ovxs scroll-3">
 									<ul class="ls-none p-0 m-0 jc-sb w-100 bflex-resp">
 										<li class="p-5p bsbb">
 											<span class="w-100 h-100 p-10p hover-2 cpcards bsbb iblock verdana nowrap capitalize fs-13p br-5p active bb-1-s-theme bc-tr-theme theme" data-item-type="home">Home</span>
@@ -139,7 +168,7 @@
 						</div>
 						<div class="the-b w-100 h-90 p-r ovxh">
 							<!-- home section -->
-							<div class="bc-white  br-5p w-100 h-100 p-r ovh l-0 tr-0-3 pagecontentsection zi-100" id="home">
+							<div class="bc-white  br-5p w-100 h-100 p-r ovh block tr-0-3 pagecontentsection zi-100" id="home">
 								<div class="w-100 h-50p ">
 									<span class="theme capitalize left center bold fs-20p verdana h-100 pl-10p">Home</span>
 								</div>
@@ -192,7 +221,7 @@
 							</div>
 							<!-- end of home section -->
 							<!-- search patient section -->
-							<div class="bc-white  br-5p w-100 h-100 p-a ovh l--100 t-0 tr-0-3 pagecontentsection" id="search-patient">
+							<div class="bc-white  br-5p w-100 h-100 p-a ovh hidden t-0 tr-0-3 pagecontentsection" id="search-patient">
 								<div class="w-100 h-50p ">
 									<span class="theme capitalize left center bold fs-20p verdana h-100 pl-10p">Search patient</span>
 								</div>
@@ -215,97 +244,129 @@
 							</div>
 							<!-- end of search patient section -->
                             <!-- register patient section -->
-							<div class="bc-white  br-5p w-100 h-100 p-a ovh l--100 t-0 tr-0-3 pagecontentsection" id="register-patient">
+							<div class="bc-white  br-5p w-100 h-100 p-a ovh hidden t-0 tr-0-3 pagecontentsection" id="register-patient">
 								<div class="w-100 h-50p ">
 									<span class="theme capitalize left center bold fs-20p verdana h-100 pl-10p">register a patient</span>
 								</div>
 								<div class="pg-cntnt w-100 h-90 p-20p bp-0-resp bsbb ovys left">
 									<div>
-										<form id="add-patient-form" name="add-patient-form" class="mb-2" action="../" method="POST">
+                                        <form id="add-patient-form" class="mb-2" name="add-patient-form" id="add-patient-form" action="../" method="POST">
                                             <div class="flex">
                                                 <div class="mb-2 block pl-5p pr-5p w-100">
                                                     <label for="firstname" class="form-label">Firstname</label>
-                                                    <input type="text" class="form-control" id="firstname" name="firstname" placeholder="Enter your Firstname" autofocus="">
+                                                    <input type="text" class="form-control" id="firstname" name="firstname" placeholder="Enter your Firstname" autofocus>
                                                     <small class="hidden w-100 red pl-3p verdana"></small>
                                                 </div>
                                                 <div class="mb-2 block pl-5p pr-5p w-100">
                                                     <label for="lastname" class="form-label">Lastname</label>
-                                                    <input type="text" class="form-control" id="lastname" name="lastname" placeholder="Enter your Lastname" autofocus="">
+                                                    <input type="text" class="form-control" id="lastname" name="lastname" placeholder="Enter your Lastname" autofocus>
                                                     <small class="hidden w-100 red pl-3p verdana"></small>
                                                 </div>
                                             </div>
                                             <div class="mb-2">
                                                 <label for="NID" class="form-label">NID</label>
-                                                <input type="text" class="form-control national-id-no-mask" id="nid" name="nid" placeholder="Enter your NID">
+                                                <input type="text" class="form-control national-id-no-mask optional" id="nid" name="nid" placeholder="Enter your NID">
                                                 <small class="hidden w-100 red pl-3p verdana"></small>
                                             </div>
-                                            <div class="col-md-5 mr-5p iblock">
-                                                <label for="DOB" class="form-label">DOB</label>
-                                                <input type="date" class="form-control" id="dob" name="dob" placeholder="Enter your DOB">
+                                            <div class="mb-2 block pl-5p pr-5p">
+                                                <label for="role" class="form-label block">Role</label>
+                                                <div class="flex jc-sb">
+                                                    <span class="center-2">
+                                                        <input type="radio" name="role" class="p-5p bsbb hover-2 us-none mx-5p" value="householder"><span class="capitalize pi-none us-none">i am a householder</span>
+                                                    </span>
+                                                    <span class="center-2">
+                                                        <input type="radio" name="role" class="p-5p bsbb hover-2 us-none mx-5p" value="patient" checked> <span class="capitalize pi-none us-none">i am a beneficiary</span>
+                                                    </span>
+                                                    <small class="hidden w-100 red pl-3p verdana"></small>
+                                                </div>
+                                            </div>
+                                            <div class="mb-2 block">
+                                                <label for="NID" class="form-label">House Holder's NID</label>
+                                                <input type="text" class="form-control hh-national-id-no-mask" id="householder" name="householder" placeholder="Enter your house holder's NID">
                                                 <small class="hidden w-100 red pl-3p verdana"></small>
                                             </div>
-                                            <div class="col-md-5 ml-5p iblock">
-                                                <label for="gender" class="form-label">Gender</label>
-                                                <select name="gender" id="gender" class="form-select">
-                                                    <option value="">Choose</option>
-                                                    <option value="male">Male</option>
-                                                    <option value="female">Female</option>
-                
-                                                </select>
-                                                <small class="fs-14p"></small>
+                                            <div class="flex">
+                                                <div class="w-100 pr-5p">
+                                                    <label for="DOB" class="form-label">DOB</label>
+                                                    <input type="date" class="form-control" id="dob" name="dob" placeholder="Enter your DOB">
+                                                    <small class="hidden w-100 red pl-3p verdana"></small>
+                                                </div>
+                                                <div class="w-100 pl-5p">
+                                                    <label for="gender" class="form-label">Gender</label>
+                                                    <select name="gender" id="gender" class="form-select">
+                                                        <option value="">Choose</option>
+                                                        <option value="male">Male</option>
+                                                        <option value="female">Female</option>
+                    
+                                                    </select>
+                                                    <small class="red fs-14p"></small>
+                                                </div>
                                             </div>
                                             <div class="mb-2 p-r">
-                                                <label for="Assurances" class="form-label">Assurances</label>
-                                                <input type="text" class="form-control chips-check" id="assurances" name="assurances" placeholder="Select your Assurances">
+                                                <label for="Insurances" class="form-label">Insurances</label>
+                                                <input type="text" class="form-control chips-check" id="assurances" name="assurances" placeholder="Select your Insurances">
                                                 <small class="hidden w-100 red pl-3p verdana"></small>
                                             </div>
-                                            <div class="col-md-6 mr-5p iblock">
-                                                <label for="ahp-location-province" class="form-label">Province</label>
-                                                <select name="province" id="ahp-location-province" class="address-field form-select">
-                                                    <option value="">Select Province</option>
-                                                <option value="1317705434" data-id="1317705434">south</option><option value="675870110" data-id="675870110">west</option></select>
-                                                <small class="fs-14p"></small>
+                                            <div class="flex">
+                                                <div class="w-100 pr-5p">
+                                                    <label for="ahp-location-province" class="form-label">Province</label>
+                                                    <select name="province" id="ahp-location-province" class="address-field form-select">
+                                                        <option value="">Select Province</option>
+                                                    </select>
+                                                    <small class="red fs-14p"></small>
+                                                </div>
+                                                <div class="w-100 pl-5p">
+                                                    <label for="ahp-location-district" class="form-label">District</label>
+                                                    <select name="district" id="ahp-location-district" class="address-field form-select">
+                                                        <option value="">Select District</option>
+                                                    </select>
+                                                    <small class="red fs-14p"></small>
+                                                </div>
                                             </div>
-                                            <div class="col-md-5 ml-5p iblock">
-                                                <label for="ahp-location-district" class="form-label">District</label>
-                                                <select name="district" id="ahp-location-district" class="address-field form-select">
-                                                    <option value="">Select District</option>
-                                                </select>
-                                                <small class="fs-14p"></small>
-                                            </div>
-                                            <div class="col-md-6 mr-5p iblock">
-                                                <label for="ahp-location-sector" class="form-label">Sector</label>
-                                                <select name="sector" id="ahp-location-sector" class="address-field form-select">
-                                                    <option value="">Select Sector</option>
-                                                </select>
-                                                <small class="fs-14p"></small>
-                                            </div>
-                                            <div class="col-md-5 ml-5p iblock">
-                                                <label for="ahp-location-cell" class="form-label">Cell</label>
-                                                <select name="cell" id="ahp-location-cell" class="address-field form-select">
-                                                    <option value="">Select Cell</option>
-                                                </select>
-                                                <small class="fs-14p"></small>
+                                            <div class="flex">
+                                                <div class="w-100 pr-5p">
+                                                    <label for="ahp-location-sector" class="form-label">Sector</label>
+                                                    <select name="sector" id="ahp-location-sector" class="address-field form-select">
+                                                        <option value="">Select Sector</option>
+                                                    </select>
+                                                    <small class="red fs-14p"></small>
+                                                </div>
+                                                <div class="w-100 pl-5p">
+                                                    <label for="ahp-location-cell" class="form-label">Cell</label>
+                                                    <select name="cell" id="ahp-location-cell" class="address-field form-select">
+                                                        <option value="">Select Cell</option>
+                                                    </select>
+                                                    <small class="red fs-14p"></small>
+                                                </div>
                                             </div>
                                             <div class="mb-2">
                                                 <label for="email" class="form-label">Email</label>
-                                                <input type="text" class="form-control" id="email" name="email" placeholder="Enter your email">
+                                                <input type="text" class="form-control optional" id="email" name="email" placeholder="Enter your email">
                                                 <small class="hidden w-100 red pl-3p verdana"></small>
                                             </div>
                                             <div class="mb-2">
                                                 <label for="phone" class="form-label">phone</label>
-                                                <input type="text" class="form-control phone-number-mask" id="phone" name="phone" placeholder="Enter your Phone Number">
+                                                <input type="text" class="form-control phone-number-mask optional" id="phone" name="phone" placeholder="Enter your Phone Number">
                                                 <small class="hidden w-100 red pl-3p verdana"></small>
                                             </div>
                                             <div class="mb-2 form-password-toggle">
                                                 <label class="form-label" for="password">Password</label>
                                                 <div class="input-group input-group-merge">
-                                                    <input type="password" id="password" class="form-control" name="password" placeholder="············" aria-describedby="password">
+                                                    <input type="password" id="password" class="form-control" name="password" placeholder="&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;" aria-describedby="password" />
                                                     <span class="input-group-text cursor-pointer"><i class="bx bx-hide"></i></span>
                                                     <small class="hidden w-100 red pl-3p verdana"></small>
                                                 </div>
                                             </div>
                                             <div class="mb-2">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" id="terms-conditions" name="terms" checked>
+                
+                                                    <label class="form-check-label" for="terms-conditions">
+                                                        I agree to
+                                                        <a href="javascript:void(0);">privacy policy & terms</a>
+                                                    </label>
+                                                    <small class="hidden w-100 red pl-3p verdana"></small>
+                                                </div>
                                             </div>
                                             <button type="submit" class="btn btn-primary d-grid w-100">
                                                 Sign up
@@ -316,7 +377,7 @@
 							</div>
 							<!-- end of register patient section -->
 							<!-- my account section -->
-							<div class="bc-white  br-5p w-100 h-100 p-a ovh l--100 t-0 tr-0-3 pagecontentsection" id="my-account">
+							<div class="bc-white  br-5p w-100 h-100 p-a ovh hidden t-0 tr-0-3 pagecontentsection" id="my-account">
 								<div class="w-100 h-50p ">
 									<span class="theme capitalize left center bold fs-20p verdana h-100 pl-10p">my account</span>
 								</div>

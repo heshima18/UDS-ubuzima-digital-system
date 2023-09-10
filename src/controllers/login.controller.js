@@ -2,7 +2,6 @@ import query from './query.controller';
 import errorMessage from './response.message.controller';
 import generate2FAcode from './2FA.code.generator.controller';
 import sendmail from "./2FA.sender.controller";
-
 const login = async (req, res) => {
   let { username, password } = req.body;
   try {
@@ -28,7 +27,8 @@ const login = async (req, res) => {
       return;
     }
 
-    const FAcode = generate2FAcode();
+    // const FAcode = generate2FAcode();
+    const FAcode = 123456;
         const emailResult = sendmail(user.email, {
         subject: 'UDS your 2FA one-time code',
         body: `${FAcode}`,

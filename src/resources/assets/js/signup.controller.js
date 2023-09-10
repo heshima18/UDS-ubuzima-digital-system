@@ -9,11 +9,31 @@ try {
         f = document.querySelector('form#formAuthentication')
         s = Array.from(f.querySelectorAll('select.address-field'));
         g = Array.from(f.querySelectorAll('select.form-select'));
-        i = Array.from(f.querySelectorAll('.form-control'))
+        i = Array.from(f.querySelectorAll('input'))
+        let hhnid  = i.find(function (inp) {
+            return inp.name == 'householder';
+        })
+
+        let radios = i.filter(function (radio) {
+            return radio.type == 'radio'
+        })
+        for (const radio of radios) {
+            radio.addEventListener('mousedown',e=>{
+                if (radio.value == 'patient') {
+                   hhnid.parentElement.classList.replace('hidden', 'block')
+                   hhnid.classList.toggle('optional')
+                }else{
+                   hhnid.parentElement.classList.replace('block', 'hidden')
+                   hhnid.value = null
+                   hhnid.classList.toggle('optional')
+                }
+            })
+        }
         initializeCleave(
             f.querySelector('input.phone-number-mask'),
             f.querySelector('input.national-id-no-mask')
         );
+        initializeCleave(null, hhnid)
         for (const sele of s) {
             i.push(sele)
         }
@@ -29,8 +49,8 @@ try {
             o.value = province.id
             o.setAttribute('data-id',province.id)
         }
-        let departments = f.querySelector('input#assurances')
-        departments.addEventListener('focus', function (e) {
+        let assurance = f.querySelector('input#assurances')
+        assurance.addEventListener('focus', function (e) {
             showRecs(this,q.message,'assurances')
         })
         for (const select of s) {
@@ -92,8 +112,8 @@ try {
                if(!a){ 
                 v = 0
                }
-               if (input.name == 'phone' || input.name == 'nid') {
-                 Object.assign(b,{[input.name]:  input.value.replace(/ /g, "")})   
+               if (input.name == 'phone' || input.name == 'nid' || input.name == 'householder') {
+                 Object.assign(b,{[input.name]:  (input.name == 'phone' && input.value == '+250')? null : input.value.replace(/ /g, "")})   
                }else if (input.name == 'firstname') {
                   u+= `${input.value + Math.floor(Math.random() * 999).toString().padStart(3, '0')}.`
                   n+= `${input.value} `
@@ -105,8 +125,9 @@ try {
                   if (z) {
                       if (input.name == 'assurances') {
                         q = []
-                        for (const assurance of getchips(input.parentNode.querySelector('div.chipsholder'))) {
-                            q.push({id : assurance, status : 'eligible'})
+                        for (const assurance of getchips(input.parentNode.querySelector('div.chipsholder'),['id','number'])) {
+                            Object.assign(assurance,{status : 'eligible'})
+                            q.push(assurance)
                         } 
                         Object.assign(b,{[input.name]: q})
                       }else{
@@ -117,10 +138,14 @@ try {
                   Object.assign(b,{[input.name]: input.value})
                }
             }
+            for (const radio of radios) {
+                if (radio.checked) {
+                    Object.assign(b,{ role: radio.value})
+                }
+            }
             if (v) {
                 Object.assign(b,{ Full_name: n})
                 Object.assign(b,{ username: u})
-                console.log(b)
                 postschema.body = JSON.stringify(b)
                 console.log(b)
                 r = await request('api/signup',postschema);

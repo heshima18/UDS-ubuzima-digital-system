@@ -115,22 +115,55 @@ export function page (req,res,page){
                 file = path.join(__dirname,'..','pages', 'receptionist-index.html')
                 break;
             case 'search-patient/':
-                file = path.join(__dirname,'..','pages', 'receptionist-search-patient.html')
+                file = path.join(__dirname,'..','pages', 'receptionist-index.html')
                 break;
             case 'search-patient':
-                file = path.join(__dirname,'..','pages', 'receptionist-search-patient.html')
+                file = path.join(__dirname,'..','pages', 'receptionist-index.html')
                 break;
             case 'register-patient/':
-                file = path.join(__dirname,'..','pages', 'receptionist-register-patient.html')
+                file = path.join(__dirname,'..','pages', 'receptionist-index.html')
                 break;
             case 'register-patient':
-                file = path.join(__dirname,'..','pages', 'receptionist-register-patient.html')
+                file = path.join(__dirname,'..','pages', 'receptionist-index.html')
                 break;
             case 'my-account/':
                 file = path.join(__dirname,'..','pages', 'receptionist-my-account.html')
                 break;
             case 'my-account':
                 file = path.join(__dirname,'..','pages', 'receptionist-my-account.html')
+                break;
+            default:
+                    file = 'N/A'
+                break;
+        } 
+    }else if (user == 'pharmacist') {
+        switch (filename) {
+            case '':
+                file = path.join(__dirname,'..','pages', 'pharmacist-index.html')
+                break;
+            case 'home/':
+                file = path.join(__dirname,'..','pages', 'pharmacist-index.html')
+                break;
+            case 'home':
+                file = path.join(__dirname,'..','pages', 'pharmacist-index.html')
+                break;
+            case 'view-prescription/':
+                file = path.join(__dirname,'..','pages', 'pharmacist-index.html')
+                break;
+            case 'view-prescription':
+                file = path.join(__dirname,'..','pages', 'pharmacist-index.html')
+                break;
+            case 'manage-inventory/':
+                file = path.join(__dirname,'..','pages', 'pharmacist-index.html')
+                break;
+            case 'manage-inventory':
+                file = path.join(__dirname,'..','pages', 'pharmacist-index.html')
+                break;
+            case 'my-account/':
+                file = path.join(__dirname,'..','pages', 'pharmacist-my-account.html')
+                break;
+            case 'my-account':
+                file = path.join(__dirname,'..','pages', 'pharmacist-my-account.html')
                 break;
             default:
                     file = 'N/A'
@@ -148,10 +181,10 @@ export function page (req,res,page){
                 file = path.join(__dirname,'..','pages', 'hcp-index.html')
                 break;
             case 'search-patient/':
-                file = path.join(__dirname,'..','pages', 'hcp-search-patient.html')
+                file = path.join(__dirname,'..','pages', 'hcp-index.html')
                 break;
             case 'search-patient':
-                file = path.join(__dirname,'..','pages', 'hcp-search-patient.html')
+                file = path.join(__dirname,'..','pages', 'hcp-index.html')
                 break;
             case 'create-session/':
                 file = path.join(__dirname,'..','pages', 'hcp-index.html')
@@ -170,6 +203,69 @@ export function page (req,res,page){
                 break;
             case 'view-session':
                 file = path.join(__dirname,'..','pages', 'hcp-index.html')
+                break;
+            case 'appointments/':
+                file = path.join(__dirname,'..','pages', 'hcp-index.html')
+                break;
+            case 'appointments':
+                file = path.join(__dirname,'..','pages', 'hcp-index.html')
+                break;
+            default:
+                    file = 'N/A'
+                break;
+        } 
+    }else if (user == 'patient') {
+        switch (filename) {
+            case '':
+                file = path.join(__dirname,'..','pages', 'patient-index.html')
+                break;
+            case 'home/':
+                file = path.join(__dirname,'..','pages', 'patient-index.html')
+                break;
+            case 'home':
+                file = path.join(__dirname,'..','pages', 'patient-index.html')
+                break;
+            case 'medical-history/':
+                file = path.join(__dirname,'..','pages', 'patient-index.html')
+                break;
+            case 'medical-history':
+                file = path.join(__dirname,'..','pages', 'patient-index.html')
+                break;
+            case 'payments-history/':
+                file = path.join(__dirname,'..','pages', 'patient-index.html')
+                break;
+            case 'payments-history':
+                file = path.join(__dirname,'..','pages', 'patient-index.html')
+                break;
+            case 'appointments/':
+                file = path.join(__dirname,'..','pages', 'patient-index.html')
+                break;
+            case 'appointments':
+                file = path.join(__dirname,'..','pages', 'patient-index.html')
+                break;
+            case 'search-medication/':
+                file = path.join(__dirname,'..','pages', 'patient-index.html')
+                break;
+            case 'search-medication':
+                file = path.join(__dirname,'..','pages', 'patient-index.html')
+                break;
+            case 'feedbacks/':
+                file = path.join(__dirname,'..','pages', 'patient-index.html')
+                break;
+            case 'feedbacks':
+                file = path.join(__dirname,'..','pages', 'patient-index.html')
+                break;
+            case 'my-account/':
+                file = path.join(__dirname,'..','pages', 'patient-index.html')
+                break;
+            case 'my-account':
+                file = path.join(__dirname,'..','pages', 'patient-index.html')
+                break;
+            case 'view-session/':
+                file = path.join(__dirname,'..','pages', 'patient-index.html')
+                break;
+            case 'view-session':
+                file = path.join(__dirname,'..','pages', 'patient-index.html')
                 break;
             default:
                     file = 'N/A'
@@ -197,6 +293,39 @@ export function page (req,res,page){
                 break;
             case 'my-account':
                 file = path.join(__dirname,'..','pages', 'laboratory-index.html')
+                break;
+            default:
+                    file = 'N/A'
+                break;
+        } 
+    }else if (user == 'cashier') {
+        switch (filename) {
+            case '':
+                file = path.join(__dirname,'..','pages', 'cashier-index.html')
+                break;
+            case 'home/':
+                file = path.join(__dirname,'..','pages', 'cashier-index.html')
+                break;
+            case 'home':
+                file = path.join(__dirname,'..','pages', 'cashier-index.html')
+                break;
+            case 'view-prescription/':
+                file = path.join(__dirname,'..','pages', 'cashier-index.html')
+                break;
+            case 'view-prescription':
+                file = path.join(__dirname,'..','pages', 'cashier-index.html')
+                break;
+            case 'search-patient/':
+                file = path.join(__dirname,'..','pages', 'cashier-index.html')
+                break;
+            case 'search-patient':
+                file = path.join(__dirname,'..','pages', 'cashier-index.html')
+                break;
+            case 'my-account/':
+                file = path.join(__dirname,'..','pages', 'cashier-index.html')
+                break;
+            case 'my-account':
+                file = path.join(__dirname,'..','pages', 'cashier-index.html')
                 break;
             default:
                     file = 'N/A'
