@@ -135,7 +135,7 @@ export const getUsessions = async (req,res)=>{
         DISTINCT
           JSON_OBJECT('id', mh.hospital,'phone', hospitals.phone, 'name', hospitals.name, 'location', 
             CONCAT(
-              (SELECT name From Provinces Where id = hospitals.province),' , ',
+              (SELECT name From provinces Where id = hospitals.province),' , ',
               (SELECT name From districts Where id = hospitals.district),' , ',
               (SELECT name From sectors Where id = hospitals.sector),' , ',
               (SELECT name From cells Where id = hospitals.cell)
@@ -303,7 +303,7 @@ export const session = async (req,res)=>{
       DISTINCT 
       JSON_OBJECT('id', p.id, 'name', p.Full_name, 'dob', p.dob,'phone', p.phone,'nid', p.nid, 'location', 
         CONCAT(
-          (SELECT name From Provinces Where id = p.resident_province),' , ',
+          (SELECT name From provinces Where id = p.resident_province),' , ',
           (SELECT name From districts Where id = p.resident_district),' , ',
           (SELECT name From sectors Where id = p.resident_sector),' , ',
           (SELECT name From cells Where id = p.resident_cell)
@@ -315,7 +315,7 @@ export const session = async (req,res)=>{
       DISTINCT
         JSON_OBJECT('id', mh.hospital,'phone', hospitals.phone, 'name', hospitals.name, 'location', 
           CONCAT(
-            (SELECT name From Provinces Where id = hospitals.province),' , ',
+            (SELECT name From provinces Where id = hospitals.province),' , ',
             (SELECT name From districts Where id = hospitals.district),' , ',
             (SELECT name From sectors Where id = hospitals.sector),' , ',
             (SELECT name From cells Where id = hospitals.cell)
