@@ -9,7 +9,7 @@ import homeController from '../controllers/home.controller';
 import signup from '../controllers/signup.controller';
 import { authorizeRawRole, authorizeRole } from '../middlewares/roles.authorizer.middleware';
 import { authorizeAdmin, authorizeCashier, authorizeHc_provider, authorizeHcp_ptnt, authorizeLaboratory_scientist, authorizePatient, authorizePatientToken, authorizePharmacist } from '../middlewares/users.authoriser.middleware';
-import {addEmployeetoHp, addemployee, getEmployees, getHpEmployees} from '../controllers/employee.controller';
+import {addEmployeetoHp, addemployee, getEmployees, getEmployeesByRole, getHpEmployees} from '../controllers/employee.controller';
 import { getHP, getHPs, searchHP,addhospital } from '../controllers/hospital.controller';
 import {addSession, addSessionComment, addSessionDecision, addSessionEquipment, addSessionMedicine, addSessionOperation, addSessionService, addSessionTests, approvePayment, closeSession, getHc_pSessions, getHpsessions, getUsessions, markMedicineAsServed, session } from '../controllers/patient.session.controller';
 import {addmedicine, getMed, getMeds, searchMed} from '../controllers/medicine.controller';
@@ -25,7 +25,7 @@ import { getMessages, markAsSeen, sendMessage } from '../controllers/message.con
 import { authorizeAppointmentAccess } from '../middlewares/appointment.authorizer.middleware';
 import { authorizeSession } from '../middlewares/session.authorizer.middleware';
 import { addUserAssurance, getPatient, getPatients } from '../controllers/patients.controller';
-import { addAssurance, getAssurances } from '../controllers/assurance.controller';
+import { addAssurance, assurance, getAssurances } from '../controllers/assurance.controller';
 import { authorizeUserAssurance } from '../middlewares/assurance.authorizer.middleware';
 import { at } from '../controllers/token.verifier.controller';
 import { io } from '../socket.io/connector.socket.io';
@@ -33,7 +33,7 @@ import { resend2FA } from '../controllers/2FA.resender.controller';
 import { addService, getServices } from '../controllers/services.controller';
 import { addOperation, getOperations } from '../controllers/operations.controller';
 import { addEquipment, getEquipments } from '../controllers/equipments.controller';
-import { titles } from '../utils/titles.controller';
+import { organiseTitles, titles } from '../utils/titles.controller';
 import { checkTest } from '../middlewares/tests.middleware';
 const router = express.Router({ strict: false });
 router.post('/verify',verification)
@@ -57,20 +57,22 @@ router.post("/add-province",authorizeRole,authorizeAdmin,addProvince)
 router.post("/add-district",authorizeRole,authorizeAdmin,addDistrict)
 router.post("/add-sector",authorizeRole,authorizeAdmin,addSector)
 router.post("/add-assurance",authorizeRole,authorizeAdmin,addAssurance)
+router.post("/assurance/:assurance",authorizeRole,authorizeAdmin,assurance)
 router.post("/add-assurance-to-user",authorizeRole,authorizePatientToken,addUserAssurance)
-router.post("/add-session-test",authorizeRole,(req,res,next) => authorizeSession(req,res,next,null),checkTest,addSessionTests)
-router.post("/add-session-medicine",authorizeRole,(req,res,next) => authorizeSession(req,res,next,null),authorizeHc_provider,addSessionMedicine)
-router.post("/mark-as-served",authorizeRole,(req,res,next) => authorizeSession(req,res,next,null),authorizePharmacist,markMedicineAsServed)
-router.post("/add-session-equipment",authorizeRole,(req,res,next) => authorizeSession(req,res,next,null),authorizeHc_provider,addSessionEquipment)
-router.post("/add-session-service",authorizeRole,(req,res,next) => authorizeSession(req,res,next,null),authorizeHc_provider,addSessionService)
-router.post("/add-session-operation",authorizeRole,(req,res,next) => authorizeSession(req,res,next,null),authorizeHc_provider,addSessionOperation)
-router.post("/add-session-comment",authorizeRole,(req,res,next) => authorizeSession(req,res,next,null),authorizeHcp_ptnt,addSessionComment)
-router.post("/add-session-decisions",authorizeRole,(req,res,next) => authorizeSession(req,res,next,null),authorizeHc_provider,addSessionDecision)
+router.post("/add-session-test",authorizeRole,(req,res,next) => authorizeSession(req,res,next,'isnotclosed'),checkTest,addSessionTests)
+router.post("/add-session-medicine",authorizeRole,(req,res,next) => authorizeSession(req,res,next,'isnotclosed'),authorizeHc_provider,addSessionMedicine)
+router.post("/mark-as-served",authorizeRole,(req,res,next) => authorizeSession(req,res,next,'isnotclosed'),authorizePharmacist,markMedicineAsServed)
+router.post("/add-session-equipment",authorizeRole,(req,res,next) => authorizeSession(req,res,next,'isnotclosed'),authorizeHc_provider,addSessionEquipment)
+router.post("/add-session-service",authorizeRole,(req,res,next) => authorizeSession(req,res,next,'isnotclosed'),authorizeHc_provider,addSessionService)
+router.post("/add-session-operation",authorizeRole,(req,res,next) => authorizeSession(req,res,next,'isnotclosed'),authorizeHc_provider,addSessionOperation)
+router.post("/add-session-comment",authorizeRole,(req,res,next) => authorizeSession(req,res,next,'isnotclosed'),authorizeHc_provider,addSessionComment)
+router.post("/add-session-decisions",authorizeRole,(req,res,next) => authorizeSession(req,res,next,'isnotclosed'),authorizeHc_provider,addSessionDecision)
 router.post("/add-cell",authorizeRole,authorizeAdmin,addCell)
-router.post('/addemployee',authorizeRole,authorizeAdmin,authorizeHospital,addemployee)
+router.post('/addemployee',authorizeRole,authorizeAdmin,(req,res,next) => authorizeHospital(req,res,next,'isoptional'),addemployee)
 router.post('/add-employee-to-hp',authorizeRole,authorizeAdmin,authorizeHospital,addEmployeetoHp)
 router.post('/get-hp-employees',authorizeRole,authorizeHospital,getHpEmployees)
 router.post('/get-employees',authorizeRole,authorizeAdmin,getEmployees)
+router.post('/get-employees-by-role/:role',authorizeRole,authorizeAdmin,getEmployeesByRole)
 router.post('/addsession',authorizeRole,authorizeHc_provider,authorizePatient,authorizeUserAssurance,addSession)
 router.get('/api/test',test);
 router.get('/get-map',getMap);
@@ -111,7 +113,7 @@ router.get('/assets/*',assets);
 router.post('/api/signup',authorizeRawRole, signup)
 router.post('/resend-2FA',resend2FA)
 router.get('/:user/:filename*', (req, res) => page(req, res, 'admin'));
-router.post('/get-titles',authorizeRole,authorizeAdmin, (req, res) => res.send({success:true, message: titles}));
+router.post('/get-titles',authorizeRole,authorizeAdmin, organiseTitles);
 
 router.get('/:filename*',(req, res)=> page(req, res, null));
 export default router

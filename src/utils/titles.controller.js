@@ -90,4 +90,13 @@ export const titles = [
     {"Gastroenterology Nurse": 5},
     {"Neurosurgeon": 5},
     {"Neurosurgery Nurse": 5},
+    {"Insurance Manager": 12},
 ]
+export const organiseTitles = async (req,res)=>{
+    let titlesdata = titles
+    titlesdata = titlesdata.map(function (title) {
+        return Object.keys(title)[0]
+    })
+    titlesdata.sort()
+    res.send({success: true, message: titlesdata})
+}

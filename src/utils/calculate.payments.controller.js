@@ -14,5 +14,5 @@ export async function calculatePayments(assurance,totalPayment) {
     let the_assu_am = (totalPayment * percentages)/100
     // the_assu_am = the_assu_am.toFixed(2);
     let the_pati_am = totalPayment - the_assu_am
-    return {assurance_ammount:the_assu_am,patient_ammount:the_pati_am}
+    return { assurance_amount: the_assu_am,patient_amount: the_pati_am }
 }

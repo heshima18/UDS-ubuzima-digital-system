@@ -26,6 +26,8 @@ const errorMessage = {
     mc_error_message:'medicine was not created',
     emp_inassigned_to_hp_error_message:'you are not assigned to a health facility yet',
     err_open_session : `this action can't be performed on an open session`,
+    err_unopen_session : `this action can't be performed on session which is not open`,
+    err_closed_session : `this action can't be performed on a closed session`,
     medic_updated_message:'medication info updated successfully',
     lgIn_message: 'logged in successfully',
     _err_assu_404:'assurance not found',

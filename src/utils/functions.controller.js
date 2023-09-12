@@ -148,6 +148,10 @@ export function checkEmpty(input){
     if (input.type == 'radio' || input.type == 'checkbox') {
       return 1
     }
+    if (input.classList.contains('optional')) {
+      setSuccessFor(input)
+      return 1
+    }
     if (input.classList.contains('chips-check')) {
       let chipshol = input.parentElement.querySelector('div.chipsholder');
       if (!chipshol) {
@@ -163,7 +167,7 @@ export function checkEmpty(input){
         if (input.getAttribute('data-optional')) {
           return 1
         }
-       setErrorFor(input,`please ${(input.tagName == "SELECT")? 'select' : 'enter'} the ${input.name}`)
+        setErrorFor(input,`please ${(input.tagName == "SELECT")? 'select' : 'enter'} the ${input.name}`)
         return 0
       }else{
           setSuccessFor(input)
@@ -177,9 +181,6 @@ export function checkEmpty(input){
         setErrorFor(input,`please ${(input.tagName == "SELECT")? 'select' : 'enter'} the ${input.name}`)
         return 0
       }
-    }else if (input.classList.contains('optional')) {
-      setSuccessFor(input)
-      return 1
     }else{
       if (input.value == '' || input.value == '+250') {
         if (input.getAttribute('data-optional')) {
@@ -247,7 +248,7 @@ export function showRecs(input, data,type) {
             return ite.id == item.getAttribute('data-id')
           })
           if (ion) {
-           promptin(ion,chipsHolder)
+           promptin(ion,chipsHolder,type)
           }
         }else if (type == 'tests') {
           let ion =  data.filter(function (ite) {
@@ -405,7 +406,7 @@ export function getPath(index) {
   return i[index]
   
 }
-function promptin(info,chipsHolder) {
+function promptin(info,chipsHolder,type) {
   b = addshade();
   a = document.createElement('div');
   b.appendChild(a)
@@ -418,11 +419,12 @@ function promptin(info,chipsHolder) {
                                   <form method="post" id="rec-quantity-form" name="rec-quantity-form">
                                     <div class="col-md-12 p-10p">
                                       <label for="quantity" class="form-label">quantity</label>
-                                        <div class="input-group">
-                                            <input type="number" class="form-control" placeholder="quantity" name="quantity" id="quantity">
-                                            <span class="input-group-text hover-2 us-none">${info.unit}</span>
-                                            <small class="w-100 red pl-3p verdana capitalize"></small>
-                                        </div>
+                                      <div class="input-group">
+                                          <input type="number" class="form-control" placeholder="quantity" name="quantity" id="quantity">
+                                          <span class="input-group-text hover-2 us-none">${info.unit}</span>
+                                          <small class="w-100 red pl-3p verdana capitalize"></small>
+                                      </div>
+                                        ${(type == 'medicines') ? `
                                         <div class="w-100 h-a my-20p px-0 flex">
                                           <div class="fv-plugins-icon-container fv-plugins-bootstrap5-row-valid">
                                             <div class="form-check custom-option custom-option-icon mx-5p">
@@ -435,42 +437,50 @@ function promptin(info,chipsHolder) {
                                                     <input name="status" class="form-check-input" type="radio" value="served" id="status1">
                                                 </label>
                                             </div>
+                                          </div>
+                                          <div class="fv-plugins-icon-container fv-plugins-bootstrap5-row-valid">
+                                            <div class="form-check custom-option custom-option-icon checked mx-5p">
+                                                <label class="form-check-label custom-option-content" for="status">
+                                                    <span class="custom-option-body">
+                                                        <i class="bx bx-rocket"></i>
+                                                        <span class="custom-option-title"> not yet served </span>
+                                                        <small class="capitalize"> 'not yet served' drugs will require further confirmation</small>
+                                                    </span>
+                                                    <input name="status" class="form-check-input" type="radio" value="null" id="status" checked="">
+                                                </label>
+                                            </div>
+                                          </div>
                                         </div>
-                                        <div class="fv-plugins-icon-container fv-plugins-bootstrap5-row-valid">
-                                        <div class="form-check custom-option custom-option-icon checked mx-5p">
-                                            <label class="form-check-label custom-option-content" for="status">
-                                                <span class="custom-option-body">
-                                                    <i class="bx bx-rocket"></i>
-                                                    <span class="custom-option-title"> not yet served </span>
-                                                    <small class="capitalize"> 'not yet served' drugs will require further confirmation</small>
-                                                </span>
-                                                <input name="status" class="form-check-input" type="radio" value="null" id="status" checked="">
-                                            </label>
-                                        </div>
-                                    </div>
-                                        </div>
+                                        ` : '' }
                                     </div>
                                     <div class="center-2 my-10p px-10p bsbb">
-                                        <button type="submit" class="btn btn-primary">Proceed</button>
-                                      </div>
+                                      <button type="submit" class="btn btn-primary">Proceed</button>
+                                    </div>
                                   </form>
                               </div>`
   m = a.querySelector('form#rec-quantity-form')
   v = a.querySelector('input#quantity');
   let stats = Array.from(a.querySelectorAll('input[type="radio"]'));
-  for (const status of stats) {
-    status.parentElement.addEventListener('mousedown',e=>{
-      stats.map(function (status) {
-       status.parentElement.parentElement.classList.toggle('checked') 
+  if (stats.length) {
+    for (const status of stats) {
+      status.parentElement.addEventListener('mousedown',e=>{
+        stats.map(function (status) {
+         status.parentElement.parentElement.classList.toggle('checked') 
+        })
       })
-    })
-}
+    }
+    
+  }
   v.focus()
   m.addEventListener('submit', (event)=>{
     event.preventDefault()
     if (v.value.trim() != '') {
-      let cs = stats.find(function (status) {return status.checked == true})
-      addChip({name:info.name, id: info.id , quantity: v.value, status: cs.value},chipsHolder,['id','quantity','status'])
+      if (stats.length) {
+        let cs = stats.find(function (status) {return status.checked == true})
+        addChip({name:info.name, id: info.id , quantity: v.value, status: cs.value},chipsHolder,['id','quantity','status'])
+      }else{
+        addChip({name:info.name, id: info.id , quantity: v.value},chipsHolder,['id','quantity'])
+      }
       deletechild(b,b.parentNode)
     }else{
       setErrorFor(v,'enter the quantity')
@@ -1050,7 +1060,12 @@ export function calcTime(targetTime) {
   }
 }
 export function fT(time) {
-  let formatedTime = new Date(time)
-  formatedTime.setHours(formatedTime.getHours() - 1)
-  return  new Intl.DateTimeFormat('en-US',{weekday: 'long',year: 'numeric',month: 'long',day: 'numeric', hour: '2-digit', minute: '2-digit'}).format(new Date(formatedTime))
+  try {
+    let formatedTime = new Date(time)
+    formatedTime.setHours(formatedTime.getHours() - 1)
+    return  new Intl.DateTimeFormat('en-US',{weekday: 'long',year: 'numeric',month: 'long',day: 'numeric', hour: '2-digit', minute: '2-digit'}).format(new Date(formatedTime))
+    
+  } catch (error) {
+    return time
+  }
 }

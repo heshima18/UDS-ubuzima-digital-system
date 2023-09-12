@@ -2,7 +2,6 @@ export const roles = [
     "Admin",
     "Ministry of health staff" ,
     "Director of finance" ,
-    "Human resource manager" ,
     "pharmacist" ,
     "hc_provider" ,
     "laboratory_scientist" ,
@@ -11,5 +10,6 @@ export const roles = [
     "cashier" ,
     "patient",
     "director_general",
-    "householder"
+    "householder",
+    "assurance_manager"
 ]

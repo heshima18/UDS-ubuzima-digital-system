@@ -22,7 +22,7 @@ export const getHPs = async (req,res)=>{
       hospitals.id AS id,
       hospitals.type,
       GROUP_CONCAT(DISTINCT JSON_OBJECT('province', provinces.name, 'district', districts.name, 'sector', sectors.name,'cell', cells.name)) as location,
-      COALESCE(CONCAT('[', GROUP_CONCAT(DISTINCT JSON_OBJECT('id', users.id, 'name', users.Full_name, 'position', users.title,'phone', users.phone, 'department', users.department)), ']'), '[]') AS employees,
+      COALESCE(CONCAT('[', GROUP_CONCAT(DISTINCT JSON_OBJECT('id', users.id, 'name', users.Full_name)), ']'), '[]') AS employees,
       CONCAT('[', GROUP_CONCAT(DISTINCT JSON_OBJECT('id', departments.id, 'name', departments.name)), ']') AS departments,
       COUNT(DISTINCT medical_history.id) AS total_patients
     FROM

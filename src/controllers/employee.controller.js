@@ -45,9 +45,11 @@ export const addemployee = async (req,res)=>{
       let des3 = await checku_name(username,'users')
       if(!des3) return res.status(500).send({success: false, message : errorMessage.is_error});
       if (des3.length) return res.send({success: false, message : errorMessage._err_uname_avai});
-      let update = await query(`UPDATE hospitals SET employees = JSON_ARRAY_APPEND(employees, '$', ?) where hospitals.id = ?`,[uid,hospital]);
-      if (!update) return res.status(500).send({success:false, message: errorMessage.is_error})
-      if (!update.affectedRows) return res.status(404).send({success:false, message: errorMessage._err_hc_404})
+      if (hospital) {
+        let update = await query(`UPDATE hospitals SET employees = JSON_ARRAY_APPEND(employees, '$', ?) where hospitals.id = ?`,[uid,hospital]);
+        if (!update) return res.status(500).send({success:false, message: errorMessage.is_error})
+        if (!update.affectedRows) return res.status(404).send({success:false, message: errorMessage._err_hc_404})
+      }
       let insert = await query(`insert into users(id,NID,email,phone,Full_name,username,password,role,department,status,title,license)values(?,?,?,?,?,?,?,?,?,?,?,?)`,[uid,nid,email,phone,Full_name,username,password,role,department,'unverified',title,license])
       let FAcode = generate2FAcode()
       if (!insert) {
@@ -115,6 +117,34 @@ export const getEmployees = async (req,res)=>{
            users inner join hospitals on JSON_CONTAINS(hospitals.employees, JSON_QUOTE(users.id), '$')
            left join departments on users.department = departments.id
       `,[])
+      if (!select) {
+          return res.status(500).send({success:false, message: errorMessage.is_error})
+      }
+      res.send({success: true, message: select})
+  } catch (error) {
+      console.log(error)
+      return res.status(500).send({success:false, message: errorMessage.is_error})
+  }
+}
+export const getEmployeesByRole = async (req,res)=>{
+  try {
+      let {role} = req.params
+      let select = await query(`
+          SELECT
+           users.id,
+           users.online,
+           users.Full_name as name,
+           users.phone,
+           users.email,
+           users.title as position,
+           users.nid,
+           users.status
+          FROM 
+           users
+          WHERE
+           role = ? 
+           
+          `,[role])
       if (!select) {
           return res.status(500).send({success:false, message: errorMessage.is_error})
       }

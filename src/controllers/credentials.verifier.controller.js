@@ -45,3 +45,10 @@ export async function getTest(testid) {
     }
     return q
 }
+export async function getPayment(sessionid) {
+    let q = await query(`select id,assurance_amount,amount from payments where session = ?`,[sessionid])
+    if (!q) {
+        return undefined
+    }
+    return q
+}

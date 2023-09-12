@@ -81,7 +81,7 @@ $(document).ready(async function () {
         for (const input of i) {
         n =  checkEmpty(input);
             if (!n) {
-            v = 0 
+             v = 0 
             }
         }
         if(v){
@@ -280,19 +280,26 @@ $(document).ready(async function () {
         const $modal = $(this);
         let hospital = f.querySelector('input#hospital')
         let department = f.querySelector('input#department')
-        for (const title of t.message) {
-            t.message[t.message.indexOf(title)] = {id: Object.keys(title), name: Object.keys(title)}
-        }
+        let titles = t.message
+        titles = titles.map(function (title) {
+            return {id: title, name: title}
+        }) 
         let title = i.find(function (inputs) {return inputs.name == 'title'});
         hospital.addEventListener('focus', function (e) {
             showRecs(this,h.message,'hospital')
         })
         title.addEventListener('focus', function (e) {
-            showRecs(this,t.message,'hospital')
+            showRecs(this,titles,'titles')
         })
 
         department.addEventListener('focus', function (e) {
-            showRecs(this,n.message,'department')
+            let departments = h.message.find(function (hospp) {
+                return hospp.id == hospital.getAttribute('data-id')
+            })
+            if (departments) {
+                departments = departments.departments
+                showRecs(this,departments,'department')
+            }
         })
         initializeCleave(
             $modal.find('.phone-number-mask'),

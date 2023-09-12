@@ -17,6 +17,16 @@ export async function authorizeSession (req, res, next, extra){
           return res.status(403).send({success: false, message: errorMessage._err_forbidden})
         }
       }
+      if (extra == 'isopen') {
+        if (q.status != 'open') {
+          return res.status(403).send({success: false, message: errorMessage.err_unopen_session})
+        }
+      }
+      if (extra == 'isnotclosed') {
+        if (q.status == 'closed') {
+          return res.status(403).send({success: false, message: errorMessage.err_closed_session})
+        }
+      }
       if (user.role == 'patient' || user.role == 'householder') {
         if (q.patient != user.id) {
           return res.status(403).send({success: false, message: errorMessage._err_forbidden})

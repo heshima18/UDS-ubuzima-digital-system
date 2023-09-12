@@ -62,8 +62,8 @@ export async function ioSendMessage(messageInfo) {
   const sid = id();
   let insert = await query(`insert
    into messages
-   (id,user,receiver,type,title,content,addins,sessionid)
-   values(?,?,?,?,?,?,?,?)`,
+   (id,user,receiver,type,title,content,addins,sessionid,dateadded)
+   values(?,?,?,?,?,?,?,?,CURRENT_TIMESTAMP())`,
    [uid,messageInfo.sender.id,messageInfo.receiver,messageInfo.type,messageInfo.title,messageInfo.content,JSON.stringify(messageInfo.extra),sid])
   if (insert) {
     return uid;

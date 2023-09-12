@@ -61,7 +61,7 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,z,notificationlinks
     }
     postschema.body = JSON.stringify({token})
     let users = await request('get-hp-employees',postschema)
-    q = await request('get-inventory',postschema)
+    q = await request('getmeds',postschema)
     f = await request('get-tests',postschema)
     l = await request('get-equipments',postschema)
     k = await request('get-services',postschema)
@@ -74,7 +74,7 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,z,notificationlinks
     if (!q.success || !f.success || !l.success || !k.success || !j.success || !users.success) {
         return alertMessage(q.message)
     }
-    let extra = {users: users.message, tests: f.message, medicines : q.message.medicines, equipments: l.message, services : k.message, operations : j.message}
+    let extra = {users: users.message, tests: f.message, medicines : q.message, equipments: l.message, services : k.message, operations : j.message}
     a = getPath(1)
     c = Array.from(document.querySelectorAll('span.cpcards'))
     p = Array.from(document.querySelectorAll('div.pagecontentsection'))
@@ -280,7 +280,7 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,z,notificationlinks
                           }
                     }
                     let button = f.querySelector('button[type="submit"]')
-                    f.addEventListener('submit', async e =>{
+                    f.onsubmit =  async e =>{
                         let a,b,n,u,r;
                         n = '';
                         u = '';
@@ -319,7 +319,7 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,z,notificationlinks
                             button.textContent = 'create session'
                             alertMessage(r.message)
                         }
-                    }) 
+                    }
                 } catch (error) {
                 console.log(error)  
                 }
@@ -334,7 +334,7 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,z,notificationlinks
               addLoadingTab(page.querySelector('div.theb'));
               let session_input = page.querySelector('input#session-id');
               let session_s_button = page.querySelector('button[name="session-search"]');
-              session_s_button.addEventListener('click', async event=>{
+              session_s_button.onclick =  async event=>{
                 event.preventDefault();
                 if (session_input.value != '' && session_input.value != session) {
                     if (!session) {
@@ -348,6 +348,7 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,z,notificationlinks
                     let sessiondata =  await request(`session/${session}`,postschema)
                     if (sessiondata.success) {
                         theb.innerHTML = raw
+                        sessionStorage.removeItem('minfo')
                     }
                     session_s_button.innerHTML = `<i class="bx bx-search h-20p w-a center"></i>`
                     session_s_button.removeAttribute('disabled')
@@ -359,11 +360,14 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,z,notificationlinks
                     sessiondata = sessiondata.message
                     showSession(sessiondata);
                 }
-              })
+              }
               if (session) {
                 postschema.body = JSON.stringify({token: getdata('token')})
                 let sessiondata =  await request(`session/${session}`,postschema)
-                if (!sessiondata.success) return alertMessage(sessiondata.message)
+                if (!sessiondata.success){
+                    sessionStorage.removeItem('minfo')
+                    return alertMessage(sessiondata.message)
+                }
                 session_input.value = session
                 sessiondata = sessiondata.message
                 showSession(sessiondata);
@@ -504,6 +508,12 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,z,notificationlinks
                                 dataHolders.find(function(element) {return element.getAttribute('data-hold') == 'name'}).classList.replace('dgray','green')
                             }else{
                                 clonedNode.classList.add('bc-gray')
+                            }
+                            if (data.servedOut) {
+                                let span = document.createElement('span')
+                                span.innerText = '( served out )'
+                                span.className = `fs-10p p-a t-0 mt-50p l-0 ml-25p`
+                                clonedNode.appendChild(span)
                             }
                         }
                        for (const dataHolder of dataHolders) {
@@ -760,7 +770,9 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,z,notificationlinks
                 s = p.indexOf(v)
                 let url = new URL(window.location.href);
                 if (link.getAttribute('data-message-type') == 'test_res_message' || link.getAttribute('data-message-type') == 'session_message') {
-                    url.pathname = `/${getPath()[0]}/${link.getAttribute('data-href-target')}/${sessiondata('minfo').session}`;
+                    let minfo = sessiondata('minfo')
+                    minfo = sessiondata('minfo')
+                    url.pathname = `/${getPath()[0]}/${link.getAttribute('data-href-target')}/${minfo.session}`;
                 }else if (link.getAttribute('data-message-type') == '__APPNTMNT_MSSG_') {
                     appApprovalCont(message)
                     url.pathname = `/${getPath()[0]}/${link.getAttribute('data-href-target')}`;
@@ -806,9 +818,9 @@ class popups{
                                     <input type="text" class="form-control" id="result" placeholder="Demo results" name="result">
                                     <small class="w-100 red pl-3p verdana"></small>
                                 </div>
-                                <div class="wrap center-2 my-15p bsbb bblock-resp">
-                                    <button type="submit" class="btn btn-primary mx-10p bfull-resp bm-a-resp bmy-10p-resp">Proceed</button>
-                                    <button type="button" class="btn btn-label-primary mx-10p capitalize bfull-resp bm-a-resp bmy-10p-resp">Request for tesing</button>
+                                <div class="wrap center-2 px-10p bsbb bblock-resp">
+                                    <button type="submit" class="btn btn-primary bfull-resp mr-10p bm-a-resp bmy-10p-resp">Proceed</button>
+                                    <button type="button" class="btn btn-label-primary ml-10p capitalize bfull-resp bm-a-resp bmy-10p-resp">Request for tesing</button>
                                 </div>
                             </form>
                         </div>`
@@ -976,8 +988,8 @@ class popups{
                                     <input type="text" class="form-control extras chips-check" id="medicines" placeholder="Demo medicine" name="medicines">
                                     <small class="hidden w-100 red pl-3p verdana"></small>
                                 </div>
-                                <div class="wrap center-2 my-15p bsbb bblock-resp">
-                                    <button type="submit" class="btn btn-primary mx-10p bfull-resp bm-a-resp bmy-10p-resp">Proceed</button>
+                                <div class="wrap center-2 px-10p bsbb bblock-resp">
+                                    <button type="submit" class="btn btn-primary bfull-resp bm-a-resp bmy-10p-resp">Proceed</button>
                                 </div>
                             </form>
                         </div>`
@@ -1034,9 +1046,9 @@ class popups{
                                     <input type="text" class="form-control bevalue" id="operation" placeholder="Demo operation" name="operation">
                                     <small class="w-100 red pl-3p verdana"></small>
                                 </div>
-                                <div class="wrap center-2 my-15p bsbb bblock-resp">
-                                    <button type="submit" class="btn btn-primary mx-10p bfull-resp bm-a-resp bmy-10p-resp">Proceed</button>
-                                    <button type="button" class="btn btn-label-primary mx-10p capitalize bfull-resp bm-a-resp bmy-10p-resp">Request for tesing</button>
+                                <div class="wrap center-2 px-10p bsbb bblock-resp">
+                                    <button type="submit" class="btn btn-primary bfull-resp mr-10p  bm-a-resp bmy-10p-resp">Proceed</button>
+                                    <button type="button" class="btn btn-label-primary ml-10p  capitalize bfull-resp bm-a-resp bmy-10p-resp">Request for tesing</button>
                                 </div>
                             </form>
                         </div>`
@@ -1128,8 +1140,8 @@ class popups{
                                     <span class="p-a t-0 t-0 mx-20p r-0 mt-42p capitalize" name="unit-hol"></span>
                                     <small class="w-100 red pl-3p verdana"></small>
                                 </div>
-                                <div class="wrap center-2 my-15p bsbb bblock-resp">
-                                    <button type="submit" class="btn btn-primary mx-10p bfull-resp bm-a-resp bmy-10p-resp">Proceed</button>
+                                <div class="wrap center-2 px-10p bsbb bblock-resp">
+                                    <button type="submit" class="btn btn-primary bfull-resp bm-a-resp bmy-10p-resp">Proceed</button>
                                 </div>
                             </form>
                         </div>`
@@ -1206,8 +1218,8 @@ class popups{
                                     <span class="p-a t-0 t-0 mx-20p r-0 mt-42p capitalize" name="unit-hol"></span>
                                     <small class="w-100 red pl-3p verdana"></small>
                                 </div>
-                                <div class="wrap center-2 my-15p bsbb bblock-resp">
-                                    <button type="submit" class="btn btn-primary mx-10p bfull-resp bm-a-resp bmy-10p-resp">Proceed</button>
+                                <div class="wrap center-2 px-10p bsbb bblock-resp">
+                                    <button type="submit" class="btn btn-primary bfull-resp bm-a-resp bmy-10p-resp">Proceed</button>
                                 </div>
                             </form>
                         </div>`
@@ -1278,8 +1290,8 @@ class popups{
                                     <textarea class="form-control" id="comment" placeholder="Demo comment" name="comment">${data}</textarea>
                                     <small class="w-100 red pl-3p verdana"></small>
                                 </div>
-                                <div class="wrap center-2 my-15p bsbb bblock-resp">
-                                    <button type="submit" class="btn btn-primary mx-10p bfull-resp bm-a-resp bmy-10p-resp">Proceed</button>
+                                <div class="wrap center-2 px-10p bsbb bblock-resp">
+                                    <button type="submit" class="btn btn-primary bfull-resp bm-a-resp bmy-10p-resp">Proceed</button>
                                 </div>
                             </form>
                         </div>`
@@ -1333,8 +1345,8 @@ class popups{
                                     <span class="input-group-text hover-2 us-none" id="add-decision">add</span>
                                     <small class="hidden w-100 red pl-3p verdana"></small>
                                 </div>
-                                <div class="wrap center-2 my-15p bsbb bblock-resp">
-                                    <button type="submit" class="btn btn-primary mx-10p bfull-resp bm-a-resp bmy-10p-resp">Proceed</button>
+                                <div class="wrap center-2 px-10p bsbb bblock-resp">
+                                    <button type="submit" class="btn btn-primary bfull-resp bm-a-resp bmy-10p-resp">Proceed</button>
                                 </div>
                             </form>
                         </div>`

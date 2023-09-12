@@ -95,6 +95,7 @@ let nfPanel = document.querySelector('ul.nf-panel');
     }
 })()
 export function pushNotifs(message) {
+    console.log('asdfg')
     q = Array.from(document.querySelectorAll('.data-role'));
     b = q.find(function (element) {return element.getAttribute('data-role') == 'notification-count-badge'})
     if (b) {
@@ -136,18 +137,18 @@ export function pushNotifs(message) {
                   </div>`
     nfPanel.insertBefore(li,nfPanel.childNodes[0])
     l = Array.from(nfPanel.querySelectorAll('div.list-link'))
-    clicks(l,b,[message])
+    clicks(l,b,m)
 }
 function clicks(l,b,m) {
     let menu = document.querySelector('[name="notification-dropdown"]');
     l.map(function (element) {
         let del  = Array.from(element.parentElement.querySelectorAll('a.delete-m'))
         del.map(function (button) {
-            button.addEventListener('click',event2=>{
+            button.onclick =  event2 =>{
                 deletechild(button.parentElement.parentElement.parentElement,button.parentElement.parentElement.parentElement.parentElement)
-            })
+            }
         })
-        element.addEventListener('click',async e=>{
+        element.onclick = async e=>{
             if (!element.classList.contains('list-link')) {
                 return 0
             }
@@ -211,7 +212,7 @@ function clicks(l,b,m) {
               console.log(error)  
             }
             
-        })
+        }
     }) 
 }
 export function expirateMssg(mssg_id) {
