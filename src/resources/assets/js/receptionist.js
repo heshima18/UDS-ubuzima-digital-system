@@ -2,54 +2,61 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,z,x,c,v,b,n,m
 import { alertMessage, getdata, getschema, postschema, request,initializeCleave, checkEmpty,cpgcntn, showRecs, getchips,getPath, addUprofile,showAvaiEmps, deletechild, geturl, addsCard,showAvaiAssurances, addLoadingTab } from "../../../utils/functions.controller.js";
 import { expirateMssg,userinfo } from "./nav.js";
 (async function () {
+    z = userinfo
     let token = getdata('token')
-m = await request('get-map',getschema)
-q = await request('get-assurances',getschema)
-if (userinfo) {
-    z = userinfo.message
-    z = z.message
-    m = m.message
-    try {
-        const socket = io(geturl(),{ query : { id: z.id} });
-        socket.on('connect', () => {
-        console.log('Connected to the server');
-        });
-        
-        socket.on('message', (message) => {
-            pushNotifs(message);
-            addsCard(message.title,true)
+    if (!token) {
+        window.location.href = '../../login/'
+    }
+    if (!z.success) {
+        localStorage.removeItem('token')
+        return alertMessage(z.message)
+    }
+    if (z.success) {
+        z = z.message
+        try {
+            const socket = io(geturl(),{ query : { id: z.id} });
+            socket.on('connect', () => {
+            console.log('Connected to the server');
+            });
+            
+            socket.on('message', (message) => {
+                pushNotifs(message);
+                messages.push(message)
+                notificationlinks = getNfPanelLinks()
+                genClicks(notificationlinks)
+                addsCard(message.title,true)
 
-        });
-        socket.on('expiratemssg', (message) => {
-            expirateMssg(message);
-        });
-        socket.on('selecthp', (message)=>{
-            var div = document.createElement('div')
-            document.body.appendChild(div)
-            for (const hp of message) {
-                div.innerHTML += `<div id="${hp.id}" class="verdana hover p-5p">${hp.name}</div>`
-            }
-            let dvs = div.querySelectorAll('div')
-            dvs.forEach(button=>{
-                button.addEventListener('click',e=>{
-                    e.preventDefault()
-                    socket.emit('hpchoosen',{hp: button.id, token: localStorage.getItem('token')})
+            });
+            socket.on('expiratemssg', (message) => {
+                expirateMssg(message);
+            });
+            socket.on('selecthp', (message)=>{
+                var div = document.createElement('div')
+                document.body.appendChild(div)
+                for (const hp of message) {
+                    div.innerHTML += `<div id="${hp.id}" class="verdana hover p-5p">${hp.name}</div>`
+                }
+                let dvs = div.querySelectorAll('div')
+                dvs.forEach(button=>{
+                    button.addEventListener('click',e=>{
+                        e.preventDefault()
+                        socket.emit('hpchoosen',{hp: button.id, token: localStorage.getItem('token')})
+                    })
                 })
             })
-        })
-        socket.on('changetoken',(token)=>{
-            window.alert('token changed')
-            localStorage.setItem('token',token)
-            window.location.href = window.location.href
-        })
-        socket.emit('messageToId',{recipientId: z.id, message: 'wassup'})
-        if (typeof(z.hospital) != 'string' && typeof(z.hospital) == 'object' && z.hospital.length > 0) {
-            socket.emit('getpsforselection',z.hospital)
+            socket.on('changetoken',(token)=>{
+                window.alert('token changed')
+                localStorage.setItem('token',token)
+                window.location.href = window.location.href
+            })
+            socket.emit('messageToId',{recipientId: z.id, message: 'wassup'})
+            if (typeof(z.hospital) != 'string' && typeof(z.hospital) == 'object' && z.hospital.length > 0) {
+                socket.emit('getpsforselection',z.hospital)
+            }
+        } catch (error) {
+            console.log(error)
         }
-    } catch (error) {
-        console.log(error)
     }
-}
 postschema.body = JSON.stringify({token: localStorage.getItem('token')})
 let users = await request('get-hp-employees',postschema)
 if (!users) return alertMessage(users.message)
