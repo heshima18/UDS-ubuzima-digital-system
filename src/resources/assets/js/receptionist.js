@@ -1,5 +1,5 @@
 let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,z,x,c,v,b,n,m
-import { alertMessage, getdata, getschema, postschema, request,initializeCleave, checkEmpty, showRecs, getchips,getPath, addUprofile,showAvaiEmps, deletechild, geturl, addsCard,showAvaiAssurances, addLoadingTab } from "../../../utils/functions.controller.js";
+import { alertMessage, getdata, getschema, postschema, request,initializeCleave, checkEmpty,cpgcntn, showRecs, getchips,getPath, addUprofile,showAvaiEmps, deletechild, geturl, addsCard,showAvaiAssurances, addLoadingTab } from "../../../utils/functions.controller.js";
 import { expirateMssg } from "./nav.js";
 (async function () {
     let token = getdata('token')
@@ -8,6 +8,7 @@ m = await request('get-map',getschema)
 q = await request('get-assurances',getschema)
 if (z.success) {
     z = z.message
+    m = m.message
     try {
         const socket = io(geturl(),{ query : { id: z.id} });
         socket.on('connect', () => {
@@ -58,69 +59,57 @@ c = Array.from(document.querySelectorAll('span.cpcards'))
 p = Array.from(document.querySelectorAll('div.pagecontentsection'))
 if(a){
 	p.forEach(target=>{
-		if (a == target.id) {
-			t = p.indexOf(target)
+        if (a == target.id) {
+            t = p.indexOf(target)
             c.forEach((cp)=>{
                 cp.classList.remove('active','bb-1-s-theme','bc-tr-theme','theme')
             })
             c[t].classList.add('active','bb-1-s-theme','bc-tr-theme','theme')
-            cpgcntn(t)
+            cpgcntn(t,p)
+            gsd(target)
             return 0
-		}
-	})
+        }
+    })
 }else{
 	window.history.pushState('','','./home')
     cpgcntn(0)
 
 }
-window.onpopstate = function () {
-    a = getPath(1)
-    if(a){
-        p.forEach(target=>{
-            if (a == target.id) {
-                t = p.indexOf(target)
-                c.forEach((cp)=>{
-                    cp.classList.remove('active','bb-1-s-theme','bc-tr-theme','theme')
-                })
-                c[t].classList.add('active','bb-1-s-theme','bc-tr-theme','theme')
-                cpgcntn(t,p)
-                return 0
-            }
-        })
-    }else{
-        window.history.pushState('','','./home')
-        cpgcntn(0,p)
+    window.onpopstate = function () {
+        a = getPath(1)
+        if(a){
+            p.forEach(target=>{
+                if (a == target.id) {
+                    t = p.indexOf(target)
+                    c.forEach((cp)=>{
+                        cp.classList.remove('active','bb-1-s-theme','bc-tr-theme','theme')
+                    })
+                    c[t].classList.add('active','bb-1-s-theme','bc-tr-theme','theme')
+                    cpgcntn(t,p)
+                    return 0
+                }
+            })
+        }else{
+            window.history.pushState('','','./home')
+            cpgcntn(0,p)
 
+        }
     }
-}
 c.forEach((cudstp)=>{
     cudstp.addEventListener('click',()=>{
-      c.forEach((cp)=>{
-        cp.classList.remove('active','bb-1-s-theme','bc-tr-theme','theme')
-      })
+        c.forEach((cp)=>{
+            cp.classList.remove('active','bb-1-s-theme','bc-tr-theme','theme')
+        })
         cudstp.classList.add('active','bb-1-s-theme','bc-tr-theme','theme')
         let url = new URL(window.location.href);
         url.pathname = `/receptionist/${cudstp.getAttribute('data-item-type')}`;
         window.history.pushState({},'',url.toString())
-        cpgcntn(c.indexOf(cudstp))
+        cpgcntn(c.indexOf(cudstp),p)
+        gsd(p.find(function (elem) {
+            return elem.id == cudstp.getAttribute('data-item-type')
+        }))
     })
 })
-async  function cpgcntn(step) {
-    p.forEach(page=>{
-        if(p.indexOf(page) == step){
-           page.classList.replace('l-100','l-0')
-           page.classList.replace('l--100','l-0')
-           window.history.pushState('','',`./${page.id}`)
-           gsd(page)
-        }else if (p.indexOf(page) > step) {
-            page.classList.replace('l--100','l-100')
-            page.classList.replace('l-0','l-100')
-        }else if (p.indexOf(page) < step) {
-            page.classList.replace('l-100','l--100')
-            page.classList.replace('l-0','l--100')
-        }
-    })
-  }
   async function gsd(page) {
     x = page.id
     if (x == 'search-patient') {
@@ -271,8 +260,7 @@ async  function cpgcntn(step) {
 
     }else if (x == 'register-patient') {
         try {
-            if (m.success && q.success) {
-                m = m.message
+                
                 f = document.querySelector('form#add-patient-form')
                 s = Array.from(f.querySelectorAll('select.address-field'));
                 g = Array.from(f.querySelectorAll('select.form-select'));
@@ -424,9 +412,7 @@ async  function cpgcntn(step) {
                         }
                     }
                 }) 
-            }else{
-                alertMessage(m.message)
-            }
+           
         } catch (error) {
           console.log(error)  
         }
