@@ -1,10 +1,19 @@
 import query from './query.controller'
 import errorMessage from './response.message.controller'
 import id from "./randomInt.generator.controller";
+import { checkArrayAvai } from './credentials.verifier.controller';
 export const addAssurance = async (req,res)=>{
     try {
         let { name,percentage } = req.body
-        let insert = await query(`insert into assurances(id,name,percentage_coverage)values(?,?,?)`,[id(), name, percentage])
+        let insert = await query(`insert into assurances(id,name,percentage_coverage,
+            rstctd_medicines,	
+            rstctd_tests,
+            rstctd_operations,	
+            rstctd_equipments,	
+            rstctd_services,	
+            managers,
+            dateadded	
+            )values(?,?,?,?,?,?,?,?,?,CURRENT_TIMESTAMP())`,[id(), name, percentage,'[]','[]','[]','[]','[]','[]'])
         if (!insert) {
             res.status(500).send({success:false, message: errorMessage.is_error})
             return
@@ -47,7 +56,7 @@ export const assurance = async (req,res)=>{
         let select = await query(`SELECT
          assurances.id,
          assurances.name,
-         COALESCE(CONCAT('[', GROUP_CONCAT(DISTINCT  CASE WHEN users.id IS NOT NULL THEN JSON_OBJECT('id', users.id, 'name', users.Full_name) ELSE NULL END), ']'), '[]') AS managers,
+         COALESCE(CONCAT('[', GROUP_CONCAT(DISTINCT  CASE WHEN users.id IS NOT NULL THEN JSON_OBJECT('id', users.id, 'name', users.Full_name, 'title', users.title) ELSE NULL END), ']'), '[]') AS managers,
          COALESCE(CONCAT('[', GROUP_CONCAT(DISTINCT  CASE WHEN medicines.id IS NOT NULL THEN JSON_OBJECT('id', medicines.id, 'name', medicines.name, 'price', medicines.price) ELSE NULL END), ']'), '[]') AS rstrct_m,
          COALESCE(CONCAT('[', GROUP_CONCAT(DISTINCT  CASE WHEN tests.id IS NOT NULL THEN JSON_OBJECT('id', tests.id, 'name', tests.name, 'price', tests.price) ELSE NULL END), ']'), '[]') AS rstrct_t,
          COALESCE(CONCAT('[', GROUP_CONCAT(DISTINCT  CASE WHEN operations.id IS NOT NULL THEN JSON_OBJECT('id', operations.id, 'name', operations.name, 'price', operations.price) ELSE NULL END), ']'), '[]') AS rstrct_o,
@@ -61,9 +70,6 @@ export const assurance = async (req,res)=>{
          LEFT JOIN operations ON JSON_CONTAINS(assurances.rstctd_operations, JSON_QUOTE(operations.id), '$')
          LEFT JOIN equipments ON JSON_CONTAINS(assurances.rstctd_equipments, JSON_QUOTE(equipments.id), '$')
          LEFT JOIN services ON JSON_CONTAINS(assurances.rstctd_services, JSON_QUOTE(services.id), '$')
-
-
-
 
         WHERE 
          assurances.id = ?
@@ -85,6 +91,94 @@ export const assurance = async (req,res)=>{
             return assurance
         })
         res.send({success: true, message: select[0]})
+    } catch (error) {
+        res.status(500).send({success:false, message: errorMessage.is_error})
+        console.log(error)
+    }
+}
+export const addMedicineToAssuranceRestrictedList = async (req,res)=>{
+    try {
+        let {medicines, assurance} = req.body
+        for (const medicine of medicines) {
+            let ArrayAvai = await checkArrayAvai('assurances','rstctd_medicines',medicine,'id',assurance);
+            if (!ArrayAvai) {
+                return res.status(500).send({success:false, message: errorMessage.is_error})
+            }
+            if (ArrayAvai.length) {
+                return res.send({success: false, message: errorMessage.err_entr_avai})
+            }
+            let update = await query(`UPDATE assurances SET rstctd_medicines = JSON_ARRAY_APPEND(rstctd_medicines, '$', ?) where assurances.id = ?`,[medicine,assurance]);
+            if (!update) return res.status(500).send({success:false, message: errorMessage.is_error})
+            if (!update.affectedRows) return res.status(404).send({success:false, message: errorMessage._err_hc_404})
+          
+        }
+        res.send({success: true, message: errorMessage.mc_added_to_aSsU_message})
+    } catch (error) {
+        res.status(500).send({success:false, message: errorMessage.is_error})
+        console.log(error)
+    }
+}
+export const addTestToAssuranceRestrictedList = async (req,res)=>{
+    try {
+        let {tests, assurance} = req.body
+        for (const test of tests) {
+            let ArrayAvai = await checkArrayAvai('assurances','rstctd_tests',test,'id',assurance);
+            if (!ArrayAvai) {
+                return res.status(500).send({success:false, message: errorMessage.is_error})
+            }
+            if (ArrayAvai.length) {
+                return res.send({success: false, message: errorMessage.err_entr_avai})
+            }
+            let update = await query(`UPDATE assurances SET rstctd_tests = JSON_ARRAY_APPEND(rstctd_tests, '$', ?) where assurances.id = ?`,[test,assurance]);
+            if (!update) return res.status(500).send({success:false, message: errorMessage.is_error})
+            if (!update.affectedRows) return res.status(404).send({success:false, message: errorMessage._err_hc_404})
+          
+        }
+        res.send({success: true, message: errorMessage.mc_added_to_aSsU_message})
+    } catch (error) {
+        res.status(500).send({success:false, message: errorMessage.is_error})
+        console.log(error)
+    }
+}
+export const addEquipmentToAssuranceRestrictedList = async (req,res)=>{
+    try {
+        let {equipments, assurance} = req.body
+        for (const equipment of equipments) {
+            let ArrayAvai = await checkArrayAvai('assurances','rstctd_equipments',equipment,'id',assurance);
+            if (!ArrayAvai) {
+                return res.status(500).send({success:false, message: errorMessage.is_error})
+            }
+            if (ArrayAvai.length) {
+                return res.send({success: false, message: errorMessage.err_entr_avai})
+            }
+            let update = await query(`UPDATE assurances SET rstctd_equipments = JSON_ARRAY_APPEND(rstctd_equipments, '$', ?) where assurances.id = ?`,[equipment,assurance]);
+            if (!update) return res.status(500).send({success:false, message: errorMessage.is_error})
+            if (!update.affectedRows) return res.status(404).send({success:false, message: errorMessage._err_hc_404})
+          
+        }
+        res.send({success: true, message: errorMessage.mc_added_to_aSsU_message})
+    } catch (error) {
+        res.status(500).send({success:false, message: errorMessage.is_error})
+        console.log(error)
+    }
+}
+export const addServiceToAssuranceRestrictedList = async (req,res)=>{
+    try {
+        let {services, assurance} = req.body
+        for (const service of services) {
+            let ArrayAvai = await checkArrayAvai('assurances','rstctd_services',service,'id',assurance);
+            if (!ArrayAvai) {
+                return res.status(500).send({success:false, message: errorMessage.is_error})
+            }
+            if (ArrayAvai.length) {
+                return res.send({success: false, message: errorMessage.err_entr_avai})
+            }
+            let update = await query(`UPDATE assurances SET rstctd_services = JSON_ARRAY_APPEND(rstctd_services, '$', ?) where assurances.id = ?`,[service,assurance]);
+            if (!update) return res.status(500).send({success:false, message: errorMessage.is_error})
+            if (!update.affectedRows) return res.status(404).send({success:false, message: errorMessage._err_hc_404})
+          
+        }
+        res.send({success: true, message: errorMessage.mc_added_to_aSsU_message})
     } catch (error) {
         res.status(500).send({success:false, message: errorMessage.is_error})
         console.log(error)

@@ -3,7 +3,7 @@ import errorMessage from './response.message.controller'
 import id from "./randomInt.generator.controller";
 import generate2FAcode from './2FA.code.generator.controller'
 import sendmail from "./2FA.sender.controller";
-import {checkEmail, checkNID, checku_name, checkPhone} from './credentials.verifier.controller';
+import {checkEmail, checkNID, checku_name, checkPhone, checkArrayAvai} from './credentials.verifier.controller';
 import authenticateToken from './token.verifier.controller';
 import { titles } from '../utils/titles.controller';
 import { roles } from '../utils/roles.controller';
@@ -161,6 +161,24 @@ export const addEmployeetoHp = async (req,res)=>{
       if (!update) return res.status(500).send({success:false, message: errorMessage.is_error})
       if (!update.affectedRows) return res.status(404).send({success:false, message: errorMessage._err_hc_404})
       res.send({success: true, message: errorMessage.uc_added_to_hp_message})
+    
+  } catch (error) {
+    console.log(error)
+    res.status(500).send({success:false, message: errorMessage.is_error})
+  }
+}
+export const addEmployeetoAssurance = async (req,res)=>{
+  try {
+    let {manager,assurance} = req.body
+      let ArrayAvai = await checkArrayAvai('assurances','managers',manager,'id',assurance);
+      if (!ArrayAvai) return res.status(500).send({success: false, message: errorMessage.is_error})
+      if (ArrayAvai.length) {
+        return res.send({success: false, message: errorMessage.err_entr_avai})
+      }
+      let update = await query(`UPDATE assurances SET managers = JSON_ARRAY_APPEND(managers, '$', ?) where assurances.id = ?`,[manager,assurance]);
+      if (!update) return res.status(500).send({success:false, message: errorMessage.is_error})
+      if (!update.affectedRows) return res.status(404).send({success:false, message: errorMessage._err_hc_404})
+      res.send({success: true, message: errorMessage.uc_added_to_aSsU_message})
     
   } catch (error) {
     console.log(error)

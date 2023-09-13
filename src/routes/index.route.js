@@ -9,7 +9,7 @@ import homeController from '../controllers/home.controller';
 import signup from '../controllers/signup.controller';
 import { authorizeRawRole, authorizeRole } from '../middlewares/roles.authorizer.middleware';
 import { authorizeAdmin, authorizeCashier, authorizeHc_provider, authorizeHcp_ptnt, authorizeLaboratory_scientist, authorizePatient, authorizePatientToken, authorizePharmacist } from '../middlewares/users.authoriser.middleware';
-import {addEmployeetoHp, addemployee, getEmployees, getEmployeesByRole, getHpEmployees} from '../controllers/employee.controller';
+import {addEmployeetoAssurance, addEmployeetoHp, addemployee, getEmployees, getEmployeesByRole, getHpEmployees} from '../controllers/employee.controller';
 import { getHP, getHPs, searchHP,addhospital } from '../controllers/hospital.controller';
 import {addSession, addSessionComment, addSessionDecision, addSessionEquipment, addSessionMedicine, addSessionOperation, addSessionService, addSessionTests, approvePayment, closeSession, getHc_pSessions, getHpsessions, getUsessions, markMedicineAsServed, session } from '../controllers/patient.session.controller';
 import {addmedicine, getMed, getMeds, searchMed} from '../controllers/medicine.controller';
@@ -25,7 +25,7 @@ import { getMessages, markAsSeen, sendMessage } from '../controllers/message.con
 import { authorizeAppointmentAccess } from '../middlewares/appointment.authorizer.middleware';
 import { authorizeSession } from '../middlewares/session.authorizer.middleware';
 import { addUserAssurance, getPatient, getPatients } from '../controllers/patients.controller';
-import { addAssurance, assurance, getAssurances } from '../controllers/assurance.controller';
+import { addAssurance, addMedicineToAssuranceRestrictedList, assurance, getAssurances } from '../controllers/assurance.controller';
 import { authorizeUserAssurance } from '../middlewares/assurance.authorizer.middleware';
 import { at } from '../controllers/token.verifier.controller';
 import { io } from '../socket.io/connector.socket.io';
@@ -58,6 +58,8 @@ router.post("/add-district",authorizeRole,authorizeAdmin,addDistrict)
 router.post("/add-sector",authorizeRole,authorizeAdmin,addSector)
 router.post("/add-assurance",authorizeRole,authorizeAdmin,addAssurance)
 router.post("/assurance/:assurance",authorizeRole,authorizeAdmin,assurance)
+router.post("/aMtA/",authorizeRole,authorizeAdmin,addEmployeetoAssurance)
+router.post("/aMeDtA/",authorizeRole,authorizeAdmin,addMedicineToAssuranceRestrictedList)
 router.post("/add-assurance-to-user",authorizeRole,authorizePatientToken,addUserAssurance)
 router.post("/add-session-test",authorizeRole,(req,res,next) => authorizeSession(req,res,next,'isnotclosed'),checkTest,addSessionTests)
 router.post("/add-session-medicine",authorizeRole,(req,res,next) => authorizeSession(req,res,next,'isnotclosed'),authorizeHc_provider,addSessionMedicine)

@@ -244,11 +244,15 @@ export function showRecs(input, data,type) {
      item.addEventListener('mousedown', (e)=>{
       if (input.classList.contains('chips-check')) {
         if (type == 'medicines' || type == 'equipments' || type == 'services') {
-          let ion =  data.filter(function (ite) {
-            return ite.id == item.getAttribute('data-id')
-          })
-          if (ion) {
-           promptin(ion,chipsHolder,type)
+          if (input.classList.contains('no-quantity-addin')) {
+            addChip({name:item.textContent, id: item.getAttribute('data-id')},chipsHolder,['id'])
+          }else{
+            let ion =  data.filter(function (ite) {
+              return ite.id == item.getAttribute('data-id')
+            })
+            if (ion) {
+             promptin(ion,chipsHolder,type)
+            }
           }
         }else if (type == 'tests') {
           let ion =  data.filter(function (ite) {
@@ -1068,4 +1072,10 @@ export function fT(time) {
   } catch (error) {
     return time
   }
+}
+export function aDePh(parent) {
+  let defaultLi = document.createElement('li')
+  defaultLi.className = `ovh center-2`
+  parent.appendChild(defaultLi)
+  defaultLi.innerHTML = `<span class="capitalize dgray flex fs-16p bold-2">no entries available</span>`
 }
