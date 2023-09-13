@@ -1,8 +1,11 @@
 let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,z,x,c,v,b,n,m
 import { alertMessage, getdata, getschema, postschema, request,initializeCleave, checkEmpty,cpgcntn, showRecs, getchips,getPath, addUprofile,showAvaiEmps, deletechild, geturl, addsCard,showAvaiAssurances, addLoadingTab } from "../../../utils/functions.controller.js";
-import { expirateMssg,userinfo } from "./nav.js";
+import {pushNotifs, userinfo,expirateMssg, getNfPanelLinks,m as messages} from "./nav.js";
+
 (async function () {
     z = userinfo
+    m = await request('get-map',getschema)
+    q = await request('get-assurances',getschema)
     let token = getdata('token')
     if (!token) {
         window.location.href = '../../login/'
@@ -13,6 +16,8 @@ import { expirateMssg,userinfo } from "./nav.js";
     }
     if (z.success) {
         z = z.message
+        m = m.message
+        q = q.message
         try {
             const socket = io(geturl(),{ query : { id: z.id} });
             socket.on('connect', () => {
@@ -124,7 +129,7 @@ c.forEach((cudstp)=>{
       s = f.querySelector('input[type="text"]')
       setTimeout(e=>{s.focus()},200)
       b = f.querySelector('button[type="submit"]')
-      f.addEventListener('submit',async e=>{
+      f.onsubmit = async e=>{
         e.preventDefault();
         if (!s.value) return 0
         b.innerHTML = `<span class="spinner-border" role="status" aria-hidden="true"></span>`
@@ -250,7 +255,7 @@ c.forEach((cudstp)=>{
             
         }
 
-      })
+      }
     }else if (x == 'my-account') {
         console.log(userinfo)
         n = document.querySelector('span.name')
