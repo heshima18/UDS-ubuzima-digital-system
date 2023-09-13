@@ -38,7 +38,7 @@ export const resend2FA = async (req, res) => {
         'login-2-fa'
     );
     let updateResult;
-    user.role == 'patient' ? updateResult = await query(`UPDATE patients SET FA = ? WHERE id = ?`, [FAcode, user.id]):
+    user.role == 'patient' || user.role == 'householder'  ? updateResult = await query(`UPDATE patients SET FA = ? WHERE id = ?`, [FAcode, user.id]):
      updateResult = await query(`UPDATE users SET FA = ? WHERE id = ?`, [FAcode, user.id]);
 
     if (!updateResult) {

@@ -802,6 +802,9 @@ export async function chSession(){
     z = await request(`authenticateToken/${token}`,getschema)
     if (z.success) {
       z = z.message
+      if (z.role == 'patient' || z.role == 'householder') {
+        window.location.href = `../patient/home`
+      }
       window.location.href = `../${z.role}/home`
     }
   }
