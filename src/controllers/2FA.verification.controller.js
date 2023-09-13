@@ -45,7 +45,7 @@ const verification = async (req,res)=>{
         if (!select) return res.status(500).send({success:false, message: errorMessage.is_error})
         if (select.length > 0){
             [select] = select;
-            if(select.role == 'patient') { 
+            if(select.role == 'patient' || select.role == 'householder') { 
                 await query(`update patients set fa = null,status = "active" where id = ?`,[select.id])
             }else{
                 var hospital =  await query(`select name,id from hospitals where JSON_CONTAINS(employees, JSON_QUOTE(?), '$')`,[select.id]);
@@ -61,7 +61,7 @@ const verification = async (req,res)=>{
                 query(`update users set fa = null ${(select.status === 'unverified')? ',status = "active"' : ''} where id = ?`,[select.id]);
             }
             let token 
-            if (select.role != 'patient' && select.role != 'Admin') {
+            if (select.role != 'patient' && select.role != 'Admin' && select.role != 'householder') {
                 if (!hospital.id) {
                    return res.status(403).send({success: false, message: errorMessage.emp_inassigned_to_hp_error_message}) 
                 }

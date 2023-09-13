@@ -1,12 +1,12 @@
 let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,z,x,c,v,b,n,m
 import { alertMessage, getdata, getschema, postschema, request,initializeCleave, checkEmpty,cpgcntn, showRecs, getchips,getPath, addUprofile,showAvaiEmps, deletechild, geturl, addsCard,showAvaiAssurances, addLoadingTab } from "../../../utils/functions.controller.js";
-import { expirateMssg } from "./nav.js";
+import { expirateMssg,userinfo } from "./nav.js";
 (async function () {
     let token = getdata('token')
-z = await request(`authenticateToken/${token}`,getschema)
 m = await request('get-map',getschema)
 q = await request('get-assurances',getschema)
-if (z.success) {
+if (userinfo) {
+    z = userinfo.message
     z = z.message
     m = m.message
     try {
@@ -245,11 +245,11 @@ c.forEach((cudstp)=>{
 
       })
     }else if (x == 'my-account') {
-        
+        console.log(userinfo)
         n = document.querySelector('span.name')
-        n.textContent = z.Full_name
+        n.textContent = userinfo.message.Full_name
         i = document.querySelector('span.n-img');
-        i.textContent = z.Full_name.substring(0,1)
+        i.textContent = userinfo.message.Full_name.substring(0,1)
         let editbuts = Array.from(page.querySelectorAll('span.icon-edit-icon'))
         for (const button of editbuts) {
             button.addEventListener('click',()=>{
