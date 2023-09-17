@@ -54,7 +54,7 @@ if(!u){
     l = await request('get-equipments',postschema)
     k = await request('get-services',postschema)
     j = await request('get-operations',postschema)
-    u = await request('get-employees-by-role/assurance_manager',postschema)
+    u = await request('get-employees-by-role/insurance_manager',postschema)
     
     if (!q.success || !f.success || !l.success || !k.success || !j.success || !u.success) {
         return alertMessage(q.message)
@@ -207,7 +207,7 @@ if(!u){
         cont.className = `br-10p cntr card p-10p bsbb w-60 h-80 b-mgc-resp`
         cont.innerHTML = `<div class="w-100 h-100 p-5p bp-0-resp">
                             <div class="head w-100 px-5p py-10p bsbb">
-                                <span class="capitalize bold-2 fs-20p">Assurance <span class="consolas" data-holder="true" data-hold="name"># ${assurance}</span></span>
+                                <span class="capitalize bold-2 fs-20p">insurance&nbsp;&nbsp;<span class="consolas" data-holder="true" data-hold="name"># ${assurance}</span></span>
                             </div>
                             <div class="p-5p bsbb w-100 h-91 ovh p-r">
                                 <div class="w-100 h-100 ovys scroll-2 body">
@@ -320,7 +320,7 @@ if(!u){
                                         <div class="flex jc-sb my-20p bsbb">
                                             <span class="title bold-2 fs-16p capitalize center">restricted services</span>
                                             <div class="p-10p my-5p mx-4p bsbb flex jc-sb">
-                                                <span class="btn-primary btn capitalize data-buttons btn-sm" data-role="add-service">add an service</span>
+                                                <span class="btn-primary btn capitalize data-buttons btn-sm" data-role="add-service">add a service</span>
                                             </div>
                                         </div>
                                         <div class="my-2p px-1p">
@@ -353,6 +353,32 @@ if(!u){
         }
         assurance = assurance.message
         removeLoadingTab(body)
+        let dataHolder = Array.from(cont.querySelectorAll('[data-holder="true"]'))
+        dataHolder.map(function (holder) {
+            holder.innerText = assurance[holder.getAttribute('data-hold')]
+        })
+        const loopingDataHolders = Array.from(document.querySelectorAll('ul[name="looping-info"]'))
+        for (const element of loopingDataHolders) {
+            let dataToHold = element.getAttribute('data-hold');
+            let dataToShow = assurance[dataToHold]
+            if (!dataToShow.length) {
+                aDePh(element.parentElement)
+                element.parentNode.removeChild(element)
+                continue
+            }
+            for (const data of dataToShow) {
+                let clonedNode = element.cloneNode(true);
+                let cloneButton = clonedNode.querySelector('.data-buttons')
+                if(cloneButton) cloneButton.setAttribute('data-id', data.id);
+                let dataHolders = Array.from(clonedNode.querySelectorAll('[name="looping-info-hol"]'))
+                for (const dataHolder of dataHolders) {
+                    dataHolder.innerText = data[dataHolder.getAttribute('data-hold')]
+                }
+               element.parentNode.appendChild(clonedNode)
+            }
+            element.parentNode.removeChild(element)
+    
+        }
         let buttons = Array.from(cont.querySelectorAll('.data-buttons'));
         buttons.forEach( async button=>{
             button.addEventListener('click', function (e){
@@ -379,53 +405,31 @@ if(!u){
                         Magic.addEquipment(extra.equipments)
                         break;
                     case 'add-service':
-                        Magic.addTest(extra.services)
+                        Magic.addService(extra.services)
                         break;
                     case 'remove-manager':
-                        Magic.removeManager(this.getAttribute('data-id'))
+                        Magic.removeManager(this)
                         break;
-                    case 'remove-medicine':
-                        Magic.removeMedicine(this.getAttribute('data-id'))
+                    case 'remove-medication':
+                        Magic.removeMedicine(this)
                     break;
                     case 'remove-test':
-                        Magic.removeTest(this.getAttribute('data-id'))
+                        Magic.removeTest(this)
                     break;
                     case 'remove-operation':
-                        Magic.removeOperation(this.getAttribute('data-id'))
+                        Magic.removeOperation(this)
                     break;
                     case 'remove-equipment':
-                        Magic.removeEquipment(this.getAttribute('data-id'))
+                        Magic.removeEquipment(this)
                     break;
                     case 'remove-service':
-                        Magic.removeService(this.getAttribute('data-id'))
+                        Magic.removeService(this)
                     break;
                     default:
                         break;
                 }
             })
         })
-        const loopingDataHolders = Array.from(document.querySelectorAll('ul[name="looping-info"]'))
-        for (const element of loopingDataHolders) {
-            let dataToHold = element.getAttribute('data-hold');
-            let dataToShow = assurance[dataToHold]
-            if (!dataToShow.length) {
-                aDePh(element.parentElement)
-                element.parentNode.removeChild(element)
-                continue
-            }
-            for (const data of dataToShow) {
-                let clonedNode = element.cloneNode(true);
-                let cloneButton = clonedNode.querySelector('.data-buttons')
-                if(cloneButton) cloneButton.setAttribute('data-id', data.id);
-                let dataHolders = Array.from(clonedNode.querySelectorAll('[name="looping-info-hol"]'))
-                for (const dataHolder of dataHolders) {
-                    dataHolder.innerText = data[dataHolder.getAttribute('data-hold')]
-                }
-               element.parentNode.appendChild(clonedNode)
-            }
-            element.parentNode.removeChild(element)
-    
-        }
     }
 })()
 
@@ -483,7 +487,6 @@ class magic{
                 delete values.quantity
                 postschema.body = JSON.stringify(values)
                 let results = await request('aMtA',postschema)
-                console.log(results)
                 if (results.success) {
                     deletechild(sbigdiv,sbigdiv.parentElement)
                 }
@@ -563,7 +566,7 @@ class magic{
                             <form method="post" id="add-test-form" name="add-test-form">
                                 <div class="col-md-12 p-10p bsbb mb-5p p-r">
                                     <label for="tests" class="form-label">tests</label>
-                                    <input type="text" class="form-control extras chips-check" id="test" placeholder="Test Name" name="test">
+                                    <input type="text" class="form-control extras chips-check no-extra-info-addin" id="tests" placeholder="Test Name" name="tests">
                                     <small class="hidden w-100 red pl-3p verdana"></small>
                                 </div>
                                 <div class="wrap center-2 px-10p bsbb bblock-resp my-15p">
@@ -620,7 +623,7 @@ class magic{
                             <form method="post" id="add-operation-form" name="add-operation-form">
                                 <div class="col-md-12 p-10p bsbb mb-5p p-r">
                                     <label for="operations" class="form-label">operations</label>
-                                    <input type="text" class="form-control extras chips-check" id="operation" placeholder="Operation Name" name="operation">
+                                    <input type="text" class="form-control extras chips-check no-extra-info-addin" id="operation" placeholder="Operation Name" name="operations">
                                     <small class="hidden w-100 red pl-3p verdana"></small>
                                 </div>
                                 <div class="wrap center-2 px-10p bsbb bblock-resp my-15p">
@@ -654,7 +657,7 @@ class magic{
                 } 
                 Object.assign(values,{assurance: this.assurance,token: getdata('token')})
                 postschema.body = JSON.stringify(values)
-                let results = await request('aTesTA',postschema)
+                let results = await request('aOpeTA',postschema)
                 if (results.success) {
                     deletechild(operationsP,operationsP.parentElement)
                 }
@@ -677,7 +680,7 @@ class magic{
                             <form method="post" id="add-equipment-form" name="add-equipment-form">
                                 <div class="col-md-12 p-10p bsbb mb-5p p-r">
                                     <label for="equipments" class="form-label">equipments</label>
-                                    <input type="text" class="form-control extras chips-check no-quantity-addin" id="equipments" placeholder="Equipment Name" name="equipment">
+                                    <input type="text" class="form-control extras chips-check no-quantity-addin" id="equipments" placeholder="Equipment Name" name="equipments">
                                     <small class="hidden w-100 red pl-3p verdana"></small>
                                 </div>
                                 <div class="wrap center-2 px-10p bsbb bblock-resp my-15p">
@@ -711,7 +714,7 @@ class magic{
                 } 
                 Object.assign(values,{assurance: this.assurance,token: getdata('token')})
                 postschema.body = JSON.stringify(values)
-                let results = await request('aTesTA',postschema)
+                let results = await request('aEquTA',postschema)
                 if (results.success) {
                     deletechild(equipmentsP,equipmentsP.parentElement)
                 }
@@ -768,7 +771,7 @@ class magic{
                 } 
                 Object.assign(values,{assurance: this.assurance,token: getdata('token')})
                 postschema.body = JSON.stringify(values)
-                let results = await request('aTesTA',postschema)
+                let results = await request('aSerTA',postschema)
                 if (results.success) {
                     deletechild(servicesP,servicesP.parentElement)
                 }
@@ -779,22 +782,125 @@ class magic{
             }
         })
     }
-    removeManager(){
+    async removeManager(button){
+        button.classList.add('loading')
+        button.setAttribute('disabled', true)
+        button.innerText = `removing...`
+        postschema.body = JSON.stringify({
+            token: getdata('token'),
+            type: 'managers',
+            assurance: this.assurance,
+            needle: button.getAttribute('data-id')
+        })
+        let result = await request('rAenrs',postschema)
+        button.classList.remove('loading')
+        button.removeAttribute('disabled')
+        if (result.success) {
+            alertMessage(result.message)
+            deletechild(button.parentElement.parentElement.parentElement,button.parentElement.parentElement.parentElement.parentElement)
+        }else{
+            alertMessage(result.message)
+        }
 
     }
-    removeMedicine(){
-
+    async removeMedicine(button){
+        button.classList.add('loading')
+        button.setAttribute('disabled', true)
+        button.innerText = `removing...`
+        postschema.body = JSON.stringify({
+            token: getdata('token'),
+            type: 'rstctd_medicines',
+            assurance: this.assurance,
+            needle: button.getAttribute('data-id')
+        })
+        let result = await request('rAenrs',postschema)
+        button.classList.remove('loading')
+        button.removeAttribute('disabled')
+        if (result.success) {
+            alertMessage(result.message)
+            deletechild(button.parentElement.parentElement.parentElement,button.parentElement.parentElement.parentElement.parentElement)
+        }else{
+            alertMessage(result.message)
+        }
     }
-    removeTest(){
-        
+    async removeTest(button){
+        button.classList.add('loading')
+        button.setAttribute('disabled', true)
+        button.innerText = `removing...`
+        postschema.body = JSON.stringify({
+            token: getdata('token'),
+            type: 'rstctd_tests',
+            assurance: this.assurance,
+            needle: button.getAttribute('data-id')
+        })
+        let result = await request('rAenrs',postschema)
+        button.classList.remove('loading')
+        button.removeAttribute('disabled')
+        if (result.success) {
+            alertMessage(result.message)
+            deletechild(button.parentElement.parentElement.parentElement,button.parentElement.parentElement.parentElement.parentElement)
+        }else{
+            alertMessage(result.message)
+        }
     }
-    removeOperation(){
-        
+    async removeOperation(button){
+        button.classList.add('loading')
+        button.setAttribute('disabled', true)
+        button.innerText = `removing...`
+        postschema.body = JSON.stringify({
+            token: getdata('token'),
+            type: 'rstctd_operations',
+            assurance: this.assurance,
+            needle: button.getAttribute('data-id')
+        })
+        let result = await request('rAenrs',postschema)
+        button.classList.remove('loading')
+        button.removeAttribute('disabled')
+        if (result.success) {
+            alertMessage(result.message)
+            deletechild(button.parentElement.parentElement.parentElement,button.parentElement.parentElement.parentElement.parentElement)
+        }else{
+            alertMessage(result.message)
+        }
     }
-    removeEquipment(){
-        
+    async removeEquipment(button){
+        button.classList.add('loading')
+        button.setAttribute('disabled', true)
+        button.innerText = `removing...`
+        postschema.body = JSON.stringify({
+            token: getdata('token'),
+            type: 'rstctd_equipments',
+            assurance: this.assurance,
+            needle: button.getAttribute('data-id')
+        })
+        let result = await request('rAenrs',postschema)
+        button.classList.remove('loading')
+        button.removeAttribute('disabled')
+        if (result.success) {
+            alertMessage(result.message)
+            deletechild(button.parentElement.parentElement.parentElement,button.parentElement.parentElement.parentElement.parentElement)
+        }else{
+            alertMessage(result.message)
+        }
     }
-    removeService(){
-        
+    async removeService(button){
+        button.classList.add('loading')
+        button.setAttribute('disabled', true)
+        button.innerText = `removing...`
+        postschema.body = JSON.stringify({
+            token: getdata('token'),
+            type: 'rstctd_services',
+            assurance: this.assurance,
+            needle: button.getAttribute('data-id')
+        })
+        let result = await request('rAenrs',postschema)
+        button.classList.remove('loading')
+        button.removeAttribute('disabled')
+        if (result.success) {
+            alertMessage(result.message)
+            deletechild(button.parentElement.parentElement.parentElement,button.parentElement.parentElement.parentElement.parentElement)
+        }else{
+            alertMessage(result.message)
+        }
     }
 }

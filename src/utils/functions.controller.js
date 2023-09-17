@@ -224,9 +224,12 @@ export function showRecs(input, data,type) {
     div.innerHTML = `<div class="w-100 h-100 p-5p bsbb"><ul class="ls-none p-0 m-0"></ul></div>`
     for(const info of data){
       let item = document.createElement('li');
-      item.className = 'hover p-10p bsbb w-100 item capitalize'
+      item.className = 'hover p-10p bsbb w-100 item capitalize left'
       item.textContent = info.name
       item.setAttribute('data-id',info.id)
+      if (type == 'medicines' || type == 'equipments' || type == 'services'|| type == 'tests' || type == 'operations') {
+        item.setAttribute('data-price',info.price)
+      }
       div.querySelector('ul').appendChild(item)
     }
     let chipsHolder = parent.querySelector('div.chipsholder')
@@ -245,7 +248,7 @@ export function showRecs(input, data,type) {
       if (input.classList.contains('chips-check')) {
         if (type == 'medicines' || type == 'equipments' || type == 'services') {
           if (input.classList.contains('no-quantity-addin')) {
-            addChip({name:item.textContent, id: item.getAttribute('data-id')},chipsHolder,['id'])
+            addChip({name:item.textContent, id: item.getAttribute('data-id'), price: item.getAttribute('data-price')},chipsHolder,['id','name','price'])
           }else{
             let ion =  data.filter(function (ite) {
               return ite.id == item.getAttribute('data-id')
@@ -255,18 +258,26 @@ export function showRecs(input, data,type) {
             }
           }
         }else if (type == 'tests') {
-          let ion =  data.filter(function (ite) {
-            return ite.id == item.getAttribute('data-id')
-          })
-          if (ion) {
-            promptTestsPopup(ion,chipsHolder)
+          if (input.classList.contains('no-extra-info-addin')) {
+            addChip({name:item.textContent, id: item.getAttribute('data-id'), price: item.getAttribute('data-price')},chipsHolder,['id','name','price'])
+          }else{
+            let ion =  data.filter(function (ite) {
+              return ite.id == item.getAttribute('data-id')
+            })
+            if (ion) {
+              promptTestsPopup(ion,chipsHolder)
+            }
           }
         }else if (type == 'operations') {
-          let ion =  data.filter(function (ite) {
-            return ite.id == item.getAttribute('data-id')
-          })
-          if (ion) {
-            promptOperationPopup(ion,chipsHolder)
+          if (input.classList.contains('no-extra-info-addin')) {
+            addChip({name:item.textContent, id: item.getAttribute('data-id'), price: item.getAttribute('data-price')},chipsHolder,['id','name','price'])
+          }else{
+            let ion =  data.filter(function (ite) {
+              return ite.id == item.getAttribute('data-id')
+            })
+            if (ion) {
+              promptOperationPopup(ion,chipsHolder)
+            }
           }
         }else if (type == 'assurances') {
           let ion =  data.filter(function (ite) {

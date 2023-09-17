@@ -105,17 +105,21 @@ export const getEmployees = async (req,res)=>{
           SELECT
            users.id,
            users.online,
-           users.Full_name as names,
+           users.Full_name as name,
            users.phone,
            users.email,
            users.title as position,
            users.nid,
            users.status,
-           hospitals.name as hp,
+           COALESCE(hospitals.name, 'N/A')  as hp,
            COALESCE(departments.name, 'N/A')  as department
           FROM 
-           users inner join hospitals on JSON_CONTAINS(hospitals.employees, JSON_QUOTE(users.id), '$')
+           users left join hospitals on JSON_CONTAINS(hospitals.employees, JSON_QUOTE(users.id), '$')
            left join departments on users.department = departments.id
+          where 
+            users.role!= 'Admin'
+            AND 
+            users.role!= 'system'
       `,[])
       if (!select) {
           return res.status(500).send({success:false, message: errorMessage.is_error})
@@ -142,8 +146,7 @@ export const getEmployeesByRole = async (req,res)=>{
           FROM 
            users
           WHERE
-           role = ? 
-           
+           users.role = ?
           `,[role])
       if (!select) {
           return res.status(500).send({success:false, message: errorMessage.is_error})
@@ -157,6 +160,13 @@ export const getEmployeesByRole = async (req,res)=>{
 export const addEmployeetoHp = async (req,res)=>{
   try {
     let {employee,hospital} = req.body
+      let ArrayAvai = await checkArrayAvai('hospitals','employees',employee,'id',hospital);
+      if (!ArrayAvai) {
+          return res.status(500).send({success:false, message: errorMessage.is_error})
+      }
+      if (ArrayAvai.length) {
+          return res.send({success: false, message: errorMessage.err_entr_avai})
+      }
       let update = await query(`UPDATE hospitals SET employees = JSON_ARRAY_APPEND(employees, '$', ?) where hospitals.id = ?`,[employee,hospital]);
       if (!update) return res.status(500).send({success:false, message: errorMessage.is_error})
       if (!update.affectedRows) return res.status(404).send({success:false, message: errorMessage._err_hc_404})
@@ -183,5 +193,23 @@ export const addEmployeetoAssurance = async (req,res)=>{
   } catch (error) {
     console.log(error)
     res.status(500).send({success:false, message: errorMessage.is_error})
+  }
+}
+export const removeEmployeFromHospital = async (req,res)=>{
+  try {
+      let {hospital, employee} = req.body
+      let ArrayAvai = await checkArrayAvai('hospitals','employees',employee,'id',hospital);
+      if (!ArrayAvai) {
+          return res.status(500).send({success:false, message: errorMessage.is_error})
+      }
+      if (!ArrayAvai.length) {
+          return res.send({success: false, message: errorMessage.err_entr_not_avai})
+      }
+      let update = await query(`UPDATE hospitals SET employees = JSON_REMOVE(employees,JSON_UNQUOTE(JSON_SEARCH(employees, 'one',?))) where hospitals.id = ?`,[employee,hospital]);
+      if (!update) return res.status(500).send({success:false, message: errorMessage.is_error})
+      res.send({success: true, message: errorMessage.entr_removed})
+  } catch (error) {
+      res.status(500).send({success:false, message: errorMessage.is_error})
+      console.log(error)
   }
 }

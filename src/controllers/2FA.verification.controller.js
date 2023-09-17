@@ -61,11 +61,25 @@ const verification = async (req,res)=>{
                 query(`update users set fa = null ${(select.status === 'unverified')? ',status = "active"' : ''} where id = ?`,[select.id]);
             }
             let token 
-            if (select.role != 'patient' && select.role != 'Admin' && select.role != 'householder') {
+            if (select.role != 'patient' && select.role != 'Admin' && select.role != 'householder' && select.role != 'insurance_manager') {
                 if (!hospital.id) {
                    return res.status(403).send({success: false, message: errorMessage.emp_inassigned_to_hp_error_message}) 
                 }
                  token = addToken({id:select.id,Full_name:select.Full_name,role: select.role,status: select.status,hospital: hospital.id,department: select.department, title: select.title,hp_name:hospital.name })
+            }else if (select.role == 'insurance_manager') {
+                let assurance = await query(`select id from assurances where JSON_CONTAINS(managers, JSON_QUOTE(?),'$')`,[select.id])
+                if(assurance.length > 1){
+                    let h = []
+                    for (const hos of assurance) {
+                       h.push(hos.id) 
+                    }
+                    assurance = h
+                }else if(assurance.length == 1){
+                    [assurance] = assurance
+                }else{
+                    return res.status(403).send({success: false, message: errorMessage.emp_inassigned_to_assu_error_message})
+                }
+                token = addToken({id:select.id,Full_name:select.Full_name,role: select.role,status: select.status,title: select.title, assurance: assurance.id})
             }else{
                  token = addToken({id:select.id,Full_name:select.Full_name,role: select.role,status: select.status})
             }

@@ -331,6 +331,120 @@ export function page (req,res,page){
                     file = 'N/A'
                 break;
         } 
+    }else if (user == 'insurance_manager') {
+        switch (filename) {
+            case '':
+                file = path.join(__dirname,'..','pages', 'insurance-index.html')
+                break;
+            case 'home/':
+                file = path.join(__dirname,'..','pages', 'insurance-index.html')
+                break;
+            case 'home':
+                file = path.join(__dirname,'..','pages', 'insurance-index.html')
+                break;
+            case 'restricted-medications/':
+                file = path.join(__dirname,'..','pages', 'insurance-index.html')
+                break;
+            case 'restricted-medications':
+                file = path.join(__dirname,'..','pages', 'insurance-index.html')
+                break;
+            case 'restricted-tests/':
+                file = path.join(__dirname,'..','pages', 'insurance-index.html')
+                break;
+            case 'restricted-tests':
+                file = path.join(__dirname,'..','pages', 'insurance-index.html')
+                break;
+            case 'my-account/':
+                file = path.join(__dirname,'..','pages', 'insurance-index.html')
+                break;
+            case 'my-account':
+                file = path.join(__dirname,'..','pages', 'insurance-index.html')
+                break;
+            case 'restricted-operations/':
+                file = path.join(__dirname,'..','pages', 'insurance-index.html')
+                break;
+            case 'restricted-operations':
+                file = path.join(__dirname,'..','pages', 'insurance-index.html')
+                break;
+            case 'restricted-equipments/':
+                file = path.join(__dirname,'..','pages', 'insurance-index.html')
+                break;
+            case 'restricted-equipments':
+                file = path.join(__dirname,'..','pages', 'insurance-index.html')
+                break;
+            case 'restricted-services/':
+                file = path.join(__dirname,'..','pages', 'insurance-index.html')
+            break;
+            case 'restricted-services':
+                file = path.join(__dirname,'..','pages', 'insurance-index.html')
+                break;
+            case 'medical-prescriptions/':
+                file = path.join(__dirname,'..','pages', 'insurance-index.html')
+            break;
+            case 'medical-prescriptions':
+                file = path.join(__dirname,'..','pages', 'insurance-index.html')
+                break;
+            default:
+                    file = 'N/A'
+                break;
+        } 
+    }else if (user == 'dof') {
+        switch (filename) {
+            case '':
+                file = path.join(__dirname,'..','pages', 'dof-index.html')
+                break;
+            case 'home/':
+                file = path.join(__dirname,'..','pages', 'dof-index.html')
+                break;
+            case 'home':
+                file = path.join(__dirname,'..','pages', 'dof-index.html')
+                break;
+            case 'restricted-medications/':
+                file = path.join(__dirname,'..','pages', 'dof-index.html')
+                break;
+            case 'restricted-medications':
+                file = path.join(__dirname,'..','pages', 'dof-index.html')
+                break;
+            case 'restricted-tests/':
+                file = path.join(__dirname,'..','pages', 'dof-index.html')
+                break;
+            case 'restricted-tests':
+                file = path.join(__dirname,'..','pages', 'dof-index.html')
+                break;
+            case 'my-account/':
+                file = path.join(__dirname,'..','pages', 'dof-index.html')
+                break;
+            case 'my-account':
+                file = path.join(__dirname,'..','pages', 'dof-index.html')
+                break;
+            case 'restricted-operations/':
+                file = path.join(__dirname,'..','pages', 'dof-index.html')
+                break;
+            case 'restricted-operations':
+                file = path.join(__dirname,'..','pages', 'dof-index.html')
+                break;
+            case 'restricted-equipments/':
+                file = path.join(__dirname,'..','pages', 'dof-index.html')
+                break;
+            case 'restricted-equipments':
+                file = path.join(__dirname,'..','pages', 'dof-index.html')
+                break;
+            case 'restricted-services/':
+                file = path.join(__dirname,'..','pages', 'dof-index.html')
+            break;
+            case 'restricted-services':
+                file = path.join(__dirname,'..','pages', 'dof-index.html')
+                break;
+            case 'medical-prescriptions/':
+                file = path.join(__dirname,'..','pages', 'dof-index.html')
+            break;
+            case 'medical-prescriptions':
+                file = path.join(__dirname,'..','pages', 'dof-index.html')
+                break;
+            default:
+                    file = 'N/A'
+                break;
+        } 
     }else{
         switch (filename) {
             case '':

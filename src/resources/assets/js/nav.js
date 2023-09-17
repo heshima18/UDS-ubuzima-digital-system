@@ -1,5 +1,9 @@
 import { postschema, request,alertMessage, getdata,getschema, animskel, deletechild,getPath,cpgcntn, sessiondata, calcTime} from "../../../utils/functions.controller.js"
 let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,z,x,c,v,b,n
+const now = luxon.DateTime.now();
+let kigaliTime = now.setZone('Africa/Kigali');
+kigaliTime = kigaliTime.toFormat('yyyy/MM/dd HH:mm:ss');
+console.log(kigaliTime);
 const token = getdata('token');
 export const userinfo = await request(`authenticateToken/${token}`,getschema);
 if (userinfo.message.role != getPath()[0]) {
@@ -28,12 +32,22 @@ let nfPanel = document.querySelector('ul.nf-panel');
         z = userinfo.message
         if (n && t) {
             n.innerHTML = `<span class="w-100 h-70 capitalize wrap fs-13p flex px-5p">${z.Full_name}</span>`
-            if (z.role != 'patient' && z.role != 'householder' && z.role != 'admin') {
+            if (z.role != 'patient' && z.role != 'householder' && z.role != 'admin' && z.role != 'insurance_manager') {
                 t.innerHTML = `<span class="w-100 h-70 capitalize wrap fs-12p flex px-5p"><span>${z.hp_name}</span> <span class="bold-2 center mx-3p"><span class="w-5p h-5p br-50 bc-dgray"></span></span>${z.title}</span>`
             }else{
                 t.innerHTML = null
             }
         }
+        let logoutLink = document.querySelector('a[href="auth-login.html"]')
+        logoutLink.addEventListener('click', function (event) {
+            event.preventDefault();
+            localStorage.removeItem('token');
+            localStorage.removeItem('userinfo');
+
+            let url = new URL(window.location.href);
+            url.pathname = `/`;
+            window.location.href = url.toString()
+        })
         for (const button of dropdown_button) {
             button.addEventListener('click',function () {
                 let target = this.getAttribute('data-bs-toggle')

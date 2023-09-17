@@ -2,6 +2,7 @@ import query from './query.controller'
 import errorMessage from './response.message.controller'
 import id from "./randomInt.generator.controller";
 import { checkArrayAvai } from './credentials.verifier.controller';
+import authenticateToken from './token.verifier.controller';
 export const addAssurance = async (req,res)=>{
     try {
         let { name,percentage } = req.body
@@ -53,6 +54,15 @@ export const getAssurances = async (req,res)=>{
 export const assurance = async (req,res)=>{
     try {
         let {assurance} = req.params
+        if (!assurance) {
+            let { token } = req.body
+            token = authenticateToken(token)
+            token = token.token
+            assurance = token.assurance
+        }
+        if (!assurance) {
+            return res.status(404).send({success: false, message: errorMessage._err_assu_404})
+        }
         let select = await query(`SELECT
          assurances.id,
          assurances.name,
@@ -77,8 +87,7 @@ export const assurance = async (req,res)=>{
          `,[assurance])
         
         if (!select) {
-            res.status(500).send({success:false, message: errorMessage.is_error})
-            return
+            return res.status(500).send({success:false, message: errorMessage.is_error})
         }
         if (assurance.length == 0) return res.status(404).send({success: false, message: select})
         select = select.map(function (assurance) {
@@ -100,16 +109,16 @@ export const addMedicineToAssuranceRestrictedList = async (req,res)=>{
     try {
         let {medicines, assurance} = req.body
         for (const medicine of medicines) {
-            let ArrayAvai = await checkArrayAvai('assurances','rstctd_medicines',medicine,'id',assurance);
+            let ArrayAvai = await checkArrayAvai('assurances','rstctd_medicines',medicine.id,'id',assurance);
             if (!ArrayAvai) {
                 return res.status(500).send({success:false, message: errorMessage.is_error})
             }
             if (ArrayAvai.length) {
                 return res.send({success: false, message: errorMessage.err_entr_avai})
             }
-            let update = await query(`UPDATE assurances SET rstctd_medicines = JSON_ARRAY_APPEND(rstctd_medicines, '$', ?) where assurances.id = ?`,[medicine,assurance]);
+            let update = await query(`UPDATE assurances SET rstctd_medicines = JSON_ARRAY_APPEND(rstctd_medicines, '$', ?) where assurances.id = ?`,[medicine.id,assurance]);
             if (!update) return res.status(500).send({success:false, message: errorMessage.is_error})
-            if (!update.affectedRows) return res.status(404).send({success:false, message: errorMessage._err_hc_404})
+            if (!update.affectedRows) return res.status(404).send({success:false, message: errorMessage._err_assu_404})
           
         }
         res.send({success: true, message: errorMessage.mc_added_to_aSsU_message})
@@ -122,19 +131,19 @@ export const addTestToAssuranceRestrictedList = async (req,res)=>{
     try {
         let {tests, assurance} = req.body
         for (const test of tests) {
-            let ArrayAvai = await checkArrayAvai('assurances','rstctd_tests',test,'id',assurance);
+            let ArrayAvai = await checkArrayAvai('assurances','rstctd_tests',test.id,'id',assurance);
             if (!ArrayAvai) {
                 return res.status(500).send({success:false, message: errorMessage.is_error})
             }
             if (ArrayAvai.length) {
                 return res.send({success: false, message: errorMessage.err_entr_avai})
             }
-            let update = await query(`UPDATE assurances SET rstctd_tests = JSON_ARRAY_APPEND(rstctd_tests, '$', ?) where assurances.id = ?`,[test,assurance]);
+            let update = await query(`UPDATE assurances SET rstctd_tests = JSON_ARRAY_APPEND(rstctd_tests, '$', ?) where assurances.id = ?`,[test.id,assurance]);
             if (!update) return res.status(500).send({success:false, message: errorMessage.is_error})
-            if (!update.affectedRows) return res.status(404).send({success:false, message: errorMessage._err_hc_404})
+            if (!update.affectedRows) return res.status(404).send({success:false, message: errorMessage._err_assu_404})
           
         }
-        res.send({success: true, message: errorMessage.mc_added_to_aSsU_message})
+        res.send({success: true, message: errorMessage.tc_added_to_aSsU_message})
     } catch (error) {
         res.status(500).send({success:false, message: errorMessage.is_error})
         console.log(error)
@@ -144,19 +153,19 @@ export const addEquipmentToAssuranceRestrictedList = async (req,res)=>{
     try {
         let {equipments, assurance} = req.body
         for (const equipment of equipments) {
-            let ArrayAvai = await checkArrayAvai('assurances','rstctd_equipments',equipment,'id',assurance);
+            let ArrayAvai = await checkArrayAvai('assurances','rstctd_equipments',equipment.id,'id',assurance);
             if (!ArrayAvai) {
                 return res.status(500).send({success:false, message: errorMessage.is_error})
             }
             if (ArrayAvai.length) {
                 return res.send({success: false, message: errorMessage.err_entr_avai})
             }
-            let update = await query(`UPDATE assurances SET rstctd_equipments = JSON_ARRAY_APPEND(rstctd_equipments, '$', ?) where assurances.id = ?`,[equipment,assurance]);
+            let update = await query(`UPDATE assurances SET rstctd_equipments = JSON_ARRAY_APPEND(rstctd_equipments, '$', ?) where assurances.id = ?`,[equipment.id,assurance]);
             if (!update) return res.status(500).send({success:false, message: errorMessage.is_error})
-            if (!update.affectedRows) return res.status(404).send({success:false, message: errorMessage._err_hc_404})
+            if (!update.affectedRows) return res.status(404).send({success:false, message: errorMessage._err_assu_404})
           
         }
-        res.send({success: true, message: errorMessage.mc_added_to_aSsU_message})
+        res.send({success: true, message: errorMessage.ec_added_to_aSsU_message})
     } catch (error) {
         res.status(500).send({success:false, message: errorMessage.is_error})
         console.log(error)
@@ -166,19 +175,59 @@ export const addServiceToAssuranceRestrictedList = async (req,res)=>{
     try {
         let {services, assurance} = req.body
         for (const service of services) {
-            let ArrayAvai = await checkArrayAvai('assurances','rstctd_services',service,'id',assurance);
+            let ArrayAvai = await checkArrayAvai('assurances','rstctd_services',service.id,'id',assurance);
             if (!ArrayAvai) {
                 return res.status(500).send({success:false, message: errorMessage.is_error})
             }
             if (ArrayAvai.length) {
                 return res.send({success: false, message: errorMessage.err_entr_avai})
             }
-            let update = await query(`UPDATE assurances SET rstctd_services = JSON_ARRAY_APPEND(rstctd_services, '$', ?) where assurances.id = ?`,[service,assurance]);
+            let update = await query(`UPDATE assurances SET rstctd_services = JSON_ARRAY_APPEND(rstctd_services, '$', ?) where assurances.id = ?`,[service.id,assurance]);
             if (!update) return res.status(500).send({success:false, message: errorMessage.is_error})
-            if (!update.affectedRows) return res.status(404).send({success:false, message: errorMessage._err_hc_404})
+            if (!update.affectedRows) return res.status(404).send({success:false, message: errorMessage._err_assu_404})
           
         }
-        res.send({success: true, message: errorMessage.mc_added_to_aSsU_message})
+        res.send({success: true, message: errorMessage.sc_added_to_aSsU_message})
+    } catch (error) {
+        res.status(500).send({success:false, message: errorMessage.is_error})
+        console.log(error)
+    }
+}
+export const addOperationToAssuranceRestrictedList = async (req,res)=>{
+    try {
+        let {operations, assurance} = req.body
+        for (const operation of operations) {
+            let ArrayAvai = await checkArrayAvai('assurances','rstctd_operations',operation.id,'id',assurance);
+            if (!ArrayAvai) {
+                return res.status(500).send({success:false, message: errorMessage.is_error})
+            }
+            if (ArrayAvai.length) {
+                return res.send({success: false, message: errorMessage.err_entr_avai})
+            }
+            let update = await query(`UPDATE assurances SET rstctd_operations = JSON_ARRAY_APPEND(rstctd_operations, '$', ?) where assurances.id = ?`,[operation.id,assurance]);
+            if (!update) return res.status(500).send({success:false, message: errorMessage.is_error})
+            if (!update.affectedRows) return res.status(404).send({success:false, message: errorMessage._err_assu_404})
+          
+        }
+        res.send({success: true, message: errorMessage.oc_added_to_aSsU_message})
+    } catch (error) {
+        res.status(500).send({success:false, message: errorMessage.is_error})
+        console.log(error)
+    }
+}
+export const removeItemFromAssurancelist = async (req,res)=>{
+    try {
+        let {type, assurance, needle} = req.body
+        let ArrayAvai = await checkArrayAvai('assurances',type,needle,'id',assurance);
+        if (!ArrayAvai) {
+            return res.status(500).send({success:false, message: errorMessage.is_error})
+        }
+        if (!ArrayAvai.length) {
+            return res.send({success: false, message: errorMessage.err_entr_not_avai})
+        }
+        let update = await query(`UPDATE assurances SET ${type} = JSON_REMOVE(${type},JSON_UNQUOTE(JSON_SEARCH(${type}, 'one',?))) where assurances.id = ?`,[needle,assurance]);
+        if (!update) return res.status(500).send({success:false, message: errorMessage.is_error})
+        res.send({success: true, message: errorMessage.entr_removed})
     } catch (error) {
         res.status(500).send({success:false, message: errorMessage.is_error})
         console.log(error)

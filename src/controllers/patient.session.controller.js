@@ -32,8 +32,8 @@ export const addSession = async (req,res)=>{
         var t = await query(`select price from tests where id = ?`, [test.id]);
         Object.assign(tests[tests.indexOf(test)],{tester: hc_provider})
         if(t.length == 0)  return res.status(500).send({success:false, message: errorMessage._err_test_404})
-        console.log(tests)
         t = t[0]
+        Object.assign(tests[tests.indexOf(test)],{price: t.price})
         itt +=t.price
       }
       let meds = await query(`select medicines from inventories where hospital = ?`, [hp]);
@@ -44,12 +44,12 @@ export const addSession = async (req,res)=>{
         for (const medic of meds) {
           if (medic.id == medicine.id) {
             if (Number(medic.quantity) < Number(medicine.quantity)) {
-              Object.assign(medicines[medicines.indexOf(medicine)],{servedOut: true, status: null})
+              Object.assign(medicines[medicines.indexOf(medicine)],{servedOut: true, status: null, price: m.price * medicine.quantity})
             }else{
               if(m.length == 0)  return res.status(500).send({success:false, message: errorMessage._err_med_404})
               m = m[0]
               imt +=(m.price * parseInt(medicine.quantity))
-              Object.assign(medicines[medicines.indexOf(medicine)],{servedOut: false})
+              Object.assign(medicines[medicines.indexOf(medicine)],{servedOut: false, price: m.price * parseInt(medicine.quantity)})
              if (medicine.status == 'served') {
                   meds[meds.indexOf(medic)].quantity = parseInt(meds[meds.indexOf(medic)].quantity) - parseInt(medicine.quantity)
                 }
@@ -57,31 +57,34 @@ export const addSession = async (req,res)=>{
           }
         }
         if (!('servedOut' in medicines[medicines.indexOf(medicine)])) {
-          Object.assign(medicines[medicines.indexOf(medicine)], {servedOut : true})
+          Object.assign(medicines[medicines.indexOf(medicine)], {servedOut : true, price: 0})
         }
       }
       for (const equipment of equipments) {
         var m = await query(`select price from equipments where id = ?`, [equipment.id]);
         if(m.length == 0)  return res.status(404).send({success:false, message: errorMessage._err_equipment_404})
         m = m[0]
+        Object.assign(equipments[equipments.indexOf(equipment)],{price: m.price * parseInt(equipment.quantity)})
         iet +=(m.price * parseInt(equipment.quantity))
       }
       for (const service of services) {
         var m = await query(`select price from services where id = ?`, [service.id]);
         if(m.length == 0)  return res.status(404).send({success:false, message: errorMessage._err_service_404})
         m = m[0]
+        Object.assign(services[services.indexOf(service)],{price: m.price * parseInt(service.quantity)})
         ist +=(m.price * parseInt(service.quantity))
       }
       for (const operation of operations) {
-        Object.assign(operations[operations.indexOf(operation)],{operator: hc_provider})
         var m = await query(`select price from operations where id = ?`, [operation.id]);
         if(m.length == 0)  return res.status(404).send({success:false, message: errorMessage._err_operation_404})
         m = m[0]
+        Object.assign(operations[operations.indexOf(operation)],{operator: hc_provider, price: parseInt(m.price)})
         iot +=m.price
       }
+      let addins = {medicines, tests, operations, services, equipments}
       query(`UPDATE inventories  SET medicines = ? where hospital = ?`, [JSON.stringify(meds),hp])
       let tt = itt+imt+iot+ist+iet;
-      let pts = await calculatePayments(assurance,tt)
+      let pts = await calculatePayments(assurance,addins,'all')
       let insertpayment = await query(`insert into payments(id,user,session,amount,assurance_amount,status)values(?,?,?,?,?,?)`,[id(),patient,uid,pts.patient_amount,pts.assurance_amount,'awaiting payment'])
       let insert = await query(`insert into
        medical_history(id,patient,hospital,departments,hc_provider,symptoms,tests,medicines,decision,comment,status,assurance,services,operations,equipments,dateadded)values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,CURRENT_TIMESTAMP())`,[uid,patient,hp,JSON.stringify(departments),hc_provider,JSON.stringify(symptoms),JSON.stringify(tests),JSON.stringify(medicines),JSON.stringify(decision),comment,(close)? "closed" :"open",assurance,JSON.stringify(services),JSON.stringify(operations),JSON.stringify(equipments)])
@@ -303,7 +306,7 @@ export const session = async (req,res)=>{
     mh.dateadded as dateadded,
     GROUP_CONCAT(
       DISTINCT 
-      JSON_OBJECT('id', p.id, 'name', p.Full_name, 'dob', p.dob,'phone', p.phone,'nid', p.nid, 'location', 
+      JSON_OBJECT('id', p.id, 'name', p.Full_name, 'weight', mh.p_weight, 'dob', p.dob,'phone', p.phone,'nid', p.nid, 'location', 
         CONCAT(
           (SELECT name From provinces Where id = p.resident_province),' , ',
           (SELECT name From districts Where id = p.resident_district),' , ',
@@ -484,6 +487,7 @@ export const addSessionTests = async (req,res)=>{
         t = {price : 0}
       }else{
          [t] = t
+         Object.assign(test,{price: t.price})
          itt +=t.price
          let objectAvai = await checkObjectAvai('medical_history','tests','id',test.id,'id',session)
           if (!objectAvai) {
@@ -496,7 +500,7 @@ export const addSessionTests = async (req,res)=>{
         }
       
       if (itt == 0) return res.status(403).send({success: false, message: errorMessage._err_test_404})
-      let pts = await calculatePayments(assurance,itt)
+      let pts = await calculatePayments(assurance,{tests: [test]},'tests')
       let payment_info = await getPayment(session)
       if (!payment_info) {
         return res.status(500).send({success:false, message: errorMessage.is_error})
@@ -533,6 +537,7 @@ export const addSessionOperation = async (req,res)=>{
         t = {price : 0}
       }else{
          [t] = t
+         Object.assign(operation,{price: parseInt(t.price)})
          itt +=t.price
          let objectAvai = await checkObjectAvai('medical_history','operations','id',operation.id,'id',session)
           if (!objectAvai) {
@@ -545,7 +550,7 @@ export const addSessionOperation = async (req,res)=>{
         }
       
       if (itt == 0) return res.status(403).send({success: false, message: errorMessage._err_operation_404})
-      let pts = await calculatePayments(assurance,itt)
+      let pts = await calculatePayments(assurance,{operations: [operation]},'operations')
       let payment_info = await getPayment(session)
       if (!payment_info) {
         return res.status(500).send({success:false, message: errorMessage.is_error})
@@ -583,6 +588,7 @@ export const addSessionService = async (req,res)=>{
       }else{
          [t] = t
          itt +=(t.price * service.quantity)
+         Object.assign(service,{price: t.price * parseInt(service.quantity)})
          let objectAvai = await checkObjectAvai('medical_history','services','id',service.id,'id',session)
           if (!objectAvai) {
             return res.status(500).send({success:false, message: errorMessage.is_error})
@@ -594,7 +600,7 @@ export const addSessionService = async (req,res)=>{
         }
       
       if (itt == 0) return res.status(403).send({success: false, message: errorMessage._err_service_404})
-      let pts = await calculatePayments(assurance,itt)
+      let pts = await calculatePayments(assurance,{services: [service]},'services')
       let payment_info = await getPayment(session)
       if (!payment_info) {
         return res.status(500).send({success:false, message: errorMessage.is_error})
@@ -630,20 +636,21 @@ export const addSessionEquipment = async (req,res)=>{
       if(t.length == 0) {
         t = {price : 0}
       }else{
-         [t] = t
-         itt += (t.price * equipment.quantity)
-         let objectAvai = await checkObjectAvai('medical_history','equipments','id',equipment.id,'id',session)
-          if (!objectAvai) {
-            return res.status(500).send({success:false, message: errorMessage.is_error})
-          }
-          if (objectAvai.length) {
-            return res.send({success: false, message: errorMessage.err_entr_avai})
-          }
-         query(`update medical_history set equipments =  JSON_ARRAY_APPEND(equipments, '$', JSON_OBJECT("id", ?, "quantity", ?)) where id = ?`,[equipment.id,equipment.quantity,session])
-        }
+        [t] = t
+        itt += (t.price * equipment.quantity)
+        Object.assign(equipment,{price: t.price * parseInt(equipment.quantity)})
+        let objectAvai = await checkObjectAvai('medical_history','equipments','id',equipment.id,'id',session)
+         if (!objectAvai) {
+           return res.status(500).send({success:false, message: errorMessage.is_error})
+         }
+         if (objectAvai.length) {
+           return res.send({success: false, message: errorMessage.err_entr_avai})
+         }
+        query(`update medical_history set equipments =  JSON_ARRAY_APPEND(equipments, '$', JSON_OBJECT("id", ?, "quantity", ?)) where id = ?`,[equipment.id,equipment.quantity,session])
+      }
       
       if (itt == 0) return res.status(403).send({success: false, message: errorMessage._err_equipment_404})
-      let pts = await calculatePayments(assurance,itt)
+      let pts = await calculatePayments(assurance,{equipments : [equipment]},'equipments')
       let payment_info = await getPayment(session)
       if (!payment_info) {
         return res.status(500).send({success:false, message: errorMessage.is_error})
@@ -697,8 +704,10 @@ export const addSessionMedicine = async (req,res)=>{
             if (medic.id == medicine.id) {
               if (Number(medic.quantity) < Number(medicine.quantity)) {
                 Object.assign(medicine, {servedOut : true})
+                Object.assign(medicines[medicines.indexOf(medicine)],{servedOut: true, price: m.price * parseInt(medicine.quantity)})
               }else{
                 Object.assign(medicine, {servedOut : false})
+                Object.assign(medicines[medicines.indexOf(medicine)],{servedOut: false, price: m.price * parseInt(medicine.quantity)})
                 itt += (m.price * medicine.quantity)
                 if (medicine.status == 'served') {
                   meds[meds.indexOf(medic)].quantity = parseInt(meds[meds.indexOf(medic)].quantity) - parseInt(medicine.quantity)
@@ -708,12 +717,13 @@ export const addSessionMedicine = async (req,res)=>{
           }
           if (!('servedOut' in medicine)) {
             Object.assign(medicine, {servedOut : true, status : null})
+            Object.assign(medicines[medicines.indexOf(medicine)],{servedOut: true, price: 0})
           }
           query(`update medical_history set medicines =  JSON_ARRAY_APPEND(medicines, '$', JSON_OBJECT("id", ?, "quantity", ?, "servedOut", ?, "status",?)) where id = ? AND hc_provider = ?`,[medicine.id,medicine.quantity,medicine.servedOut,medicine.status,session,hc_provider])
         }
         query(`UPDATE inventories  SET medicines = ? where hospital = ?`, [JSON.stringify(meds),decoded.token.hospital])
         // if (itt == 0) return res.status(403).send({success: false, message: errorMessage._err_med_404})
-        let pts = await calculatePayments(assurance,itt)
+        let pts = await calculatePayments(assurance,{medicines},'medicines')
        let payment_info = await getPayment(session)
       if (!payment_info) {
         return res.status(500).send({success:false, message: errorMessage.is_error})
@@ -841,4 +851,102 @@ export const markMedicineAsServed = async (req,res) =>{
     console.log(error)
     return res.status(500).send({success: false, message: errorMessage.is_error})
   }
+}
+export const testPay = async (req,res) =>{
+  let v = await calculatePayments(794092683,{medicines: [{id: 1594898649, price: 12},{id: 1594898649, price: 12}],tests: [{id: 2332,price: 200}],operations: [{id: 121212, price: 2000}]},'type')
+  res.send(v)
+}
+export const assuranceMH = async (req,res)=>{
+  try { 
+    let { token,hospital } = req.body
+    token = authenticateToken(token)
+    token = token.token
+    let assurance = token.assurance
+    let response = await query(`SELECT
+    mh.id AS session_id,
+    mh.status as status,
+    mh.dateadded as dateadded,
+    GROUP_CONCAT(
+      DISTINCT 
+      JSON_OBJECT('id', p.id, 'name', p.Full_name ,'insurance', COALESCE(p.assurances,'[]'))
+    ) AS p_info,
+    GROUP_CONCAT(
+      DISTINCT
+        JSON_OBJECT('id', mh.hospital,'phone', hospitals.phone, 'name', hospitals.name, 'location', 
+          CONCAT(
+            (SELECT name From provinces Where id = hospitals.province),' , ',
+            (SELECT name From districts Where id = hospitals.district),' , ',
+            (SELECT name From sectors Where id = hospitals.sector),' , ',
+            (SELECT name From cells Where id = hospitals.cell)
+          )
+      )
+    ) AS hp_info,
+    GROUP_CONCAT(
+      DISTINCT
+        JSON_OBJECT('id', pm.id, 'status', pm.status, 'a_amount', pm.assurance_amount, 'p_amount', pm.amount, 'datepaid', pm.datepaid, 'date', pm.date)
+      ) AS payment_info
+
+FROM
+    medical_history mh
+    INNER JOIN patients p ON mh.patient = p.id
+    INNER JOIN users ON mh.Hc_provider = users.id
+    LEFT JOIN users as tester ON JSON_CONTAINS(mh.tests, JSON_OBJECT('tester', tester.id), '$')
+    LEFT JOIN users as operator ON JSON_CONTAINS(mh.operations, JSON_OBJECT('operator', operator.id), '$')
+    INNER JOIN hospitals ON mh.hospital = hospitals.id
+    INNER JOIN payments as pm ON mh.id = pm.session
+    LEFT JOIN medicines AS m ON JSON_CONTAINS(mh.medicines, JSON_OBJECT('id', m.id), '$')
+    LEFT JOIN equipments as eq ON JSON_CONTAINS(mh.equipments, JSON_OBJECT('id', eq.id), '$')
+    LEFT JOIN services as s ON JSON_CONTAINS(mh.services, JSON_OBJECT('id', s.id), '$')
+    LEFT JOIN operations as o ON JSON_CONTAINS(mh.operations, JSON_OBJECT('id', o.id), '$')
+    LEFT JOIN tests AS t ON JSON_CONTAINS(mh.tests, JSON_OBJECT('id', t.id), '$')
+    LEFT JOIN departments as d ON JSON_CONTAINS(mh.departments, JSON_QUOTE(d.id), '$')
+    left join assurances as a on mh.assurance = a.id
+WHERE mh.assurance = ? and mh.hospital = ?
+GROUP BY mh.id;
+
+  `,[assurance,hospital])
+    if(!response) return res.status(500).send({success: false, message: errorMessage.is_error})
+    if (response.length == 0) return res.status(404).send({success: false, message: []})
+    for (const session of response) {
+      response[response.indexOf(session)].hp_info = JSON.parse(session.hp_info);
+      response[response.indexOf(session)].p_info = JSON.parse(session.p_info)
+      response[response.indexOf(session)].p_info.insurance = JSON.parse(session.p_info.insurance)
+      response[response.indexOf(session)].payment_info = JSON.parse(session.payment_info)
+      response[response.indexOf(session)].dateadded = new Date(session.dateadded).toISOString().split('T')[0]
+      response[response.indexOf(session)].p_info.insurance = session.p_info.insurance.find(function (insurance) {
+        return insurance.id == assurance
+      })
+    }
+    res.send({success: true, message: response})
+    
+  } catch (error) {
+    console.log(error)
+    res.status(500).send({success:false, message: errorMessage.is_error})
+  }
+}
+export const assuranceHP = async (req,res) =>{
+  try {
+    let { token } = req.body
+    token = authenticateToken(token)
+    token = token.token
+    let assurance = token.assurance
+    let response = await query(`SELECT
+                                  distinct hp.id,
+                                  hp.name
+                                FROM
+                                  medical_history as mh
+                                  INNER JOIN 
+                                    hospitals as hp on mh.hospital = hp.id
+                                WHERE
+                                  mh.assurance = ?
+                                GROUP BY 
+                                  hp.id
+    `,[assurance])
+    if (!response) return res.status(500).send({success: true, message: errorMessage.is_error})
+    res.send({success: true, message: response})
+  } catch (error) {
+    console.log(error)
+    return res.status(500).send({success: true, message: errorMessage.is_error})
+  }
+  
 }

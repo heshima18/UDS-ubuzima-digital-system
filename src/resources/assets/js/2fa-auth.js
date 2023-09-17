@@ -96,6 +96,9 @@ form.addEventListener('submit', async e=>{
             }else if (z.role == 'laboratory_scientist') {
                 window.location.href = '../laboratory_scientist/home/'
                 
+            }else if (z.role == 'insurance_manager') {
+                window.location.href = '../insurance_manager/home/'
+                
             }
         }else{
             console.log()

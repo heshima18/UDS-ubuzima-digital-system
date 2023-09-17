@@ -17,7 +17,6 @@ $(document).ready(async function () {
     n = await request('get-departments',postschema)
     h =  await request('gethospitals',postschema)
     t = await request('get-titles',postschema)
-    console.log(t)
     try{
         f = document.querySelector('form#add-employee-form')
         s = Array.from(f.querySelectorAll('select.address-field'));
@@ -135,7 +134,7 @@ $(document).ready(async function () {
             language: { sLengthMenu: "_MENU_", search: "", searchPlaceholder: "Search..." },
             columns: [
                 { data: "" }, // Responsive Control column
-                { data: "names", title: "Names" },
+                { data: "name", title: "Names" },
                 { data: "nid", title: "NID" },
                 { data: "position", title: "Position" },
                 { data: "hp", title: "Health Post" },
@@ -266,6 +265,18 @@ $(document).ready(async function () {
                         a.append('<option value="' + e.toLowerCase() + '" class="text-capitalize">' + e + "</option>");
                     });
                 });
+                 // Filter by Department
+                 this.api().columns(6).every(function () {
+                    var t = this,
+                        a = $(`<select class="form-select text-capitalize"><option value=""> Select Status </option></select>`)
+                            .appendTo(".employee-status").on("change", function () {
+                                var e = $.fn.dataTable.util.escapeRegex($(this).val());
+                                t.search(e ? "^" + e + "$" : "", !0, !1).draw();
+                            });
+                    t.data().unique().sort().each(function (e, t) {
+                        a.append('<option value="' + e.toLowerCase() + '" class="text-capitalize">' + e + "</option>");
+                    });
+                });
             }
         });
     // Delete employee when delete icon clicked
@@ -299,6 +310,8 @@ $(document).ready(async function () {
             if (departments) {
                 departments = departments.departments
                 showRecs(this,departments,'department')
+            }else{
+                showRecs(this,n.message,'department')
             }
         })
         initializeCleave(

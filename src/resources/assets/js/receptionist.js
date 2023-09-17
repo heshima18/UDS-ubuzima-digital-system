@@ -17,7 +17,6 @@ import {pushNotifs, userinfo,expirateMssg, getNfPanelLinks,m as messages} from "
     if (z.success) {
         z = z.message
         m = m.message
-        q = q.message
         try {
             const socket = io(geturl(),{ query : { id: z.id} });
             socket.on('connect', () => {

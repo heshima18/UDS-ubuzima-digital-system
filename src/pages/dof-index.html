@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Director of Finance - Home | UDS</title>
+    <link rel="stylesheet" type="text/css" href="/styles/styling.css">
+    <link rel="icon" type="image/x-icon" href="/assets/svg/logo.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&amp;display=swap"
+        rel="stylesheet" />
+
+    <link rel="stylesheet" href="/assets/vendor/fonts/boxicons.css" />
+    <link rel="stylesheet" href="/assets/vendor/fonts/fontawesome.css" />
+    <link rel="stylesheet" href="/assets/vendor/libs/spinkit/spinkit.css">
+
+    <!-- Core CSS -->
+    <link rel="stylesheet" href="/assets/vendor/css/core.css" class="template-customizer-core-css" />
+    <link rel="stylesheet" href="/assets/vendor/css/theme-default.css" class="template-customizer-theme-css" />
+    <link rel="stylesheet" href="/assets/css/demo.css" />
+
+    <!-- Vendors CSS -->
+    <link rel="stylesheet" href="/assets/vendor/libs/datatables-bs5/datatables.bootstrap5.css" />
+    <link rel="stylesheet" href="/assets/vendor/libs/datatables-responsive-bs5/responsive.bootstrap5.css" />
+    <link rel="stylesheet" href="/assets/vendor/libs/datatables-buttons-bs5/buttons.bootstrap5.css" />
+    <link rel="stylesheet" href="/assets/vendor/libs/datatables-checkboxes-jquery/datatables.checkboxes.css" />
+    <link rel="stylesheet" href="/styles/styling.css">
+    <link rel="stylesheet" href="/assets/vendor/fonts/boxicons.css">
+    <script src="/assets/js/nav.js" type="module"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/luxon/2.0.2/luxon.min.js"></script>
+    <script src="/assets/vendor/libs/jquery/jquery.js"></script>
+    <script src="/assets/js/insurance.js" type="module"></script>
+	<script src="/getSocketIo/socket.io.min.js"></script>
+    <script src="/assets/vendor/libs/datatables-bs5/datatables-bootstrap5.js"></script>
+    <script src="/assets/vendor/js/bootstrap.js"></script>
+	<link rel="shortcut icon" href="/icons/favicon.png" type="image/x-icon">
+</head>
+<body class="p-0 m-0 w-100 h-100 p-a ovh">
+<div class="cont w-100 h-100 ovxh" id="cont">
+	<div class="theshade w-100 h-100 p-f bc-tr-black zi-20 pl-300p bsbb tr-0-3 hidden"></div>
+	<div id="body" class="bc-gray w-100 h-100 p-r bsbb">
+        <div class="w-100 h-a bsbb m-0 t-0 p-f p-10p zi-100">
+            <nav class="w-100 card-2 bc-white br-5p flex jc-sb pr-15p pl-15p" id="layout-navbar">
+                <div class="h-54p center">
+                    <a class="nav-item nav-link px-0 me-xl-4" href="javascript:void(0)">
+                        <i class="">UDS_logo</i>
+                    </a>
+                </div>
+                <div class="h-54p center" id="navbar-collapse">
+                    <ul class="navbar-nav flex-row align-items-center ms-auto">
+                        <li class="nav-item navbar-dropdown dropdown p-5p bsbb mr-5p">
+                            <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="notification-dropdown" data-bs-auto-close="outside">
+                                <i class="bx bx-bell bx-sm"></i>
+                                <span class="p-a bc-red br-50 w-15p h-15p fs-9p white hidden t-5p r-0  data-role" data-role="notification-count-badge">0</span>
+                            </a>
+                            <ul class="notification-dropdown bc-white card h-400p w-390p p-0 t-80p p-f mr-20p r-0 ls-none hidden" data-bs-popper="static" name="notification-dropdown" id="notification-dropdown">
+                                <li class="dropdown-menu-header border-bottom px-10p py-5p bsbb">
+                                    <div class="dropdown-header d-flex align-items-center py-10p">
+                                        <h5 class="text-body mb-0 me-auto capitalize">Notifications</h5>
+                                        <a href="javascript:void(0)" class="dropdown-notifications-all text-body" data-bs-toggle="tooltip" data-bs-placement="top" aria-label="Mark all as read" data-bs-original-title="Mark all as read"><i class="bx fs-4 bx-envelope-open"></i></a>
+                                    </div>
+                                </li>
+                                <li class="dropdown-notifications-list scrollable-container h-80 ovys scroll-3">
+                                    <ul class="list-group list-group-flush nf-panel h-100">
+                                       <li class="w-100 h-100 center">
+                                        <div class="center">
+                                            <div class="sk-grid sk-primary">
+                                                <div class="sk-grid-cube"></div>
+                                                <div class="sk-grid-cube"></div>
+                                                <div class="sk-grid-cube"></div>
+                                                <div class="sk-grid-cube"></div>
+                                                <div class="sk-grid-cube"></div>
+                                                <div class="sk-grid-cube"></div>
+                                                <div class="sk-grid-cube"></div>
+                                                <div class="sk-grid-cube"></div>
+                                                <div class="sk-grid-cube"></div>
+                                            </div>
+                                        </div>
+                                        <div class="w-100 h-a dgray capitalize">loading...</div>
+                                       </li>
+                                    </ul>
+                                </li>
+                                <li class="dropdown-menu-footer border-top">
+                                    <a href="javascript:void(0);" class="dropdown-item d-flex justify-content-center p-3">
+                                        Mark all as seen
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li class="nav-item navbar-dropdown dropdown-user dropdown ml-5p">
+                            <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="profile-dropdown">
+                                <div class="avatar avatar-online">
+                                    <img src="/assets/img/avatar-1.png" alt="" class="w-px-40 h-auto rounded-circle">
+                                </div>
+                            </a>
+                            <ul class="profile-dropdown bc-white card h-200p w-200p p-0 t-80p p-f mr-20p r-0 ls-none hidden" name="profile-dropdown">
+                                <li>
+                                    <a class="dropdown-item" href="pages-account-settings-account.html">
+                                        <div class="flex px-5p py-10p bsbb">
+                                            <div class="left mx-5p">
+                                                <div class="avatar avatar-online">
+                                                    <img src="/assets/img/avatar-1.png" alt="" class="w-px-40 h-auto rounded-circle">
+                                                </div>
+                                            </div>
+                                            <div class="left">
+                                                <span class="fw-semibold d-bloc data-role bsbb" data-role="profile-name"><span class="skel w-65p h-10p br-2p block my-5p"></span></span>
+                                                <small class="text-muted block data-role" data-role="profile-title"><span class="skel w-50p h-10p br-2p block my-5p"></span></small>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </li>
+                                <li class="px-10p bsbb py-2p">
+                                    <div class="dropdown-divider"></div>
+                                </li>
+                                <li class="px-10p bsbb py-2p">
+                                    <a class="dropdown-item left" href="../my-account">
+                                        <i class="bx bx-user me-2"></i>
+                                        <span class="align-middle">My Account</span>
+                                    </a>
+                                </li>
+                                <li class="px-10p bsbb py-2p">
+                                    <div class="dropdown-divider"></div>
+                                </li>
+                                <li class="px-10p bsbb py-2p">
+                                    <a class="dropdown-item left" href="auth-login.html" target="_blank">
+                                        <i class="bx bx-power-off me-2"></i>
+                                        <span class="align-middle">Log Out</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+                <div class="navbar-search-wrapper search-input-wrapper d-none">
+                    <input type="text" name="search" class="form-control search-input container-xxl border-0" placeholder="Search..." aria-label="Search..." autofocus="true">
+                    <i class="bx bx-x bx-sm search-toggler cursor-pointer"></i>
+                </div>
+            </nav>
+        </div>
+		<div class="thebody w-100 h-90 p-r pt-100p bsbb">
+			<div class="w-100 h-100 mb-10p">
+				<div class="w-90 m-a h-100 p-10p br-10p mb-30p bsbb">
+					<div class="w-100 h-100 p-10p bsbb flex bblock-resp bp-0-resp" aria-controls="cont">
+						<div class="w-240p bfull-resp h-100 bh-70p-resp p-10p bsbb the-h">
+							<div class="cont w-100 h-100">
+								<div class="the-h w-210p m-a bfull-resp bsbb h-a ovxs scroll-3 p-5p bsbb bc-white br-5p">
+									<ul class="ls-none p-0 m-0 jc-sb w-100 bflex-resp">
+										<li class="p-5p bsbb">
+											<span class="w-100 h-100 p-10p hover-7 cpcards bsbb flex verdana nowrap capitalize fs-13p br-5p active bb-1-s-theme bc-tr-theme theme" data-item-type="home">
+                                                <span class="w-19p h-19p mr-5p"><i class="menu-icon tf-icons bx bx-home-circle"></i></span>
+                                                    <span class="center pt-2p bsbb">
+                                                        Home
+                                                    </span>
+                                             </span>
+										</li>
+                                       
+                                        <li class="p-5p bsbb">
+                                            <span class="w-100 h-100 p-10p hover-7 cpcards bsbb iblock verdana nowrap capitalize fs-13p br-5p" data-item-type="restricted-medications">restricted medications</span>
+                                        </li>
+                                        <li class="p-5p bsbb">
+											<span class="w-100 h-100 p-10p hover-7 cpcards bsbb iblock verdana nowrap capitalize fs-13p br-5p" data-item-type="restricted-tests">restricted tests</span>
+										</li>
+                                        <li class="p-5p bsbb">
+											<span class="w-100 h-100 p-10p hover-7 cpcards bsbb iblock verdana nowrap capitalize fs-13p br-5p" data-item-type="restricted-operations">restricted operations</span>
+										</li>
+                                        <li class="p-5p bsbb">
+											<span class="w-100 h-100 p-10p hover-7 cpcards bsbb iblock verdana nowrap capitalize fs-13p br-5p" data-item-type="restricted-equipments">restricted equipments</span>
+										</li>
+                                        <li class="p-5p bsbb">
+											<span class="w-100 h-100 p-10p hover-7 cpcards bsbb iblock verdana nowrap capitalize fs-13p br-5p" data-item-type="restricted-services">restricted services</span>
+										</li>
+                                        <li class="p-5p bsbb">
+											<span class="w-100 h-100 p-10p hover-7 cpcards bsbb iblock verdana nowrap capitalize fs-13p br-5p" data-item-type="medical-prescriptions">medical prescriptions</span>
+										</li>
+										<li class="p-5p bsbb">
+											<span class="w-100 h-100 p-10p hover-7 cpcards bsbb flex verdana nowrap capitalize fs-13p br-5p" data-item-type="my-account">
+                                                <span class="w-19p h-19p mr-5p"><i class="tf-icons bx bx-user"></i></span>
+                                                <span class="center bsbb pt-1p">
+                                                    my account
+                                                </span>
+                                            </span>
+										</li>
+									</ul>
+								</div>
+							</div>
+						</div>
+						<div class="the-b w-100 h-90 p-r ovxh">
+							<!-- home section -->
+							<div class="br-5p w-100 h-100 p-r ovh block tr-0-3 pagecontentsection zi-10" id="home">
+								<div class="w-100 h-a p-10p bsbb">
+									<span class="theme capitalize left flex bold fs-20p verdana h-100 pl-10p"><span class="dgray capitalize">insurance manager / </span>&nbsp;Home</span>
+								</div>
+								<div class="pg-cntnt w-100 h-90 bh-80-resp scroll-3 p-20p bsbb ovys left bp-0-resp">
+									<div class="home row p-5p bsbb">
+                                        <div class="col-md-6 col-lg-4 mb-3">
+                                            <div class="card">
+                                                <div class="card-header capitalize">
+                                                    Patients
+                                                </div>
+                                                <div class="card-body">
+                                                    <h5 class="card-title capitalize">total medicines in inventory</h5>
+                                                    <p class="card-text">
+                                                        <span class="bold-2">30</span> medicines
+                                                    </p>
+                                                    <a href="pendingApplications/" class="btn btn-primary">View</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 col-lg-4 mb-3">
+                                            <div class="card">
+                                                <div class="card-header capitalize">
+                                                    Patients
+                                                </div>
+                                                <div class="card-body">
+                                                    <h5 class="card-title capitalize">critical value medicines</h5>
+                                                    <p class="card-text">
+                                                        <span class="bold-2">30</span> medicines
+                                                    </p>
+                                                    <a href="pendingApplications/" class="btn btn-primary">View</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 col-lg-4 mb-3">
+                                            <div class="card">
+                                                <div class="card-header capitalize">
+                                                    tests
+                                                </div>
+                                                <div class="card-body">
+                                                    <h5 class="card-title capitalize">finished medicines</h5>
+                                                    <p class="card-text">
+                                                        <span class="bold-2">30</span> medicines
+                                                    </p>
+                                                    <a href="pendingApplications/" class="btn btn-primary">View</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 col-lg-4 mb-3">
+                                            <div class="card">
+                                                <div class="card-header capitalize">
+                                                    tests
+                                                </div>
+                                                <div class="card-body">
+                                                    <h5 class="card-title capitalize">today's total tests</h5>
+                                                    <p class="card-text">
+                                                        <span class="bold-2">30</span> tests
+                                                    </p>
+                                                    <a href="pendingApplications/" class="btn btn-primary">View</a>
+                                                </div>
+                                            </div>
+                                        </div>
+									</div>
+								</div>
+							</div>
+                            <!-- manage restricted medications section -->
+							<div class="br-5p w-100 h-100 p-a ovh hidden t-0 tr-0-3 pagecontentsection" id="restricted-medications">
+								<div class="w-100 h-a p-10p bsbb">
+									<span class="theme capitalize left flex bold fs-20p verdana h-100 pl-10p"><span class="dgray capitalize">insurance manager / </span>&nbsp;restricted medications</span>
+								</div>
+								<div class="pg-cntnt w-100 h-90 p-20p bp-0-resp bsbb ovys left scroll-2">
+                                    <div class="card">
+                                        <div class="card-header border-bottom text-center">
+                                            <div class="d-flex justify-content-between align-items-center row pt-3 gap-3 gap-md-0">
+                                                <div class="col-md-4 medication-name"></div>
+                                            </div>
+                                        </div>
+                                        <div class="card-datatable mb-3 table-responsive">
+                                            <table class="datatables datatables-medications my-3 table border-top"></table>
+                                        </div>
+                                    </div>
+								</div>
+                                <div class="modal fade ovh">
+                                    <div class="cntr bc-white p-15p w-400p h-220p h-a bsbb br-5p card-6"  id="add-medicine">
+                                        <div class="">
+                                            <div class="modal-header text-uppercase">
+                                                <span class="card-header capitalize fs-18p">Add restricted Test To List</span>
+                                            </div>
+                                            <div class="modal-body">
+                                                <div class="body w-100 h-a p-5p grid">
+                                                    <form method="post" id="add-medicine-form" name="add-medicine-form">
+                                                        <div class="col-md-12 p-10p bsbb mb-5p p-r">
+                                                            <label for="medicines" class="form-label">medicines</label>
+                                                            <input type="text" class="form-control chips-check no-quantity-addin" id="medicines" placeholder="Demo medicine" name="medicines">
+                                                            <small class="hidden w-100 red pl-3p verdana"></small>
+                                                        </div>
+                                                        <div class="col-12 text-center d-flex gap-3 justify-content-end my-10p">
+                                                            <button type="reset" class="btn btn-label-secondary"
+                                                                data-bs-dismiss="modal" aria-label="Close">Cancel</button>
+                                                            <button type="submit" class="btn btn-primary">proceed</button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+							</div>
+							<!-- end of manage restricted medications section -->
+                            <!-- manage restricted tests section -->
+							<div class="br-5p w-100 h-100 p-a ovh hidden t-0 tr-0-3 pagecontentsection" id="restricted-tests">
+								<div class="w-100 h-a p-10p bsbb">
+									<span class="theme capitalize left flex bold fs-20p verdana h-100 pl-10p"><span class="dgray capitalize">insurance manager / </span>&nbsp;restricted tests</span>
+								</div>
+								<div class="pg-cntnt w-100 h-90 p-20p bp-0-resp bsbb ovys left scroll-2">
+                                    <div class="card">
+                                        <div class="card-header border-bottom text-center">
+                                            <div class="d-flex justify-content-between align-items-center row pt-3 gap-3 gap-md-0">
+                                                <div class="col-md-4 test-name"></div>
+                                            </div>
+                                        </div>
+                                        <div class="card-datatable mb-3 table-responsive">
+                                            <table class="datatables datatables-tests my-3 table border-top"></table>
+                                        </div>
+                                    </div>
+								</div>
+                                <div class="modal fade ovh">
+                                    <div class="cntr bc-white p-15p w-400p h-220p h-a bsbb br-5p card-6"  id="add-test">
+                                        <div class="">
+                                            <div class="modal-header text-uppercase">
+                                                <span class="card-header capitalize fs-18p">Add restricted Test To List</span>
+                                            </div>
+                                            <div class="modal-body">
+                                                <div class="body w-100 h-a p-5p grid">
+                                                    <form method="post" id="add-test-form" name="add-test-form">
+                                                        <div class="col-md-12 p-10p bsbb mb-5p p-r">
+                                                            <label for="tests" class="form-label">tests</label>
+                                                            <input type="text" class="form-control chips-check no-extra-info-addin" id="tests" placeholder="Demo test" name="tests">
+                                                            <small class="hidden w-100 red pl-3p verdana"></small>
+                                                        </div>
+                                                        <div class="col-12 text-center d-flex gap-3 justify-content-end my-10p">
+                                                            <button type="reset" class="btn btn-label-secondary"
+                                                                data-bs-dismiss="modal" aria-label="Close">Cancel</button>
+                                                            <button type="submit" class="btn btn-primary">proceed</button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+							</div>
+							<!-- end of manage restricted tests section -->
+                            <!-- manage restricted operations section -->
+							<div class="br-5p w-100 h-100 p-a ovh hidden t-0 tr-0-3 pagecontentsection" id="restricted-operations">
+								<div class="w-100 h-a p-10p bsbb">
+									<span class="theme capitalize left flex bold fs-20p verdana h-100 pl-10p"><span class="dgray capitalize">insurance manager / </span>&nbsp;restricted operations</span>
+								</div>
+								<div class="pg-cntnt w-100 h-90 p-20p bp-0-resp bsbb ovys left scroll-2">
+                                    <div class="card">
+                                        <div class="card-header border-bottom text-center">
+                                            <div class="d-flex justify-content-between align-items-center row pt-3 gap-3 gap-md-0">
+                                                <div class="col-md-4 operation-name"></div>
+                                                
+                                            </div>
+                                        </div>
+                                        <div class="card-datatable mb-3 table-responsive">
+                                            <table class="datatables datatables-operations my-3 table border-top"></table>
+                                        </div>
+                                    </div>
+								</div>
+                                <div class="modal fade ovh">
+                                    <div class="cntr bc-white p-15p w-400p h-220p h-a bsbb br-5p card-6"  id="add-operation-modal">
+                                        <div class="">
+                                            <div class="modal-header text-uppercase">
+                                                <span class="card-header capitalize fs-18p">Add restricted Operation To List</span>
+                                            </div>
+                                            <div class="modal-body">
+                                                <div class="body w-100 h-a p-5p grid">
+                                                    <form method="post" id="add-operation-form" name="add-operation-form">
+                                                        <div class="col-md-12 p-10p bsbb mb-5p p-r">
+                                                            <label for="operations" class="form-label">operations</label>
+                                                            <input type="text" class="form-control chips-check no-extra-info-addin" id="operations" placeholder="Demo operation" name="operations">
+                                                            <small class="hidden w-100 red pl-3p verdana"></small>
+                                                        </div>
+                                                        <div class="col-12 text-center d-flex gap-3 justify-content-end my-10p">
+                                                            <button type="reset" class="btn btn-label-secondary"
+                                                                data-bs-dismiss="modal" aria-label="Close">Cancel</button>
+                                                            <button type="submit" class="btn btn-primary">proceed</button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+							</div>
+							<!-- end of manage restricted operations section -->
+                             <!-- manage restricted equipments section -->
+							<div class="br-5p w-100 h-100 p-a ovh hidden t-0 tr-0-3 pagecontentsection" id="restricted-equipments">
+								<div class="w-100 h-a p-10p bsbb">
+									<span class="theme capitalize left flex bold fs-20p verdana h-100 pl-10p"><span class="dgray capitalize">insurance manager / </span>&nbsp;restricted equipments</span>
+								</div>
+								<div class="pg-cntnt w-100 h-90 p-20p bp-0-resp bsbb ovys left scroll-2">
+                                    <div class="card">
+                                        <div class="card-header border-bottom text-center">
+                                            <div class="d-flex justify-content-between align-items-center row pt-3 gap-3 gap-md-0">
+                                                <div class="col-md-4 equipment-name"></div>
+                                            </div>
+                                        </div>
+                                        <div class="card-datatable mb-3 table-responsive">
+                                            <table class="datatables datatables-equipments my-3 table border-top"></table>
+                                        </div>
+                                    </div>
+								</div>
+                                <div class="modal fade ovh">
+                                    <div class="cntr bc-white p-15p w-400p h-220p h-a bsbb br-5p card-6"  id="add-equipment-modal">
+                                        <div class="">
+                                            <div class="modal-header text-uppercase">
+                                                <span class="card-header capitalize fs-18p">Add restricted equipment To List</span>
+                                            </div>
+                                            <div class="modal-body">
+                                                <div class="body w-100 h-a p-5p grid">
+                                                    <form method="post" id="add-equipment-form" name="add-equipment-form">
+                                                        <div class="col-md-12 p-10p bsbb mb-5p p-r">
+                                                            <label for="equipments" class="form-label">equipments</label>
+                                                            <input type="text" class="form-control chips-check no-quantity-addin" id="equipments" placeholder="Demo equipment" name="equipments">
+                                                            <small class="hidden w-100 red pl-3p verdana"></small>
+                                                        </div>
+                                                        <div class="col-12 text-center d-flex gap-3 justify-content-end my-10p">
+                                                            <button type="reset" class="btn btn-label-secondary"
+                                                                data-bs-dismiss="modal" aria-label="Close">Cancel</button>
+                                                            <button type="submit" class="btn btn-primary">proceed</button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+							</div>
+							<!-- end of manage restricted equipments section -->
+                            <!-- manage restricted services section -->
+							<div class="br-5p w-100 h-100 p-a ovh hidden t-0 tr-0-3 pagecontentsection" id="restricted-services">
+								<div class="w-100 h-a p-10p bsbb">
+									<span class="theme capitalize left flex bold fs-20p verdana h-100 pl-10p"><span class="dgray capitalize">insurance manager / </span>&nbsp;restricted services</span>
+								</div>
+								<div class="pg-cntnt w-100 h-90 p-20p bp-0-resp bsbb ovys left scroll-2">
+                                    <div class="card">
+                                        <div class="card-header border-bottom text-center">
+                                            <div class="d-flex justify-content-between align-items-center row pt-3 gap-3 gap-md-0">
+                                                <div class="col-md-4 service-name"></div>
+                                            </div>
+                                        </div>
+                                        <div class="card-datatable mb-3 table-responsive">
+                                            <table class="datatables datatables-services my-3 table border-top"></table>
+                                        </div>
+                                    </div>
+								</div>
+                                <div class="modal fade ovh">
+                                    <div class="cntr bc-white p-15p w-400p h-220p h-a bsbb br-5p card-6"  id="add-service-modal">
+                                        <div class="">
+                                            <div class="modal-header text-uppercase">
+                                                <span class="card-header capitalize fs-18p">Add restricted Service To List</span>
+                                            </div>
+                                            <div class="modal-body">
+                                                <div class="body w-100 h-a p-5p grid">
+                                                    <form method="post" id="add-service-form" name="add-service-form">
+                                                        <div class="col-md-12 p-10p bsbb mb-5p p-r">
+                                                            <label for="services" class="form-label">services</label>
+                                                            <input type="text" class="form-control chips-check no-quantity-addin" id="services" placeholder="Demo Service" name="services">
+                                                            <small class="hidden w-100 red pl-3p verdana"></small>
+                                                        </div>
+                                                        <div class="col-12 text-center d-flex gap-3 justify-content-end my-10p">
+                                                            <button type="reset" class="btn btn-label-secondary"
+                                                                data-bs-dismiss="modal" aria-label="Close">Cancel</button>
+                                                            <button type="submit" class="btn btn-primary">proceed</button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+							</div>
+							<!-- end of manage restricted services section -->
+                            <!-- manage restricted services section -->
+							<div class="br-5p w-100 h-100 p-a ovh hidden t-0 tr-0-3 pagecontentsection" id="medical-prescriptions">
+								<div class="w-100 h-a p-10p bsbb">
+									<span class="bblock-resp theme capitalize left flex bold fs-20p verdana h-100 pl-10p"><span class="dgray capitalize">insurance manager / </span>&nbsp;medical prescriptions</span>
+                                    <span class="bblock-resp bleft-resp inp-hospital px-10p bsbb p-r bp-y-10p-resp right bc-white br-5p p-8p w-300p">
+                                        <form action="" method="post" id="hp-form">
+                                            <div class="p-r">
+                                                <input type="text" class="w-100 no-outline b-none dgray bevalue" id="hospital"name="hospital"  placeholder="Health facility">
+                                                <button class="btn btn-primary btn-sm p-a t-0 r-0 mt--2p" name="search"><i class="bx bx-search h-20p w-a "></i></button>
+                                            </div>
+                                        </form>
+                                    </span>
+								</div>
+								<div class="pg-cntnt w-100 h-90 p-20p bp-0-resp bsbb ovys left scroll-2">
+                                    <div class="w-100 h-100 theb p-r"> 
+                                        <div class="card">
+                                            <div class="card-header border-bottom text-center">
+                                                <div class="d-flex justify-content-between align-items-center row pt-3 gap-3 gap-md-0">
+                                                    <div class="col-md-4 health-facility"></div>
+                                                    <div class="col-md-6 date-range flex">
+                                                        <form action="" method="post" name="date-range" class="flex">
+                                                            <div class="">
+                                                                <div class="col-md-10">
+                                                                    <label for="start" class="form-label">Start Date</label>
+                                                                    <input class="form-control" type="date" id="start">
+                                                                </div>
+                                                            </div>
+                                                            <div class="">
+                                                                <div class="col-md-10">
+                                                                    <label for="start" class="form-label">End Date</label>
+                                                                    <input class="form-control" type="date" id="end">
+                                                                </div>
+                                                            </div>
+                                                            <div class="">
+                                                                <div class="col-md-10">
+                                                                    <label for="start" class="form-label">filter</label>
+                                                                    <button class="btn btn-primary" type="submit">Filter</button>
+                                                                </div>
+                                                            </div>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="card-datatable mb-3 table-responsive">
+                                                <table class="datatables datatables-prescriptions my-3 table border-top"></table>
+                                            </div>
+                                        </div>
+                                    </div>
+								</div>
+							</div>
+							<!-- end of manage restricted services section -->
+							<!-- my account section -->
+							<div class="br-5p w-100 h-100 p-a ovh hidden t-0 tr-0-3 pagecontentsection" id="my-account">
+								<div class="w-100 h-50p ">
+									<span class="theme capitalize left center bold fs-20p verdana h-100 pl-10p">my account</span>
+								</div>
+								<div class="pg-cntnt w-100 h-90 p-20p bsbb ovys left">
+									<div>
+										<div class="w-100 h-a bsbb">
+											<div class="w-100 h-a center">
+												<div class="b-1-s-g p-10p">
+													<div class="header w-100 h-120p center">
+														<div class="w-100p h-100p">
+															<span class="w-100 h-100 bc-tr-theme br-50 theme fs-50p capitalize uihol courier bold-2 center n-img">a</span>
+														</div>
+													</div>
+													<div class="desc center">
+														<div class="names w-100 h-70p mt-30 center">
+															<span class="fs-15p bsbb dgray capitalize namehol verdana name">aaa aaa</span>
+															<div class="w-100 mt-10p h-a center">
+																<span class="icon-edit-icon center w-40p h-20p bc-gray br-2p p-10p bsbb verdana capitalize fs-10p dgray hover-2" data-target="names">
+																	edit
+																</span>
+															</div>
+														</div>
+														<div class="names w-100 h-70p mt-30 center">
+															<span class="fs-15p bsbb dgray capitalize namehol verdana">*********</span>
+															<div class="w-100 mt-10p h-a center">
+																<span class="icon-edit-icon center w-40p h-20p bc-gray br-2p p-10p bsbb verdana capitalize fs-10p dgray hover-2" data-target="password">
+																	edit
+																</span>
+															</div>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+							<!-- end of my account section -->
+						</div>
+
+					</div>
+				</div>
+                <!-- footer section -->
+                <div class="w-100 h-a p-f b-0">
+                    <footer class="content-footer footer bg-footer-theme">
+                        <div class="flex p-20p jc-sb">
+                            <div class="mb-2 mb-md-0 text-uppercase">
+                                ©
+                                <script>
+                                    document.write(new Date().getFullYear())
+                                </script>
+                                <strong>UDS</strong>
+                            </div>
+                            <div>
+                            Powered by <a href="https://prtlfo.vercel.app/" target="_blank" class="footer-link fw-bolder">#_himself</a>
+                            </div>
+                        </div>
+                    </footer>
+                </div>
+                <!-- end of footer section -->
+			</div>
+		</div>		
+	</div>
+</div>
+</body>
+</html>

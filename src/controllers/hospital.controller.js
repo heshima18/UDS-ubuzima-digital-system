@@ -62,7 +62,7 @@ export const getHP = async (req,res)=>{
       hospitals.id AS id,
       hospitals.type,
       GROUP_CONCAT(DISTINCT JSON_OBJECT('province', provinces.name, 'district', districts.name, 'sector', sectors.name,'cell', cells.name)) as location,
-      COALESCE(CONCAT('[', GROUP_CONCAT(DISTINCT JSON_OBJECT('id', users.id, 'name', users.Full_name, 'position', users.title,'phone', users.phone)), ']'), '[]') AS employees,
+      COALESCE(CONCAT('[', GROUP_CONCAT(DISTINCT JSON_OBJECT('id', users.id, 'name', users.Full_name, 'title', users.title,'phone', users.phone)), ']'), '[]') AS employees,
       CONCAT('[', GROUP_CONCAT(DISTINCT JSON_OBJECT('id', departments.id, 'name', departments.name)), ']') AS departments,
       COUNT(DISTINCT medical_history.id) AS total_patients
     FROM
@@ -87,7 +87,7 @@ export const getHP = async (req,res)=>{
         response[response.indexOf(hospital)].departments = JSON.parse(hospital.departments)  
       }
       if (response.length == 0) return res.status(404).send({success: false, message: errorMessage._err_hc_404})
-      res.send({success: true, message: response})
+      res.send({success: true, message: response[0]})
     
   } catch (error) {
     console.log(error)

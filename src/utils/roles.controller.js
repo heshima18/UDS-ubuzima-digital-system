@@ -1,15 +1,16 @@
 export const roles = [
     "Admin",
-    "Ministry of health staff" ,
-    "Director of finance" ,
+    "mohs" ,
+    "dof" ,
     "pharmacist" ,
     "hc_provider" ,
     "laboratory_scientist" ,
-    "community health worker" ,
+    "chw" ,
     "receptionist" ,
     "cashier" ,
     "patient",
     "director_general",
     "householder",
-    "assurance_manager"
+    "insurance_manager",
+    "surgeon"
 ]

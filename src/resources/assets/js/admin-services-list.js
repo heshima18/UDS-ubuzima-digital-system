@@ -204,7 +204,7 @@ $(document).ready(function () {
         const $modal = $(this);
         let unit = f.querySelector('input#unit')
         unit.addEventListener('focus', function (e) {
-            showRecs(this,[{id: 'days', name: 'days'},{id: 'hours', name: 'hours'},{id: 'kilometers', name: 'kilometers'},{id: 'meters', name: 'meters'}],'unit')
+            showRecs(this,[{id: 'days', name: 'days'},{id: 'hours', name: 'hours'},{id: 'kilometers', name: 'kilometers'},{id: 'meters', name: 'meters'},{id: 'night', name: 'night'}],'unit')
         })
     });
 });

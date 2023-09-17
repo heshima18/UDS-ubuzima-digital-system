@@ -97,25 +97,4 @@ document.getElementById("layout-menu") && (isHorizontalLayout = document.getElem
             } catch (e) { }
     })()
 
-var o = $(".select2");
-o.length && o.each(function () {
-    $(this).wrap('<div class="position-relative"></div>').select2({
-        placeholder: "Choose...",
-        dropdownParent: $(this).parent(),
-    });
-});
 
-(function ($) {
-    var validationForms = $(".needs-validation");
-    validationForms.each(function () {
-        $(this).on("submit", e => {
-            e.preventDefault();
-            if (this.checkValidity()) {
-                console.log("Submitted!");
-            } else {
-                e.stopPropagation();
-            }
-            $(this).addClass("was-validated");
-        });
-    });
-})(jQuery);
