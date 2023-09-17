@@ -755,6 +755,7 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,z,notificationlinks
         })
     }
     function genClicks(notificationlinks) {
+        let messages = sessiondata('messages')
         notificationlinks.map((link)=>{
             link.addEventListener(`click`, ()=>{
                 if (!link.classList.contains('list-link')) {
@@ -770,9 +771,15 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,z,notificationlinks
                 s = p.indexOf(v)
                 let url = new URL(window.location.href);
                 if (link.getAttribute('data-message-type') == 'test_res_message' || link.getAttribute('data-message-type') == 'session_message') {
-                    let minfo = sessiondata('minfo')
-                    minfo = sessiondata('minfo')
-                    url.pathname = `/${getPath()[0]}/${link.getAttribute('data-href-target')}/${minfo.session}`;
+                    let session 
+                    if (message.addins) {
+                        session = message.addins.session
+                    }else if (message.extra) {
+                        session = message.extra.session
+                    }
+                    if (session) {
+                        url.pathname = `/${getPath()[0]}/${link.getAttribute('data-href-target')}/${session}`;
+                    }
                 }else if (link.getAttribute('data-message-type') == '__APPNTMNT_MSSG_') {
                     appApprovalCont(message)
                     url.pathname = `/${getPath()[0]}/${link.getAttribute('data-href-target')}`;

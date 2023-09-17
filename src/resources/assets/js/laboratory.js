@@ -1,7 +1,7 @@
 import { alertMessage, getdata, getschema, postschema, request,initializeCleave,sessiondata, checkEmpty, showRecs, getchips,getPath, addUprofile,addsCard,cpgcntn, geturl } from "../../../utils/functions.controller.js";
-import {expirateMssg, getNfPanelLinks, pushNotifs, userinfo} from "./nav.js";
+import {expirateMssg, getNfPanelLinks, pushNotifs, userinfo,m as messages} from "./nav.js";
 
-let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z
+let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z,notificationlinks
 (async function () {
     z = userinfo
     let token = getdata('token')
@@ -22,6 +22,9 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z
             
             socket.on('message', (message) => {
                 pushNotifs(message);
+                messages.push(message)
+                notificationlinks = getNfPanelLinks()
+                genClicks(notificationlinks)
                 addsCard(message.title,true)
 
             });
@@ -118,29 +121,44 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z
         gsd(p[c.indexOf(cudstp)])
         })
     })
-    let notificationlinks = getNfPanelLinks()
-    notificationlinks.map((link)=>{
-        link.addEventListener(`click`, ()=>{
-            if (!link.classList.contains('list-link')) {
-                return 0
-            }
-            v = document.querySelector(`div#${link.getAttribute('data-href-target')}`)
-           if (v) {
-            p = Array.from(v.parentElement.querySelectorAll('.pagecontentsection'))
-            
-            s = p.indexOf(v)
-            let url = new URL(window.location.href);
-            if (link.getAttribute('data-message-type') == 'test_res_message' || link.getAttribute('data-message-type') == 'session_message') {
-                url.pathname = `/${getPath()[0]}/${link.getAttribute('data-href-target')}/${sessiondata('minfo').session}`;
-            }else{
-                url.pathname = `/${getPath()[0]}/${link.getAttribute('data-href-target')}`;
-            }
-            window.history.pushState({},'',url.toString())
-            cpgcntn(p.indexOf(v),p,extra)
-            gsd(v,null)
-           }
+    notificationlinks = getNfPanelLinks()
+    genClicks(notificationlinks)
+    function genClicks(notificationlinks) {
+        let messages = sessiondata('messages')
+        notificationlinks.map((link)=>{
+            link.addEventListener(`click`, ()=>{
+                if (!link.classList.contains('list-link')) {
+                    return 0
+                }
+                v = document.querySelector(`div#${link.getAttribute('data-href-target')}`)
+                let message = messages.find(function (mess) {
+                    return mess.id == link.getAttribute('data-id')
+                })
+                if (v && message) {
+                p = Array.from(v.parentElement.querySelectorAll('.pagecontentsection'))
+                
+                s = p.indexOf(v)
+                let url = new URL(window.location.href);
+                let sessioninfo
+                if (link.getAttribute('data-message-type') == 'req_test_message' || link.getAttribute('data-message-type') == 'session_message') {
+                    if (message.addins) {
+                        sessioninfo = message.addins
+                    }else if (message.extra) {
+                        sessioninfo = message.extra
+                    }
+                    if (sessioninfo) {
+                        url.pathname = `/${getPath()[0]}/${link.getAttribute('data-href-target')}`;
+                    }
+                }else{
+                    url.pathname = `/${getPath()[0]}/${link.getAttribute('data-href-target')}`;
+                }
+                window.history.pushState({},'',url.toString())
+                cpgcntn(p.indexOf(v),p)
+                gsd(v,message)
+               }
+            })
         })
-    })
+    }
 })();
 async function gsd(page,extra) {
     try {
@@ -190,16 +208,22 @@ async function gsd(page,extra) {
                 n = i.find(function (e) {return e.id == 'patient'})
                 s = i.find(function (e) {return e.id == 'session'})
                 t = i.find(function (e) {return e.id == 'test'})
-                if (sessiondata('pinfo')) {
-                  n.value = sessiondata('pinfo').patient_name
-                  n.setAttribute('data-id',sessiondata('pinfo').patient)
-                  s.value = `${sessiondata('pinfo').patient_name}'s session`
-                  s.setAttribute('data-id',sessiondata('pinfo').session)
-                  t.value = `${sessiondata('pinfo').t_name}`
-                  t.setAttribute('data-id',sessiondata('pinfo').test)
+                if (extra) {
+                let session
+                if (extra.addins) {
+                    session = extra.addins
+                }else if (extra.extra) {
+                    session = extra.extra
+                }
+                  n.value = session.patient_name
+                  n.setAttribute('data-id',session.patient)
+                  s.value = `${session.patient_name}'s session`
+                  s.setAttribute('data-id',session.session)
+                  t.value = `${session.t_name}`
+                  t.setAttribute('data-id',session.test)
                 }
                 let button = f.querySelector('button[type="submit"]')
-                f.addEventListener('submit', async e =>{
+                f.onsubmit =  async e =>{
                     let a,b,n,u,r;
                     n = '';
                     u = '';
@@ -239,14 +263,14 @@ async function gsd(page,extra) {
                                     token: getdata('token'),
                                     title:'incoming test results',
                                     token: getdata('token'),
-                                    receiver: sessiondata('pinfo').sender.id,
+                                    receiver: extra.sender.id,
                                     type: 'test_res_message', 
-                                    content: `the results of ${sessiondata('pinfo').t_name} for  ${sessiondata('pinfo').patient_name} are ready to view`,
+                                    content: `the results of ${session.t_name} for  ${session.patient_name} are ready to view`,
                                     extra: {
-                                        test: sessiondata('pinfo').test,
-                                        t_name: sessiondata('pinfo').t_name,
-                                        session: sessiondata('pinfo').session, 
-                                        patient: sessiondata('pinfo').patient
+                                        test: session.test,
+                                        t_name: session.t_name,
+                                        session: session.session, 
+                                        patient: session.patient
                                     },
                                     controller: {
                                         looping: false,
@@ -267,7 +291,7 @@ async function gsd(page,extra) {
                             }
                         }
                     }
-                }) 
+                }
             } catch (error) {
             console.log(error)  
             }

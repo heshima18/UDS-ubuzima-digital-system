@@ -68,7 +68,6 @@ export async function calculatePayments(assurance,item,type) {
           }
         }
       }
-      console.log(sum)
       return sum
     } 
     } catch (error) {

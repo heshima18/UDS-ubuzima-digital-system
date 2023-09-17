@@ -9,7 +9,7 @@ import { io } from '../socket.io/connector.socket.io';
 import { checkObjectAvai, getPayment, getSession } from './credentials.verifier.controller';
 export const addSession = async (req,res)=>{
   try {
-    let {patient,symptoms,tests,decision,departments,medicines,comment,token,assurance,close,equipments,services,operations} = req.body
+    let {patient,symptoms,tests,decision,departments,medicines,comment,token,assurance,close,equipments,services,operations,weight} = req.body
       let uid = id();
       tests = tests || []
       equipments = equipments || []
@@ -87,7 +87,7 @@ export const addSession = async (req,res)=>{
       let pts = await calculatePayments(assurance,addins,'all')
       let insertpayment = await query(`insert into payments(id,user,session,amount,assurance_amount,status)values(?,?,?,?,?,?)`,[id(),patient,uid,pts.patient_amount,pts.assurance_amount,'awaiting payment'])
       let insert = await query(`insert into
-       medical_history(id,patient,hospital,departments,hc_provider,symptoms,tests,medicines,decision,comment,status,assurance,services,operations,equipments,dateadded)values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,CURRENT_TIMESTAMP())`,[uid,patient,hp,JSON.stringify(departments),hc_provider,JSON.stringify(symptoms),JSON.stringify(tests),JSON.stringify(medicines),JSON.stringify(decision),comment,(close)? "closed" :"open",assurance,JSON.stringify(services),JSON.stringify(operations),JSON.stringify(equipments)])
+       medical_history(id,patient,hospital,departments,hc_provider,symptoms,tests,medicines,decision,comment,status,assurance,services,operations,equipments,p_weight,dateadded)values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,CURRENT_TIMESTAMP())`,[uid,patient,hp,JSON.stringify(departments),hc_provider,JSON.stringify(symptoms),JSON.stringify(tests),JSON.stringify(medicines),JSON.stringify(decision),comment,(close)? "closed" :"open",assurance,JSON.stringify(services),JSON.stringify(operations),JSON.stringify(equipments),weight])
       query(`update patients set last_diagnosed = (SELECT dateadded FROM medical_history where id = ?) where id = ?`,[uid,patient])
       if (!insert || !insertpayment) {
         return res.status(500).send({success:false, message: errorMessage.is_error})
@@ -901,10 +901,10 @@ FROM
     LEFT JOIN tests AS t ON JSON_CONTAINS(mh.tests, JSON_OBJECT('id', t.id), '$')
     LEFT JOIN departments as d ON JSON_CONTAINS(mh.departments, JSON_QUOTE(d.id), '$')
     left join assurances as a on mh.assurance = a.id
-WHERE mh.assurance = ? and mh.hospital = ?
+WHERE mh.assurance = ? and mh.hospital = ? and mh.status != ?
 GROUP BY mh.id;
 
-  `,[assurance,hospital])
+  `,[assurance,hospital,'open'])
     if(!response) return res.status(500).send({success: false, message: errorMessage.is_error})
     if (response.length == 0) return res.status(404).send({success: false, message: []})
     for (const session of response) {

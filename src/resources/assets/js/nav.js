@@ -17,6 +17,7 @@ let nfPanel = document.querySelector('ul.nf-panel');
 (async function () {
     if (!m.success) return alertMessage(m.message)
     m = m.message
+    sessionStorage.setItem('messages',JSON.stringify(m))
     try {
         if (!userinfo.success){ 
             return alertMessage(userinfo.message)
@@ -109,7 +110,9 @@ let nfPanel = document.querySelector('ul.nf-panel');
     }
 })()
 export function pushNotifs(message) {
-    console.log('asdfg')
+    let messages = sessiondata('messages')
+    messages.push(message);
+    sessionStorage.setItem('messages',JSON.stringify(messages))
     q = Array.from(document.querySelectorAll('.data-role'));
     b = q.find(function (element) {return element.getAttribute('data-role') == 'notification-count-badge'})
     if (b) {
@@ -154,6 +157,7 @@ export function pushNotifs(message) {
     clicks(l,b,m)
 }
 function clicks(l,b,m) {
+    let messages = sessiondata('messages')
     let menu = document.querySelector('[name="notification-dropdown"]');
     l.map(function (element) {
         let del  = Array.from(element.parentElement.querySelectorAll('a.delete-m'))
@@ -193,22 +197,18 @@ function clicks(l,b,m) {
                 }
                 if (v) {
                     p = Array.from(v.parentElement.querySelectorAll('.pagecontentsection'))
-                    h = m.find(function (message) {
+                    h = messages.find(function (message) {
                         return message.id == element.getAttribute('data-id')
                     })
                     if (h.addins) { 
                         Object.assign(h.addins, {sender: h.sender})
                         if (element.getAttribute('data-message-type') == 'p_message' || element.getAttribute('data-message-type') == 'req_test_message') {
                             sessionStorage.setItem('pinfo',JSON.stringify(h.addins));
-                        }else{
-                            sessionStorage.setItem('minfo',JSON.stringify(h.addins));
                         }
                     }else{
                         Object.assign(h.extra, {sender: h.sender})
                         if (element.getAttribute('data-message-type') == 'p_message' || element.getAttribute('data-message-type') == 'req_test_message') {
                             sessionStorage.setItem('pinfo',JSON.stringify(h.extra));
-                        }else{
-                            sessionStorage.setItem('minfo',JSON.stringify(h.extra));
                         }
                     }
                     // if (v) {
