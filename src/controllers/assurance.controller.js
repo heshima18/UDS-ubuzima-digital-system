@@ -233,3 +233,29 @@ export const removeItemFromAssurancelist = async (req,res)=>{
         console.log(error)
     }
 }
+export const assuranceHP = async (req,res) =>{
+    try {
+      let { token } = req.body
+      token = authenticateToken(token)
+      token = token.token
+      let assurance = token.assurance
+      let response = await query(`SELECT
+                                    distinct hp.id,
+                                    hp.name
+                                  FROM
+                                    medical_history as mh
+                                    INNER JOIN 
+                                      hospitals as hp on mh.hospital = hp.id
+                                  WHERE
+                                    mh.assurance = ?
+                                  GROUP BY 
+                                    hp.id
+      `,[assurance])
+      if (!response) return res.status(500).send({success: true, message: errorMessage.is_error})
+      res.send({success: true, message: response})
+    } catch (error) {
+      console.log(error)
+      return res.status(500).send({success: true, message: errorMessage.is_error})
+    }
+    
+  }

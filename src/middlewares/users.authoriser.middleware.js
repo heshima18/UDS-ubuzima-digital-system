@@ -195,3 +195,27 @@ export const authorizeAssuranceManager = async (req, res, next) => {
     res.status(500).send({ message: errorMessage.is_error, success: false });
   }
 };
+export const authorizeMultipleRoles = async (req, res, next, roles) => {
+  try {
+    const {token} = req.body;
+      const decoded = authenticateToken(token);
+      if (!decoded.success) return res.status(500).send({ message: errorMessage.is_error, success: false });
+
+      let id = decoded.token.id
+      let q = await query(`select role from users where id = ?`,[id])
+
+      if (!q) return res.status(500).send({ message: errorMessage.is_error, success: false });
+      
+      if (q.length == 0) return res.status(404).send({ message: errorMessage._err_u_404, success: false });
+      [q] = q
+      if (!(roles.indexOf(q.role) in roles)) {
+        return res.status(401).send({ message: errorMessage._err_forbidden, success: false })
+      }
+      console.log('body for multiple users check check')
+      next();
+
+  } catch (error) {
+    console.log(error)
+    res.status(500).send({ message: errorMessage.is_error, success: false });
+  }
+};

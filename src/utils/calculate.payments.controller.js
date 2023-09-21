@@ -54,6 +54,7 @@ export async function calculatePayments(assurance,item,type) {
               let restrictedDrug = restrictedItems[key].find(function (restrictedrug) {
                 return restrictedrug == drug.id
               }) 
+              console.log(restrictedDrug)
               if (!restrictedDrug) {
                 sum.assurance_amount+= ((Number(drug.price) * Number(percentages.assurance))/100)
                 sum.patient_amount+= ((Number(drug.price) * Number(percentages.patient))/100)
@@ -64,10 +65,15 @@ export async function calculatePayments(assurance,item,type) {
               }
             }
           }else if (!drug.servedOut) {
-            sum.patient_amount+=drug.price  
+                sum.assurance_amount+= ((Number(drug.price) * Number(percentages.assurance))/100)
+                sum.patient_amount+= ((Number(drug.price) * Number(percentages.patient))/100)
+                sum.assurance_amount = Number(sum.assurance_amount.toFixed(2))
+                sum.patient_amount = Number(sum.patient_amount.toFixed(2)) 
+                console.log(sum)
           }
         }
       }
+      console.log(sum)
       return sum
     } 
     } catch (error) {

@@ -84,7 +84,7 @@ form.addEventListener('submit', async e=>{
             }else if (z.role == 'director_general') {
                 window.location.href = '../dg/home/'
                 
-            }else if (z.role == 'Director of finance') {
+            }else if (z.role == 'dof') {
                 window.location.href = '../dof/home/'
                 
             }else if (z.role == 'Ministry of health staff') {

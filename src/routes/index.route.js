@@ -8,10 +8,10 @@ import verification from '../controllers/2FA.verification.controller';
 import homeController from '../controllers/home.controller';
 import signup from '../controllers/signup.controller';
 import { authorizeRawRole, authorizeRole } from '../middlewares/roles.authorizer.middleware';
-import { authorizeAdmin, authorizeAssuranceManager, authorizeCashier, authorizeHc_provider, authorizeHcp_ptnt, authorizeLaboratory_scientist, authorizePatient, authorizePatientToken, authorizePharmacist } from '../middlewares/users.authoriser.middleware';
+import { authorizeAdmin, authorizeAssuranceManager, authorizeCashier, authorizeHc_provider, authorizeHcp_ptnt, authorizeLaboratory_scientist, authorizeMultipleRoles, authorizePatient, authorizePatientToken, authorizePharmacist } from '../middlewares/users.authoriser.middleware';
 import {addEmployeetoAssurance, addEmployeetoHp, addemployee, getEmployees, getEmployeesByRole, getHpEmployees, removeEmployeFromHospital} from '../controllers/employee.controller';
-import { getHP, getHPs, searchHP,addhospital } from '../controllers/hospital.controller';
-import {addSession, addSessionComment, addSessionDecision, addSessionEquipment, addSessionMedicine, addSessionOperation, addSessionService, addSessionTests, approvePayment, assuranceHP, assuranceMH, closeSession, getHc_pSessions, getHpsessions, getUsessions, markMedicineAsServed, session, testPay } from '../controllers/patient.session.controller';
+import { getHP, getHPs, searchHP,addhospital, hospitalASSU } from '../controllers/hospital.controller';
+import {addSession, addSessionComment, addSessionDecision, addSessionEquipment, addSessionMedicine, addSessionOperation, addSessionService, addSessionTests, approvePayment, assuranceMH, closeSession, getHc_pSessions, getHpsessions, getUsessions, markMedicineAsServed, session, testPay } from '../controllers/patient.session.controller';
 import {addmedicine, getMed, getMeds, searchMed} from '../controllers/medicine.controller';
 import {addDepartment, addDepartmentToHp, getDepartments, removeDepartmentFromHospital} from '../controllers/departments.controller';
 import {addtest,getTests} from '../controllers/tests.controller';
@@ -20,12 +20,12 @@ import { CheckAppointmentTimer, getAppointmentETA } from '../middlewares/time.au
 import { addCell, addDistrict, addProvince, addSector } from '../controllers/add.location.controller';
 import getMap from '../controllers/get.locations.controller';
 import { authorizeHospital } from '../middlewares/hospital.authorizer.middleware';
-import {getInventory,addInventory} from '../controllers/inventory.controller';
+import {getInventory,addInventory, addInventoryTests, addInventoryOperations, addInventoryEquipments, addInventoryServices} from '../controllers/inventory.controller';
 import { getMessages, markAsSeen, sendMessage } from '../controllers/message.controller';
 import { authorizeAppointmentAccess } from '../middlewares/appointment.authorizer.middleware';
 import { authorizeSession } from '../middlewares/session.authorizer.middleware';
 import { addUserAssurance, getPatient, getPatients } from '../controllers/patients.controller';
-import { addAssurance, addEquipmentToAssuranceRestrictedList, addMedicineToAssuranceRestrictedList, addOperationToAssuranceRestrictedList, addServiceToAssuranceRestrictedList, addTestToAssuranceRestrictedList, assurance, getAssurances, removeItemFromAssurancelist } from '../controllers/assurance.controller';
+import { addAssurance, addEquipmentToAssuranceRestrictedList, addMedicineToAssuranceRestrictedList, addOperationToAssuranceRestrictedList, addServiceToAssuranceRestrictedList, addTestToAssuranceRestrictedList, assurance, getAssurances, removeItemFromAssurancelist,assuranceHP } from '../controllers/assurance.controller';
 import { authorizeUserAssurance } from '../middlewares/assurance.authorizer.middleware';
 import { at } from '../controllers/token.verifier.controller';
 import { io } from '../socket.io/connector.socket.io';
@@ -67,6 +67,7 @@ router.post("/aEquTA/",authorizeRole,authorizeAssuranceManager,addEquipmentToAss
 router.post("/rAenrs/",authorizeRole,authorizeAssuranceManager,removeItemFromAssurancelist)
 router.post("/gAsSuMH/",authorizeRole,authorizeAssuranceManager,assuranceMH)
 router.post("/gAsSuHP/",authorizeRole,authorizeAssuranceManager,assuranceHP)
+router.post("/gHosPiAsSu/",authorizeRole,(req,res,next) => authorizeMultipleRoles(req,res,next,['dof']),hospitalASSU)
 router.get("/tp",testPay)
 router.post("/add-assurance-to-user",authorizeRole,authorizePatientToken,addUserAssurance)
 router.post("/add-session-test",authorizeRole,(req,res,next) => authorizeSession(req,res,next,'isnotclosed'),checkTest,addSessionTests)
@@ -93,7 +94,13 @@ router.post('/hcp-appointments',authorizeRole,authorizeHc_provider,hcpAppointmen
 router.post('/appointment/:id',authorizeRole,authorizeHc_provider,appointment)
 router.get('/medicine/:medicine',getMed);
 router.post('/search-medicine/:medicine',authorizeRole,searchMed);
-router.post('/add-inventory',authorizeRole,authorizePharmacist,addInventory);
+router.post('/add-inventory',authorizeRole,(req,res,next) => authorizeMultipleRoles(req,res,next,['dof','pharmacist']),addInventory);
+router.post('/add-inventory-tests',authorizeRole,(req,res,next) => authorizeMultipleRoles(req,res,next,['dof','pharmacist']),addInventoryTests);
+router.post('/add-inventory-operations',authorizeRole,(req,res,next) => authorizeMultipleRoles(req,res,next,['dof','pharmacist']),addInventoryOperations);
+router.post('/add-inventory-equipments',authorizeRole,(req,res,next) => authorizeMultipleRoles(req,res,next,['dof','pharmacist']),addInventoryEquipments);
+router.post('/add-inventory-services',authorizeRole,(req,res,next) => authorizeMultipleRoles(req,res,next,['dof','pharmacist']),addInventoryServices);
+
+
 router.post('/getmeds',authorizeRole,getMeds);
 router.post('/approve-appointment',authorizeRole,authorizeHc_provider,approveAppointment);
 router.post('/getAppointmentETA',authorizeRole,authorizeHc_provider,getAppointmentETA)
@@ -101,9 +108,9 @@ router.post('/decline-appointment',authorizeRole,authorizeHc_provider,declineApp
 router.post('/send-message',authorizeRole,sendMessage);
 router.post('/get-messages',authorizeRole,getMessages);
 router.post('/mark-as-seen',authorizeRole,markAsSeen);
-router.post('/get-inventory',authorizeRole,getInventory);
+router.post('/get-inventory',authorizeRole,(req,res,next) => authorizeMultipleRoles(req,res,next,['dof']),getInventory);
 router.post('/gethospitals',authorizeRole,getHPs)
-router.post('/hospital/:hospital',authorizeRole,getHP)
+router.post('/hospital/:hospital?',authorizeRole,getHP)
 router.post('/search-hospital/:hospital',authorizeRole,searchHP)
 router.post('/add-department',authorizeRole,authorizeAdmin,addDepartment)
 router.post('/add-department-to-hp',authorizeRole,authorizeAdmin,addDepartmentToHp)

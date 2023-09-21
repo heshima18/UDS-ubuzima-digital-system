@@ -1,15 +1,18 @@
 import query from './query.controller'
 import errorMessage from './response.message.controller'
 import id from "./randomInt.generator.controller";
+import authenticateToken from './token.verifier.controller';
 export const addhospital = async (req,res)=>{
   try {
     let { name,departments,province,type,district,sector,cell,dependency,phone } = req.body
-    let insert = await query(`insert into hospitals(id,name,departments,province,type,phone,district,sector,cell,dependency,employees)values(?,?,?,?,?,?,?,?,?,?,?)`,[id(),name,JSON.stringify(departments),province,type,phone,district,sector,cell,dependency,'[]'])
+    let uid = id()
+    let insert = await query(`insert into hospitals(id,name,departments,province,type,phone,district,sector,cell,dependency,employees)values(?,?,?,?,?,?,?,?,?,?,?)`,[uid,name,JSON.stringify(departments),province,type,phone,district,sector,cell,dependency,'[]'])
     if (!insert) {
         res.status(500).send({success:false, message: errorMessage.is_error})
         return
     }
     res.send({success: true, message: 'health service center created sucessfully'})
+    await query(`insert into inventories(id,hospital,medicines,tests,equipments,operations,services)values(?,?,?,?,?,?,?)`,[id(),uid,'[]','[]','[]','[]','[]'])
   } catch (error) {
     res.status(500).send({success:false, message: errorMessage.is_error})
     console.log(error)
@@ -57,6 +60,15 @@ export const getHPs = async (req,res)=>{
 export const getHP = async (req,res)=>{
   try {
       let {hospital} = req.params
+      if (!hospital) {
+        let { token } = req.body
+        token = authenticateToken(token)
+        token = token.token
+        hospital = token.hospital
+    }
+    if (!hospital) {
+        return res.status(404).send({success: false, message: errorMessage._err_hc_404})
+    }
       let response = await query(`SELECT
       hospitals.name AS name,
       hospitals.id AS id,
@@ -162,4 +174,30 @@ export async function getCustomHps (ids){
     console.log(error)
     return []
   }
+}
+export const hospitalASSU = async (req,res) =>{
+  try {
+    let { token } = req.body
+    token = authenticateToken(token)
+    token = token.token
+    let hospital = token.hospital
+    let response = await query(`SELECT
+                                  distinct assu.id,
+                                  assu.name
+                                FROM
+                                  medical_history as mh
+                                  INNER JOIN 
+                                    assurances as assu on mh.assurance = assu.id
+                                WHERE
+                                  mh.hospital = ?
+                                GROUP BY 
+                                  assu.id
+    `,[hospital])
+    if (!response) return res.status(500).send({success: true, message: errorMessage.is_error})
+    res.send({success: true, message: response})
+  } catch (error) {
+    console.log(error)
+    return res.status(500).send({success: true, message: errorMessage.is_error})
+  }
+  
 }

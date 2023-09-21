@@ -1270,18 +1270,21 @@ let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z
                         });
                     }
                     $.fn.dataTable.ext.search.push(function (settings, data, dataIndex) {
-                        let min = minDate.value;
-                        let max = maxDate.value;
-                        let date = new Date(data[5]).toISOString().split('T')[0]; // Assuming the date is in a format compatible with JavaScript Date objects
-                        if (
-                            (min === "" && max === "") ||
-                            (min === "" && date <= max) ||
-                            (min <= date && max === "") ||
-                            (min <= date && date <= max)
-                        ) {
-                            return true;
+                        if (settings.nTable.classList.contains('datatables-prescriptions')) {
+                            let min = minDate.value;
+                            let max = maxDate.value;
+                            let date = new Date(data[5]).toISOString().split('T')[0]; // Assuming the date is in a format compatible with JavaScript Date objects
+                            if (
+                                (min === "" && max === "") ||
+                                (min === "" && date <= max) ||
+                                (min <= date && max === "") ||
+                                (min <= date && date <= max)
+                            ) {
+                                return true;
+                            }
+                            return false;
                         }
-                        return false;
+                        return true
                     })
                     let delbuts = Array.from(page.querySelectorAll('button.view'))
                     delbuts.forEach(button => {
@@ -1308,7 +1311,6 @@ let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z
                     let maxDate = inputs[1]
                     dateRangeForm.onsubmit = function (event) {
                         event.preventDefault();
-
                         let values = {}
                         e.draw();
                         let fileredData = e.rows({ search: 'applied'}).data().toArray();
@@ -1320,6 +1322,7 @@ let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z
                             Object.assign(values,{[input.id]: new Date(input.value).toISOString().split('T')[0]})
                         }
                     }
+                   
                     
             }
             

@@ -399,16 +399,16 @@ export function page (req,res,page){
             case 'home':
                 file = path.join(__dirname,'..','pages', 'dof-index.html')
                 break;
-            case 'restricted-medications/':
+            case 'medications-inventory/':
                 file = path.join(__dirname,'..','pages', 'dof-index.html')
                 break;
-            case 'restricted-medications':
+            case 'medications-inventory':
                 file = path.join(__dirname,'..','pages', 'dof-index.html')
                 break;
-            case 'restricted-tests/':
+            case 'tests-inventory/':
                 file = path.join(__dirname,'..','pages', 'dof-index.html')
                 break;
-            case 'restricted-tests':
+            case 'tests-inventory':
                 file = path.join(__dirname,'..','pages', 'dof-index.html')
                 break;
             case 'my-account/':
@@ -417,22 +417,22 @@ export function page (req,res,page){
             case 'my-account':
                 file = path.join(__dirname,'..','pages', 'dof-index.html')
                 break;
-            case 'restricted-operations/':
+            case 'operations-inventory/':
                 file = path.join(__dirname,'..','pages', 'dof-index.html')
                 break;
-            case 'restricted-operations':
+            case 'operations-inventory':
                 file = path.join(__dirname,'..','pages', 'dof-index.html')
                 break;
-            case 'restricted-equipments/':
+            case 'equipments-inventory/':
                 file = path.join(__dirname,'..','pages', 'dof-index.html')
                 break;
-            case 'restricted-equipments':
+            case 'equipments-inventory':
                 file = path.join(__dirname,'..','pages', 'dof-index.html')
                 break;
-            case 'restricted-services/':
+            case 'services-inventory/':
                 file = path.join(__dirname,'..','pages', 'dof-index.html')
             break;
-            case 'restricted-services':
+            case 'services-inventory':
                 file = path.join(__dirname,'..','pages', 'dof-index.html')
                 break;
             case 'medical-prescriptions/':

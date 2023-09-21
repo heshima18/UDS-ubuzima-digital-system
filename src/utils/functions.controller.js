@@ -248,7 +248,16 @@ export function showRecs(input, data,type) {
       if (input.classList.contains('chips-check')) {
         if (type == 'medicines' || type == 'equipments' || type == 'services') {
           if (input.classList.contains('no-quantity-addin')) {
-            addChip({name:item.textContent, id: item.getAttribute('data-id'), price: item.getAttribute('data-price')},chipsHolder,['id','name','price'])
+            if (input.classList.contains('price-addin')) {
+              let ion =  data.filter(function (ite) {
+                return ite.id == item.getAttribute('data-id')
+              })
+              if (ion) {
+               promptPrice(ion,chipsHolder,type)
+              }
+            }else{
+              addChip({name:item.textContent, id: item.getAttribute('data-id'), price: item.getAttribute('data-price')},chipsHolder,['id','name','price'])
+            }
           }else{
             let ion =  data.filter(function (ite) {
               return ite.id == item.getAttribute('data-id')
@@ -259,7 +268,16 @@ export function showRecs(input, data,type) {
           }
         }else if (type == 'tests') {
           if (input.classList.contains('no-extra-info-addin')) {
-            addChip({name:item.textContent, id: item.getAttribute('data-id'), price: item.getAttribute('data-price')},chipsHolder,['id','name','price'])
+            if (input.classList.contains('price-addin')) {
+              let ion =  data.filter(function (ite) {
+                return ite.id == item.getAttribute('data-id')
+              })
+              if (ion) {
+                promptPrice(ion,chipsHolder)
+              }  
+            }else{
+              addChip({name:item.textContent, id: item.getAttribute('data-id'), price: item.getAttribute('data-price')},chipsHolder,['id','name','price'])
+            }
           }else{
             let ion =  data.filter(function (ite) {
               return ite.id == item.getAttribute('data-id')
@@ -270,7 +288,16 @@ export function showRecs(input, data,type) {
           }
         }else if (type == 'operations') {
           if (input.classList.contains('no-extra-info-addin')) {
-            addChip({name:item.textContent, id: item.getAttribute('data-id'), price: item.getAttribute('data-price')},chipsHolder,['id','name','price'])
+            if (input.classList.contains('price-addin')) {
+              let ion =  data.filter(function (ite) {
+                return ite.id == item.getAttribute('data-id')
+              })
+              if (ion) {
+                promptPrice(ion,chipsHolder)
+              }            
+            }else{
+              addChip({name:item.textContent, id: item.getAttribute('data-id'), price: item.getAttribute('data-price')},chipsHolder,['id','name','price'])
+            }
           }else{
             let ion =  data.filter(function (ite) {
               return ite.id == item.getAttribute('data-id')
@@ -439,7 +466,7 @@ function promptin(info,chipsHolder,type) {
                                           <span class="input-group-text hover-2 us-none">${info.unit}</span>
                                           <small class="w-100 red pl-3p verdana capitalize"></small>
                                       </div>
-                                        ${(type == 'medicines') ? `
+                                        ${(getPath()[0] == 'hc_provider') ? `
                                         <div class="w-100 h-a my-20p px-0 flex">
                                           <div class="fv-plugins-icon-container fv-plugins-bootstrap5-row-valid">
                                             <div class="form-check custom-option custom-option-icon mx-5p">
@@ -492,13 +519,50 @@ function promptin(info,chipsHolder,type) {
     if (v.value.trim() != '') {
       if (stats.length) {
         let cs = stats.find(function (status) {return status.checked == true})
-        addChip({name:info.name, id: info.id , quantity: v.value, status: cs.value},chipsHolder,['id','quantity','status'])
+        addChip({name:info.name, id: info.id ,unit: info.unit , quantity: v.value, status: cs.value},chipsHolder,['id','name','quantity','status','unit'])
       }else{
-        addChip({name:info.name, id: info.id , quantity: v.value},chipsHolder,['id','quantity'])
+        addChip({name:info.name, id: info.id ,unit: info.unit ,price: info.price , quantity: v.value},chipsHolder,['id','name','quantity','price','unit'])
       }
       deletechild(b,b.parentNode)
     }else{
       setErrorFor(v,'enter the quantity')
+    }
+  })
+}
+function promptPrice(info,chipsHolder) {
+  b = addshade();
+  a = document.createElement('div');
+  b.appendChild(a)
+  info = info[0]
+  a.className = "w-400p h-a p-10p bsbb bc-white cntr zi-10000 br-5p" 
+  a.innerHTML = `<div class="head w-100 h-50p py-10p px-15p bsbb">
+                                  <span class="fs-17p dgray capitalize igrid h-100 verdana">enter the price of ${info.name}</span>
+                              </div>
+                              <div class="body w-100 h-a p-5p grid">
+                                  <form method="post" id="rec-price-form" name="rec-price-form">
+                                    <div class="col-md-12 p-10p">
+                                      <label for="price" class="form-label">price</label>
+                                      <div class="input-group">
+                                          <input type="number" class="form-control" placeholder="price" name="price" id="price">
+                                          <span class="input-group-text hover-2 us-none">RWF</span>
+                                          <small class="w-100 red pl-3p verdana capitalize"></small>
+                                      </div>
+                                    </div>
+                                    <div class="center-2 my-10p px-10p bsbb">
+                                      <button type="submit" class="btn btn-primary">Proceed</button>
+                                    </div>
+                                  </form>
+                              </div>`
+  m = a.querySelector('form#rec-price-form')
+  v = a.querySelector('input#price');
+  v.focus()
+  m.addEventListener('submit', (event)=>{
+    event.preventDefault()
+    if (v.value.trim() != '') {
+        addChip({name:info.name, id: info.id , price: v.value},chipsHolder,['id','name','price'])
+      deletechild(b,b.parentNode)
+    }else{
+      setErrorFor(v,'enter the price')
     }
   })
 }

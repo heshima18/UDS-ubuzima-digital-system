@@ -30,15 +30,13 @@ export const addInventory = async (req,res)=>{
             found = 1
           }
         }
-
-        // insert = await query(`update inventories set medicines = JSON_ARRAY_APPEND(medicines, '$', ?) where hospital = ?`,[obj,hospital])
       }
       
       if (!insert && !found) {
         return res.status(500).send({success:false, message: errorMessage.is_error})
       }
       if (found) {
-        return res.send({success: true, message: errorMessage.err_entr_avai})
+        return res.send({success: false, message: errorMessage.err_entr_avai})
       }
       res.send({success: true, message: errorMessage.iu_message})
     
@@ -47,7 +45,134 @@ export const addInventory = async (req,res)=>{
     res.status(500).send({success:false, message: errorMessage.is_error})
   }
 }
-
+export const addInventoryTests = async (req,res)=>{
+  try {
+    let {tests,token} = req.body
+      token = authenticateToken(token)
+      token = token.token
+      let hospital = token.hospital
+      var insert
+      let found
+      for (const test of tests) {
+        let objectAvai = await checkObjectAvai('inventories','tests','id',test.id,'hospital',hospital)
+        if (!objectAvai) {
+          return res.status(500).send({success:false, message: errorMessage.is_error})
+        }
+        if (!objectAvai.length) {
+          insert = await query(`UPDATE inventories SET tests = JSON_ARRAY_APPEND(tests, '$', JSON_OBJECT("id", ?, "price", ?)) WHERE hospital = ?`, [test.id, test.price, hospital]);
+        }else{
+          found = 1
+        }
+      }
+      if (!insert && !found) {
+        return res.status(500).send({success:false, message: errorMessage.is_error})
+      }
+      if (found) {
+        return res.send({success: false, message: errorMessage.err_entr_avai})
+      }
+      res.send({success: true, message: errorMessage.iu_message})
+    
+  } catch (error) {
+    console.log(error)
+    res.status(500).send({success:false, message: errorMessage.is_error})
+  }
+}
+export const addInventoryOperations = async (req,res)=>{
+  try {
+    let {operations,token} = req.body
+      token = authenticateToken(token)
+      token = token.token
+      let hospital = token.hospital
+      var insert
+      let found
+      for (const operation of operations) {
+        let objectAvai = await checkObjectAvai('inventories','operations','id',operation.id,'hospital',hospital)
+        if (!objectAvai) {
+          return res.status(500).send({success:false, message: errorMessage.is_error})
+        }
+        if (!objectAvai.length) {
+          insert = await query(`UPDATE inventories SET operations = JSON_ARRAY_APPEND(operations, '$', JSON_OBJECT("id", ?, "price", ?)) WHERE hospital = ?`, [operation.id, operation.price, hospital]);
+        }else{
+          found = 1
+        }
+      }
+      if (!insert && !found) {
+        return res.status(500).send({success:false, message: errorMessage.is_error})
+      }
+      if (found) {
+        return res.send({success: false, message: errorMessage.err_entr_avai})
+      }
+      res.send({success: true, message: errorMessage.iu_message})
+    
+  } catch (error) {
+    console.log(error)
+    res.status(500).send({success:false, message: errorMessage.is_error})
+  }
+}
+export const addInventoryEquipments = async (req,res)=>{
+  try {
+    let {equipments,token} = req.body
+      token = authenticateToken(token)
+      token = token.token
+      let hospital = token.hospital
+      var insert
+      let found
+      for (const equipment of equipments) {
+        let objectAvai = await checkObjectAvai('inventories','equipments','id',equipment.id,'hospital',hospital)
+        if (!objectAvai) {
+          return res.status(500).send({success:false, message: errorMessage.is_error})
+        }
+        if (!objectAvai.length) {
+          insert = await query(`UPDATE inventories SET equipments = JSON_ARRAY_APPEND(equipments, '$', JSON_OBJECT("id", ?, "quantity", ?)) WHERE hospital = ?`, [equipment.id, equipment.quantity, hospital]);
+        }else{
+          found = 1
+        }
+      }
+      if (!insert && !found) {
+        return res.status(500).send({success:false, message: errorMessage.is_error})
+      }
+      if (found) {
+        return res.send({success: false, message: errorMessage.err_entr_avai})
+      }
+      res.send({success: true, message: errorMessage.iu_message})
+    
+  } catch (error) {
+    console.log(error)
+    res.status(500).send({success:false, message: errorMessage.is_error})
+  }
+}
+export const addInventoryServices = async (req,res)=>{
+  try {
+    let {services,token} = req.body
+      token = authenticateToken(token)
+      token = token.token
+      let hospital = token.hospital
+      var insert
+      let found
+      for (const service of services) {
+        let objectAvai = await checkObjectAvai('inventories','services','id',service.id,'hospital',hospital)
+        if (!objectAvai) {
+          return res.status(500).send({success:false, message: errorMessage.is_error})
+        }
+        if (!objectAvai.length) {
+          insert = await query(`UPDATE inventories SET services = JSON_ARRAY_APPEND(services, '$', JSON_OBJECT("id", ?, "price", ?)) WHERE hospital = ?`, [service.id, service.price, hospital]);
+        }else{
+          found = 1
+        }
+      }
+      if (!insert && !found) {
+        return res.status(500).send({success:false, message: errorMessage.is_error})
+      }
+      if (found) {
+        return res.send({success: false, message: errorMessage.err_entr_avai})
+      }
+      res.send({success: true, message: errorMessage.iu_message})
+    
+  } catch (error) {
+    console.log(error)
+    res.status(500).send({success:false, message: errorMessage.is_error})
+  }
+}
 export const getInventory = async (req,res)=>{
   try {
     let {token} = req.body
@@ -58,9 +183,51 @@ export const getInventory = async (req,res)=>{
       var select = await query(`
       SELECT
       i.medicines as raw_medicines,
-      CONCAT('[', GROUP_CONCAT(DISTINCT CONCAT('{"id": "', m.id, '","name": "', m.name, '","unit": "', m.unit, '"}')), ']') AS medicines
+      i.tests as raw_tests,
+      i.operations as raw_operations,
+      i.equipments as raw_equipments,
+      i.services as raw_services,
+      COALESCE(
+        CONCAT('[',
+          GROUP_CONCAT(
+            DISTINCT  CASE WHEN m.id IS NOT NULL THEN JSON_OBJECT('id', m.id, 'name', m.name,'unit', m.unit, 'price', (SELECT price FROM medicines where id = m.id))  ELSE NULL END SEPARATOR ',' 
+          ),
+        ']'),
+      '[]') AS medicines,
+      COALESCE(
+        CONCAT('[',
+          GROUP_CONCAT(
+            DISTINCT  CASE WHEN t.id IS NOT NULL THEN JSON_OBJECT('id', t.id, 'name', t.name)  ELSE NULL END SEPARATOR ',' 
+          ),
+        ']'),
+      '[]') AS tests,
+      COALESCE(
+        CONCAT('[',
+          GROUP_CONCAT(
+            DISTINCT  CASE WHEN o.id IS NOT NULL THEN JSON_OBJECT('id', o.id, 'name', o.name)  ELSE NULL END SEPARATOR ',' 
+          ),
+        ']'),
+      '[]') AS operations,
+      COALESCE(
+        CONCAT('[',
+          GROUP_CONCAT(
+            DISTINCT  CASE WHEN s.id IS NOT NULL THEN JSON_OBJECT('id', s.id, 'name', s.name, 'unit', s.unit)  ELSE NULL END SEPARATOR ',' 
+          ),
+        ']'),
+      '[]') AS services,
+      COALESCE(
+        CONCAT('[',
+          GROUP_CONCAT(
+            DISTINCT  CASE WHEN eq.id IS NOT NULL THEN JSON_OBJECT('id', eq.id, 'name', eq.name,'unit', eq.unit)  ELSE NULL END SEPARATOR ',' 
+          ),
+        ']'),
+      '[]') AS equipments
       FROM inventories AS i
-      INNER JOIN medicines AS m ON JSON_CONTAINS(i.medicines, JSON_OBJECT('id', m.id), '$')
+      LEFT JOIN medicines AS m ON JSON_CONTAINS(i.medicines, JSON_OBJECT('id', m.id), '$')
+      LEFT JOIN equipments as eq ON JSON_CONTAINS(i.equipments, JSON_OBJECT('id', eq.id), '$')
+      LEFT JOIN services as s ON JSON_CONTAINS(i.services, JSON_OBJECT('id', s.id), '$')
+      LEFT JOIN operations as o ON JSON_CONTAINS(i.operations, JSON_OBJECT('id', o.id), '$')
+      LEFT JOIN tests AS t ON JSON_CONTAINS(i.tests, JSON_OBJECT('id', t.id), '$')
       WHERE i.hospital = ?
       GROUP BY i.hospital;`,[hospital,hospital])  
       if (!select) {
@@ -69,11 +236,39 @@ export const getInventory = async (req,res)=>{
       if(select.length == 0)return res.send({success: true, message: select})
       select = select[0]
       select.medicines = JSON.parse(select.medicines)
+      select.tests = JSON.parse(select.tests)
+      select.operations = JSON.parse(select.operations)
+      select.equipments = JSON.parse(select.equipments)
+      select.services = JSON.parse(select.services)
       select.raw_medicines = JSON.parse(select.raw_medicines)
+      select.raw_tests = JSON.parse(select.raw_tests)
+      select.raw_operations = JSON.parse(select.raw_operations)
+      select.raw_equipments = JSON.parse(select.raw_equipments)
+      select.raw_services = JSON.parse(select.raw_services)
+
+
+
       for (const medicine of select.medicines) {
         Object.assign(select.medicines[select.medicines.indexOf(medicine)],{quantity: select.raw_medicines[select.medicines.indexOf(medicine)].quantity})
       }
+      for (const test of select.tests) {
+        Object.assign(select.tests[select.tests.indexOf(test)],{price: select.raw_tests[select.tests.indexOf(test)].price})
+      }
+      for (const operation of select.operations) {
+        Object.assign(select.operations[select.operations.indexOf(operation)],{price: select.raw_operations[select.operations.indexOf(operation)].price})
+      }
+      for (const service of select.services) {
+        Object.assign(select.services[select.services.indexOf(service)],{price: select.raw_services[select.services.indexOf(service)].price})
+      }
+      for (const equipment of select.equipments) {
+        Object.assign(select.equipments[select.equipments.indexOf(equipment)],{quantity: select.raw_equipments[select.equipments.indexOf(equipment)].quantity})
+      }
       delete select.raw_medicines
+      delete select.raw_operations
+      delete select.raw_tests
+      delete select.raw_equipments
+      delete select.raw_services
+
       res.send({success: true, message: select})
     
   } catch (error) {

@@ -172,62 +172,6 @@ export const getUsessions = async (req,res)=>{
     res.status(500).send({success:false, message: errorMessage.is_error})
   }
 }
-export const getHpsessions = async (req,res)=>{
-  try { 
-      let {token} = req.body
-      let decoded = authenticateToken(token)
-      let hp = decoded.token.hospital
-      if (!hp) {hp = req.body.hospital}
-      let response = await query(`SELECT 
-      mh.id AS session_id,
-      mh.tests as raw_tests,
-      mh.comment as comment,
-      mh.status as status,
-      patients.Full_name as patient_name,
-      patients.id as patient_id,
-      mh.medicines as raw_medicines,
-      payments.amount as payment_amount,
-      payments.status as payment_status,
-      mh.decision as decision,
-      CONCAT('[', GROUP_CONCAT(DISTINCT CONCAT('{"name": "', m.name, '"}')), ']') AS medicines,
-      COALESCE( CONCAT('[', GROUP_CONCAT(DISTINCT CONCAT('{"name": "', t.name, '"}')), ']'), '[]') AS tests
-    FROM
-      medical_history mh
-      INNER JOIN payments ON mh.id = payments.session
-      INNER JOIN patients ON mh.patient = patients.id
-      INNER JOIN medicines AS m ON JSON_CONTAINS(mh.medicines, JSON_OBJECT('id', m.id), '$')
-      LEFT JOIN tests AS t ON JSON_CONTAINS(mh.tests, JSON_OBJECT('id', t.id), '$')
-    WHERE mh.hospital = ?
-    GROUP BY
-    mh.id;
-    `,[hp])
-      if(!response) return res.status(500).send({success: false, message: errorMessage.is_error})
-      for (const mh of response) {
-        response[response.indexOf(mh)].medicines = JSON.parse(mh.medicines);
-        response[response.indexOf(mh)].decision = JSON.parse(mh.decision);
-        response[response.indexOf(mh)].tests = JSON.parse(mh.tests)
-        response[response.indexOf(mh)].raw_tests = JSON.parse(mh.raw_tests);
-        response[response.indexOf(mh)].raw_medicines = JSON.parse(mh.raw_medicines)    
-        for (const medicine of mh.medicines) {
-            Object.assign(response[response.indexOf(mh)].medicines[mh.medicines.indexOf(medicine)],{quantity: response[response.indexOf(mh)].raw_medicines[mh.medicines.indexOf(medicine)].quantity, servedOut: response[response.indexOf(mh)].raw_medicines[mh.medicines.indexOf(medicine)].servedOut})
-        }
-        for (const tests of mh.tests) {
-          try {
-            Object.assign(response[response.indexOf(mh)].tests[mh.tests.indexOf(tests)],{result: response[response.indexOf(mh)].raw_tests[mh.tests.indexOf(tests)].result,tester: response[response.indexOf(mh)].raw_tests[mh.tests.indexOf(tests)].tester})
-          } catch (error) {
-            
-          }
-        }
-        delete response[response.indexOf(mh)].raw_tests
-        delete response[response.indexOf(mh)].raw_medicines
-      }
-      res.send({success: true, message: response})
-    
-  } catch (error) {
-    console.log(error)
-    res.status(500).send({success:false, message: errorMessage.is_error})
-  }
-}
 export const getHc_pSessions = async (req,res)=>{
   try { 
       let {token} = req.body
@@ -509,7 +453,7 @@ export const addSessionTests = async (req,res)=>{
       payment_info.assurance_amount +=pts.assurance_amount
       payment_info.amount +=pts.patient_amount
       // return console.log(payment_info)
-      let updatepayment = await query(`update payments set amount = ?,assurance_amount = ? where session = ?`,[payment_info.amount,payment_info.assurance_ammount,session])
+      let updatepayment = await query(`update payments set amount = ?,assurance_amount = ? where session = ?`,[payment_info.amount,payment_info.assurance_amount,session])
       query(`update medical_history set departments =  JSON_ARRAY_APPEND(departments, '$', ?) where id = ?`,[tester.department,session])
       if (!updatepayment) {
         return res.status(500).send({success:false, message: errorMessage.is_error})
@@ -558,8 +502,8 @@ export const addSessionOperation = async (req,res)=>{
       payment_info = payment_info[0] 
       payment_info.assurance_amount +=pts.assurance_amount
       payment_info.amount +=pts.patient_amount
-      // return console.log(payment_info)
-      let updatepayment = await query(`update payments set amount = ?,assurance_amount = ? where session = ?`,[payment_info.amount,payment_info.assurance_ammount,session])
+      console.log(payment_info)
+      let updatepayment = await query(`update payments set amount = ?,assurance_amount = ? where session = ?`,[payment_info.amount,payment_info.assurance_amount,session])
       let update_mh =  await query(`update medical_history set departments =  JSON_ARRAY_APPEND(departments, '$', ?) where id = ?`,[operator.department,session])
       if (!updatepayment || !update_mh) {
         return res.status(500).send({success:false, message: errorMessage.is_error})
@@ -609,7 +553,7 @@ export const addSessionService = async (req,res)=>{
       payment_info.assurance_amount +=pts.assurance_amount
       payment_info.amount +=pts.patient_amount
       // return console.log(payment_info)
-      let updatepayment = await query(`update payments set amount = ?,assurance_amount = ? where session = ?`,[payment_info.amount,payment_info.assurance_ammount,session])
+      let updatepayment = await query(`update payments set amount = ?,assurance_amount = ? where session = ?`,[payment_info.amount,payment_info.assurance_amount,session])
       let update_mh =  await query(`update medical_history set departments =  JSON_ARRAY_APPEND(departments, '$', ?) where id = ?`,[operator.department,session])
       if (!updatepayment || !update_mh) {
         return res.status(500).send({success:false, message: errorMessage.is_error})
@@ -659,7 +603,7 @@ export const addSessionEquipment = async (req,res)=>{
       payment_info.assurance_amount +=pts.assurance_amount
       payment_info.amount +=pts.patient_amount
       // return console.log(payment_info)
-      let updatepayment = await query(`update payments set amount = ?,assurance_amount = ? where session = ?`,[payment_info.amount,payment_info.assurance_ammount,session])
+      let updatepayment = await query(`update payments set amount = ?,assurance_amount = ? where session = ?`,[payment_info.amount,payment_info.assurance_amount,session])
       let update_mh =  await query(`update medical_history set departments =  JSON_ARRAY_APPEND(departments, '$', ?) where id = ?`,[operator.department,session])
       if (!updatepayment || !update_mh) {
         return res.status(500).send({success:false, message: errorMessage.is_error})
@@ -704,7 +648,7 @@ export const addSessionMedicine = async (req,res)=>{
             if (medic.id == medicine.id) {
               if (Number(medic.quantity) < Number(medicine.quantity)) {
                 Object.assign(medicine, {servedOut : true})
-                Object.assign(medicines[medicines.indexOf(medicine)],{servedOut: true, price: m.price * parseInt(medicine.quantity)})
+                Object.assign(medicines[medicines.indexOf(medicine)],{servedOut: true, price: m.price * parseInt(medicine.quantity), status: null})
               }else{
                 Object.assign(medicine, {servedOut : false})
                 Object.assign(medicines[medicines.indexOf(medicine)],{servedOut: false, price: m.price * parseInt(medicine.quantity)})
@@ -732,7 +676,7 @@ export const addSessionMedicine = async (req,res)=>{
       payment_info.assurance_amount +=pts.assurance_amount
       payment_info.amount +=pts.patient_amount
       // return console.log(payment_info)
-      updatepayment = await query(`update payments set amount = ?,assurance_amount = ? where session = ?`,[payment_info.amount,payment_info.assurance_ammount,session])
+      updatepayment = await query(`update payments set amount = ?,assurance_amount = ? where session = ?`,[payment_info.amount,payment_info.assurance_amount,session])
       }
       if (!updatepayment) {
         return res.status(500).send({success:false, message: errorMessage.is_error})
@@ -924,29 +868,65 @@ GROUP BY mh.id;
     res.status(500).send({success:false, message: errorMessage.is_error})
   }
 }
-export const assuranceHP = async (req,res) =>{
-  try {
-    let { token } = req.body
-    token = authenticateToken(token)
-    token = token.token
-    let assurance = token.assurance
-    let response = await query(`SELECT
-                                  distinct hp.id,
-                                  hp.name
-                                FROM
-                                  medical_history as mh
-                                  INNER JOIN 
-                                    hospitals as hp on mh.hospital = hp.id
-                                WHERE
-                                  mh.assurance = ?
-                                GROUP BY 
-                                  hp.id
-    `,[assurance])
-    if (!response) return res.status(500).send({success: true, message: errorMessage.is_error})
-    res.send({success: true, message: response})
+export const getHpsessions = async (req,res)=>{
+  try { 
+      let {token,assurance} = req.body
+      let decoded = authenticateToken(token)
+      let hp = decoded.token.hospital
+      if (!hp) {hp = req.body.hospital}
+      let response = await query(`SELECT
+      mh.id AS session_id,
+      mh.status as status,
+      mh.dateadded as dateadded,
+      GROUP_CONCAT(
+        DISTINCT 
+        JSON_OBJECT('id', p.id, 'name', p.Full_name ,'insurance', COALESCE(p.assurances,'[]'))
+      ) AS p_info,
+      GROUP_CONCAT(
+        DISTINCT
+          JSON_OBJECT('id', a.id, 'name', a.name
+        )
+      ) AS in_info,
+      GROUP_CONCAT(
+        DISTINCT
+          JSON_OBJECT('id', pm.id, 'status', pm.assu_paym_status, 'a_amount', pm.assurance_amount, 'p_amount', pm.amount)
+        ) AS payment_info
+  
+  FROM
+      medical_history mh
+      INNER JOIN patients p ON mh.patient = p.id
+      INNER JOIN users ON mh.Hc_provider = users.id
+      LEFT JOIN users as tester ON JSON_CONTAINS(mh.tests, JSON_OBJECT('tester', tester.id), '$')
+      LEFT JOIN users as operator ON JSON_CONTAINS(mh.operations, JSON_OBJECT('operator', operator.id), '$')
+      INNER JOIN hospitals ON mh.hospital = hospitals.id
+      INNER JOIN payments as pm ON mh.id = pm.session
+      LEFT JOIN medicines AS m ON JSON_CONTAINS(mh.medicines, JSON_OBJECT('id', m.id), '$')
+      LEFT JOIN equipments as eq ON JSON_CONTAINS(mh.equipments, JSON_OBJECT('id', eq.id), '$')
+      LEFT JOIN services as s ON JSON_CONTAINS(mh.services, JSON_OBJECT('id', s.id), '$')
+      LEFT JOIN operations as o ON JSON_CONTAINS(mh.operations, JSON_OBJECT('id', o.id), '$')
+      LEFT JOIN tests AS t ON JSON_CONTAINS(mh.tests, JSON_OBJECT('id', t.id), '$')
+      LEFT JOIN departments as d ON JSON_CONTAINS(mh.departments, JSON_QUOTE(d.id), '$')
+      left join assurances as a on mh.assurance = a.id
+    WHERE mh.hospital = ? and mh.assurance = ? and mh.status != ?
+    GROUP BY
+    mh.id;
+    `,[hp,assurance,'open'])
+      if(!response) return res.status(500).send({success: false, message: errorMessage.is_error})
+      for (const session of response) {
+        response[response.indexOf(session)].in_info = JSON.parse(session.in_info);
+        response[response.indexOf(session)].p_info = JSON.parse(session.p_info)
+        response[response.indexOf(session)].p_info.insurance = JSON.parse(session.p_info.insurance)
+        response[response.indexOf(session)].payment_info = JSON.parse(session.payment_info)
+        response[response.indexOf(session)].dateadded = new Date(session.dateadded).toISOString().split('T')[0]
+        response[response.indexOf(session)].p_info.insurance = session.p_info.insurance.find(function (insurance) {
+          return insurance.id == assurance
+        })
+      }
+      res.send({success: true, message: response})
+    
   } catch (error) {
     console.log(error)
-    return res.status(500).send({success: true, message: errorMessage.is_error})
+    res.status(500).send({success:false, message: errorMessage.is_error})
   }
-  
 }
+

@@ -6,11 +6,6 @@
 	<title>Director of Finance - Home | UDS</title>
     <link rel="stylesheet" type="text/css" href="/styles/styling.css">
     <link rel="icon" type="image/x-icon" href="/assets/svg/logo.svg" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
-    <link
-        href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&amp;display=swap"
-        rel="stylesheet" />
 
     <link rel="stylesheet" href="/assets/vendor/fonts/boxicons.css" />
     <link rel="stylesheet" href="/assets/vendor/fonts/fontawesome.css" />
@@ -31,7 +26,7 @@
     <script src="/assets/js/nav.js" type="module"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/luxon/2.0.2/luxon.min.js"></script>
     <script src="/assets/vendor/libs/jquery/jquery.js"></script>
-    <script src="/assets/js/insurance.js" type="module"></script>
+    <script src="/assets/js/dof.js" type="module"></script>
 	<script src="/getSocketIo/socket.io.min.js"></script>
     <script src="/assets/vendor/libs/datatables-bs5/datatables-bootstrap5.js"></script>
     <script src="/assets/vendor/js/bootstrap.js"></script>
@@ -141,7 +136,7 @@
         </div>
 		<div class="thebody w-100 h-90 p-r pt-100p bsbb">
 			<div class="w-100 h-100 mb-10p">
-				<div class="w-90 m-a h-100 p-10p br-10p mb-30p bsbb">
+				<div class="w-95 m-a bfull-resp h-100 p-10p br-10p mb-30p bsbb">
 					<div class="w-100 h-100 p-10p bsbb flex bblock-resp bp-0-resp" aria-controls="cont">
 						<div class="w-240p bfull-resp h-100 bh-70p-resp p-10p bsbb the-h">
 							<div class="cont w-100 h-100">
@@ -157,19 +152,19 @@
 										</li>
                                        
                                         <li class="p-5p bsbb">
-                                            <span class="w-100 h-100 p-10p hover-7 cpcards bsbb iblock verdana nowrap capitalize fs-13p br-5p" data-item-type="restricted-medications">restricted medications</span>
+                                            <span class="w-100 h-100 p-10p hover-7 cpcards bsbb iblock verdana nowrap capitalize fs-13p br-5p" data-item-type="medications-inventory">medications inventory</span>
                                         </li>
                                         <li class="p-5p bsbb">
-											<span class="w-100 h-100 p-10p hover-7 cpcards bsbb iblock verdana nowrap capitalize fs-13p br-5p" data-item-type="restricted-tests">restricted tests</span>
+											<span class="w-100 h-100 p-10p hover-7 cpcards bsbb iblock verdana nowrap capitalize fs-13p br-5p" data-item-type="tests-inventory">tests inventory</span>
 										</li>
                                         <li class="p-5p bsbb">
-											<span class="w-100 h-100 p-10p hover-7 cpcards bsbb iblock verdana nowrap capitalize fs-13p br-5p" data-item-type="restricted-operations">restricted operations</span>
+											<span class="w-100 h-100 p-10p hover-7 cpcards bsbb iblock verdana nowrap capitalize fs-13p br-5p" data-item-type="operations-inventory">operations inventory</span>
 										</li>
                                         <li class="p-5p bsbb">
-											<span class="w-100 h-100 p-10p hover-7 cpcards bsbb iblock verdana nowrap capitalize fs-13p br-5p" data-item-type="restricted-equipments">restricted equipments</span>
+											<span class="w-100 h-100 p-10p hover-7 cpcards bsbb iblock verdana nowrap capitalize fs-13p br-5p" data-item-type="equipments-inventory">equipments inventory</span>
 										</li>
                                         <li class="p-5p bsbb">
-											<span class="w-100 h-100 p-10p hover-7 cpcards bsbb iblock verdana nowrap capitalize fs-13p br-5p" data-item-type="restricted-services">restricted services</span>
+											<span class="w-100 h-100 p-10p hover-7 cpcards bsbb iblock verdana nowrap capitalize fs-13p br-5p" data-item-type="services-inventory">services inventory</span>
 										</li>
                                         <li class="p-5p bsbb">
 											<span class="w-100 h-100 p-10p hover-7 cpcards bsbb iblock verdana nowrap capitalize fs-13p br-5p" data-item-type="medical-prescriptions">medical prescriptions</span>
@@ -254,9 +249,9 @@
 								</div>
 							</div>
                             <!-- manage restricted medications section -->
-							<div class="br-5p w-100 h-100 p-a ovh hidden t-0 tr-0-3 pagecontentsection" id="restricted-medications">
+							<div class="br-5p w-100 h-100 p-a ovh hidden t-0 tr-0-3 pagecontentsection" id="medications-inventory">
 								<div class="w-100 h-a p-10p bsbb">
-									<span class="theme capitalize left flex bold fs-20p verdana h-100 pl-10p"><span class="dgray capitalize">insurance manager / </span>&nbsp;restricted medications</span>
+									<span class="theme capitalize left flex bold fs-20p verdana h-100 pl-10p"><span class="dgray capitalize">Director of finance / </span>&nbsp;medications inventory</span>
 								</div>
 								<div class="pg-cntnt w-100 h-90 p-20p bp-0-resp bsbb ovys left scroll-2">
                                     <div class="card">
@@ -274,14 +269,14 @@
                                     <div class="cntr bc-white p-15p w-400p h-220p h-a bsbb br-5p card-6"  id="add-medicine">
                                         <div class="">
                                             <div class="modal-header text-uppercase">
-                                                <span class="card-header capitalize fs-18p">Add restricted Test To List</span>
+                                                <span class="card-header capitalize fs-18p">Add medications To inventory</span>
                                             </div>
                                             <div class="modal-body">
                                                 <div class="body w-100 h-a p-5p grid">
                                                     <form method="post" id="add-medicine-form" name="add-medicine-form">
                                                         <div class="col-md-12 p-10p bsbb mb-5p p-r">
                                                             <label for="medicines" class="form-label">medicines</label>
-                                                            <input type="text" class="form-control chips-check no-quantity-addin" id="medicines" placeholder="Demo medicine" name="medicines">
+                                                            <input type="text" class="form-control chips-check" id="medicines" placeholder="Demo medicine" name="medicines">
                                                             <small class="hidden w-100 red pl-3p verdana"></small>
                                                         </div>
                                                         <div class="col-12 text-center d-flex gap-3 justify-content-end my-10p">
@@ -297,10 +292,10 @@
                                 </div>
 							</div>
 							<!-- end of manage restricted medications section -->
-                            <!-- manage restricted tests section -->
-							<div class="br-5p w-100 h-100 p-a ovh hidden t-0 tr-0-3 pagecontentsection" id="restricted-tests">
+                            <!-- manage tests inventory section -->
+							<div class="br-5p w-100 h-100 p-a ovh hidden t-0 tr-0-3 pagecontentsection" id="tests-inventory">
 								<div class="w-100 h-a p-10p bsbb">
-									<span class="theme capitalize left flex bold fs-20p verdana h-100 pl-10p"><span class="dgray capitalize">insurance manager / </span>&nbsp;restricted tests</span>
+									<span class="theme capitalize left flex bold fs-20p verdana h-100 pl-10p"><span class="dgray capitalize">insurance manager / </span>&nbsp;tests inventory</span>
 								</div>
 								<div class="pg-cntnt w-100 h-90 p-20p bp-0-resp bsbb ovys left scroll-2">
                                     <div class="card">
@@ -318,17 +313,17 @@
                                     <div class="cntr bc-white p-15p w-400p h-220p h-a bsbb br-5p card-6"  id="add-test">
                                         <div class="">
                                             <div class="modal-header text-uppercase">
-                                                <span class="card-header capitalize fs-18p">Add restricted Test To List</span>
+                                                <span class="card-header capitalize fs-18p">Add Test To inventory</span>
                                             </div>
                                             <div class="modal-body">
                                                 <div class="body w-100 h-a p-5p grid">
                                                     <form method="post" id="add-test-form" name="add-test-form">
                                                         <div class="col-md-12 p-10p bsbb mb-5p p-r">
                                                             <label for="tests" class="form-label">tests</label>
-                                                            <input type="text" class="form-control chips-check no-extra-info-addin" id="tests" placeholder="Demo test" name="tests">
+                                                            <input type="text" class="form-control chips-check no-extra-info-addin price-addin" id="tests" placeholder="Demo test" name="tests">
                                                             <small class="hidden w-100 red pl-3p verdana"></small>
                                                         </div>
-                                                        <div class="col-12 text-center d-flex gap-3 justify-content-end my-10p">
+                                                        <div class="col-12 text-center d-flex gap-3 justify-content-end p-10p my-10p">
                                                             <button type="reset" class="btn btn-label-secondary"
                                                                 data-bs-dismiss="modal" aria-label="Close">Cancel</button>
                                                             <button type="submit" class="btn btn-primary">proceed</button>
@@ -340,11 +335,11 @@
                                     </div>
                                 </div>
 							</div>
-							<!-- end of manage restricted tests section -->
-                            <!-- manage restricted operations section -->
-							<div class="br-5p w-100 h-100 p-a ovh hidden t-0 tr-0-3 pagecontentsection" id="restricted-operations">
+							<!-- end of manage tests inventory section -->
+                            <!-- manage operations inventory section -->
+							<div class="br-5p w-100 h-100 p-a ovh hidden t-0 tr-0-3 pagecontentsection" id="operations-inventory">
 								<div class="w-100 h-a p-10p bsbb">
-									<span class="theme capitalize left flex bold fs-20p verdana h-100 pl-10p"><span class="dgray capitalize">insurance manager / </span>&nbsp;restricted operations</span>
+									<span class="theme capitalize left flex bold fs-20p verdana h-100 pl-10p"><span class="dgray capitalize">insurance manager / </span>&nbsp;operations inventory</span>
 								</div>
 								<div class="pg-cntnt w-100 h-90 p-20p bp-0-resp bsbb ovys left scroll-2">
                                     <div class="card">
@@ -363,14 +358,14 @@
                                     <div class="cntr bc-white p-15p w-400p h-220p h-a bsbb br-5p card-6"  id="add-operation-modal">
                                         <div class="">
                                             <div class="modal-header text-uppercase">
-                                                <span class="card-header capitalize fs-18p">Add restricted Operation To List</span>
+                                                <span class="card-header capitalize fs-18p">Add Operations To inventory</span>
                                             </div>
                                             <div class="modal-body">
                                                 <div class="body w-100 h-a p-5p grid">
                                                     <form method="post" id="add-operation-form" name="add-operation-form">
                                                         <div class="col-md-12 p-10p bsbb mb-5p p-r">
                                                             <label for="operations" class="form-label">operations</label>
-                                                            <input type="text" class="form-control chips-check no-extra-info-addin" id="operations" placeholder="Demo operation" name="operations">
+                                                            <input type="text" class="form-control chips-check no-extra-info-addin price-addin" id="operations" placeholder="Demo operation" name="operations">
                                                             <small class="hidden w-100 red pl-3p verdana"></small>
                                                         </div>
                                                         <div class="col-12 text-center d-flex gap-3 justify-content-end my-10p">
@@ -385,11 +380,11 @@
                                     </div>
                                 </div>
 							</div>
-							<!-- end of manage restricted operations section -->
-                             <!-- manage restricted equipments section -->
-							<div class="br-5p w-100 h-100 p-a ovh hidden t-0 tr-0-3 pagecontentsection" id="restricted-equipments">
+							<!-- end of manage operations inventory section -->
+                             <!-- manage equipments inventory section -->
+							<div class="br-5p w-100 h-100 p-a ovh hidden t-0 tr-0-3 pagecontentsection" id="equipments-inventory">
 								<div class="w-100 h-a p-10p bsbb">
-									<span class="theme capitalize left flex bold fs-20p verdana h-100 pl-10p"><span class="dgray capitalize">insurance manager / </span>&nbsp;restricted equipments</span>
+									<span class="theme capitalize left flex bold fs-20p verdana h-100 pl-10p"><span class="dgray capitalize">insurance manager / </span>&nbsp;equipments inventory</span>
 								</div>
 								<div class="pg-cntnt w-100 h-90 p-20p bp-0-resp bsbb ovys left scroll-2">
                                     <div class="card">
@@ -407,14 +402,14 @@
                                     <div class="cntr bc-white p-15p w-400p h-220p h-a bsbb br-5p card-6"  id="add-equipment-modal">
                                         <div class="">
                                             <div class="modal-header text-uppercase">
-                                                <span class="card-header capitalize fs-18p">Add restricted equipment To List</span>
+                                                <span class="card-header capitalize fs-18p">Add equipments To inventory</span>
                                             </div>
                                             <div class="modal-body">
                                                 <div class="body w-100 h-a p-5p grid">
                                                     <form method="post" id="add-equipment-form" name="add-equipment-form">
                                                         <div class="col-md-12 p-10p bsbb mb-5p p-r">
                                                             <label for="equipments" class="form-label">equipments</label>
-                                                            <input type="text" class="form-control chips-check no-quantity-addin" id="equipments" placeholder="Demo equipment" name="equipments">
+                                                            <input type="text" class="form-control chips-check" id="equipments" placeholder="Demo equipment" name="equipments">
                                                             <small class="hidden w-100 red pl-3p verdana"></small>
                                                         </div>
                                                         <div class="col-12 text-center d-flex gap-3 justify-content-end my-10p">
@@ -429,11 +424,11 @@
                                     </div>
                                 </div>
 							</div>
-							<!-- end of manage restricted equipments section -->
-                            <!-- manage restricted services section -->
-							<div class="br-5p w-100 h-100 p-a ovh hidden t-0 tr-0-3 pagecontentsection" id="restricted-services">
+							<!-- end of manage equipments inventory section -->
+                            <!-- manage services inventory section -->
+							<div class="br-5p w-100 h-100 p-a ovh hidden t-0 tr-0-3 pagecontentsection" id="services-inventory">
 								<div class="w-100 h-a p-10p bsbb">
-									<span class="theme capitalize left flex bold fs-20p verdana h-100 pl-10p"><span class="dgray capitalize">insurance manager / </span>&nbsp;restricted services</span>
+									<span class="theme capitalize left flex bold fs-20p verdana h-100 pl-10p"><span class="dgray capitalize">insurance manager / </span>&nbsp;services inventory</span>
 								</div>
 								<div class="pg-cntnt w-100 h-90 p-20p bp-0-resp bsbb ovys left scroll-2">
                                     <div class="card">
@@ -451,14 +446,14 @@
                                     <div class="cntr bc-white p-15p w-400p h-220p h-a bsbb br-5p card-6"  id="add-service-modal">
                                         <div class="">
                                             <div class="modal-header text-uppercase">
-                                                <span class="card-header capitalize fs-18p">Add restricted Service To List</span>
+                                                <span class="card-header capitalize fs-18p">Add Services To inventory</span>
                                             </div>
                                             <div class="modal-body">
                                                 <div class="body w-100 h-a p-5p grid">
                                                     <form method="post" id="add-service-form" name="add-service-form">
                                                         <div class="col-md-12 p-10p bsbb mb-5p p-r">
                                                             <label for="services" class="form-label">services</label>
-                                                            <input type="text" class="form-control chips-check no-quantity-addin" id="services" placeholder="Demo Service" name="services">
+                                                            <input type="text" class="form-control chips-check no-quantity-addin price-addin" id="services" placeholder="Demo Service" name="services">
                                                             <small class="hidden w-100 red pl-3p verdana"></small>
                                                         </div>
                                                         <div class="col-12 text-center d-flex gap-3 justify-content-end my-10p">
@@ -473,15 +468,15 @@
                                     </div>
                                 </div>
 							</div>
-							<!-- end of manage restricted services section -->
-                            <!-- manage restricted services section -->
+							<!-- end of manage services inventory section -->
+                            <!-- manage prescriptions section -->
 							<div class="br-5p w-100 h-100 p-a ovh hidden t-0 tr-0-3 pagecontentsection" id="medical-prescriptions">
 								<div class="w-100 h-a p-10p bsbb">
-									<span class="bblock-resp theme capitalize left flex bold fs-20p verdana h-100 pl-10p"><span class="dgray capitalize">insurance manager / </span>&nbsp;medical prescriptions</span>
+									<span class="bblock-resp theme capitalize left flex bold fs-20p verdana h-100 pl-10p"><span class="dgray capitalize">Director of finance / </span>&nbsp;medical prescriptions</span>
                                     <span class="bblock-resp bleft-resp inp-hospital px-10p bsbb p-r bp-y-10p-resp right bc-white br-5p p-8p w-300p">
                                         <form action="" method="post" id="hp-form">
                                             <div class="p-r">
-                                                <input type="text" class="w-100 no-outline b-none dgray bevalue" id="hospital"name="hospital"  placeholder="Health facility">
+                                                <input type="text" class="w-100 no-outline b-none dgray bevalue" id="insurance"name="insurance"  placeholder="Insurance">
                                                 <button class="btn btn-primary btn-sm p-a t-0 r-0 mt--2p" name="search"><i class="bx bx-search h-20p w-a "></i></button>
                                             </div>
                                         </form>
@@ -492,28 +487,52 @@
                                         <div class="card">
                                             <div class="card-header border-bottom text-center">
                                                 <div class="d-flex justify-content-between align-items-center row pt-3 gap-3 gap-md-0">
-                                                    <div class="col-md-4 health-facility"></div>
+                                                    <div class="col-md-3 status">
+                                                        <label for="start" class="form-label block nowrap">filter by status</label>
+                                                    </div>
                                                     <div class="col-md-6 date-range flex">
                                                         <form action="" method="post" name="date-range" class="flex">
-                                                            <div class="">
+                                                            <div class="col-md-5">
                                                                 <div class="col-md-10">
                                                                     <label for="start" class="form-label">Start Date</label>
                                                                     <input class="form-control" type="date" id="start">
                                                                 </div>
                                                             </div>
-                                                            <div class="">
+                                                            <div class="col-md-5">
                                                                 <div class="col-md-10">
                                                                     <label for="start" class="form-label">End Date</label>
                                                                     <input class="form-control" type="date" id="end">
                                                                 </div>
                                                             </div>
-                                                            <div class="">
+                                                            <div class="col-md-3">
                                                                 <div class="col-md-10">
-                                                                    <label for="start" class="form-label">filter</label>
+                                                                    <label for="start" class="form-label block">filter</label>
                                                                     <button class="btn btn-primary" type="submit">Filter</button>
                                                                 </div>
                                                             </div>
                                                         </form>
+                                                    </div>
+                                                    <div class="col-md-3 date-range action">
+                                                        <div class="col-md-10 p-r">
+                                                            <label for="start" class="form-label block">action</label>
+                                                            <button class="btn btn-primary act-button nowrap" type="button">with selected</button>
+                                                            <div class="card-5 mt-10p p-a w-130p h-a br-5p mx-18p bc-white zi-20 ovh hidden" id="act-div">
+                                                                <div class="w-100 h-100 p-r zi-20">
+                                                                    <ul class="p-0 m-0 ls-none">
+                                                                        <li class="w-100 ha px-15p py-10p bsbb hover-7 act-buttons" id="calculate-total-price">
+                                                                            <span class="capitalize">
+                                                                                calculate sum
+                                                                            </span>
+                                                                        </li>
+                                                                        <li class="w-100 py-10p px-15p bsbb hover-7 act-buttons" id="mark-as-paid">
+                                                                            <span class="capitalize">
+                                                                                mark as paid
+                                                                            </span>
+                                                                        </li>
+                                                                    </ul>
+                                                                </div>
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
@@ -524,7 +543,7 @@
                                     </div>
 								</div>
 							</div>
-							<!-- end of manage restricted services section -->
+							<!-- end of manage prescriptions section -->
 							<!-- my account section -->
 							<div class="br-5p w-100 h-100 p-a ovh hidden t-0 tr-0-3 pagecontentsection" id="my-account">
 								<div class="w-100 h-50p ">
