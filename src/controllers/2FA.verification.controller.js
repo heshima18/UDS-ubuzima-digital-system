@@ -12,8 +12,7 @@ const verification = async (req,res)=>{
             status,
             email,
             Full_name,
-            role,
-            extra
+            role
         from 
          patients
           where 
@@ -32,7 +31,8 @@ const verification = async (req,res)=>{
              users.role,
              users.status,
              users.department,
-             users.title 
+             users.title,
+             users.extra 
              FROM
               users 
             where 
