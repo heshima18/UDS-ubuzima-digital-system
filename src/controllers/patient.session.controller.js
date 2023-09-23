@@ -858,6 +858,7 @@ GROUP BY mh.id;
       response[response.indexOf(session)].p_info = JSON.parse(session.p_info)
       response[response.indexOf(session)].p_info.insurance = JSON.parse(session.p_info.insurance)
       response[response.indexOf(session)].payment_info = JSON.parse(session.payment_info)
+      response[response.indexOf(session)].dateclosed = new Date(session.dateclosed).toISOString().split('T')[0]
       response[response.indexOf(session)].dateadded = new Date(session.dateadded).toISOString().split('T')[0]
       response[response.indexOf(session)].p_info.insurance = session.p_info.insurance.find(function (insurance) {
         return insurance.id == assurance
@@ -921,6 +922,7 @@ export const getHpsessions = async (req,res)=>{
         response[response.indexOf(session)].p_info.insurance = JSON.parse(session.p_info.insurance)
         response[response.indexOf(session)].payment_info = JSON.parse(session.payment_info)
         response[response.indexOf(session)].dateadded = new Date(session.dateadded).toISOString().split('T')[0]
+        response[response.indexOf(session)].dateclosed = new Date(session.dateclosed).toISOString().split('T')[0]
         response[response.indexOf(session)].p_info.insurance = session.p_info.insurance.find(function (insurance) {
           return insurance.id == assurance
         })
