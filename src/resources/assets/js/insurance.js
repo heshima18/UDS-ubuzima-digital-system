@@ -1136,7 +1136,7 @@ let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z
                                 { data: "hp_info.name", title: "health facility" },
                                 { data: "p_info.insurance.number", title: "insurance number" },
                                 { data: "payment_info.a_amount", title: "amount (RWF)" },
-                                { data: "dateadded", title: "date" },
+                                { data: "dateclosed", title: "date" },
                                 { title: "Action", data: 'id'}
                             ],
                             columnDefs: [

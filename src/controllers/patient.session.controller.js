@@ -810,6 +810,8 @@ export const assuranceMH = async (req,res)=>{
     mh.id AS session_id,
     mh.status as status,
     mh.dateadded as dateadded,
+    mh.dateclosed as dateclosed,
+
     GROUP_CONCAT(
       DISTINCT 
       JSON_OBJECT('id', p.id, 'name', p.Full_name ,'insurance', COALESCE(p.assurances,'[]'))
@@ -878,6 +880,7 @@ export const getHpsessions = async (req,res)=>{
       mh.id AS session_id,
       mh.status as status,
       mh.dateadded as dateadded,
+      mh.dateclosed as dateclosed,
       GROUP_CONCAT(
         DISTINCT 
         JSON_OBJECT('id', p.id, 'name', p.Full_name ,'insurance', COALESCE(p.assurances,'[]'))
