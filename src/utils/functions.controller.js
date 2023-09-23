@@ -518,8 +518,10 @@ function promptin(info,chipsHolder,type) {
   v.focus()
   m.addEventListener('submit', (event)=>{
     event.preventDefault()
-    if (v.value.trim() != '' || Number(v.value.trim()) > '' ) {
+    if (v.value.trim() != '' && Number(v.value.trim()) > 0 ) {
+      console.log(Number(v.value.trim()))
       if (stats.length) {
+
         let cs = stats.find(function (status) {return status.checked == true})
         addChip({name:info.name, id: info.id ,unit: info.unit , quantity: v.value, status: cs.value},chipsHolder,['id','name','quantity','status','unit'])
       }else{
