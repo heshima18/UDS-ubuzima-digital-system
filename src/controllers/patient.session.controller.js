@@ -85,10 +85,10 @@ export const addSession = async (req,res)=>{
       query(`UPDATE inventories  SET medicines = ? where hospital = ?`, [JSON.stringify(meds),hp])
       let tt = itt+imt+iot+ist+iet;
       let pts = await calculatePayments(assurance,addins,'all')
-      let insertpayment = await query(`insert into payments(id,user,session,amount,assurance_amount,status)values(?,?,?,?,?,?)`,[id(),patient,uid,pts.patient_amount,pts.assurance_amount,'awaiting payment'])
+      let insertpayment = await query(`insert into payments(id,user,session,amount,assurance_amount,status,date,assurance)values(?,?,?,?,?,?,CURRENT_TIMESTAMP(),?)`,[id(),patient,uid,pts.patient_amount,pts.assurance_amount,'awaiting payment',assurance])
       let insert = await query(`insert into
        medical_history(id,patient,hospital,departments,hc_provider,symptoms,tests,medicines,decision,comment,status,assurance,services,operations,equipments,p_weight,dateadded)values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,CURRENT_TIMESTAMP())`,[uid,patient,hp,JSON.stringify(departments),hc_provider,JSON.stringify(symptoms),JSON.stringify(tests),JSON.stringify(medicines),JSON.stringify(decision),comment,(close)? "closed" :"open",assurance,JSON.stringify(services),JSON.stringify(operations),JSON.stringify(equipments),weight])
-      query(`update patients set last_diagnosed = (SELECT dateadded FROM medical_history where id = ?) where id = ?`,[uid,patient])
+      query(`update patients set last_diagnosed = CURRENT_TIMESTAMP() where id = ?`,[uid,patient])
       if (!insert || !insertpayment) {
         return res.status(500).send({success:false, message: errorMessage.is_error})
       }
@@ -923,6 +923,31 @@ export const getHpsessions = async (req,res)=>{
         })
       }
       res.send({success: true, message: response})
+    
+  } catch (error) {
+    console.log(error)
+    res.status(500).send({success:false, message: errorMessage.is_error})
+  }
+}
+export const approveAssuPayment = async (req,res)=>{
+  try {
+    let {assurance,range} = req.body
+    console.log(assurance,range)
+      let updatepayment = await  query(`
+                                        UPDATE 
+                                          payments
+                                        SET
+                                          assu_paym_status = ?
+                                        WHERE
+                                          date >= ? AND date <= ?
+                                        AND
+                                          assurance = ?`,['paid',range.min,range.max,assurance])
+      if (!updatepayment) {
+        return res.status(500).send({success:false, message: errorMessage.is_error})
+      }else if (updatepayment.affectedRows == 0) {
+        return res.send({success:false, message: errorMessage._err_unknown})
+      }
+      res.send({success: true, message: errorMessage.pAp_message})
     
   } catch (error) {
     console.log(error)

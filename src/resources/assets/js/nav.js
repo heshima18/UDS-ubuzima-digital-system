@@ -1,9 +1,5 @@
-import { postschema, request,alertMessage, getdata,getschema, animskel, deletechild,getPath,cpgcntn, sessiondata, calcTime} from "../../../utils/functions.controller.js"
+import { postschema, request,alertMessage, getdata,getschema, animskel, deletechild,getPath,cpgcntn, sessiondata, calcTime,DateTime} from "../../../utils/functions.controller.js"
 let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,z,x,c,v,b,n
-// const now = luxon.DateTime.now();
-// let kigaliTime = now.setZone('Africa/Kigali');
-// kigaliTime = kigaliTime.toFormat('yyyy/MM/dd HH:mm:ss');
-// console.log(kigaliTime);
 const token = getdata('token');
 export const userinfo = await request(`authenticateToken/${token}`,getschema);
 if (userinfo.message.role != getPath()[0]) {
@@ -267,4 +263,5 @@ export function getNfPanelLinks() {
     l = Array.from(nfPanel.querySelectorAll('div.list-link'))
     return l
 }
+export {DateTime}
 export default userinfo

@@ -1376,7 +1376,7 @@ let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z
                     }
                     let actButtons = Array.from(actDiv.querySelectorAll('.act-buttons'));
                     actButtons.forEach(button=>{
-                        button.onclick = function (event) {
+                        button.onclick = async function (event) {
                             actDiv.classList.toggle('hidden')
                             event.preventDefault();
                             if (!fileredData) {
@@ -1393,7 +1393,19 @@ let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z
                                 })
                                 alertMessage(`the sum of the selected entries is <b>${adcm(sum)} RWF</b>`)
                             }else if (button.id == 'mark-as-paid') {
-                                
+                                let min = inputs[0].value
+                                let max = inputs[1].value
+                                if (min,max) {
+                                    let dates_interval = {min,max}
+                                    let assurance = hp_in.getAttribute('data-id')
+                                    postschema.body = JSON.stringify({
+                                        token: getdata('token'),
+                                        range: dates_interval,
+                                        assurance
+                                    })
+                                    let update = await request('approve-assurance-payment',postschema)
+                                    alertMessage(update.message)
+                                }
                             }
 
                         }

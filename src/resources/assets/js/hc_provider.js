@@ -1,7 +1,6 @@
 
 import { alertMessage, getdata, getschema, postschema, request,deletechild, checkEmpty, showRecs, getchips,getPath,calcTime, addUprofile,addsCard,cpgcntn, geturl,sessiondata,addChip, showAvaiAssurances, adcm, addshade, addLoadingTab, removeLoadingTab, showAvaiEmps, fT } from "../../../utils/functions.controller.js";
-import {pushNotifs, userinfo,expirateMssg, getNfPanelLinks,m as messages} from "./nav.js";
-
+import {pushNotifs, userinfo,expirateMssg, getNfPanelLinks,m as messages, DateTime} from "./nav.js";
 let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,z,notificationlinks
 (async function () {
     z = userinfo
@@ -627,7 +626,7 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,z,notificationlinks
                     </div>
                     <div class="w-100 h-a my-10p">
                         <span class="dgray capitalize block">description: </span>
-                        <span class="black capitalize block">${message.addins.content} </span>
+                        <span class="black capitalize block">${(message.addins)? message.addins.content : message.extra.content} </span>
                     </div>
                     <div class="w-100 h-a my-10p">
                         <span class="dgray capitalize block">estimated time: </span>
@@ -667,7 +666,6 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,z,notificationlinks
             alertMessage(time.message)
         }
         let bs = Array.from(cont.querySelectorAll('[data-role="button"]'))
-        console.log(message)
         bs.map(function (button) {
             button.addEventListener('click', async()=>{
                 if (button.classList.contains('loading')) {
@@ -678,7 +676,7 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,z,notificationlinks
                         token : getdata('token'),
                         patient : message.sender.id,
                         subject : message.content,
-                        message : message.addins.content,
+                        message : (message.addins) ? message.addins.content : message.extra.content,
                         time : time.message,
                         status : 'approved',
                         dateadded : message.dateadded
@@ -946,7 +944,7 @@ class popups{
                 });
               }
         })
-        form.addEventListener('submit', async event=>{            
+        form.addEventListener('submit', async event=>{
             event.preventDefault();
             l = 1
             for (const input of inputs) {

@@ -87,8 +87,8 @@ form.addEventListener('submit', async e=>{
             }else if (z.role == 'dof') {
                 window.location.href = '../dof/home/'
                 
-            }else if (z.role == 'Ministry of health staff') {
-                window.location.href = '../mhs/home/'
+            }else if (z.role == 'mohs') {
+                window.location.href = '../mohs/home/'
                 
             }else if (z.role == 'Human resource manager') {
                 window.location.href = '../hrm/home/'

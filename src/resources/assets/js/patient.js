@@ -567,7 +567,6 @@ function addAppointmentDiv() {
             s.title = `incoming appointment request`
             this.classList.add('loading')
             form.querySelector(`button`).innerHTML = `<span class="spinner-border" role="status" aria-hidden="true"></span>`
-            console.log(s)
             postschema.body = JSON.stringify(s)
             let result = await request('send-message',postschema)
             form.querySelector(`button`).innerHTML = `proceed`

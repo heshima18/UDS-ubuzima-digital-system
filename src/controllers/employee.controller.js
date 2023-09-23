@@ -10,7 +10,7 @@ import { roles } from '../utils/roles.controller';
 
 export const addemployee = async (req,res)=>{
   try {
-      let {Full_name,email,phone,nid,hospital,department,title,license} = req.body
+      let {Full_name,email,phone,nid,hospital,department,title,license,extra} = req.body
       let role,password = '123456',username = Full_name.replace(/ /gi,".");
       username+= id().substring(2,4);
       for (const tit of titles) {
@@ -50,7 +50,7 @@ export const addemployee = async (req,res)=>{
         if (!update) return res.status(500).send({success:false, message: errorMessage.is_error})
         if (!update.affectedRows) return res.status(404).send({success:false, message: errorMessage._err_hc_404})
       }
-      let insert = await query(`insert into users(id,NID,email,phone,Full_name,username,password,role,department,status,title,license)values(?,?,?,?,?,?,?,?,?,?,?,?)`,[uid,nid,email,phone,Full_name,username,password,role,department,'unverified',title,license])
+      let insert = await query(`insert into users(id,NID,email,phone,Full_name,username,password,role,department,status,title,license,extra,dateadded)values(?,?,?,?,?,?,?,?,?,?,?,?,?,CURRENT_TIMESTAMP())`,[uid,nid,email,phone,Full_name,username,password,role,department,'unverified',title,license,JSON.stringify(extra)])
       let FAcode = generate2FAcode()
       if (!insert) {
         return res.status(500).send({success:false, message: errorMessage.is_error})

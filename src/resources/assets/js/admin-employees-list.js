@@ -1,11 +1,11 @@
 // Import the Employees from 'constants.js'
-import { alertMessage, getdata, getschema, postschema, request, initializeCleave,checkEmpty,showRecs } from "../../../utils/functions.controller.js";
+import { alertMessage, getdata, getschema, postschema, request, initializeCleave,checkEmpty,showRecs, addshade, getLocs, deletechild } from "../../../utils/functions.controller.js";
 
 
 
 // Wait for the document to be ready
 $(document).ready(async function () {
-    let t, a, n, u, z, v, d, h, f, i, s, b, x, c;
+    let t, a, n, u, z, v, d, h, f, i, s, b, x, c, info;
     u = getdata('token')
     if(!u){
         window.location.href = '../../login'
@@ -17,105 +17,7 @@ $(document).ready(async function () {
     n = await request('get-departments',postschema)
     h =  await request('gethospitals',postschema)
     t = await request('get-titles',postschema)
-    try{
-        f = document.querySelector('form#add-employee-form')
-        s = Array.from(f.querySelectorAll('select.address-field'));
-        i = Array.from(f.querySelectorAll('.form-control'))
-        z = Array.from(f.querySelectorAll('.form-select'))
-        
-        for (const sele of z) {
-         i.push(sele)
-        }
-        b = f.querySelector('button[type="submit"]')
-        for (const select of s) {
-            select.addEventListener('change',e=>{
-                e.preventDefault();
-                if (select.name == 'province') {
-                    for (const province of m.provinces) {
-                        if (province.id == select.value) {
-                            s[2].innerHTML =  '<option value="">Select Sector</option>'
-                            s[3].innerHTML =  '<option value="">Select Cell</option>'
-                            cdcts(province.districts,s[1],'District')
-                        }else if(select.value == ''){
-                            s[1].innerHTML =  '<option value="">Select District</option>'
-                            s[2].innerHTML =  '<option value="">Select Sector</option>'
-                            s[3].innerHTML =  '<option value="">Select Cell</option>'
-                        }
-                    }
-                }
-                if (select.name == 'district') {
-                    for (const province of m.provinces) {
-                        for (const district of province.districts) {
-                            if (district.id == select.value) {
-                                s[3].innerHTML =  '<option value="">Select Cell</option>'
-                                cdcts(district.sectors,s[2],'Sector')
-                            }else if(select.value == ''){
-                                s[2].innerHTML =  '<option value="">Select Sector</option>'
-                                s[3].innerHTML =  '<option value="">Select Cell</option>'
-                            }
-                        }
-                    }
-                }
-                if (select.name == 'sector') {
-                    for (const province of m.provinces) {
-                        for (const district of province.districts) {
-                            for (const sector of district.sectors) {
-                                if (sector.id == select.value) {
-                                    cdcts(sector.cells,s[3],'Cell')
-                                }else if(select.value == ''){
-                                    s[3].innerHTML =  '<option value="">Choose...</option>'
-                                }
-                            }
-                        }
-                    }
-                }
-            })
-        }
-    } catch (error) {
-    console.log(error)  
-    }
-    f.addEventListener('submit', async e =>{
-        e.preventDefault();
-        v = 1
-        for (const input of i) {
-        n =  checkEmpty(input);
-            if (!n) {
-             v = 0 
-            }
-        }
-        if(v){
-            x = {}
-            for (const input of i) {
-                if (!input.classList.contains('chips-check')) {
-                    if (input.name == 'phone' || input.name == 'nid') {
-                        Object.assign(x,{[input.name]:  input.value.replace(/ /g, "")})   
-                    }else if (input.classList.contains('bevalue')) {
-                        Object.assign(x,{[input.name]: input.getAttribute('data-id')})
-                    }else{
-                        Object.assign(x,{[input.name]: input.value})
-
-                    }
-                }else{
-                    c = getchips(input.parentNode.querySelector('div.chipsholder'));
-                    Object.assign(x,{[input.name]: c})
-                }
-            }
-            Object.assign(x,{token: getdata('token')})
-            postschema.body = JSON.stringify(x)
-            b.setAttribute('disabled', true)
-            b.textContent = `Recording employee...`
-
-            a = await request('addemployee',postschema);
-            b.removeAttribute('disabled')
-            b.textContent = `Submit`
-            if (a.success) {
-                alertMessage(a.message)
-                f.reset()
-            }else{
-                alertMessage(a.message)
-            }
-        }
-    })
+    const map = await request('get-map',getschema)
     if (!v.success || !n.success || !h.success) return alertMessage(v.message)
     for (const employee of v.message) {
         Object.assign( v.message[v.message.indexOf(employee)],{image: ""})
@@ -201,7 +103,7 @@ $(document).ready(async function () {
                 {
                     text: '<i class="bx bx-plus me-0 me-sm-1"></i><span class="d-none d-sm-inline-block">Add New</span>',
                     className: "add-new btn btn-primary",
-                    attr: { "data-bs-toggle": "modal", "data-bs-target": "#add-employee" },
+                    attr: { "id": "showAddEForm" },
                 },
             ],
 
@@ -284,11 +186,168 @@ $(document).ready(async function () {
         if (confirm("Are you sure you want to delete this employee?")) {
             e.row($(this).parents("tr")).remove().draw();
         }
-    }), setTimeout(() => {
-        $(".dataTables_filter .form-control").removeClass("form-control-sm");
-        $(".dataTables_length .form-select").removeClass("form-select-sm");
-    }, 0), $('#update-employee, #add-employee').on('shown.bs.modal', function () {
-        const $modal = $(this);
+    })
+    
+    async function getMOHSLimitInfo() {
+        let div = addshade();
+        a = document.createElement('div');
+        div.appendChild(a)
+        a.className = "w-350p h-a p-10p bsbb bc-white cntr zi-10000 br-5p b-mgc-resp card" 
+        a.innerHTML  =`<div class="head w-100 h-50p py-10p px-15p bsbb">
+                            <span class="fs-18p bold-2 dgray capitalize igrid h-100 card-title">Staff additional info</span>
+                        </div>
+                        <div class="body w-100 h-a p-5p grid">
+                            <form method="post" id="req-info-form" name="req-info-form">
+                                <div class="col-md-12 px-10p py-6p bsbb p-r">
+                                    <label for=" class="form-label">Limit</label>
+                                    <input type="text" class="form-control bevalue" id="limit" placeholder="Demo Limit" name="limit">
+                                    <small class="w-100 red pl-3p verdana"></small>
+                                </div>
+                                <div class="col-md-12 px-10p py-6p bsbb p-r">
+                                    <label for="Location" class="form-label">Location</label>
+                                    <input type="text" class="form-control bevalue" id="Location" placeholder="Demo Location" name="location">
+                                    <small class="w-100 red pl-3p verdana"></small>
+                                </div>
+                                <div class="wrap center-2 px-10p bsbb bblock-resp my-10p">
+                                    <button type="submit" class="btn btn-primary bfull-resp mr-10p bm-a-resp bmy-10p-resp">Proceed</button>
+                                </div>
+                            </form>
+                        </div>`
+        let form = a.querySelector("form");
+        let inputs = Array.from(a.querySelectorAll('input'))
+        let limit = inputs.find(function (ins) {return ins.name == "limit" })
+        let location = inputs.find(function (ins) {return ins.name == "location" })
+        location.addEventListener('focus', (event)=>{
+            showRecs(location,getLocs(map.message,limit.getAttribute('data-id')),location.id)
+        })
+        limit.addEventListener('focus', (event)=>{
+            showRecs(limit,[{id: 'province', name:'province'},{id: 'district', name:'district'},{id: 'sector', name:'sector'}],limit.id)
+        })
+        form.addEventListener('submit', async event=>{
+            event.preventDefault();
+            let l = 1
+            for (const input of inputs) {
+                v = checkEmpty(input);
+                if (!v) {
+                    l = 0
+                }
+            }
+            if (l) {
+                let values = {}
+                for (const input of inputs) {
+                    Object.assign(values,{[input.name]: (input.classList.contains('bevalue'))? input.getAttribute('data-id') : input.value })
+                }
+                info = values
+                deletechild(div,div.parentElement)
+            }
+        })
+    }
+    let showAddEFormButton = document.querySelector('#showAddEForm')
+    showAddEFormButton.onclick = function (event) {
+      event.preventDefault()
+      showAddEForm()  
+    } 
+    function showAddEForm() {
+        let addediv = document.querySelector('#add-employee')
+        addediv = addediv.cloneNode(true)
+        let div = addshade()
+        div.appendChild(addediv)
+        
+        f = addediv.querySelector('form#add-employee-form')
+        s = Array.from(f.querySelectorAll('select.address-field'));
+        i = Array.from(f.querySelectorAll('.form-control'))
+        z = Array.from(f.querySelectorAll('.form-select'))
+        
+        for (const sele of z) {
+         i.push(sele)
+        }
+        b = f.querySelector('button[type="submit"]')
+        for (const select of s) {
+            select.addEventListener('change',e=>{
+                e.preventDefault();
+                if (select.name == 'province') {
+                    for (const province of m.provinces) {
+                        if (province.id == select.value) {
+                            s[2].innerHTML =  '<option value="">Select Sector</option>'
+                            s[3].innerHTML =  '<option value="">Select Cell</option>'
+                            cdcts(province.districts,s[1],'District')
+                        }else if(select.value == ''){
+                            s[1].innerHTML =  '<option value="">Select District</option>'
+                            s[2].innerHTML =  '<option value="">Select Sector</option>'
+                            s[3].innerHTML =  '<option value="">Select Cell</option>'
+                        }
+                    }
+                }
+                if (select.name == 'district') {
+                    for (const province of m.provinces) {
+                        for (const district of province.districts) {
+                            if (district.id == select.value) {
+                                s[3].innerHTML =  '<option value="">Select Cell</option>'
+                                cdcts(district.sectors,s[2],'Sector')
+                            }else if(select.value == ''){
+                                s[2].innerHTML =  '<option value="">Select Sector</option>'
+                                s[3].innerHTML =  '<option value="">Select Cell</option>'
+                            }
+                        }
+                    }
+                }
+                if (select.name == 'sector') {
+                    for (const province of m.provinces) {
+                        for (const district of province.districts) {
+                            for (const sector of district.sectors) {
+                                if (sector.id == select.value) {
+                                    cdcts(sector.cells,s[3],'Cell')
+                                }else if(select.value == ''){
+                                    s[3].innerHTML =  '<option value="">Choose...</option>'
+                                }
+                            }
+                        }
+                    }
+                }
+            })
+        }
+        f.addEventListener('submit', async e =>{
+            e.preventDefault();
+            v = 1
+            for (const input of i) {
+            n =  checkEmpty(input);
+                if (!n) {
+                v = 0 
+                }
+            }
+            if(v){
+                x = {}
+                for (const input of i) {
+                    if (!input.classList.contains('chips-check')) {
+                        if (input.name == 'phone' || input.name == 'nid') {
+                            Object.assign(x,{[input.name]:  input.value.replace(/ /g, "")})   
+                        }else if (input.classList.contains('bevalue')) {
+                            Object.assign(x,{[input.name]: input.getAttribute('data-id')})
+                        }else{
+                            Object.assign(x,{[input.name]: input.value})
+
+                        }
+                    }else{
+                        c = getchips(input.parentNode.querySelector('div.chipsholder'));
+                        Object.assign(x,{[input.name]: c})
+                    }
+                }
+                Object.assign(x,{token: getdata('token'), extra: info})
+                postschema.body = JSON.stringify(x)
+                b.setAttribute('disabled', true)
+                b.textContent = `Recording employee...`
+
+                a = await request('addemployee',postschema);
+                b.removeAttribute('disabled')
+                b.textContent = `Submit`
+                if (a.success) {
+                    alertMessage(a.message)
+                    f.reset()
+                }else{
+                    alertMessage(a.message)
+                }
+            }
+        })
         let hospital = f.querySelector('input#hospital')
         let department = f.querySelector('input#department')
         let titles = t.message
@@ -302,7 +361,13 @@ $(document).ready(async function () {
         title.addEventListener('focus', function (e) {
             showRecs(this,titles,'titles')
         })
-
+        
+        title.onblur = async function () {
+            let titVal = this.getAttribute('data-id')
+            if (titVal == 'Ministry of health staff') {
+                info = await getMOHSLimitInfo()
+            }
+        }
         department.addEventListener('focus', function (e) {
             let departments = h.message.find(function (hospp) {
                 return hospp.id == hospital.getAttribute('data-id')
@@ -315,8 +380,8 @@ $(document).ready(async function () {
             }
         })
         initializeCleave(
-            $modal.find('.phone-number-mask'),
-            $modal.find('.national-id-no-musk')
+            f.querySelector('.phone-number-mask'),
+            f.querySelector('.national-id-no-musk')
         );
-    });
+    }
 });

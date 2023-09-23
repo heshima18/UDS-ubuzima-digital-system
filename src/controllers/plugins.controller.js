@@ -72,7 +72,24 @@ export let getSocketIo = (req, res) => {
 
     res.writeHead(200, {
       'Content-Type': 'text/javascript',
-      'Content-Length': contentLength.toString(),
+      'Content-Length': data.length,
+    });
+    res.end(data);
+  });
+};
+export let getLuxon = (req, res) => {
+  const { filename } = req.params;
+  const file = path.join(__dirname,'..','..','node_modules','luxon','build','es6',filename);
+
+  fs.readFile(file, (err, data) => {
+    if (err) {
+      res.status(404).send('File not Found');
+      return;
+    }
+
+    res.writeHead(200, {
+      'Content-Type': 'text/javascript',
+      'Content-Length': data.length,
     });
     res.end(data);
   });

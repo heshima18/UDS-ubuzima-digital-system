@@ -1,4 +1,6 @@
 var q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,z,x,c,v,b,n,m
+import { DateTime } from "/getLuxon/luxon.js";
+export {DateTime}
 export async function request(url,options){
     try {
       let z = await fetch(geturl() +url,options);
@@ -322,13 +324,13 @@ export function showRecs(input, data,type) {
       }
      })
     })
-    input.onblur = function () {
+    input.addEventListener('blur', function () {
       try {
-        setTimeout(e=>{parent.removeChild(div)},200)
+        setTimeout(e=>{deletechild(div,parent)},200)
       } catch (error) {
         
       }
-    }
+    })
     input.onkeyup = function () {
      let value = this.value.trim();
      items.forEach(item =>{
@@ -1144,8 +1146,7 @@ export function calcTime(targetTime) {
 export function fT(time) {
   try {
     let formatedTime = new Date(time)
-    formatedTime.setHours(formatedTime.getHours() - 1)
-    return  new Intl.DateTimeFormat('en-US',{weekday: 'long',year: 'numeric',month: 'long',day: 'numeric', hour: '2-digit', minute: '2-digit'}).format(new Date(formatedTime))
+    return  new Intl.DateTimeFormat('en-US',{weekday: 'long',year: 'numeric',month: 'long',day: 'numeric', hour: '2-digit', minute: '2-digit'}).format(formatedTime)
     
   } catch (error) {
     return time
@@ -1156,4 +1157,40 @@ export function aDePh(parent) {
   defaultLi.className = `ovh center-2`
   parent.appendChild(defaultLi)
   defaultLi.innerHTML = `<span class="capitalize dgray flex fs-16p bold-2">no entries available</span>`
+}
+export function getLocs(map,required) {
+  let cache = []
+  if (required == "province") {
+      for (const provinces of map) {
+          cache.push({id: provinces.provinces[0].id, name: provinces.provinces[0].name})
+      }
+      return cache
+  }else if (required == "district") {
+      for (const provinces of map) {
+          for (const district of  provinces.provinces[0].districts) {
+              cache.push({id: district.id, name: district.name})
+          }
+      }
+      return cache
+  }else if (required == "sector") {
+      for (const provinces of map) {
+          for (const district of  provinces.provinces[0].districts) {
+              for (const sector of district.sectors) {
+                  cache.push({id: sector.id, name: sector.name})
+              }
+          }
+      }
+      return cache
+  }else if (required == "cell") {
+      for (const provinces of map) {
+          for (const district of  provinces.provinces[0].districts) {
+              for (const sector of district.sectors) {
+                  for (const cell of sector.cells) {
+                      cache.push({id: cell.id, name: cell.name})
+                  }
+              }
+          }
+      }
+      return cache
+  }
 }

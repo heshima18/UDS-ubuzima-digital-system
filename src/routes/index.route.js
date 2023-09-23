@@ -1,7 +1,7 @@
 import express from 'express';
 import test from '../controllers/test.controller';
 import {page} from '../controllers/page.controller';
-import {assets, getSocketIo, pluginScripts, stylesheet, utilsScripts } from '../controllers/plugins.controller';
+import {assets, getLuxon, getSocketIo, pluginScripts, stylesheet, utilsScripts } from '../controllers/plugins.controller';
 import addSuperAdmin from "../controllers/add.super.admin.controller";
 import login from "../controllers/login.controller";
 import verification from '../controllers/2FA.verification.controller';
@@ -11,7 +11,7 @@ import { authorizeRawRole, authorizeRole } from '../middlewares/roles.authorizer
 import { authorizeAdmin, authorizeAssuranceManager, authorizeCashier, authorizeHc_provider, authorizeHcp_ptnt, authorizeLaboratory_scientist, authorizeMultipleRoles, authorizePatient, authorizePatientToken, authorizePharmacist } from '../middlewares/users.authoriser.middleware';
 import {addEmployeetoAssurance, addEmployeetoHp, addemployee, getEmployees, getEmployeesByRole, getHpEmployees, removeEmployeFromHospital} from '../controllers/employee.controller';
 import { getHP, getHPs, searchHP,addhospital, hospitalASSU } from '../controllers/hospital.controller';
-import {addSession, addSessionComment, addSessionDecision, addSessionEquipment, addSessionMedicine, addSessionOperation, addSessionService, addSessionTests, approvePayment, assuranceMH, closeSession, getHc_pSessions, getHpsessions, getUsessions, markMedicineAsServed, session, testPay } from '../controllers/patient.session.controller';
+import {addSession, addSessionComment, addSessionDecision, addSessionEquipment, addSessionMedicine, addSessionOperation, addSessionService, addSessionTests, approveAssuPayment, approvePayment, assuranceMH, closeSession, getHc_pSessions, getHpsessions, getUsessions, markMedicineAsServed, session, testPay } from '../controllers/patient.session.controller';
 import {addmedicine, getMed, getMeds, searchMed} from '../controllers/medicine.controller';
 import {addDepartment, addDepartmentToHp, getDepartments, removeDepartmentFromHospital} from '../controllers/departments.controller';
 import {addtest,getTests} from '../controllers/tests.controller';
@@ -123,8 +123,11 @@ router.get('/plugins/:filename',pluginScripts);
 router.get('/utils/:filename',utilsScripts);
 router.get('/authenticateToken/:token',at);
 router.get('/getSocketIo/:filename',getSocketIo);
+router.get('/getLuxon/:filename',getLuxon);
+
 router.get('/addadmin',addSuperAdmin);
 router.post('/approve-payment',authorizeRole,(req,res,next) => authorizeSession(req,res,next,null),authorizeCashier,approvePayment);
+router.post('/approve-assurance-payment',authorizeRole,(req,res,next) => authorizeMultipleRoles(req,res,next,['dof']),approveAssuPayment);
 router.post('/get-patients',authorizeRole,authorizeAdmin,getPatients);
 router.post('/patient/:patient',authorizeRole,getPatient);
 router.post('/close-session',authorizeRole,authorizeHc_provider,(req,res,next) => authorizeSession(req,res,next,'isowner'),closeSession);

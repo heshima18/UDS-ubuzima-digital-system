@@ -12,7 +12,8 @@ const verification = async (req,res)=>{
             status,
             email,
             Full_name,
-            role
+            role,
+            extra
         from 
          patients
           where 
@@ -80,6 +81,10 @@ const verification = async (req,res)=>{
                     return res.status(403).send({success: false, message: errorMessage.emp_inassigned_to_assu_error_message})
                 }
                 token = addToken({id:select.id,Full_name:select.Full_name,role: select.role,status: select.status,title: select.title, assurance: assurance.id})
+            }else if (select.role == 'mohs') {
+                if (select.extra) {
+                    select.extra = JSON.parse(select.extra)
+                }
             }else{
                  token = addToken({id:select.id,Full_name:select.Full_name,role: select.role,status: select.status})
             }

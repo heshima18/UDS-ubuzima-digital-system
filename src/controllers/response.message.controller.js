@@ -60,6 +60,7 @@ const errorMessage = {
     _err_hc_404: 'the provided hospital was not found',
 
     _err_ms_404: 'the provided medical session was not found',
+    _err_unknown: 'Oops an unknown error occured',
     _session_clo_message: 'medical session was closed successfully',
     _err_hcp_404: 'the provided healthcare provider  was not found',
     _err_hH_404: 'the provided House holder  was not found',
