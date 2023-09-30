@@ -527,3 +527,6 @@ input::placeholder{
 .bc-tr-white{
   background-color: #ffffff70;
 }
+.ta-b{
+  text-align: bottom;
+}

@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Ministry of Health Staff - Home | UDS</title>
+    <link rel="stylesheet" type="text/css" href="/styles/styling.css">
+    <link rel="icon" type="image/x-icon" href="/assets/svg/logo.svg" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&amp;display=swap"
+            rel="stylesheet" />
+    
+        <link rel="stylesheet" href="/assets/vendor/fonts/boxicons.css" />
+        <link rel="stylesheet" href="/assets/vendor/fonts/fontawesome.css" />
+        <link rel="stylesheet" href="/assets/vendor/libs/spinkit/spinkit.css">
+    
+        <!-- Core CSS -->
+        <link rel="stylesheet" href="/assets/vendor/css/core.css" class="template-customizer-core-css" />
+        <link rel="stylesheet" href="/assets/vendor/css/theme-default.css" class="template-customizer-theme-css" />
+        <link rel="stylesheet" href="/assets/css/demo.css" />
+    
+        <!-- Vendors CSS -->
+        <link rel="stylesheet" href="/assets/vendor/libs/datatables-bs5/datatables.bootstrap5.css" />
+        <link rel="stylesheet" href="/assets/vendor/libs/datatables-responsive-bs5/responsive.bootstrap5.css" />
+        <link rel="stylesheet" href="/assets/vendor/libs/datatables-buttons-bs5/buttons.bootstrap5.css" />
+        <link rel="stylesheet" href="/assets/vendor/libs/datatables-checkboxes-jquery/datatables.checkboxes.css" />
+    
+        <link rel="stylesheet" href="/assets/vendor/libs/select2/select2.css" />
+        <link rel="stylesheet" href="/assets/vendor/libs/formvalidation/dist/css/formValidation.min.css" />
+        <link rel="stylesheet" href="/styles/styling.css">
+        <link rel="stylesheet" href="/assets/vendor/fonts/boxicons.css">
+        <script src="/assets/js/nav.js" type="module"></script>
+        
+    <script src="/assets/vendor/libs/jquery/jquery.js"></script>
+    <script src="/assets/js/mohs.js" type="module"></script>
+	<script src="/getSocketIo/socket.io.min.js"></script>
+    <script src="/assets/vendor/libs/datatables-bs5/datatables-bootstrap5.js"></script>
+    <script src="/assets/vendor/js/bootstrap.js"></script>
+	<link rel="shortcut icon" href="/icons/favicon.png" type="image/x-icon">
+</head>
+<body class="p-0 m-0 w-100 h-100 p-a ovh">
+<div class="cont w-100 h-100 ovxh" id="cont">
+	<div class="theshade w-100 h-100 p-f bc-tr-black zi-20 pl-300p bsbb tr-0-3 hidden"></div>
+	<div id="body" class="bc-gray w-100 h-100 p-r bsbb">
+        <div class="w-100 h-a bsbb m-0 t-0 p-f p-10p zi-100">
+            <nav class="w-100 card-2 bc-white br-5p flex jc-sb pr-15p pl-15p" id="layout-navbar">
+                <div class="h-54p center">
+                    <a class="nav-item nav-link px-0 me-xl-4" href="javascript:void(0)">
+                        <i class="">UDS_logo</i>
+                    </a>
+                </div>
+                <div class="h-54p center" id="navbar-collapse">
+                    <ul class="navbar-nav flex-row align-items-center ms-auto">
+                        <li class="nav-item navbar-dropdown dropdown p-5p bsbb mr-5p">
+                            <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="notification-dropdown" data-bs-auto-close="outside">
+                                <i class="bx bx-bell bx-sm"></i>
+                                <span class="p-a bc-red br-50 w-15p h-15p fs-9p white hidden t-5p r-0  data-role" data-role="notification-count-badge">0</span>
+                            </a>
+                            <ul class="notification-dropdown bc-white card h-400p w-390p p-0 t-80p p-f mr-20p r-0 ls-none hidden" data-bs-popper="static" name="notification-dropdown" id="notification-dropdown">
+                                <li class="dropdown-menu-header border-bottom px-10p py-5p bsbb">
+                                    <div class="dropdown-header d-flex align-items-center py-10p">
+                                        <h5 class="text-body mb-0 me-auto capitalize">Notifications</h5>
+                                        <a href="javascript:void(0)" class="dropdown-notifications-all text-body" data-bs-toggle="tooltip" data-bs-placement="top" aria-label="Mark all as read" data-bs-original-title="Mark all as read"><i class="bx fs-4 bx-envelope-open"></i></a>
+                                    </div>
+                                </li>
+                                <li class="dropdown-notifications-list scrollable-container h-80 ovys scroll-3">
+                                    <ul class="list-group list-group-flush nf-panel h-100">
+                                       <li class="w-100 h-100 center">
+                                        <div class="center">
+                                            <div class="sk-grid sk-primary">
+                                                <div class="sk-grid-cube"></div>
+                                                <div class="sk-grid-cube"></div>
+                                                <div class="sk-grid-cube"></div>
+                                                <div class="sk-grid-cube"></div>
+                                                <div class="sk-grid-cube"></div>
+                                                <div class="sk-grid-cube"></div>
+                                                <div class="sk-grid-cube"></div>
+                                                <div class="sk-grid-cube"></div>
+                                                <div class="sk-grid-cube"></div>
+                                            </div>
+                                        </div>
+                                        <div class="w-100 h-a dgray capitalize">loading...</div>
+                                       </li>
+                                    </ul>
+                                </li>
+                                <li class="dropdown-menu-footer border-top">
+                                    <a href="javascript:void(0);" class="dropdown-item d-flex justify-content-center p-3">
+                                        Mark all as seen
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li class="nav-item navbar-dropdown dropdown-user dropdown ml-5p">
+                            <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="profile-dropdown">
+                                <div class="avatar avatar-online">
+                                    <img src="/assets/img/avatar-1.png" alt="" class="w-px-40 h-auto rounded-circle">
+                                </div>
+                            </a>
+                            <ul class="profile-dropdown bc-white card h-200p w-200p p-0 t-80p p-f mr-20p r-0 ls-none hidden" name="profile-dropdown">
+                                <li>
+                                    <a class="dropdown-item" href="pages-account-settings-account.html">
+                                        <div class="flex px-5p py-10p bsbb">
+                                            <div class="left mx-5p">
+                                                <div class="avatar avatar-online">
+                                                    <img src="/assets/img/avatar-1.png" alt="" class="w-px-40 h-auto rounded-circle">
+                                                </div>
+                                            </div>
+                                            <div class="left">
+                                                <span class="fw-semibold d-bloc data-role bsbb" data-role="profile-name"><span class="skel w-65p h-10p br-2p block my-5p"></span></span>
+                                                <small class="text-muted block data-role" data-role="profile-title"><span class="skel w-50p h-10p br-2p block my-5p"></span></small>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </li>
+                                <li class="px-10p bsbb py-2p">
+                                    <div class="dropdown-divider"></div>
+                                </li>
+                                <li class="px-10p bsbb py-2p">
+                                    <a class="dropdown-item left" href="../my-account">
+                                        <i class="bx bx-user me-2"></i>
+                                        <span class="align-middle">My Account</span>
+                                    </a>
+                                </li>
+                                <li class="px-10p bsbb py-2p">
+                                    <div class="dropdown-divider"></div>
+                                </li>
+                                <li class="px-10p bsbb py-2p">
+                                    <a class="dropdown-item left" href="auth-login.html" target="_blank">
+                                        <i class="bx bx-power-off me-2"></i>
+                                        <span class="align-middle">Log Out</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+        </div>
+		<div class="thebody w-100 h-95 p-r pt-60p bsbb">
+			<div class="w-100 h-100 mb-10p">
+				<div class="w-100 m-a h-100 p-10p br-10p mb-30p bsbb">
+					<div class="w-100 h-100 p-10p bsbb flex bblock-resp bp-0-resp" aria-controls="cont">
+						<div class="w-240p bfull-resp h-100 bh-70p-resp p-10p bsbb the-h">
+							<div class="cont w-100 h-100">
+								<div class="the-h w-210p m-a bfull-resp bsbb h-a ovxs scroll-3 p-5p bsbb bc-white br-5p">
+									<ul class="ls-none p-0 m-0 jc-sb w-100 bflex-resp">
+										<li class="p-5p bsbb">
+											<span class="w-100 h-100 p-10p hover-7 cpcards bsbb flex verdana nowrap capitalize fs-13p br-5p active bb-1-s-theme bc-tr-theme theme" data-item-type="home">
+                                                <span class="w-19p h-19p mr-5p"><i class="menu-icon tf-icons bx bx-home-circle"></i></span>
+                                                    <span class="center pt-2p bsbb">
+                                                        Home
+                                                    </span>
+                                             </span>
+										</li>
+                                       
+                                        <li class="p-5p bsbb">
+                                            <span class="w-100 h-100 p-10p hover-7 cpcards bsbb iblock verdana nowrap capitalize fs-13p br-5p" data-item-type="restricted-medications">restricted medications</span>
+                                        </li>
+                                        <li class="p-5p bsbb">
+											<span class="w-100 h-100 p-10p hover-7 cpcards bsbb iblock verdana nowrap capitalize fs-13p br-5p" data-item-type="restricted-tests">restricted tests</span>
+										</li>
+                                        <li class="p-5p bsbb">
+											<span class="w-100 h-100 p-10p hover-7 cpcards bsbb iblock verdana nowrap capitalize fs-13p br-5p" data-item-type="restricted-operations">restricted operations</span>
+										</li>
+                                        <li class="p-5p bsbb">
+											<span class="w-100 h-100 p-10p hover-7 cpcards bsbb iblock verdana nowrap capitalize fs-13p br-5p" data-item-type="restricted-equipments">restricted equipments</span>
+										</li>
+                                        <li class="p-5p bsbb">
+											<span class="w-100 h-100 p-10p hover-7 cpcards bsbb iblock verdana nowrap capitalize fs-13p br-5p" data-item-type="restricted-services">restricted services</span>
+										</li>
+                                        <li class="p-5p bsbb">
+											<span class="w-100 h-100 p-10p hover-7 cpcards bsbb iblock verdana nowrap capitalize fs-13p br-5p" data-item-type="medical-prescriptions">medical prescriptions</span>
+										</li>
+										<li class="p-5p bsbb">
+											<span class="w-100 h-100 p-10p hover-7 cpcards bsbb flex verdana nowrap capitalize fs-13p br-5p" data-item-type="my-account">
+                                                <span class="w-19p h-19p mr-5p"><i class="tf-icons bx bx-user"></i></span>
+                                                <span class="center bsbb pt-1p">
+                                                    my account
+                                                </span>
+                                            </span>
+										</li>
+									</ul>
+								</div>
+							</div>
+						</div>
+						<div class="the-b w-100 h-95 p-r ovxh">
+							<!-- home section -->
+							<div class="br-5p w-100 h-100 p-r ovh block tr-0-3 pagecontentsection zi-10" id="home">
+								<div class="w-100 h-a p-10p bsbb">
+									<span class="theme capitalize left flex bold fs-20p verdana h-100 pl-10p"><span class="dgray capitalize">Ministry of health staff / </span>&nbsp;Home</span>
+								</div>
+								<div class="pg-cntnt w-100 h-90 bh-80-resp scroll-3 p-20p bsbb ovys left bp-0-resp">
+                                    <div class="row">
+                                        <div class="col-12 col-lg-8 order-2 order-md-3 order-lg-2 mb-4">
+                                            <div class="card h-100">
+                                                <div class="row row-bordered g-0 h-100">
+                                                    <div class="col-md-8">
+                                                        <h5 class="card-header m-0 me-2 pb-3">Analytics</h5>
+                                                        <div id="totalRevenueChart" class="w-100 h-100 p-10p bsbb">
+                                                            <div class="w-100 h-70 bc-tr-theme br-5p">
+                                                                
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <div class="p-5p">
+                                                            <div class="p-5p">
+                                                                <span class="capitalize dgray bold-2">actions</span>
+                                                            </div>
+                                                            <div class="p-10p bsbb">
+                                                                <div class="title">
+                                                                    <span class="capitalize">comparison</span>
+                                                                </div>
+                                                                <div class="flex my-10p">
+                                                                    <div class="text-center">
+                                                                        <div class="dropdown">
+                                                                            <button class="btn btn-sm btn-label-primary dropdown-toggle" type="button" id="growthReportId" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                                                2022
+                                                                            </button>
+                                                                            <div class="dropdown-menu dropdown-menu-end" aria-labelledby="growthReportId">
+                                                                                <a class="dropdown-item" href="javascript:void(0);">2021</a>
+                                                                                <a class="dropdown-item" href="javascript:void(0);">2020</a>
+                                                                                <a class="dropdown-item" href="javascript:void(0);">2019</a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <span class="center capitalize px-10p">with</span>
+                                                                    <div class="text-center">
+                                                                        <div class="dropdown">
+                                                                            <button class="btn btn-sm btn-label-primary dropdown-toggle" type="button" id="growthReportId" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                                                2022
+                                                                            </button>
+                                                                            <div class="dropdown-menu dropdown-menu-end" aria-labelledby="growthReportId">
+                                                                                <a class="dropdown-item" href="javascript:void(0);">2021</a>
+                                                                                <a class="dropdown-item" href="javascript:void(0);">2020</a>
+                                                                                <a class="dropdown-item" href="javascript:void(0);">2019</a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="p-10p bsbb">
+                                                                <div class="title">
+                                                                    <span class="capitalize">group by</span>
+                                                                </div>
+                                                                <div class="buttons">
+                                                                    <div class="">
+                                                                        <button type="button" class="capitalize btn-label-primary btn btn-sm my-4p mx-1p">provinces</button>
+                                                                        <button type="button" class="capitalize btn-label-primary btn btn-sm my-4p mx-1p">districts</button>
+                                                                        <button type="button" class="capitalize btn-label-primary btn btn-sm my-4p mx-1p">sectors</button>
+                                                                        <button type="button" class="capitalize btn-label-primary btn btn-sm my-4p mx-1p">cells</button>
+                                                                        <button type="button" class="capitalize btn-label-primary btn btn-sm my-4p mx-1p nowrap">health facilities</button>
+                                                                        <button type="button" class="capitalize btn-label-primary btn btn-sm my-4p mx-1p nowrap">Diagnosis Results</button>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div id="growthChart"></div>
+                                                        <div class="text-center fw-semibold pt-3 mb-2">62% Company Growth</div>
+                                    
+                                                        <div class="d-flex px-xxl-4 px-lg-2 p-4 gap-xxl-3 gap-lg-1 gap-3 justify-content-between">
+                                                            <div class="d-flex">
+                                                                <div class="me-2">
+                                                                    <span class="badge bg-label-primary p-2"><i class="bx bx-dollar text-primary"></i></span>
+                                                                </div>
+                                                                <div class="d-flex flex-column">
+                                                                    <small>2022</small>
+                                                                    <h6 class="mb-0">$32.5k</h6>
+                                                                </div>
+                                                            </div>
+                                                            <div class="d-flex">
+                                                                <div class="me-2">
+                                                                    <span class="badge bg-label-info p-2"><i class="bx bx-wallet text-info"></i></span>
+                                                                </div>
+                                                                <div class="d-flex flex-column">
+                                                                    <small>2021</small>
+                                                                    <h6 class="mb-0">$41.2k</h6>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col-md-8 col-lg-4 order-3 order-md-2">
+                                            <div class="row">
+                                                <div class="col-12 mb-4">
+                                                    <div class="card">
+                                                        <div class="card-body">
+                                                            <div class="d-flex justify-content-between flex-sm-row flex-column gap-3">
+                                                                <div class="d-flex flex-sm-column flex-row align-items-start justify-content-between">
+                                                                    <div class="card-title">
+                                                                        <h5 class="text-nowrap mb-2">Patients Report</h5>
+                                                                        <span class="badge bg-label-warning rounded-pill">Year
+                                                                            2021</span>
+                                                                    </div>
+                                                                    <div class="mt-sm-auto">
+                                                                        <small class="text-success text-nowrap fw-semibold"><i class='bx bx-chevron-up'></i>
+                                                                            68.2%</small>
+                                                                        <span class="flex">
+                                                                            <h3 class="mb-0">84,686</h3><span class="dgray px-5p">Patients</span>
+                                                                        </span>
+                                                                    </div>
+                                                                </div>
+                                                                <div id="profileReportChart" class="w-100p  h-70p br-5p bc-tr-theme"></div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-12 mb-4">
+                                                    <div class="my-10p">
+                                                        <span class="capitalize dgray bold-2">diagnosis insights</span>
+                                                    </div>
+                                                </div>
+                                                <div class="col-6 mb-4">
+                                                    <div class="card">
+                                                        <div class="card-body">
+                                                            <span class="d-block mb-1">Malaria</span>
+                                                            <h3 class="card-title text-nowrap mb-2">2,456</h3>
+                                                            <small class="text-danger fw-semibold"><i class='bx bx-down-arrow-alt'></i> -14.82%</small>
+                                                            <div id="revenueChart" class="bc-tr-theme br-5p my-10p p-5p h-60p"></div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-6 mb-4">
+                                                    <div class="card">
+                                                        <div class="card-body">
+                                                            <span class="d-block mb-1">Malaria</span>
+                                                            <h3 class="card-title text-nowrap mb-2">2,456</h3>
+                                                            <small class="text-danger fw-semibold"><i class='bx bx-down-arrow-alt'></i> -14.82%</small>
+                                                            <div id="revenueChart" class="bc-tr-theme br-5p my-10p p-5p h-60p"></div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-6 mb-4">
+                                                    <div class="card">
+                                                        <div class="card-body">
+                                                            <span class="d-block mb-1">Malaria</span>
+                                                            <h3 class="card-title text-nowrap mb-2">2,456</h3>
+                                                            <small class="text-danger fw-semibold"><i class='bx bx-down-arrow-alt'></i> -14.82%</small>
+                                                            <div id="revenueChart" class="bc-tr-theme br-5p my-10p p-5p h-60p"></div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                  <div class="col-6 mb-4">
+                                                    <div class="card">
+                                                        <div class="card-body">
+                                                            <span class="d-block mb-1">Malaria</span>
+                                                            <h3 class="card-title text-nowrap mb-2">2,456</h3>
+                                                            <small class="text-danger fw-semibold"><i class='bx bx-down-arrow-alt'></i> -14.82%</small>
+                                                            <div id="revenueChart" class="bc-tr-theme br-5p my-10p p-5p h-60p"></div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6 col-lg-4 col-xl-4 order-0 mb-4">
+                                            <div class="card h-100">
+                                                <div class="card-header d-flex align-items-center justify-content-between pb-0">
+                                                    <div class="card-title mb-0">
+                                                        <h5 class="m-0 me-2">Hospitals Rankings</h5>
+                                                        <small class="text-muted">in the selected range and location</small>
+                                                    </div>
+                                                    <div class="dropdown">
+                                                        <button class="btn p-0" type="button" id="orederStatistics" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                            <i class="bx bx-dots-vertical-rounded"></i>
+                                                        </button>
+                                                        <div class="dropdown-menu dropdown-menu-end" aria-labelledby="orederStatistics">
+                                                            <a class="dropdown-item" href="javascript:void(0);">Select All</a>
+                                                            <a class="dropdown-item" href="javascript:void(0);">Refresh</a>
+                                                            <a class="dropdown-item" href="javascript:void(0);">Share</a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="card-body">
+                                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                                        <div class="d-flex flex-column align-items-center gap-1">
+                                                            <h2 class="mb-2">8,258</h2>
+                                                            <span>Total Patients</span>
+                                                        </div>
+                                                        <div id="orderStatisticsChart"></div>
+                                                    </div>
+                                                    <ul class="p-0 m-0">
+                                                        <li class="d-flex mb-4 pb-1">
+                                                            <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
+                                                                <div class="me-2">
+                                                                    <h6 class="mb-0">Kacyiru Hp</h6>
+                                                                    <small class="text-muted">Kigali, Gasabo, ...</small>
+                                                                </div>
+                                                                <div class="user-progress">
+                                                                    <small class="fw-semibold block">82,500</small>
+                                                                    <small class="fw-semibold block">Patients</small>
+
+                                                                </div>
+                                                            </div>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 col-lg-4 col-xl-4 order-0 mb-4">
+                                            <div class="card h-100">
+                                                <div class="card-header d-flex align-items-center justify-content-between pb-0">
+                                                    <div class="card-title mb-0">
+                                                        <h5 class="m-0 me-2">Diagnosis Rankings</h5>
+                                                        <small class="text-muted">in the selected range and location</small>
+                                                    </div>
+                                                    <div class="dropdown">
+                                                        <button class="btn p-0" type="button" id="orederStatistics" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                            <i class="bx bx-dots-vertical-rounded"></i>
+                                                        </button>
+                                                        <div class="dropdown-menu dropdown-menu-end" aria-labelledby="orederStatistics">
+                                                            <a class="dropdown-item" href="javascript:void(0);">Select All</a>
+                                                            <a class="dropdown-item" href="javascript:void(0);">Refresh</a>
+                                                            <a class="dropdown-item" href="javascript:void(0);">Share</a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="card-body">
+                                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                                        <div class="d-flex flex-column gap-1">
+                                                            <h2 class="mb-2 px-5p">8,258</h2>
+                                                            <span>Total Diagnosis Results</span>
+                                                        </div>
+                                                        <div id="orderStatisticsChart"></div>
+                                                    </div>
+                                                    <ul class="p-0 m-0">
+                                                        <li class="d-flex mb-4 pb-1">
+                                                            <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
+                                                                <div class="me-2">
+                                                                    <h6 class="mb-0">Malaria</h6>
+                                                                    <small class="text-muted d-block mb-1">CHUB</small>
+                                                                </div>
+                                                                <div class="user-progress align-items-center gap-1">
+                                                                    <span class="flex">
+                                                                        <h6 class="mb-0 center">838</h6> <span class="text-muted mx-5p">Patients</span>
+                                                                    </span>
+                                                                    <span class="flex">
+                                                                        <small class="mb-0 black">83</small> <small class="text-muted mx-5p">Patients</small>
+                                                                    </span>
+                                                                </div>
+                                                            </div>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 col-lg-4 col-xl-4 order-0 mb-4">
+                                            <div class="card h-100">
+                                                <div class="card-header d-flex align-items-center justify-content-between pb-0">
+                                                    <div class="card-title mb-0">
+                                                        <h5 class="m-0 me-2 capitalize">un discovered diagnosis Report</h5>
+                                                        <small class="text-muted">in the selected range and location</small>
+                                                    </div>
+                                                    <div class="dropdown">
+                                                        <button class="btn p-0" type="button" id="orederStatistics" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                            <i class="bx bx-dots-vertical-rounded"></i>
+                                                        </button>
+                                                        <div class="dropdown-menu dropdown-menu-end" aria-labelledby="orederStatistics">
+                                                            <a class="dropdown-item" href="javascript:void(0);">Select All</a>
+                                                            <a class="dropdown-item" href="javascript:void(0);">Refresh</a>
+                                                            <a class="dropdown-item" href="javascript:void(0);">Share</a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="card-body">
+                                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                                        <div class="d-flex flex-column align-items-center gap-1">
+                                                            <h2 class="mb-2">8,258</h2>
+                                                            <span>Total cases</span>
+                                                        </div>
+                                                        <div id="orderStatisticsChart"></div>
+                                                    </div>
+                                                    <ul class="p-0 m-0">
+                                                        <li class="d-flex mb-4 pb-1">
+                                                            <div class="avatar flex-shrink-0 me-3">
+                                                                <span class="avatar-initial rounded bg-label-primary">#1</span>
+                                                            </div>
+                                                            <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
+                                                                <div class="me-2">
+                                                                    <h6 class="mb-0">common appearence</h6>
+                                                                    <small class="text-muted">symptoms: Headache, Fever, coughing</small>
+                                                                </div>
+                                                                <div class="user-progress">
+                                                                    <small class="fw-semibold">82 cases</small>
+                                                                </div>
+                                                            </div>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+								</div>
+							</div>
+							<!-- my account section -->
+							<div class="br-5p w-100 h-100 p-a ovh hidden t-0 tr-0-3 pagecontentsection" id="my-account">
+								<div class="w-100 h-50p ">
+									<span class="theme capitalize left center bold fs-20p verdana h-100 pl-10p">my account</span>
+								</div>
+								<div class="pg-cntnt w-100 h-90 p-20p bsbb ovys left">
+									<div>
+										<div class="w-100 h-a bsbb">
+											<div class="w-100 h-a center">
+												<div class="b-1-s-g p-10p">
+													<div class="header w-100 h-120p center">
+														<div class="w-100p h-100p">
+															<span class="w-100 h-100 bc-tr-theme br-50 theme fs-50p capitalize uihol courier bold-2 center n-img">a</span>
+														</div>
+													</div>
+													<div class="desc center">
+														<div class="names w-100 h-70p mt-30 center">
+															<span class="fs-15p bsbb dgray capitalize namehol verdana name">aaa aaa</span>
+															<div class="w-100 mt-10p h-a center">
+																<span class="icon-edit-icon center w-40p h-20p bc-gray br-2p p-10p bsbb verdana capitalize fs-10p dgray hover-2" data-target="names">
+																	edit
+																</span>
+															</div>
+														</div>
+														<div class="names w-100 h-70p mt-30 center">
+															<span class="fs-15p bsbb dgray capitalize namehol verdana">*********</span>
+															<div class="w-100 mt-10p h-a center">
+																<span class="icon-edit-icon center w-40p h-20p bc-gray br-2p p-10p bsbb verdana capitalize fs-10p dgray hover-2" data-target="password">
+																	edit
+																</span>
+															</div>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+							<!-- end of my account section -->
+						</div>
+
+					</div>
+				</div>
+                <!-- footer section -->
+                <div class="w-100 h-a p-f b-0">
+                    <footer class="content-footer footer bg-footer-theme">
+                        <div class="flex p-20p jc-sb">
+                            <div class="mb-2 mb-md-0 text-uppercase">
+                                ©
+                                <script>
+                                    document.write(new Date().getFullYear())
+                                </script>
+                                <strong>UDS</strong>
+                            </div>
+                            <div>
+                            Powered by <a href="https://prtlfo.vercel.app/" target="_blank" class="footer-link fw-bolder">#_himself</a>
+                            </div>
+                        </div>
+                    </footer>
+                </div>
+                <!-- end of footer section -->
+			</div>
+		</div>		
+	</div>
+</div>
+</body>
+</html>

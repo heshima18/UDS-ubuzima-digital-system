@@ -445,6 +445,21 @@ export function page (req,res,page){
                     file = 'N/A'
                 break;
         } 
+    }else if (user == 'mohs') {
+        switch (filename) {
+            case '':
+                file = path.join(__dirname,'..','pages', 'mohs-index.html')
+                break;
+            case 'home/':
+                file = path.join(__dirname,'..','pages', 'mohs-index.html')
+                break;
+            case 'home':
+                file = path.join(__dirname,'..','pages', 'mohs-index.html')
+                break;
+            default:
+                    file = 'N/A'
+                break;
+        } 
     }else{
         switch (filename) {
             case '':

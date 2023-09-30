@@ -62,7 +62,7 @@ const verification = async (req,res)=>{
                 query(`update users set fa = null ${(select.status === 'unverified')? ',status = "active"' : ''} where id = ?`,[select.id]);
             }
             let token 
-            if (select.role != 'patient' && select.role != 'Admin' && select.role != 'householder' && select.role != 'insurance_manager') {
+            if (select.role != 'patient' && select.role != 'Admin' && select.role != 'householder' && select.role != 'insurance_manager' && select.role != 'mohs') {
                 if (!hospital.id) {
                    return res.status(403).send({success: false, message: errorMessage.emp_inassigned_to_hp_error_message}) 
                 }
@@ -84,6 +84,7 @@ const verification = async (req,res)=>{
             }else if (select.role == 'mohs') {
                 if (select.extra) {
                     select.extra = JSON.parse(select.extra)
+                    token = addToken({id:select.id,Full_name:select.Full_name,role: select.role,status: select.status,title: select.title, limit: select.extra.limit, location: select.extra.location})
                 }
             }else{
                  token = addToken({id:select.id,Full_name:select.Full_name,role: select.role,status: select.status})
