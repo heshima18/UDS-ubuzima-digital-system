@@ -37,8 +37,12 @@ export const addSession = async (req,res)=>{
         itt +=t.price
       }
       let meds = await query(`select medicines from inventories where hospital = ?`, [hp]);
-      [meds] = meds
-      meds = JSON.parse(meds.medicines)
+      if (meds.length) {
+        [meds] = meds
+        meds = JSON.parse(meds.medicines)
+      }else{
+        meds = []
+      }
       for (const medicine of medicines) {
         var m = await query(`select price from medicines where id = ?`, [medicine.id]);
         for (const medic of meds) {
@@ -626,8 +630,12 @@ export const addSessionMedicine = async (req,res)=>{
       let hc_provider = decoded.token.id
       var itt = 0
       let meds = await query(`select medicines from inventories where hospital = ?`, [decoded.token.hospital]);
-      [meds] = meds
-      meds = JSON.parse(meds.medicines)
+      if (meds.length) {
+        [meds] = meds
+        meds = JSON.parse(meds.medicines)
+      }else{
+        meds = []
+      }
       let updatepayment
       
       for (const medicine of medicines) {
@@ -661,7 +669,7 @@ export const addSessionMedicine = async (req,res)=>{
           }
           if (!('servedOut' in medicine)) {
             Object.assign(medicine, {servedOut : true, status : null})
-            Object.assign(medicines[medicines.indexOf(medicine)],{servedOut: true, price: 0})
+            Object.assign(medicines[medicines.indexOf(medicine)],{servedOut: true, price: 0,status : null})
           }
           query(`update medical_history set medicines =  JSON_ARRAY_APPEND(medicines, '$', JSON_OBJECT("id", ?, "quantity", ?, "servedOut", ?, "status",?)) where id = ? AND hc_provider = ?`,[medicine.id,medicine.quantity,medicine.servedOut,medicine.status,session,hc_provider])
         }

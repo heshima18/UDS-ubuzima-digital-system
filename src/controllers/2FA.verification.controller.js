@@ -63,10 +63,14 @@ const verification = async (req,res)=>{
             }
             let token 
             if (select.role != 'patient' && select.role != 'Admin' && select.role != 'householder' && select.role != 'insurance_manager' && select.role != 'mohs') {
-                if (!hospital.id) {
+                if (!hospital.length) {
                    return res.status(403).send({success: false, message: errorMessage.emp_inassigned_to_hp_error_message}) 
                 }
-                 token = addToken({id:select.id,Full_name:select.Full_name,role: select.role,status: select.status,hospital: hospital.id,department: select.department, title: select.title,hp_name:hospital.name })
+                if ('id' in hospital) {
+                    token = addToken({id:select.id,Full_name:select.Full_name,role: select.role,status: select.status,hospital: hospital.id,department: select.department, title: select.title,hp_name:hospital.name })
+                }else{
+                    token = addToken({id:select.id,Full_name:select.Full_name,role: select.role,status: select.status,hospital,department: select.department, title: select.title,hp_name:'N/A' })
+                }
             }else if (select.role == 'insurance_manager') {
                 let assurance = await query(`select id from assurances where JSON_CONTAINS(managers, JSON_QUOTE(?),'$')`,[select.id])
                 if(assurance.length > 1){

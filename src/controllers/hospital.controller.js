@@ -160,7 +160,13 @@ export async function getCustomHps (ids){
       }
       let response = await query(`SELECT
       hospitals.name AS name,
-      hospitals.id AS id
+      hospitals.id AS id,
+      CONCAT(
+        (SELECT name From provinces Where id = hospitals.province),' , ',
+        (SELECT name From districts Where id = hospitals.district),' , ',
+        (SELECT name From sectors Where id = hospitals.sector),' , ',
+        (SELECT name From cells Where id = hospitals.cell)
+      )as location
     FROM
       hospitals
     WHERE ${s}

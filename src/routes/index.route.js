@@ -35,6 +35,7 @@ import { addOperation, getOperations } from '../controllers/operations.controlle
 import { addEquipment, getEquipments } from '../controllers/equipments.controller';
 import { organiseTitles, titles } from '../utils/titles.controller';
 import { checkTest } from '../middlewares/tests.middleware';
+import { insightsStats } from '../controllers/insights.controller';
 const router = express.Router({ strict: false });
 router.post('/verify',verification)
 router.post('/get-user-medical-history/:userid?',authorizeRole,authorizeHcp_ptnt,getUsessions)
@@ -108,6 +109,7 @@ router.post('/decline-appointment',authorizeRole,authorizeHc_provider,declineApp
 router.post('/send-message',authorizeRole,sendMessage);
 router.post('/get-messages',authorizeRole,getMessages);
 router.post('/mark-as-seen',authorizeRole,markAsSeen);
+router.post('/insights',authorizeRole,(req,res,next) => authorizeMultipleRoles(req,res,next,['mohs']),insightsStats);
 router.post('/get-inventory',authorizeRole,(req,res,next) => authorizeMultipleRoles(req,res,next,['dof']),getInventory);
 router.post('/gethospitals',authorizeRole,getHPs)
 router.post('/hospital/:hospital?',authorizeRole,getHP)

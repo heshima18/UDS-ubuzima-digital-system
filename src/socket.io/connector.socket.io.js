@@ -37,7 +37,8 @@ export const io = require('socket.io')(server, {
         if (token.success) {
             try {
                 token = token.token
-                token.hospital = hp
+                token.hospital = hp.id
+                token.hp_name = hp.name
                 token = addToken(token)
                 socket.emit('changetoken',token)
             } catch (error) {

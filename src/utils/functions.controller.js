@@ -1196,3 +1196,36 @@ export function getLocs(map,required) {
       return cache
   }
 }
+export function promptHpsToChoose(hps) {
+  u = addshade();
+  a = document.createElement('div')
+  u.appendChild(a)
+  a.className = "w-350p h-30 p-10p bsbb ovh bc-white cntr zi-10000 br-10p card b-mgc-resp"
+  a.innerHTML = `<div class="card-header d-flex align-items-center justify-content-between p-10p mb-10p bsbb">
+                    <h4 class="card-title m-0 me-2 capitalize">select a health facility</h4>
+                </div>
+                <div class="ovys w-100 h-85 scroll-2 menu-vertical">
+                  <ul class="menu-inner py-1 the-cont">
+                  </ul>
+                </div>
+                `
+  c = a.querySelector('ul')
+  for (const hospital of hps) {
+    d = document.createElement('li')
+    d.className = 'w-100 menu-item'
+    d.innerHTML = `   <div class="dep px-15p bsbb my-5p hover-7 py-10p" data-id="${hospital.id}" data-name="${hospital.name}">
+                        <h5 class="m-0">${hospital.name}</h5>
+                        <span class="dgray fs-14p px-5p capitalize">${hospital.location}</span>
+                      </div>
+                      `
+    c.appendChild(d)
+  }
+  let lis = Array.from(c.querySelectorAll('div.dep'))
+  lis.forEach(button=>{
+    button.addEventListener('click',e=>{
+        e.preventDefault()
+        deletechild(u,u.parentElement)
+    })
+  })
+  return lis
+}

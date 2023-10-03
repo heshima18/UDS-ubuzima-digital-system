@@ -1,4 +1,5 @@
-"use strict";
+
+import {templateName,config} from './config.js'
 let isRtl = window.Helpers.isRtl(),
     isDarkStyle = window.Helpers.isDarkStyle(),
     menu,

@@ -1,5 +1,5 @@
 
-import { alertMessage, getdata, getschema, postschema, request,deletechild, checkEmpty, showRecs, getchips,getPath,calcTime, addUprofile,addsCard,cpgcntn, geturl,sessiondata,addChip, showAvaiAssurances, adcm, addshade, addLoadingTab, removeLoadingTab, showAvaiEmps, fT } from "../../../utils/functions.controller.js";
+import { alertMessage, getdata, getschema, postschema, request,deletechild, checkEmpty, showRecs, getchips,getPath,calcTime, addUprofile,addsCard,cpgcntn, geturl,sessiondata,addChip, showAvaiAssurances, adcm, addshade, addLoadingTab, removeLoadingTab, showAvaiEmps, fT, promptHpsToChoose } from "../../../utils/functions.controller.js";
 import {pushNotifs, userinfo,expirateMssg, getNfPanelLinks,m as messages, DateTime} from "./nav.js";
 let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,z,notificationlinks
 (async function () {
@@ -32,21 +32,17 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,z,notificationlinks
                 expirateMssg(message);
             });
             socket.on('selecthp', (message)=>{
-                var div = document.createElement('div')
-                document.body.appendChild(div)
-                for (const hp of message) {
-                    div.innerHTML += `<div id="${hp.id}" class="verdana hover p-5p">${hp.name}</div>`
-                }
-                let dvs = div.querySelectorAll('div')
-                dvs.forEach(button=>{
-                    button.addEventListener('click',e=>{
-                        e.preventDefault()
-                        socket.emit('hpchoosen',{hp: button.id, token: localStorage.getItem('token')})
-                    })
+               let lis = promptHpsToChoose(message)
+               lis.forEach(button=>{
+                button.addEventListener('click',e=>{
+                    e.preventDefault()
+                    socket.emit('hpchoosen',{hp: {id: button.getAttribute('data-id'), name: button.getAttribute('data-name')}, token: localStorage.getItem('token')})
                 })
             })
+               
+            })
             socket.on('changetoken',(token)=>{
-                window.alert('token changed')
+                alertMessage('token changed')
                 localStorage.setItem('token',token)
                 window.location.href = window.location.href
             })
@@ -71,7 +67,7 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,z,notificationlinks
     }
     const appointments = appointment.message
     if (!q.success || !f.success || !l.success || !k.success || !j.success || !users.success) {
-        return alertMessage(q.message)
+        return 0
     }
     let extra = {users: users.message, tests: f.message, medicines : q.message, equipments: l.message, services : k.message, operations : j.message}
     a = getPath(1)
@@ -1345,12 +1341,12 @@ class popups{
                         <span class="dgray px-5p fs-14p my-10p  bsbb capitalize">the diagnosis decisions after all diagonis operations caried out in the  session's process</span>
                         <div class="body w-100 h-a p-5p grid">
                             <form method="post" id="req-decision-info-form" name="req-decision-info-form">
-                                <div class="input-group">
+                                <div class="input-group my-10p">
                                     <input type="text" class="form-control chips-check" placeholder="demo decision" name="decisions" id="decision">
                                     <span class="input-group-text hover-2 us-none" id="add-decision">add</span>
                                     <small class="hidden w-100 red pl-3p verdana"></small>
                                 </div>
-                                <div class="wrap center-2 px-10p bsbb bblock-resp">
+                                <div class="wrap center-2 px-10p bsbb bblock-resp mt-15p">
                                     <button type="submit" class="btn btn-primary bfull-resp bm-a-resp bmy-10p-resp">Proceed</button>
                                 </div>
                             </form>
