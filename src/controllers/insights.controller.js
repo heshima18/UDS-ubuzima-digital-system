@@ -6,15 +6,24 @@ export const insightsStats = async (req,res)=>{
     try {
         const leTime = DateTime.now();
         let now = leTime.setZone('Africa/Kigali');
-        let {entity,needle,range,token} = req.body
+        let {entity,needle,range,token} = req.body,avaiGroupings
         if (!entity || !needle) {
             token = authenticateToken(token)
             token = token.token
             entity = token.limit
             needle = token.location
         }
+        if (entity == 'province') {
+            avaiGroupings = ['districts','sectors','cells','health facilities']
+        }else if (entity == 'district') {
+            avaiGroupings = ['sectors','cells','health facilities']
+        }else if (entity == 'sector'){
+            avaiGroupings = ['cells','health facilities']
+        }else if (entity == 'cell'){
+            avaiGroupings = ['health facilities']
+        }
         if (!range.start || !range.stop) {
-            let start_date = `${now.year}-01-01 00:00:00`
+            let start_date = `${now.year}-${now.month - 1}-${now.date} 00:00:00`
            range.start = start_date,range.stop = now.toFormat('yyyy-MM-dd HH:mm:ss')
         }
         let results = await query(`
@@ -27,12 +36,20 @@ export const insightsStats = async (req,res)=>{
              mh.dateclosed as date,
              hospitals.id as hpid,
              hospitals.name as hpname,
-             CONCAT(
-                (SELECT name From provinces Where id = hospitals.province),' , ',
-                (SELECT name From districts Where id = hospitals.district),' , ',
-                (SELECT name From sectors Where id = hospitals.sector),' , ',
-                (SELECT name From cells Where id = hospitals.cell)
+             GROUP_CONCAT(DISTINCT JSON_OBJECT(
+                 'province', (SELECT name From provinces Where id = hospitals.province), 
+                 'district', (SELECT name From districts Where id = hospitals.district), 
+                 'sector', (SELECT name From sectors Where id = hospitals.sector),
+                 'cell', (SELECT name From cells Where id = hospitals.cell)
+                )
               ) as hp_loc,
+              GROUP_CONCAT(DISTINCT JSON_OBJECT(
+                'province',  hospitals.province, 
+                'district', hospitals.district, 
+                'sector', hospitals.sector,
+                'cell', hospitals.cell
+               )
+             ) as hp_loc_ids,
              GROUP_CONCAT(DISTINCT JSON_OBJECT('id', p.id,'name', p.Full_name)) as p_info
             FROM medical_history as mh
              LEFT JOIN hospitals ON mh.hospital = hospitals.id  AND hospitals.${entity} = ?
@@ -42,37 +59,97 @@ export const insightsStats = async (req,res)=>{
         `,[needle,range.start,range.stop,'open'])
         if (!results) return res.status(500).send({success: false, message: errorMessage.is_error})
         results = results.map(function (field) {
-        field.medicines = JSON.parse(field.medicines)
+            field.medicines = JSON.parse(field.medicines)
             field.tests = JSON.parse(field.tests)
             field.symptoms = JSON.parse(field.symptoms)
             field.decision = JSON.parse(field.decision)
             field.p_info = JSON.parse(field.p_info)
+            field.hp_loc = JSON.parse(field.hp_loc)
+            field.hp_loc_ids = JSON.parse(field.hp_loc_ids)
+
             return field
         })
-        let groupByHps,groupByProvinces,groupBySectors,groupDistricts,groupByCells,groupByResults
-        groupByHps = {}
-        groupByResults = {}
+        let groupByHps = {},groupByProvinces = {},groupBySectors = {},groupByDistricts = {},groupByCells = {},groupByResults = {}
         results.forEach(session=>{
             if (!(session.hpname in groupByHps)) {
                 let occurences = results.filter(function (occ) {
                     return occ.hpid == session.hpid
                 })
-                Object.assign(groupByHps,{[session.hpname]: {total: occurences.length, info:{name: session.hpname, id: session.hpid, loc: session.hp_loc}}})
+                Object.assign(groupByHps,{[session.hpname]: {total: occurences.length, info:{name: session.hpname, id: session.hpid, loc: Object.values(session.hp_loc).toString().replace(/,/gi,", ")}}})
             }
         })
         results.forEach(session=>{
-            for (const result of session.decision) {
-                if (!(result in groupByResults)) {
-                    Object.assign(groupByResults,{[result]: {total: 1}})
-                }else{
-                    groupByResults[result].total+=1
-                }
+            if (!(session.hp_loc.sector in groupBySectors)) {
+                let occurences = results.filter(function (occ) {
+                    return occ.hp_loc.sector == session.hp_loc.sector
+                })
+                Object.assign(groupBySectors,
+                    {
+                        [session.hp_loc.sector]: {
+                            total: occurences.length, 
+                            info:{
+                                name: session.hp_loc.sector, 
+                                id: session.hp_loc_ids.sector, 
+                                loc: `${session.hp_loc.province}, ${session.hp_loc.district}`
+                            }
+                        }
+                    })
             }
         })
-        groupByResults = {};
-          
-       
-
+        results.forEach(session=>{
+            if (!(session.hp_loc.province in groupByProvinces)) {
+                let occurences = results.filter(function (occ) {
+                    return occ.hp_loc.province == session.hp_loc.province
+                })
+                Object.assign(groupByProvinces,
+                    {
+                        [session.hp_loc.province]: {
+                            total: occurences.length, 
+                            info:{
+                                name: session.hp_loc.province, 
+                                id: session.hp_loc_ids.province, 
+                                loc: `rwanda`
+                            }
+                        }
+                    })
+            }
+        })
+        results.forEach(session=>{
+            if (!(session.hp_loc.district in groupByDistricts)) {
+                let occurences = results.filter(function (occ) {
+                    return occ.hp_loc.district == session.hp_loc.district
+                })
+                Object.assign(groupByDistricts,
+                    {
+                        [session.hp_loc.district]: {
+                            total: occurences.length, 
+                            info:{
+                                name: session.hp_loc.district, 
+                                id: session.hp_loc_ids.district, 
+                                loc: `${session.hp_loc.province}`
+                            }
+                        }
+                    })
+            }
+        })
+        results.forEach(session=>{
+            if (!(session.hp_loc.cell in groupByCells)) {
+                let occurences = results.filter(function (occ) {
+                    return occ.hp_loc.cell == session.hp_loc.cell
+                })
+                Object.assign(groupByCells,
+                    {
+                        [session.hp_loc.cell]: {
+                            total: occurences.length, 
+                            info:{
+                                name: session.hp_loc.cell, 
+                                id: session.hp_loc_ids.cell, 
+                                loc: `${session.hp_loc.province}, ${session.hp_loc.district}, ${session.hp_loc.sector}`
+                            }
+                        }
+                    })
+            }
+        })
         results.forEach((record) => {
           const decisions = record.decision;
           const hospitalName = record.hpname;
@@ -114,7 +191,7 @@ export const insightsStats = async (req,res)=>{
         dataArray.sort(([, a], [, b]) => b.total - a.total);
         const sortedData = Object.fromEntries(dataArray);
         groupByResults = sortedData
-        res.send({success: true, message: {groupByHps,groupByResults}})    
+        res.send({success: true, message: {groupByHps,groupByResults,avaiGroupings,groupBySectors,groupByProvinces,groupByDistricts,groupByCells}})    
     } catch (error) {
         console.log(error)
         return res.status(500).send({success: false, message: errorMessage.is_error})

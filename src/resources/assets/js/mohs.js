@@ -1,4 +1,4 @@
-import { postschema, request,alertMessage, getdata,getschema, animskel, deletechild,getPath,cpgcntn, sessiondata, calcTime,DateTime,geturl, adcm} from "../../../utils/functions.controller.js"
+import { postschema, request,alertMessage, getdata,getschema, animskel, deletechild,getPath,cpgcntn, sessiondata, calcTime,DateTime,geturl, adcm, removeLoadingTab} from "../../../utils/functions.controller.js"
 let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,z,x,c,v,b,n,m
 import userinfo from "./nav.js"
 import {config} from "./config.js"
@@ -41,7 +41,8 @@ import {config} from "./config.js"
         range: {
             start:'',
             stop:'',
-        }
+        },
+        groupBy: 'hospitals'
     })
     const insights = await request('insights',postschema)
     if (!insights.success) {
@@ -98,7 +99,7 @@ import {config} from "./config.js"
             })
             cudstp.classList.add('active','bb-1-s-theme','bc-tr-theme','theme')
             let url = new URL(window.location.href);
-            url.pathname = `/insurance_manager/${cudstp.getAttribute('data-item-type')}`;
+            url.pathname = `/mohs/${cudstp.getAttribute('data-item-type')}`;
             window.history.pushState({},'',url.toString())
             cpgcntn(c.indexOf(cudstp),p,extra)
             let page = p.find(function (elem) {
@@ -127,23 +128,52 @@ import {config} from "./config.js"
                 }
           
             }else if (x == 'home') {
-                let patientsDiv = document.querySelector('div.patientsDiv'),patientNholder = patientsDiv.querySelector('h3.pn-holder')
+                let patientsDiv = document.querySelector('div.patientsDiv'),patientNholder = patientsDiv.querySelector('h3.pn-holder'),customBttns = Array.from(page.querySelectorAll(`[data-role="custom-buttns"]`)),BttnsHol = Array.from(page.querySelectorAll('div.BttnsHol')),shades = Array.from(page.querySelectorAll('div[data-role="shade"]')),parents= []
                 let total = Object.keys(extra.groupByHps).map(function (key) {
                     return extra.groupByHps[key].total
-                })
-                patientNholder.innerText = adcm(total.reduce((a,c)=> a+c))
-                    var mainChartOptions = {
-                        series: [
-                            { name: "Patients", data:  total},
-                        ],
-                        chart: { height: 300, stacked: !0, type: "bar", toolbar: { show: !1 } },
-                        plotOptions: { bar: { horizontal: !1, columnWidth: "33%", borderRadius: 5} },
-                        colors: [config.colors.primary],
-                        dataLabels: { enabled: !1 },
-                        legend: { show: !0, horizontalAlign: "left", position: "top", markers: { height: 8, width: 8, radius: 12, offsetX: -3 }, labels: { colors: e }, itemMargin: { horizontal: 10 } },
-                        xaxis: { categories: Object.keys(extra.groupByHps), labels: { style: { fontSize: "13px", colors: t } }, axisTicks: { show: !1 }, axisBorder: { show: !1 } },
-                        states: { hover: { filter: { type: "none" } }, active: { filter: { type: "none" } } },
+                }),{avaiGroupings} = extra
+                BttnsHol.forEach(container=>{
+                    if (container.id == 'groupByBttnsHol') {
+                        removeLoadingTab(container)
+                        for (const group of avaiGroupings) {
+                            let but = document.createElement('button');
+                            but.setAttribute('data-target','groupBy');
+                            but.setAttribute('type','button');
+                            but.setAttribute('data-role','custom-buttns');
+                            but.className = `capitalize btn-label-primary btn btn-sm my-4p mx-2p`
+                            but.innerText = group
+                            but.id = (group == 'provinces')? 'groupByProvinces': (group == 'districts')? 'groupByDistricts': (group == 'sectors')? 'groupBySectors': (group == 'cells')? 'groupByCells': (group == 'health facilities')? 'groupByHps': '';
+                            container.appendChild(but);
+                            (group == 'health facilities')? but.classList.add('b-1-s-theme'): '';
+                            
+                        }
+                        customBttns = Array.from(page.querySelectorAll(`[data-role="custom-buttns"]`))  
+                        addCustomBttnsFunc(customBttns)
                     }
+                })
+                shades.forEach(shade=>{
+                    parents.push(shade.parentNode)
+                    removeLoadingTab(shade.parentNode)
+                })
+                function addCustomBttnsFunc(buttons) {
+                    buttons.forEach(button => {
+                        button.onclick = function (event) {
+                            event.preventDefault();
+                            let target = button.getAttribute('data-target'),cont
+                            if (target == 'comparisonType') {
+                                cont = page.querySelector('.typesHolCont')
+                                revolveStffs(button,cont)
+                                
+                            }else if (target == 'groupBy') {
+                                let id = button.id
+                                drawMainChart(extra[id])
+                            }
+                            changeBtnBrdrClr(this)
+                        }
+                    });
+                }
+                patientNholder.innerText = adcm(total.reduce((a,c)=> a+c))
+                drawMainChart(extra.groupByHps)
                     let patientsChartOptions =  {
                         chart: { height: 80, type: "area", toolbar: { show: !1 }, sparkline: { enabled: !0 } },
                         markers: {
@@ -163,9 +193,7 @@ import {config} from "./config.js"
                         xaxis: { show: !1, lines: { show: !1 }, labels: { show: !1 }, stroke: { width: 0 }, axisBorder: { show: !1 } },
                         yaxis: { stroke: { width: 0 }, show: !1 },
                     }
-                    var mainChart = new ApexCharts(document.querySelector("#mainChart"), mainChartOptions);
                     var patientsChart = new ApexCharts(patientsDiv.querySelector("#patientsChart"), patientsChartOptions);
-                    mainChart.render();
                     patientsChart.render();
                     let results = extra.groupByResults,thingtoclone = document.querySelector('div.resCard')
                 
@@ -235,7 +263,6 @@ function prepT(container,id,Obj) {
       deletechild(thingtoclone,thingtoclone.parentElement)
 
     }else if(id == 'rankByDiags'){
-        console.log(Obj)
         let total = Object.keys(Obj).length
         let ranksHol = container.querySelector('#ranks-cont'),
         thingtoclone = ranksHol.querySelector('li'),thecont,data,mainTotal = container.querySelector('#mainTotal')
@@ -256,4 +283,60 @@ function prepT(container,id,Obj) {
         }
         deletechild(thingtoclone,thingtoclone.parentElement)
     }
+}
+function changeBtnBrdrClr(button) {
+    button.classList.toggle('b-1-s-theme')
+    let otherBtns = Array.from(button.parentNode.querySelectorAll(`[data-role="custom-buttns"]`))
+    otherBtns.map(function (b) {
+        if (b!= button) {
+            b.classList.remove('b-1-s-theme')
+        }
+    })
+}
+function revolveStffs(button,cont) {
+   let subConts = Array.from(cont.querySelectorAll('.typesHol')),
+   target = subConts.find(function (elem) {
+    return elem.getAttribute('data-id') == button.id
+   })
+   console.log(subConts.indexOf(target))
+   subConts.forEach(elem=>{
+    if (subConts.indexOf(elem) > subConts.indexOf(target)) {
+        elem.classList.remove('active')
+        elem.classList.remove('mt-60p','mt--60p','mt-0')
+        elem.classList.add('mt-60p')
+
+    }else if (subConts.indexOf(elem) < subConts.indexOf(target)) {
+        elem.classList.remove('active')
+        elem.classList.remove('mt-60p','mt--60p','mt-0')
+        elem.classList.add('mt--60p')
+    }
+   })
+   target.classList.remove('mt-60p')
+   target.classList.remove('mt--60p')
+   target.classList.add('active')
+   target.classList.remove('mt-0')
+
+
+
+}
+function drawMainChart(grp) {
+    let total = Object.keys(grp).map(function (key) {
+        return grp[key].total
+    })
+    var mainChartOptions = {
+        series: [
+            { name: "Patients", data:  total},
+        ],
+        chart: { height: 300, stacked: !0, type: "bar", toolbar: { show: !1 } },
+        plotOptions: { bar: { horizontal: !1, columnWidth: "33%", borderRadius: 5} },
+        colors: [config.colors.primary],
+        dataLabels: { enabled: !1 },
+        legend: { show: !0, horizontalAlign: "left", position: "top", markers: { height: 8, width: 8, radius: 12, offsetX: -3 }, labels: { colors: e }, itemMargin: { horizontal: 10 } },
+        xaxis: { categories: Object.keys(grp), labels: { style: { fontSize: "13px", colors: t } }, axisTicks: { show: !1 }, axisBorder: { show: !1 } },
+        states: { hover: { filter: { type: "none" } }, active: { filter: { type: "none" } } },
+    }
+var mainChart = document.querySelector("#mainChart")
+mainChart.innerHTML = null
+mainChart = new ApexCharts(mainChart, mainChartOptions);
+mainChart.render(); 
 }

@@ -197,71 +197,102 @@
                                                                 <div class="title">
                                                                     <span class="capitalize">comparison</span>
                                                                 </div>
-                                                                <div class="flex my-10p">
-                                                                    <div class="text-center">
-                                                                        <div class="dropdown">
-                                                                            <button class="btn btn-sm btn-label-primary dropdown-toggle" type="button" id="growthReportId" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                                                                2022
-                                                                            </button>
-                                                                            <div class="dropdown-menu dropdown-menu-end" aria-labelledby="growthReportId">
-                                                                                <a class="dropdown-item" href="javascript:void(0);">2021</a>
-                                                                                <a class="dropdown-item" href="javascript:void(0);">2020</a>
-                                                                                <a class="dropdown-item" href="javascript:void(0);">2019</a>
+                                                                <div class="px-5p my-10p">
+                                                                    <div class="title">
+                                                                        <span class="capitalize">type</span>
+                                                                    </div>
+                                                                    <div class="buttons">
+                                                                        <div class="BttnsHol">
+                                                                            <button type="button" data-role="custom-buttns" data-target="comparisonType" id="date" class="capitalize btn-label-primary btn btn-sm my-4p mx-1p nowrap">date</button>
+                                                                            <button type="button" data-role="custom-buttns" data-target="comparisonType" id="month" class="capitalize btn-label-primary btn btn-sm my-4p mx-1p nowrap">month</button>
+                                                                            <button type="button" data-role="custom-buttns" data-target="comparisonType" id="year" class="capitalize btn-label-primary btn btn-sm my-4p mx-1p nowrap">year</button>
+        
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="w-100 h-45p typesHolCont p-r ovh">
+                                                                        <div class="flex py-10p typesHol w-100 active tr-0-2 p-a" data-id="year">
+                                                                            <div class="text-center w-40">
+                                                                                <input class="form-control form-control-sm" type="number" id="growthReportId" placeholder="Year">
+                                                                            </div>
+                                                                            <span class="center capitalize px-10p w-20">with</span>
+                                                                            <div class="text-center w-40">
+                                                                                <input class="form-control form-control-sm" type="number" id="growthReportId" placeholder="Year">
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="flex py-10p typesHol w-100 tr-0-2 p-a mt-60p" data-id="month">
+                                                                            <div class="text-center w-40">
+                                                                                <input class="form-control form-control-sm" type="month" id="growthReportId">
+                                                                            </div>
+                                                                            <span class="center capitalize px-10p w-20">with</span>
+                                                                            <div class="text-center w-40">
+                                                                                <input class="form-control form-control-sm" type="month" id="growthReportId">
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="flex py-10p typesHol w-100 tr-0-2 p-a mt-60p" data-id="date">
+                                                                            <div class="text-center w-40">
+                                                                                <input class="form-control form-control-sm" type="date" id="growthReportId">
+                                                                            </div>
+                                                                            <span class="center capitalize px-10p w-20">with</span>
+                                                                            <div class="text-center w-40">
+                                                                                <input class="form-control form-control-sm" type="date" id="growthReportId">
                                                                             </div>
                                                                         </div>
                                                                     </div>
-                                                                    <span class="center capitalize px-10p">with</span>
-                                                                    <div class="text-center">
-                                                                        <div class="dropdown">
-                                                                            <button class="btn btn-sm btn-label-primary dropdown-toggle" type="button" id="growthReportId" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                                                                2022
-                                                                            </button>
-                                                                            <div class="dropdown-menu dropdown-menu-end" aria-labelledby="growthReportId">
-                                                                                <a class="dropdown-item" href="javascript:void(0);">2021</a>
-                                                                                <a class="dropdown-item" href="javascript:void(0);">2020</a>
-                                                                                <a class="dropdown-item" href="javascript:void(0);">2019</a>
-                                                                            </div>
+                                                                </div>
+                                                                <div class="px-10p bsbb">
+                                                                    <div class="title">
+                                                                        <span class="capitalize">interval</span>
+                                                                    </div>
+                                                                    <div class="buttons">
+                                                                        <div class="BttnsHol">
+                                                                            <button type="button" data-role="custom-buttns" data-target="interval" class="capitalize btn-label-primary btn btn-sm my-4p mx-1p nowrap">date</button>
+                                                                            <button type="button" data-role="custom-buttns" data-target="interval" class="capitalize btn-label-primary btn btn-sm my-4p mx-1p nowrap">week</button>
+                                                                            <button type="button" data-role="custom-buttns" data-target="interval" class="capitalize btn-label-primary btn btn-sm my-4p mx-1p nowrap">month</button>
+        
                                                                         </div>
                                                                     </div>
+                                                                </div>
+                                                                <div class=" p-10p">
+                                                                    <button class="btn btn-primary btn-sm">proceed</button>
                                                                 </div>
                                                             </div>
                                                             <div class="p-10p bsbb">
                                                                 <div class="title">
-                                                                    <span class="capitalize">interval</span>
+                                                                    <span class="capitalize">group by</span>
                                                                 </div>
                                                                 <div class="buttons">
-                                                                    <div class="">
-                                                                        <button type="button" class="capitalize btn-label-primary btn btn-sm my-4p mx-1p nowrap">day</button>
-                                                                        <button type="button" class="capitalize btn-label-primary btn btn-sm my-4p mx-1p nowrap">week</button>
-                                                                        <button type="button" class="capitalize btn-label-primary btn btn-sm my-4p mx-1p nowrap">month</button>
-    
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                            <div class="p-10p bsbb">
-                                                                <div class="title">
-                                                                    <span class="capitalize">view by</span>
-                                                                </div>
-                                                                <div class="buttons">
-                                                                    <div class="">
-                                                                        <button type="button" class="capitalize btn-label-primary btn btn-sm my-4p mx-1p">provinces</button>
-                                                                        <button type="button" class="capitalize btn-label-primary btn btn-sm my-4p mx-1p">districts</button>
-                                                                        <button type="button" class="capitalize btn-label-primary btn btn-sm my-4p mx-1p">sectors</button>
-                                                                        <button type="button" class="capitalize btn-label-primary btn btn-sm my-4p mx-1p">cells</button>
-                                                                        <button type="button" class="capitalize btn-label-primary btn btn-sm my-4p mx-1p nowrap b-1-s-theme">health facilities</button>
+                                                                    <div class="BttnsHol h-70p p-r" id="groupByBttnsHol">
+                                                                        <div class="w-100 h-100 ovh p-a bsbb bc-white t-0 blur shaddow zi-20" data-role="shade">
+                                                                            <div class="center w-70p h-70p ovh">
+                                                                                <div class="sk-grid sk-primary">
+                                                                                    <div class="sk-grid-cube"></div>
+                                                                                    <div class="sk-grid-cube"></div>
+                                                                                    <div class="sk-grid-cube"></div>
+                                                                                    <div class="sk-grid-cube"></div>
+                                                                                    <div class="sk-grid-cube"></div>
+                                                                                    <div class="sk-grid-cube"></div>
+                                                                                    <div class="sk-grid-cube"></div>
+                                                                                    <div class="sk-grid-cube"></div>
+                                                                                    <div class="sk-grid-cube"></div>
+                                                                                  </div>
+                                                                            </div>
+                                                                        </div>
+                                                                        
                                                                     </div>
                                                                 </div>
                                                             </div>
                                                         </div>
                                                         <div class="p-10p bsbb">
                                                             <div class="title">
-                                                                <span class="capitalize">group by</span>
+                                                                <span class="capitalize">view by</span>
                                                             </div>
                                                             <div class="buttons">
-                                                                <div class="">
-                                                                    <button type="button" class="capitalize btn-label-primary btn btn-sm my-4p mx-1p nowrap">Diagnosis Results</button>
-                                                                    <button type="button" class="capitalize btn-label-primary btn btn-sm my-4p mx-1p nowrap">medications taken</button>
-                                                                    <button type="button" class="capitalize btn-label-primary btn btn-sm my-4p mx-1p nowrap">tests taken</button>
+                                                                <div class="BttnsHol" id="viewByBttnsHol">
+                                                                    <button type="button" data-role="custom-buttns" data-target="viewBy" class="capitalize btn-label-primary btn btn-sm my-4p mx-1p nowrap">cases</button>
+                                                                    <button type="button" data-role="custom-buttns" data-target="viewBy" class="capitalize btn-label-primary btn btn-sm my-4p mx-1p nowrap">medications taken</button>
+                                                                    <button type="button" data-role="custom-buttns" data-target="viewBy" class="capitalize btn-label-primary btn btn-sm my-4p mx-1p nowrap">tests taken</button>
+                                                                    <button type="button" data-role="custom-buttns" data-target="viewBy" class="capitalize btn-label-primary btn btn-sm my-4p mx-1p nowrap b-1-s-theme">patients</button>
+
 
                                                                 </div>
                                                             </div>
@@ -271,13 +302,13 @@
                                                                 <span class="capitalize">locations</span>
                                                             </div>
                                                             <div class="buttons">
-                                                                <div class="">
-                                                                    <button type="button" class="capitalize btn-label-primary btn btn-sm my-4p mx-1p nowrap">Rubavu</button>
-                                                                    <button type="button" class="capitalize btn-label-primary btn btn-sm my-4p mx-1p nowrap">karongi</button>
-                                                                    <button type="button" class="capitalize btn-label-primary btn btn-sm my-4p mx-1p nowrap">nyabihu</button>
-                                                                    <button type="button" class="capitalize btn-label-primary btn btn-sm my-4p mx-1p nowrap">rusizi</button>
-                                                                    <button type="button" class="capitalize btn-label-primary btn btn-sm my-4p mx-1p nowrap">nyamasheke</button>
-                                                                    <button type="button" class="capitalize btn-label-primary btn btn-sm my-4p mx-1p nowrap">rutsiro</button>
+                                                                <div class="BttnsHol" id="locationsBttnsHol">
+                                                                    <button type="button" data-role="custom-buttns" data-target="locs" class="capitalize btn-label-primary btn btn-sm my-4p mx-1p nowrap">Rubavu</button>
+                                                                    <button type="button" data-role="custom-buttns" data-target="locs" class="capitalize btn-label-primary btn btn-sm my-4p mx-1p nowrap">karongi</button>
+                                                                    <button type="button" data-role="custom-buttns" data-target="locs" class="capitalize btn-label-primary btn btn-sm my-4p mx-1p nowrap">nyabihu</button>
+                                                                    <button type="button" data-role="custom-buttns" data-target="locs" class="capitalize btn-label-primary btn btn-sm my-4p mx-1p nowrap">rusizi</button>
+                                                                    <button type="button" data-role="custom-buttns" data-target="locs" class="capitalize btn-label-primary btn btn-sm my-4p mx-1p nowrap">nyamasheke</button>
+                                                                    <button type="button" data-role="custom-buttns" data-target="locs" class="capitalize btn-label-primary btn btn-sm my-4p mx-1p nowrap">rutsiro</button>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -313,6 +344,70 @@
                                                     </div>
                                                 </div>
                                             </div>
+                                            <div class="row">
+                                                <div class="col-12 mb-4">
+                                                    <div class="card patientsDiv">
+                                                        <div class="card-body">
+                                                            <div class="">
+                                                                <div class="">
+                                                                    <div class="card-title">
+                                                                        <h5 class="text-nowrap mb-2 capitalize">select custom location</h5>
+                                                                    </div>
+                                                                    <div class="p-5p">
+                                                                        <div class="w-100 h-100">
+                                                                            <form action="" method="post" id="loc-range">
+                                                                                <div class="flex bblock-resp">
+                                                                                    <div class="w-50 bfull-resp pr-5p">
+                                                                                        <label for="start" class="form-label">Start</label>
+                                                                                        <input type="date" name="start" id="start"  class="form-control">
+                                                                                        <small class="red fs-14p"></small>
+                                                                                    </div>
+                                                                                    <div class="w-50 bfull-resp pl-5p">
+                                                                                        <label for="stop" class="form-label">Stop</label>
+                                                                                        <input type="date" name="stop" id="stop" class="form-control">
+                                                                                        <small class="red fs-14p"></small>
+                                                                                    </div>
+                                                                                </div>
+                                                                                <div class="flex bblock-resp">
+                                                                                    <div class="w-100 pr-5p">
+                                                                                        <label for="province" class="form-label">Province</label>
+                                                                                        <input type="text" placeholder="Select Province" name="province" id="province" class="address-field form-control">
+                                                                                        <small class="red fs-14p"></small>
+                                                                                    </div>
+                                                                                    <div class="w-100 pl-5p">
+                                                                                        <label for="district" class="form-label">District</label>
+                                                                                        <input type="text" placeholder="Select District" name="district" id="district" class="address-field form-control">
+                                                                                        <small class="red fs-14p"></small>
+                                                                                    </div>
+                                                                                </div>
+                                                                                <div class="flex bblock-resp">
+                                                                                    <div class="w-100 pr-5p">
+                                                                                        <label for="sector" class="form-label">Sector</label>
+                                                                                        <input type="text" placeholder="Select Sector" name="sector" id="sector" class="address-field form-control">
+                                                                                        <small class="red fs-14p"></small>
+                                                                                    </div>
+                                                                                    <div class="w-100 pl-5p">
+                                                                                        <label for="cell" class="form-label">Cell</label>
+                                                                                        <input type="text" placeholder="Select Cell" name="cell" id="cell" class="address-field form-control">
+                                                                                        <small class="red fs-14p"></small>
+                                                                                    </div>
+                                                                                </div>
+                                                                                <div class="w-100 h-a my-10p">
+                                                                                    <div class="w-100 h-100">
+                                                                                        <button class="btn btn-primary" type="button">
+                                                                                            <span class="capitalize">proceed</span>
+                                                                                        </button>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </form>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                     <div class="row">
@@ -321,22 +416,39 @@
                                                 <span class="capitalize dgray bold-2">diagnosis insights</span>
                                             </div>
                                         </div>
-                                        <div class="col-md-3 mb-4 resCard">
-                                            <div class="card">
-                                                <div class="card-body">
-                                                    <h3 class="d-block mb-1 name capitalize bold-2">Malaria</h3>
-                                                    <div class="flex">
-                                                        <h4 class="card-title text-nowrap mb-2 total">2,456</h4>
-                                                        <span class="capitalize px-10p">case(s)</span>
-                                                    </div>
-                                                    <small class="text-danger fw-semibold"><i class='bx bx-down-arrow-alt'></i> -14.82%</small>
-                                                    <p>
-                                                        <div>
-                                                            <span>
-                                                                <button class="btn-primary btn btn-sm">view</button>
-                                                            </span>
+                                        <div class="p-r">
+                                            <div class="w-20 bfull-resp mb-4 resCard iblock mx-5p">
+                                                <div class="card">
+                                                    <div class="card-body">
+                                                        <h3 class="d-block mb-1 name capitalize bold-2">Malaria</h3>
+                                                        <div class="flex">
+                                                            <h4 class="card-title text-nowrap mb-2 total">2,456</h4>
+                                                            <span class="capitalize px-10p">case(s)</span>
                                                         </div>
-                                                    </p>
+                                                        <small class="text-danger fw-semibold"><i class='bx bx-down-arrow-alt'></i> -14.82%</small>
+                                                        <p>
+                                                            <div>
+                                                                <span>
+                                                                    <button class="btn-primary btn btn-sm">view</button>
+                                                                </span>
+                                                            </div>
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="w-100 h-100 ovh p-a bsbb bc-white t-0 blur shaddow zi-20" data-role="shade">
+                                                <div class="cntr center w-70p h-70p ovh">
+                                                    <div class="sk-grid sk-primary">
+                                                        <div class="sk-grid-cube"></div>
+                                                        <div class="sk-grid-cube"></div>
+                                                        <div class="sk-grid-cube"></div>
+                                                        <div class="sk-grid-cube"></div>
+                                                        <div class="sk-grid-cube"></div>
+                                                        <div class="sk-grid-cube"></div>
+                                                        <div class="sk-grid-cube"></div>
+                                                        <div class="sk-grid-cube"></div>
+                                                        <div class="sk-grid-cube"></div>
+                                                      </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -365,15 +477,31 @@
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div class="">
+                                                <div class="p-r">
+                                                    <div class="w-100 h-100 ovh p-a bsbb bc-white t-0 blur shaddow zi-20" data-role="shade">
+                                                        <div class="cntr center w-70p h-70p ovh">
+                                                            <div class="sk-grid sk-primary">
+                                                                <div class="sk-grid-cube"></div>
+                                                                <div class="sk-grid-cube"></div>
+                                                                <div class="sk-grid-cube"></div>
+                                                                <div class="sk-grid-cube"></div>
+                                                                <div class="sk-grid-cube"></div>
+                                                                <div class="sk-grid-cube"></div>
+                                                                <div class="sk-grid-cube"></div>
+                                                                <div class="sk-grid-cube"></div>
+                                                                <div class="sk-grid-cube"></div>
+                                                              </div>
+                                                        </div>
+                                                    </div>
                                                     <div class="d-flex justify-content-between align-items-center mb-3 px-20p">
                                                         <div class="d-flex flex-column gap-1">
-                                                            <h2 class="mb-2" id="mainTotal"><span class="bc-gray p-5p br-5p"></span></h2>
+                                                            <h2 class="mb-2" id="mainTotal"><span class="bc-gray p-5p br-5p mx-10p my-5p w-70p block"></span></h2>
                                                             <span>Total Patients</span>
                                                         </div>
                                                         <div id="orderStatisticsChart"></div>
                                                     </div>
                                                     <ul class="px-25p m-0 h-400p ovys scroll-2" id="ranks-cont">
+                                                        
                                                         <li class="d-flex mb-4 pb-1 hover-2">
                                                             <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
                                                                 <div class="me-2">
@@ -409,11 +537,26 @@
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div class="">
+                                                <div class="p-r">
                                                     <div class="d-flex justify-content-between align-items-center mb-3">
                                                         <div class="d-flex flex-column gap-1 px-20p">
-                                                            <h2 class="mb-2" id="mainTotal"><span class="bc-gray p-5p br-5p"></span></h2>
+                                                            <h2 class="mb-2" id="mainTotal"><span class="bc-gray p-5p br-5p mx-10p my-5p w-70p block"></span></h2>
                                                             <span>Total Diagnosis Results</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="w-100 h-100 ovh p-a bsbb bc-white t-0 blur shaddow zi-20" data-role="shade">
+                                                        <div class="cntr center w-70p h-70p ovh">
+                                                            <div class="sk-grid sk-primary">
+                                                                <div class="sk-grid-cube"></div>
+                                                                <div class="sk-grid-cube"></div>
+                                                                <div class="sk-grid-cube"></div>
+                                                                <div class="sk-grid-cube"></div>
+                                                                <div class="sk-grid-cube"></div>
+                                                                <div class="sk-grid-cube"></div>
+                                                                <div class="sk-grid-cube"></div>
+                                                                <div class="sk-grid-cube"></div>
+                                                                <div class="sk-grid-cube"></div>
+                                                              </div>
                                                         </div>
                                                     </div>
                                                     <ul class="px-25p m-0 h-400p ovys scroll-2" id="ranks-cont">
