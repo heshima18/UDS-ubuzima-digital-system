@@ -1,5 +1,5 @@
-import { postschema, request,alertMessage, getdata,getschema, animskel, deletechild,getPath,cpgcntn, sessiondata, calcTime,DateTime,geturl, adcm, removeLoadingTab} from "../../../utils/functions.controller.js"
-let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,z,x,c,v,b,n,m
+import { postschema, request,alertMessage, getdata,getschema, animskel, deletechild,getPath,cpgcntn, sessiondata, calcTime,DateTime,geturl, adcm, removeLoadingTab, initializeSpecialCleave} from "../../../utils/functions.controller.js"
+let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,z,x,c,v,b,n,m,extra
 import userinfo from "./nav.js"
 import {config} from "./config.js"
 (async function () {
@@ -48,7 +48,7 @@ import {config} from "./config.js"
     if (!insights.success) {
         return alertMessage(insights.message)
     }
-    let extra = insights.message
+    extra = insights.message
     a = getPath(1)
     c = Array.from(document.querySelectorAll('span.cpcards'))
     p = Array.from(document.querySelectorAll('div.pagecontentsection'))
@@ -110,7 +110,7 @@ import {config} from "./config.js"
             }
         })
     })
-    async function gsd(page,extra) {
+    async function gsd(page) {
         try {
             x = page.id
             if (x == 'my-account') {
@@ -128,10 +128,12 @@ import {config} from "./config.js"
                 }
           
             }else if (x == 'home') {
-                let patientsDiv = document.querySelector('div.patientsDiv'),patientNholder = patientsDiv.querySelector('h3.pn-holder'),customBttns = Array.from(page.querySelectorAll(`[data-role="custom-buttns"]`)),BttnsHol = Array.from(page.querySelectorAll('div.BttnsHol')),shades = Array.from(page.querySelectorAll('div[data-role="shade"]')),parents= []
-                let total = Object.keys(extra.groupByHps).map(function (key) {
-                    return extra.groupByHps[key].total
-                }),{avaiGroupings} = extra
+                let customBttns = Array.from(page.querySelectorAll(`[data-role="custom-buttns"]`)),BttnsHol = Array.from(page.querySelectorAll('div.BttnsHol')),shades = Array.from(page.querySelectorAll('div[data-role="shade"]')),parents= [],compSearchButton = page.querySelector('button#compareSearch')
+                let {avaiGroupings} = extra
+                compSearchButton.onclick = function (event) {
+                    event.preventDefault();
+                    computeComp(page)
+                }
                 BttnsHol.forEach(container=>{
                     if (container.id == 'groupByBttnsHol') {
                         removeLoadingTab(container)
@@ -172,45 +174,33 @@ import {config} from "./config.js"
                         }
                     });
                 }
-                patientNholder.innerText = adcm(total.reduce((a,c)=> a+c))
+                drawPatientsChart(extra.groupByDates)
                 drawMainChart(extra.groupByHps)
-                    let patientsChartOptions =  {
-                        chart: { height: 80, type: "area", toolbar: { show: !1 }, sparkline: { enabled: !0 } },
-                        markers: {
-                            size: 6,
-                            colors: "transparent",
-                            strokeColors: "transparent",
-                            strokeWidth: 4,
-                            discrete: [{ fillColor: config.colors.white, seriesIndex: 0, dataPointIndex: 6, strokeColor: config.colors.success, strokeWidth: 2, size: 6, radius: 8 }],
-                            hover: { size: 7 },
-                        },
-                        grid: { show: !1, padding: { right: 8 } },
-                        colors: [config.colors.success],
-                        fill: { type: "gradient", gradient: { shade: s, shadeIntensity: 0.8, opacityFrom: 0.8, opacityTo: 0.25, stops: [0, 85, 100] } },
-                        dataLabels: { enabled: !1 },
-                        stroke: { width: 2 },
-                        series: [{ data: [180, 175, 275, 140, 205, 190, 295] }],
-                        xaxis: { show: !1, lines: { show: !1 }, labels: { show: !1 }, stroke: { width: 0 }, axisBorder: { show: !1 } },
-                        yaxis: { stroke: { width: 0 }, show: !1 },
-                    }
-                    var patientsChart = new ApexCharts(patientsDiv.querySelector("#patientsChart"), patientsChartOptions);
-                    patientsChart.render();
-                    let results = extra.groupByResults,thingtoclone = document.querySelector('div.resCard')
                 
-                    for (const result of Object.keys(results)) {
-                        let resCard = thingtoclone.cloneNode(true)
-                        // drawChartForRes(chartArea)
-                        resCard.querySelector('.name').innerText = result
-                        resCard.querySelector('.total').innerText = adcm(results[result].total)
-                        thingtoclone.parentNode.appendChild(resCard)
-                    }
-                    deletechild(thingtoclone,thingtoclone.parentElement)
-                    let rankingsDivs = Array.from(document.querySelectorAll('div.ranks'))
-                    rankingsDivs.forEach(div=>{
-                        prepT(div,div.id,extra[div.getAttribute('data-to-hold')])
-                    })
+                let results = extra.groupByResults,thingtoclone = document.querySelector('div.resCard')
+            
+                for (const result of Object.keys(results)) {
+                    let resCard = thingtoclone.cloneNode(true)
+                    // drawChartForRes(chartArea)
+                    resCard.querySelector('.name').innerText = result
+                    resCard.querySelector('.total').innerText = adcm(results[result].total)
+                    thingtoclone.parentNode.appendChild(resCard)
+                }
+                deletechild(thingtoclone,thingtoclone.parentElement)
+                let rankingsDivs = Array.from(document.querySelectorAll('div.ranks'))
+                rankingsDivs.forEach(div=>{
+                    prepT(div,div.id,extra[div.getAttribute('data-to-hold')])
+                })
 
+                let cleaveRequires = Array.from(page.querySelectorAll('.require-cleave'))
+                cleaveRequires.forEach(input=>{
+                   let type = input.getAttribute('data-id') 
+                   if( type == 'year'){
+                    initializeSpecialCleave(input,[4],4)
+                   }
+                })
             }
+
         } catch (error) {
             console.log(error)
         }
@@ -298,7 +288,6 @@ function revolveStffs(button,cont) {
    target = subConts.find(function (elem) {
     return elem.getAttribute('data-id') == button.id
    })
-   console.log(subConts.indexOf(target))
    subConts.forEach(elem=>{
     if (subConts.indexOf(elem) > subConts.indexOf(target)) {
         elem.classList.remove('active')
@@ -339,4 +328,102 @@ var mainChart = document.querySelector("#mainChart")
 mainChart.innerHTML = null
 mainChart = new ApexCharts(mainChart, mainChartOptions);
 mainChart.render(); 
+}
+function drawPatientsChart(grp) {
+    let patientsDiv = document.querySelector('div.patientsDiv'),patientNholder = patientsDiv.querySelector('.pn-holder'),percentageHolder = patientsDiv.querySelector('.percentage'),percentage
+    let Ttl = Object.keys(grp).map(function (key) {
+        return grp[key].total
+    })
+    let first = grp[Object.keys(grp)[0]].total,last = grp[Object.keys(grp)[Object.keys(grp).length - 1]].total; 
+    percentage = ((last - first) / first) * 100
+    if (first > last) {
+        percentageHolder.classList.add('text-danger')
+        percentageHolder.innerHTML = `<span class="center">
+                <i class='bx bx-chevron-down'></i>
+            </span> <span class="center">${percentage}%</span></small>`
+    }else if (first < last) {
+        percentageHolder.classList.add('text-success')
+        percentageHolder.innerHTML = `<span class="center">
+                <i class='bx bx-chevron-up'></i>
+            </span> <span class="center">${percentage}%</span></small>`
+
+    }else{
+        percentageHolder.classList.add('text-success')
+        percentageHolder.innerHTML = `<span class="center">
+                <i class='bx bx-chevron-up'></i>
+            </span> <span class="center">${percentage}%</span></small>`
+    }
+    patientNholder.classList.remove('block')
+    patientNholder.classList.add('flex')
+    patientNholder.innerHTML = `<h3 class="mb-0 pn-holder">${adcm(Ttl.reduce((a,c)=> a+c))}</h3><span class="dgray px-5p">Patients</span>`
+    let patientsChartOptions =  {
+        chart: { height: 80, type: "area", toolbar: { show: !1 }, sparkline: { enabled: !0 } },
+        dataLabels: { enabled: !1 },
+        stroke: { width: 2},
+        legend: { show: !1 },
+        markers: {
+            size: 6,
+            colors: "transparent",
+            strokeColors: "transparent",
+            strokeWidth: 4,
+            discrete: [{ fillColor: config.colors.white, seriesIndex: 0, dataPointIndex: 7, strokeColor: config.colors.primary, strokeWidth: 2, size: 6, radius: 8 }],
+            hover: { size: 7 },
+        },
+        grid: { show: !1, padding: { right: 8 } },
+        colors: [config.colors.primary],
+        fill: { type: "gradient", gradient: { shade: s, shadeIntensity: 0.8, opacityFrom: 0.8, opacityTo: 0.25, stops: [0, 85, 100] } },
+        dataLabels: { enabled: !1 },
+        stroke: { width: 2 },
+        series: [{ name:'patients', data: Ttl }],
+        xaxis: { categories: Object.keys(grp), show: !1, lines: { show: !1 }, labels: { show: !1 }, stroke: { width: 0 }, axisBorder: { show: !1 } },
+        yaxis: { stroke: { width: 0 }, show: !1 },
+    }
+    var patientsChart = patientsDiv.querySelector("#patientsChart")
+    removeLoadingTab(patientsChart)
+    patientsChart.innerHTML = null
+    var patientsChart = new ApexCharts(patientsChart, patientsChartOptions);
+    patientsChart.render();
+}
+async function computeComp(page){
+    let Conts = Array.from(page.querySelectorAll('.typesHol')),target = Conts.find(function (elem) {
+        return elem.classList.contains('active')
+    }),inputs,start,stop
+    if (!target) return 0;
+    inputs = Array.from(target.querySelectorAll('input')) 
+    for (const input of inputs) {
+        if (!input.value.trim()) {
+            return 0
+        }else if (inputs[0].value > inputs[1].value) {
+            return 0
+        }
+    }
+    start = inputs[0].value,stop = inputs[1].value
+    if (target.getAttribute('data-id') == 'year') {
+        start = `${start}-01-01`
+        stop = `${stop}-12-31`
+        console.log(start,stop)
+    }else if (target.getAttribute('data-id') == 'month') {
+        start = `${start}-01`
+        stop = `${stop}-31`
+        
+    }if (target.getAttribute('data-id') == 'date') {
+        console.log(start,stop)
+    }
+    postschema.body = JSON.stringify({
+        token: getdata('token'),
+        range: {
+            start,
+            stop,
+        },
+        compType: target.getAttribute('data-id')
+        
+    })
+    const insights = await request('insights',postschema);
+    extra = insights.message
+    if (!insights.success) {
+        return alertMessage(insights.message)
+    }
+
+    drawPatientsChart(extra.groupByDates)
+    drawMainChart(extra.groupByHps)
 }

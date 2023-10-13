@@ -22,25 +22,17 @@
         <link rel="stylesheet" href="/assets/css/demo.css" />
     
         <!-- Vendors CSS -->
-        <link rel="stylesheet" href="/assets/vendor/libs/datatables-bs5/datatables.bootstrap5.css" />
-        <link rel="stylesheet" href="/assets/vendor/libs/datatables-responsive-bs5/responsive.bootstrap5.css" />
-        <link rel="stylesheet" href="/assets/vendor/libs/datatables-buttons-bs5/buttons.bootstrap5.css" />
-        <link rel="stylesheet" href="/assets/vendor/libs/datatables-checkboxes-jquery/datatables.checkboxes.css" />
-    
-        <link rel="stylesheet" href="/assets/vendor/libs/select2/select2.css" />
-        <link rel="stylesheet" href="/assets/vendor/libs/formvalidation/dist/css/formValidation.min.css" />
         <link rel="stylesheet" href="/styles/styling.css">
         <link rel="stylesheet" href="/assets/vendor/fonts/boxicons.css">
         <script src="/assets/js/nav.js" type="module"></script>
         
-    <script src="/assets/vendor/libs/jquery/jquery.js"></script>
     <script src="/assets/js/mohs.js" type="module"></script>
     <script src="/assets/js/config.js" type="module"></script>
 
 	<script src="/getSocketIo/socket.io.min.js"></script>
-    <script src="/assets/vendor/libs/datatables-bs5/datatables-bootstrap5.js"></script>
     <script src="/assets/vendor/libs/apex-charts/apexcharts.js"></script>
     <script src="/assets/vendor/js/bootstrap.js"></script>
+    <script src="/assets/vendor/libs/cleavejs/cleave.js"></script>
 	<link rel="shortcut icon" href="/icons/favicon.png" type="image/x-icon">
 </head>
 <body class="p-0 m-0 w-100 h-100 p-a ovh">
@@ -212,48 +204,35 @@
                                                                     <div class="w-100 h-45p typesHolCont p-r ovh">
                                                                         <div class="flex py-10p typesHol w-100 active tr-0-2 p-a" data-id="year">
                                                                             <div class="text-center w-40">
-                                                                                <input class="form-control form-control-sm" type="number" id="growthReportId" placeholder="Year">
+                                                                                <input class="form-control form-control-sm require-cleave year" data-id="year" type="text" id="start" placeholder="2023">
                                                                             </div>
                                                                             <span class="center capitalize px-10p w-20">with</span>
                                                                             <div class="text-center w-40">
-                                                                                <input class="form-control form-control-sm" type="number" id="growthReportId" placeholder="Year">
+                                                                                <input class="form-control form-control-sm require-cleave year" data-id="year" type="text" id="stop" placeholder="2025">
                                                                             </div>
                                                                         </div>
                                                                         <div class="flex py-10p typesHol w-100 tr-0-2 p-a mt-60p" data-id="month">
                                                                             <div class="text-center w-40">
-                                                                                <input class="form-control form-control-sm" type="month" id="growthReportId">
+                                                                                <input class="form-control form-control-sm" type="month" id="start" data-id="month">
                                                                             </div>
                                                                             <span class="center capitalize px-10p w-20">with</span>
                                                                             <div class="text-center w-40">
-                                                                                <input class="form-control form-control-sm" type="month" id="growthReportId">
+                                                                                <input class="form-control form-control-sm" type="month" id="stop" data-id="month">
                                                                             </div>
                                                                         </div>
                                                                         <div class="flex py-10p typesHol w-100 tr-0-2 p-a mt-60p" data-id="date">
                                                                             <div class="text-center w-40">
-                                                                                <input class="form-control form-control-sm" type="date" id="growthReportId">
+                                                                                <input class="form-control form-control-sm" type="date" id="start" data-id="date">
                                                                             </div>
                                                                             <span class="center capitalize px-10p w-20">with</span>
                                                                             <div class="text-center w-40">
-                                                                                <input class="form-control form-control-sm" type="date" id="growthReportId">
+                                                                                <input class="form-control form-control-sm" type="date" id="stop" data-id="date">
                                                                             </div>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                                <div class="px-10p bsbb">
-                                                                    <div class="title">
-                                                                        <span class="capitalize">interval</span>
-                                                                    </div>
-                                                                    <div class="buttons">
-                                                                        <div class="BttnsHol">
-                                                                            <button type="button" data-role="custom-buttns" data-target="interval" class="capitalize btn-label-primary btn btn-sm my-4p mx-1p nowrap">date</button>
-                                                                            <button type="button" data-role="custom-buttns" data-target="interval" class="capitalize btn-label-primary btn btn-sm my-4p mx-1p nowrap">week</button>
-                                                                            <button type="button" data-role="custom-buttns" data-target="interval" class="capitalize btn-label-primary btn btn-sm my-4p mx-1p nowrap">month</button>
-        
                                                                         </div>
                                                                     </div>
                                                                 </div>
                                                                 <div class=" p-10p">
-                                                                    <button class="btn btn-primary btn-sm">proceed</button>
+                                                                    <button class="btn btn-primary btn-sm" id="compareSearch">proceed</button>
                                                                 </div>
                                                             </div>
                                                             <div class="p-10p bsbb">
@@ -325,18 +304,34 @@
                                                                 <div class="d-flex flex-sm-column flex-row align-items-start justify-content-between">
                                                                     <div class="card-title">
                                                                         <h5 class="text-nowrap mb-2">Patients Report</h5>
-                                                                        <span class="badge bg-label-warning rounded-pill">Year
-                                                                            2021</span>
+                                                                        <small class="dgray capitalize"> in the selected range and date</small>
                                                                     </div>
                                                                     <div class="mt-sm-auto">
-                                                                        <small class="text-success text-nowrap fw-semibold"><i class='bx bx-chevron-up'></i>
-                                                                            68.2%</small>
-                                                                        <span class="flex">
-                                                                            <h3 class="mb-0 pn-holder">N/A</h3><span class="dgray px-5p">Patients</span>
+                                                                        <small class=" text-nowrap fw-semibold percentage flex">
+                                                                            <span class="bc-gray p-5p w-80p br-10p skel"></span>
+                                                                        </small>
+                                                                        <span class="block pn-holder my-10p">
+                                                                            <span class="bc-gray p-5p w-70p br-10p skel block mb-5p"></span>
+                                                                            <span class="bc-gray p-5p w-40p br-10p skel block"></span>
                                                                         </span>
                                                                     </div>
                                                                 </div>
-                                                                <div id="profileReportChart" class="w-200p  h-a">
+                                                                <div id="profileReportChart" class="w-200p  bw-70-resp h-a ovh p-r">
+                                                                    <div class="w-100 h-100 ovh p-a bsbb bc-white t-0 blur shaddow zi-20" data-role="shade">
+                                                                        <div class="cntr center w-70p h-70p ovh">
+                                                                            <div class="sk-grid sk-primary">
+                                                                                <div class="sk-grid-cube"></div>
+                                                                                <div class="sk-grid-cube"></div>
+                                                                                <div class="sk-grid-cube"></div>
+                                                                                <div class="sk-grid-cube"></div>
+                                                                                <div class="sk-grid-cube"></div>
+                                                                                <div class="sk-grid-cube"></div>
+                                                                                <div class="sk-grid-cube"></div>
+                                                                                <div class="sk-grid-cube"></div>
+                                                                                <div class="sk-grid-cube"></div>
+                                                                              </div>
+                                                                        </div>
+                                                                    </div>
                                                                     <div id="patientsChart"></div>
                                                                 </div>
                                                             </div>
@@ -416,13 +411,13 @@
                                                 <span class="capitalize dgray bold-2">diagnosis insights</span>
                                             </div>
                                         </div>
-                                        <div class="p-r">
-                                            <div class="w-20 bfull-resp mb-4 resCard iblock mx-5p">
+                                        <div class="p-r w-96 bfull-resp m-a">
+                                            <div class="w-15 bfull-resp mb-4 resCard iblock mx-5p">
                                                 <div class="card">
                                                     <div class="card-body">
-                                                        <h3 class="d-block mb-1 name capitalize bold-2">Malaria</h3>
+                                                        <h3 class="d-block mb-1 name capitalize bold-2">...</h3>
                                                         <div class="flex">
-                                                            <h4 class="card-title text-nowrap mb-2 total">2,456</h4>
+                                                            <h4 class="card-title text-nowrap mb-2 total">...</h4>
                                                             <span class="capitalize px-10p">case(s)</span>
                                                         </div>
                                                         <small class="text-danger fw-semibold"><i class='bx bx-down-arrow-alt'></i> -14.82%</small>

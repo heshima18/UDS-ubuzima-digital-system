@@ -6,7 +6,7 @@ export const insightsStats = async (req,res)=>{
     try {
         const leTime = DateTime.now();
         let now = leTime.setZone('Africa/Kigali');
-        let {entity,needle,range,token} = req.body,avaiGroupings
+        let {entity,needle,range,token,compType} = req.body,avaiGroupings
         if (!entity || !needle) {
             token = authenticateToken(token)
             token = token.token
@@ -23,9 +23,11 @@ export const insightsStats = async (req,res)=>{
             avaiGroupings = ['health facilities']
         }
         if (!range.start || !range.stop) {
-            let start_date = `${now.year}-${now.month - 1}-${now.date} 00:00:00`
+            let start_date = `${now.year}-${now.month - 1}-${now.day} 00:00:00`
            range.start = start_date,range.stop = now.toFormat('yyyy-MM-dd HH:mm:ss')
         }
+        let dateGroupType = getDateIntervalDescription(new Date(range.start), new Date(range.stop));
+        console.log(dateGroupType)
         let results = await query(`
             SELECT
              mh.decision,
@@ -55,7 +57,7 @@ export const insightsStats = async (req,res)=>{
              LEFT JOIN hospitals ON mh.hospital = hospitals.id  AND hospitals.${entity} = ?
              inner join patients as p ON mh.patient = p.id
             WHERE  mh.dateclosed >= ? AND mh.dateclosed <= ? AND mh.status != ?
-            GROUP BY mh.id
+            GROUP BY mh.id order by mh.dateclosed asc
         `,[needle,range.start,range.stop,'open'])
         if (!results) return res.status(500).send({success: false, message: errorMessage.is_error})
         results = results.map(function (field) {
@@ -69,7 +71,7 @@ export const insightsStats = async (req,res)=>{
 
             return field
         })
-        let groupByHps = {},groupByProvinces = {},groupBySectors = {},groupByDistricts = {},groupByCells = {},groupByResults = {}
+        let groupByHps = {},groupByProvinces = {},groupBySectors = {},groupByDistricts = {},groupByCells = {},groupByResults = {},groupByDates = {}
         results.forEach(session=>{
             if (!(session.hpname in groupByHps)) {
                 let occurences = results.filter(function (occ) {
@@ -77,8 +79,6 @@ export const insightsStats = async (req,res)=>{
                 })
                 Object.assign(groupByHps,{[session.hpname]: {total: occurences.length, info:{name: session.hpname, id: session.hpid, loc: Object.values(session.hp_loc).toString().replace(/,/gi,", ")}}})
             }
-        })
-        results.forEach(session=>{
             if (!(session.hp_loc.sector in groupBySectors)) {
                 let occurences = results.filter(function (occ) {
                     return occ.hp_loc.sector == session.hp_loc.sector
@@ -95,8 +95,18 @@ export const insightsStats = async (req,res)=>{
                         }
                     })
             }
-        })
-        results.forEach(session=>{
+            const fDate = formatDate(session.date,dateGroupType)
+            if (!(fDate in groupByDates)) {
+                let occurences = results.filter(function (occ) {
+                    return formatDate(occ.date,dateGroupType) == fDate
+                })
+                Object.assign(groupByDates,
+                    {
+                        [fDate]: {
+                            total: occurences.length
+                        }
+                    })
+            }
             if (!(session.hp_loc.province in groupByProvinces)) {
                 let occurences = results.filter(function (occ) {
                     return occ.hp_loc.province == session.hp_loc.province
@@ -113,8 +123,6 @@ export const insightsStats = async (req,res)=>{
                         }
                     })
             }
-        })
-        results.forEach(session=>{
             if (!(session.hp_loc.district in groupByDistricts)) {
                 let occurences = results.filter(function (occ) {
                     return occ.hp_loc.district == session.hp_loc.district
@@ -131,8 +139,6 @@ export const insightsStats = async (req,res)=>{
                         }
                     })
             }
-        })
-        results.forEach(session=>{
             if (!(session.hp_loc.cell in groupByCells)) {
                 let occurences = results.filter(function (occ) {
                     return occ.hp_loc.cell == session.hp_loc.cell
@@ -149,52 +155,75 @@ export const insightsStats = async (req,res)=>{
                         }
                     })
             }
-        })
-        results.forEach((record) => {
-          const decisions = record.decision;
-          const hospitalName = record.hpname;
-          const hospitalId = record.hpid;
-
-        
-          decisions.forEach((decision) => {
-            if (!groupByResults[decision]) {
-              groupByResults[decision] = {
-                total: 0,
-                mostAppearance: { hospital: '', id: '', count: 0 },
-                hospitalCounts: [],
-              };
-            }
-        
-            groupByResults[decision].total++;
-            let avai =  groupByResults[decision].hospitalCounts.find(function (needle) {
-                return needle.id == hospitalId
-            })
-            if (!avai) {
-                groupByResults[decision].hospitalCounts.push({hospital: hospitalName, id: hospitalId, count: 1})
-                if (!groupByResults[decision].mostAppearance.count) {
+            const decisions = session.decision;
+            const hospitalName = session.hpname;
+            const hospitalId = session.hpid;
+            decisions.forEach((decision) => {
+              if (!groupByResults[decision]) {
+                groupByResults[decision] = {
+                  total: 0,
+                  mostAppearance: { hospital: '', id: '', count: 0 },
+                  hospitalCounts: [],
+                };
+              }
+            
+              groupByResults[decision].total++;
+              let avai =  groupByResults[decision].hospitalCounts.find(function (needle) {
+                  return needle.id == hospitalId
+              })
+              if (!avai) {
+                  groupByResults[decision].hospitalCounts.push({hospital: hospitalName, id: hospitalId, count: 1})
+                  if (!groupByResults[decision].mostAppearance.count) {
+                      groupByResults[decision].mostAppearance.hospital = hospitalName;
+                      groupByResults[decision].mostAppearance.id = hospitalId;
+                      groupByResults[decision].mostAppearance.count = 1
+                  }
+              }else{
+                  groupByResults[decision].hospitalCounts[groupByResults[decision].hospitalCounts.indexOf(avai)].count++;
+                  if (groupByResults[decision].hospitalCounts[groupByResults[decision].hospitalCounts.indexOf(avai)].count >
+                    groupByResults[decision].mostAppearance.count) {
                     groupByResults[decision].mostAppearance.hospital = hospitalName;
                     groupByResults[decision].mostAppearance.id = hospitalId;
-                    groupByResults[decision].mostAppearance.count = 1
-                }
-            }else{
-                groupByResults[decision].hospitalCounts[groupByResults[decision].hospitalCounts.indexOf(avai)].count++;
-                if (groupByResults[decision].hospitalCounts[groupByResults[decision].hospitalCounts.indexOf(avai)].count >
-                  groupByResults[decision].mostAppearance.count) {
-                  groupByResults[decision].mostAppearance.hospital = hospitalName;
-                  groupByResults[decision].mostAppearance.id = hospitalId;
-                  groupByResults[decision].mostAppearance.count = groupByResults[decision].hospitalCounts[groupByResults[decision].hospitalCounts.indexOf(avai)].count;
-                }
-            }
-          });
-        });
+                    groupByResults[decision].mostAppearance.count = groupByResults[decision].hospitalCounts[groupByResults[decision].hospitalCounts.indexOf(avai)].count;
+                  }
+              }
+            });
+        })
+        
         const dataArray = Object.entries(groupByResults);
         dataArray.sort(([, a], [, b]) => b.total - a.total);
         const sortedData = Object.fromEntries(dataArray);
         groupByResults = sortedData
-        res.send({success: true, message: {groupByHps,groupByResults,avaiGroupings,groupBySectors,groupByProvinces,groupByDistricts,groupByCells}})    
+        res.send({success: true, message: {groupByHps,groupByResults,avaiGroupings,groupBySectors,groupByProvinces,groupByDistricts,groupByCells,groupByDates}})    
     } catch (error) {
         console.log(error)
         return res.status(500).send({success: false, message: errorMessage.is_error})
     }
     
 }
+function formatDate(date,type) {
+    let options
+    if (type == 'year') {
+        options = {year: 'numeric'}
+    }else if (type == 'month') {
+        options = {year: 'numeric', month: 'short'}
+    }else {
+        options = {year: 'numeric', month: 'short',day: 'numeric'}
+    }
+   return new Date(date).toLocaleDateString(undefined,options)
+}
+function getDateIntervalDescription(startDate, endDate) {
+    const luxonStartDate = DateTime.fromJSDate(startDate);
+    const luxonEndDate = DateTime.fromJSDate(endDate);
+    
+    const diff = luxonEndDate.diff(luxonStartDate, ["years", "months", "days"]).toObject();
+    
+    console.log(diff)
+    if (diff.years > 0) {
+      return "year";
+    } else if (diff.months > 0) {
+      return "month";
+    } else if (diff.days > 0) {
+      return "day";
+    }
+}  

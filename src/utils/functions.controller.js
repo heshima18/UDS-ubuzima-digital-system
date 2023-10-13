@@ -96,6 +96,12 @@ export function alertMessage(message){
   accept.addEventListener('click',e=>{
 		deletechild(q,q.parentNode)
 	});
+  document.onkeyup = function (event) {
+    if (event.key == 'Enter' || event.key == " ") {
+      deletechild(q,q.parentNode)
+    }
+  }
+  return 0
 }
 export function getdata(item){
   let v
@@ -218,6 +224,20 @@ export async function initializeCleave(phoneElement, idElement) {
     });
   }
 }
+export function initializeSpecialCleave(element,blocks,length) {
+  const nationalID = new Cleave(element, {
+    numericOnly: true,
+    blocks,
+    delimiter: ' ',
+    delimiterLazyShow: true,
+    onValueChanged: function (e) {
+        const formattedValue = e.target.rawValue;
+        if (formattedValue.length > length) {
+            nationalID.setRawValue(formattedValue.substring(0, length));
+        }
+    }
+  });
+}
 export function showRecs(input, data,type) {
   try {
     let div =  document.createElement('div');
@@ -332,14 +352,18 @@ export function showRecs(input, data,type) {
       }
     })
     input.onkeyup = function () {
-     let value = this.value.trim();
+     let value = this.value.trim(),pattern = new RegExp(`.*${value.split('').join('.*')}.*`, "i"),match = 0
      items.forEach(item =>{
-      if (item.textContent.indexOf(value) == -1) {
+      if (!pattern.test(item.textContent)) {
         item.classList.add('hidden')
+        if (match == 0) {
+          input.removeAttribute('data-id')
+        }
       }else{
         item.classList.remove('hidden')
-        if (input.classList.contains('bevalue') && input.value == item.textContent) {
-          input.value = item.textContent
+        match = 1
+        console.log(input.value.toLowerCase() === item.textContent.toLowerCase())
+        if ((input.value.toLowerCase() === item.textContent.toLowerCase())) {
           input.setAttribute('data-id',item.getAttribute('data-id'))
         }
   
