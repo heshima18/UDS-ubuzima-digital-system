@@ -44,6 +44,8 @@ const errorMessage = {
     _err_p_404: 'patient not found',
     _err_sess_404: 'the requested session was not found',
     _err_med_404: 'medicine(s) not found',
+    _err_recs_404: 'no records found',
+
     _err_service_404: 'service(s) not found',
     _err_operation_404: 'operation(s) not found',
     _err_equipment_404: 'equipment(s) not found',

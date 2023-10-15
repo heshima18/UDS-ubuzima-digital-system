@@ -1,5 +1,5 @@
 import { postschema, request,alertMessage, getdata,getschema, animskel, deletechild,getPath,cpgcntn, sessiondata, calcTime,DateTime,geturl, adcm, removeLoadingTab, initializeSpecialCleave} from "../../../utils/functions.controller.js"
-let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,z,x,c,v,b,n,m,extra
+let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,z,x,c,v,b,n,m,extra,comparison
 import userinfo from "./nav.js"
 import {config} from "./config.js"
 (async function () {
@@ -168,7 +168,7 @@ import {config} from "./config.js"
                                 
                             }else if (target == 'groupBy') {
                                 let id = button.id
-                                drawMainChart(extra[id])
+                                drawMainChart(extra[id],comparison)
                             }
                             changeBtnBrdrClr(this)
                         }
@@ -308,26 +308,52 @@ function revolveStffs(button,cont) {
 
 
 }
-function drawMainChart(grp) {
-    let total = Object.keys(grp).map(function (key) {
-        return grp[key].total
-    })
-    var mainChartOptions = {
-        series: [
-            { name: "Patients", data:  total},
-        ],
-        chart: { height: 300, stacked: !0, type: "bar", toolbar: { show: !1 } },
-        plotOptions: { bar: { horizontal: !1, columnWidth: "33%", borderRadius: 5} },
-        colors: [config.colors.primary],
-        dataLabels: { enabled: !1 },
-        legend: { show: !0, horizontalAlign: "left", position: "top", markers: { height: 8, width: 8, radius: 12, offsetX: -3 }, labels: { colors: e }, itemMargin: { horizontal: 10 } },
-        xaxis: { categories: Object.keys(grp), labels: { style: { fontSize: "13px", colors: t } }, axisTicks: { show: !1 }, axisBorder: { show: !1 } },
-        states: { hover: { filter: { type: "none" } }, active: { filter: { type: "none" } } },
+function drawMainChart(grp, compType) {
+    let total1,total2,mainChartOptions,series1,series2,total
+    if (compType) {
+        series1 = Object.keys(grp[Object.keys(grp)[0]].total)[0]
+        series2 = Object.keys(grp[Object.keys(grp)[0]].total)[1]
+        total1 = Object.keys(grp).map(function (key) {
+            return grp[key].total[Object.keys(grp[key].total)[0]]
+        })
+        total2 = Object.keys(grp).map(function (key) {
+            return grp[key].total[Object.keys(grp[key].total)[1]]
+        })
+        mainChartOptions = {
+            series: [
+                { name: series1, data:  total1},
+                { name: series2, data:  total2},
+            ],
+            chart: { height: 300, stacked: !0, type: "bar", toolbar: { show: !1 } },
+            plotOptions: { bar: { horizontal: !1, columnWidth: "33px", borderRadius: 5} },
+            colors: [config.colors.primary,config.colors.success],
+            dataLabels: { enabled: !1 },
+            legend: { show: !0, horizontalAlign: "left", position: "top", markers: { height: 8, width: 8, radius: 12, offsetX: -3 }, labels: { colors: e }, itemMargin: { horizontal: 10 } },
+            xaxis: { categories: Object.keys(grp), labels: { style: { fontSize: "13px", colors: t } }, axisTicks: { show: !1 }, axisBorder: { show: !1 } },
+            states: { hover: { filter: { type: "none" } }, active: { filter: { type: "none" } } },
+        }
+    }else{
+        total = Object.keys(grp).map(function (key) {
+            return grp[key].total
+        })
+        mainChartOptions = {
+            series: [
+                { name: "Patients", data:  total},
+            ],
+            chart: { height: 300, stacked: !0, type: "bar", toolbar: { show: !1 } },
+            plotOptions: { bar: { horizontal: !1, columnWidth: "33px", borderRadius: 5} },
+            colors: [config.colors.primary],
+            dataLabels: { enabled: !1 },
+            legend: { show: !0, horizontalAlign: "left", position: "top", markers: { height: 8, width: 8, radius: 12, offsetX: -3 }, labels: { colors: e }, itemMargin: { horizontal: 10 } },
+            xaxis: { categories: Object.keys(grp), labels: { style: { fontSize: "13px", colors: t } }, axisTicks: { show: !1 }, axisBorder: { show: !1 } },
+            states: { hover: { filter: { type: "none" } }, active: { filter: { type: "none" } } },
+        }
+
     }
-var mainChart = document.querySelector("#mainChart")
-mainChart.innerHTML = null
-mainChart = new ApexCharts(mainChart, mainChartOptions);
-mainChart.render(); 
+    var mainChart = document.querySelector("#mainChart")
+    mainChart.innerHTML = null
+    mainChart = new ApexCharts(mainChart, mainChartOptions);
+    mainChart.render(); 
 }
 function drawPatientsChart(grp) {
     let patientsDiv = document.querySelector('div.patientsDiv'),patientNholder = patientsDiv.querySelector('.pn-holder'),percentageHolder = patientsDiv.querySelector('.percentage'),percentage
@@ -399,15 +425,23 @@ async function computeComp(page){
     }
     start = inputs[0].value,stop = inputs[1].value
     if (target.getAttribute('data-id') == 'year') {
-        start = `${start}-01-01`
-        stop = `${stop}-12-31`
-        console.log(start,stop)
+        start = `${start}-01-01 00:00:00`
+        stop = `${stop}-12-31 00:00:00`
     }else if (target.getAttribute('data-id') == 'month') {
-        start = `${start}-01`
-        stop = `${stop}-31`
+        start = `${start}-01 00:00:00`
+        stop = `${stop}-31 00:00:00`
         
-    }if (target.getAttribute('data-id') == 'date') {
-        console.log(start,stop)
+    }
+    if (target.getAttribute('data-id') == 'date') {
+        start = `${start} 00:00:00`
+        stop = `${stop} 00:00:00`
+    }
+    let  leTime = DateTime.now();
+    leTime = leTime.setZone('Africa/Kigali');
+    leTime = leTime.toString();
+    
+    if (start > leTime) {
+        return 0
     }
     postschema.body = JSON.stringify({
         token: getdata('token'),
@@ -423,7 +457,7 @@ async function computeComp(page){
     if (!insights.success) {
         return alertMessage(insights.message)
     }
-
+    comparison = target.getAttribute('data-id')
     drawPatientsChart(extra.groupByDates)
-    drawMainChart(extra.groupByHps)
+    drawMainChart(extra.groupByHps,comparison)
 }

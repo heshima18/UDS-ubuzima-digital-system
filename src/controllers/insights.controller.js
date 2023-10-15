@@ -60,6 +60,7 @@ export const insightsStats = async (req,res)=>{
             GROUP BY mh.id order by mh.dateclosed asc
         `,[needle,range.start,range.stop,'open'])
         if (!results) return res.status(500).send({success: false, message: errorMessage.is_error})
+        if (!results.length) return res.status(404).send({success: false, message: errorMessage._err_recs_404})
         results = results.map(function (field) {
             field.medicines = JSON.parse(field.medicines)
             field.tests = JSON.parse(field.tests)
@@ -74,26 +75,75 @@ export const insightsStats = async (req,res)=>{
         let groupByHps = {},groupByProvinces = {},groupBySectors = {},groupByDistricts = {},groupByCells = {},groupByResults = {},groupByDates = {}
         results.forEach(session=>{
             if (!(session.hpname in groupByHps)) {
-                let occurences = results.filter(function (occ) {
-                    return occ.hpid == session.hpid
-                })
-                Object.assign(groupByHps,{[session.hpname]: {total: occurences.length, info:{name: session.hpname, id: session.hpid, loc: Object.values(session.hp_loc).toString().replace(/,/gi,", ")}}})
-            }
-            if (!(session.hp_loc.sector in groupBySectors)) {
-                let occurences = results.filter(function (occ) {
-                    return occ.hp_loc.sector == session.hp_loc.sector
-                })
-                Object.assign(groupBySectors,
-                    {
-                        [session.hp_loc.sector]: {
-                            total: occurences.length, 
-                            info:{
-                                name: session.hp_loc.sector, 
-                                id: session.hp_loc_ids.sector, 
-                                loc: `${session.hp_loc.province}, ${session.hp_loc.district}`
+                
+                if (compType) {
+                    let startDateOccurence = results.filter(function (occ) {
+                        return occ.hpid == session.hpid && formatDate(occ.date,compType) == formatDate(range.start,compType)
+                    })
+                    let stopDateOccurence = results.filter(function (occ) {
+                        return occ.hpid == session.hpid && formatDate(occ.date,compType) == formatDate(range.stop,compType)
+                    })
+                    Object.assign(groupByHps,
+                        {
+                            [session.hpname]: {
+                                total: {
+                                    [formatDate(range.start,compType)]: startDateOccurence.length,
+                                    [formatDate(range.stop,compType)]: stopDateOccurence.length
+                                }, 
+                                info:{
+                                    name: session.hpname, 
+                                    id: session.hpid, 
+                                    loc: Object.values(session.hp_loc).toString().replace(/,/gi,", ")
+                                }
                             }
                         }
+                        )
+                }else{
+                    let occurences = results.filter(function (occ) {
+                        return occ.hpid == session.hpid
                     })
+                    Object.assign(groupByHps,{[session.hpname]: {total: occurences.length, info:{name: session.hpname, id: session.hpid, loc: Object.values(session.hp_loc).toString().replace(/,/gi,", ")}}})
+                }
+            }
+            if (!(session.hp_loc.sector in groupBySectors)) {
+                if (compType) {
+                    let startDateOccurence = results.filter(function (occ) {
+                        return occ.hp_loc.sector == session.hp_loc.sector && formatDate(occ.date,compType) == formatDate(range.start,compType)
+                    })
+                    let stopDateOccurence = results.filter(function (occ) {
+                        return occ.hp_loc.sector == session.hp_loc.sector && formatDate(occ.date,compType) == formatDate(range.stop,compType)
+                    })
+                    Object.assign(groupBySectors,
+                        {
+                            [session.hp_loc.sector]: {
+                                total: {
+                                    [formatDate(range.start,compType)]: startDateOccurence.length,
+                                    [formatDate(range.stop,compType)]: stopDateOccurence.length
+                                }, 
+                                info:{
+                                    name: session.hp_loc.sector, 
+                                    id: session.hp_loc_ids.sector, 
+                                    loc: `${session.hp_loc.province}, ${session.hp_loc.district}`
+                                }
+                            }
+                        })
+                }else{
+                    let occurences = results.filter(function (occ) {
+                        return occ.hp_loc.sector == session.hp_loc.sector
+                    })
+                    Object.assign(groupBySectors,
+                        {
+                            [session.hp_loc.sector]: {
+                                total: occurences.length, 
+                                info:{
+                                    name: session.hp_loc.sector, 
+                                    id: session.hp_loc_ids.sector, 
+                                    loc: `${session.hp_loc.province}, ${session.hp_loc.district}`
+                                }
+                            }
+                        })
+
+                }
             }
             const fDate = formatDate(session.date,dateGroupType)
             if (!(fDate in groupByDates)) {
@@ -108,52 +158,121 @@ export const insightsStats = async (req,res)=>{
                     })
             }
             if (!(session.hp_loc.province in groupByProvinces)) {
-                let occurences = results.filter(function (occ) {
-                    return occ.hp_loc.province == session.hp_loc.province
-                })
-                Object.assign(groupByProvinces,
-                    {
-                        [session.hp_loc.province]: {
-                            total: occurences.length, 
-                            info:{
-                                name: session.hp_loc.province, 
-                                id: session.hp_loc_ids.province, 
-                                loc: `rwanda`
-                            }
-                        }
+                if (compType) {
+                    let startDateOccurence = results.filter(function (occ) {
+                        return occ.hp_loc.province == session.hp_loc.province && formatDate(occ.date,compType) == formatDate(range.start,compType)
                     })
+                    let stopDateOccurence = results.filter(function (occ) {
+                        return occ.hp_loc.province == session.hp_loc.province && formatDate(occ.date,compType) == formatDate(range.stop,compType)
+                    })
+                    Object.assign(groupByProvinces,
+                        {
+                            [session.hp_loc.province]: {
+                                total: {
+                                    [formatDate(range.start,compType)]: startDateOccurence.length,
+                                    [formatDate(range.stop,compType)]: stopDateOccurence.length
+                                }, 
+                                info:{
+                                    name: session.hp_loc.province, 
+                                    id: session.hp_loc_ids.province, 
+                                    loc: `rwanda`
+                                }
+                            }
+                        })
+                }else{
+                    let occurences = results.filter(function (occ) {
+                        return occ.hp_loc.province == session.hp_loc.province
+                    })
+                    Object.assign(groupByProvinces,
+                        {
+                            [session.hp_loc.province]: {
+                                total: occurences.length, 
+                                info:{
+                                    name: session.hp_loc.province, 
+                                    id: session.hp_loc_ids.province, 
+                                    loc: `rwanda`
+                                }
+                            }
+                        })
+                }
             }
             if (!(session.hp_loc.district in groupByDistricts)) {
-                let occurences = results.filter(function (occ) {
-                    return occ.hp_loc.district == session.hp_loc.district
-                })
-                Object.assign(groupByDistricts,
-                    {
-                        [session.hp_loc.district]: {
-                            total: occurences.length, 
-                            info:{
-                                name: session.hp_loc.district, 
-                                id: session.hp_loc_ids.district, 
-                                loc: `${session.hp_loc.province}`
-                            }
-                        }
+                if (compType) {
+                    let startDateOccurence = results.filter(function (occ) {
+                        return occ.hp_loc.district == session.hp_loc.district && formatDate(occ.date,compType) == formatDate(range.start,compType)
                     })
+                    let stopDateOccurence = results.filter(function (occ) {
+                        return occ.hp_loc.district == session.hp_loc.district && formatDate(occ.date,compType) == formatDate(range.stop,compType)
+                    })
+                    Object.assign(groupByDistricts,
+                        {
+                            [session.hp_loc.district]: {
+                                total: {
+                                    [formatDate(range.start,compType)]: startDateOccurence.length,
+                                    [formatDate(range.stop,compType)]: stopDateOccurence.length
+                                }, 
+                                info:{
+                                    name: session.hp_loc.district, 
+                                    id: session.hp_loc_ids.district, 
+                                    loc: `${session.hp_loc.province}`
+                                }
+                            }
+                        })
+                }else{
+                    let occurences = results.filter(function (occ) {
+                        return occ.hp_loc.district == session.hp_loc.district
+                    })
+                    Object.assign(groupByDistricts,
+                        {
+                            [session.hp_loc.district]: {
+                                total: occurences.length, 
+                                info:{
+                                    name: session.hp_loc.district, 
+                                    id: session.hp_loc_ids.district, 
+                                    loc: `${session.hp_loc.province}`
+                                }
+                            }
+                        })
+                }
             }
             if (!(session.hp_loc.cell in groupByCells)) {
-                let occurences = results.filter(function (occ) {
-                    return occ.hp_loc.cell == session.hp_loc.cell
-                })
-                Object.assign(groupByCells,
-                    {
-                        [session.hp_loc.cell]: {
-                            total: occurences.length, 
-                            info:{
-                                name: session.hp_loc.cell, 
-                                id: session.hp_loc_ids.cell, 
-                                loc: `${session.hp_loc.province}, ${session.hp_loc.district}, ${session.hp_loc.sector}`
-                            }
-                        }
+                if (compType) {
+                    let startDateOccurence = results.filter(function (occ) {
+                        return occ.hp_loc.cell == session.hp_loc.cell && formatDate(occ.date,compType) == formatDate(range.start,compType)
                     })
+                    let stopDateOccurence = results.filter(function (occ) {
+                        return occ.hp_loc.cell == session.hp_loc.cell && formatDate(occ.date,compType) == formatDate(range.stop,compType)
+                    })
+                    Object.assign(groupByCells,
+                        {
+                            [session.hp_loc.cell]: {
+                                total: {
+                                    [formatDate(range.start,compType)]: startDateOccurence.length,
+                                    [formatDate(range.stop,compType)]: stopDateOccurence.length
+                                }, 
+                                info:{
+                                    name: session.hp_loc.cell, 
+                                    id: session.hp_loc_ids.cell, 
+                                    loc: `${session.hp_loc.province}, ${session.hp_loc.district}, ${session.hp_loc.sector}`
+                                }
+                            }
+                        })
+                }else{
+                    let occurences = results.filter(function (occ) {
+                        return occ.hp_loc.cell == session.hp_loc.cell
+                    })
+                    Object.assign(groupByCells,
+                        {
+                            [session.hp_loc.cell]: {
+                                total: occurences.length, 
+                                info:{
+                                    name: session.hp_loc.cell, 
+                                    id: session.hp_loc_ids.cell, 
+                                    loc: `${session.hp_loc.province}, ${session.hp_loc.district}, ${session.hp_loc.sector}`
+                                }
+                            }
+                        })
+                }
             }
             const decisions = session.decision;
             const hospitalName = session.hpname;
