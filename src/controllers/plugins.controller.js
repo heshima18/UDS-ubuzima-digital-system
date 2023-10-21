@@ -105,7 +105,6 @@ export let assets = (req, res) => {
     }
     let ext = file.substring((file.lastIndexOf('.')+1))
     let header
-
     switch (ext) {
       case 'js':
         header = 'text/javascript'
@@ -127,7 +126,7 @@ export let assets = (req, res) => {
         break;
     }
     const contentLength = data.length;
-
+    console.log(ext)
     res.writeHead(200, {
       'Content-Type': header,
       'Content-Length': contentLength,

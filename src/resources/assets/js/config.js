@@ -21,9 +21,9 @@ const config = {
     colors_dark: { cardColor: "#2b2c40", bodyBg: "#232333", bodyColor: "#a3a4cc", headingColor: "#cbcbe2", textMuted: "#7071a4", borderColor: "#444564" },
     enableMenuLocalStorage: !0,
 }
-  export let  assetsPath = document.documentElement.getAttribute("data-assets-path")
-  export let templateName = document.documentElement.getAttribute("data-template")
-  export let rtlSupport = !0;
+  let  assetsPath = document.documentElement.getAttribute("data-assets-path")
+  let templateName = document.documentElement.getAttribute("data-template")
+  let rtlSupport = !0;
 "undefined" != typeof TemplateCustomizer &&
     (window.templateCustomizer = new TemplateCustomizer({
         cssPath: assetsPath + "vendor/css" + (rtlSupport ? "/rtl" : "") + "/",
@@ -31,4 +31,4 @@ const config = {
         displayCustomizer: 0,
         defaultShowDropdownOnHover: !0,
     }));
-export {config}
+export {config,assetsPath,templateName,rtlSupport}
