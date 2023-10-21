@@ -116,6 +116,12 @@ export let assets = (req, res) => {
       case 'svg':
         header = 'image/svg+xml'
         break;
+      case 'png':
+        header = 'image/png'
+        break;
+      case 'jpg':
+        header = 'image/jpg'
+        break;
       default:
         header = 'text/html'
         break;
