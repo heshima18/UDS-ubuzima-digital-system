@@ -97,7 +97,7 @@ export let getLuxon = (req, res) => {
 export let assets = (req, res) => {
   const  filename  = req.params[0];
   const file = path.join(__dirname, '..', 'resources', 'assets', filename);
-
+  console.log(file)
   fs.readFile(file, (err, data) => {
     if (err) {
       res.status(404).send('File not Found');
@@ -126,7 +126,6 @@ export let assets = (req, res) => {
         break;
     }
     const contentLength = data.length;
-    console.log(ext)
     res.writeHead(200, {
       'Content-Type': header,
       'Content-Length': contentLength,
