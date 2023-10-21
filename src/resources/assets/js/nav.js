@@ -54,6 +54,12 @@ let nfPanel = document.querySelector('ul.nf-panel');
                 }
             })
         }
+        x = document.querySelector('div.thebody')
+        x.onclick = ()=>{
+            Array.from(document.querySelectorAll('[data-role="dropdowns"]')).forEach(elem=>{
+                elem.classList.add('hidden')
+            })
+        }
         b = q.find(function (element) {return element.getAttribute('data-role') == 'notification-count-badge'})
         if (b) {
             j =  m.filter(function (elem) {  return elem.status == 'new'})

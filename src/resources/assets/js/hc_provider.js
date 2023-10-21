@@ -1,5 +1,5 @@
 
-import { alertMessage, getdata, getschema, postschema, request,deletechild, checkEmpty, showRecs, getchips,getPath,calcTime, addUprofile,addsCard,cpgcntn, geturl,sessiondata,addChip, showAvaiAssurances, adcm, addshade, addLoadingTab, removeLoadingTab, showAvaiEmps, fT, promptHpsToChoose } from "../../../utils/functions.controller.js";
+import { alertMessage, getdata, getschema, postschema, request,deletechild, checkEmpty, showRecs, getchips,getPath,calcTime, addUprofile,addsCard,cpgcntn, geturl,sessiondata,addChip, showAvaiAssurances, adcm, addshade, addLoadingTab, removeLoadingTab, showAvaiEmps, fT, promptHpsToChoose, addAuthDiv } from "../../../utils/functions.controller.js";
 import {pushNotifs, userinfo,expirateMssg, getNfPanelLinks,m as messages, DateTime} from "./nav.js";
 let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,z,notificationlinks
 (async function () {
@@ -28,6 +28,10 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,z,notificationlinks
                 addsCard(message.title,true)
 
             });
+            socket.on('accessAuth', (message) => {
+                addAuthDiv(socket,message);
+
+            });
             socket.on('expiratemssg', (message) => {
                 expirateMssg(message);
             });
@@ -49,6 +53,7 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,z,notificationlinks
             socket.emit('messageToId',{recipientId: z.id, message: 'wassup'})
             if (typeof(z.hospital) != 'string' && typeof(z.hospital) == 'object' && z.hospital.length > 0) {
                 socket.emit('getpsforselection',z.hospital)
+                return 0
             }
         } catch (error) {
             console.log(error)
@@ -138,10 +143,20 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,z,notificationlinks
             x = page.id
             if (x == 'search-patient') {
             f = page.querySelector('form[name="sp-form"]');
-            s = f.querySelector('input[type="text"]')
+            s = f.querySelector('input[type="text"]');
             setTimeout(e=>{s.focus()},200)
             b = f.querySelector('button[type="submit"]')
-            f.addEventListener('submit',async e=>{
+            if (getPath(2)) {
+                b.innerHTML = `<span class="spinner-border" role="status" aria-hidden="true"></span>`
+                b.setAttribute('disabled',true)
+                r = await request(`patient/${getPath(2)}`,postschema)
+                s.value = getPath(2)
+                b.innerHTML = `<i class="bx bx-search h-20p w-a center"></i>`
+                b.removeAttribute('disabled')
+                if (!r.success) return alertMessage(r.message)
+                addUprofile(r.message);
+            }
+            f.onsubmit = async e=>{
                 e.preventDefault();
                 if (!s.value) return 0
                 b.innerHTML = `<span class="spinner-border" role="status" aria-hidden="true"></span>`
@@ -151,8 +166,11 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,z,notificationlinks
                 b.removeAttribute('disabled')
                 if (!r.success) return alertMessage(r.message)
                 addUprofile(r.message);
+                let url = new URL(window.location.href);
+                url.pathname = `/hc_provider/search-patient/${s.value}`;
+                window.history.pushState({},'',url.toString())
           
-            })
+            }
             }else if (x == 'my-account') {
                 n = page.querySelector('span.name')
                 z = getdata('userinfo')
@@ -177,15 +195,15 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,z,notificationlinks
                     let extras_input = Array.from(f.querySelectorAll('input.extras'));
                     let op_input = f.querySelector('input[name="operations"]');
                     extras_input.map(function (input) {
-                      input.addEventListener('focus', event=>{
+                      input.onfocus =  event=>{
                         showRecs(input,extra[input.id],input.id)
-                      })
+                      }
                     })
-                    op_input.addEventListener('focus', event=>{
+                    op_input.onfocus =  event=>{
                       showRecs(op_input,extra[op_input.id],op_input.id)
                     
-                    })
-                    asb.addEventListener('click',e=>{
+                    }
+                    asb.onclick = e=>{
                       let parent = asb.parentNode
                       let inp = parent.querySelector('input')
                       if (inp.value.trim()) {
@@ -199,8 +217,8 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,z,notificationlinks
                         addChip({name:inp.value.trim(), id: inp.value.trim()},chipsHolder,['id'])
                         inp.value = null
                       }
-                    })
-                    arb.addEventListener('click',e=>{
+                    }
+                    arb.onclick = e=>{
                       let parent = arb.parentNode
                       let inp = parent.querySelector('input')
                       if (inp.value.trim()) {
@@ -214,14 +232,14 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,z,notificationlinks
                         addChip({name:inp.value.trim(), id: inp.value.trim()},chipsHolder,['id'])
                         inp.value = null
                       }
-                    })
+                    }
                     n = i.find(function (e) {return e.id == 'patient'})
                     if (sessiondata('pinfo')) {
                       n.value = sessiondata('pinfo').name
                       n.setAttribute('data-id',sessiondata('pinfo').patient)
                     }
                     let val
-                    n.addEventListener('focus',()=>{
+                    n.onfocus = ()=>{
                         if (sessiondata('pinfo')) {
                             if (sessiondata('pinfo').nid) {
                                 n.value = sessiondata('pinfo').nid
@@ -231,8 +249,8 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,z,notificationlinks
                             n.setAttribute('data-id',sessiondata('pinfo').patient)
                         }
                         val = n.value
-                    })
-                    n.addEventListener('blur',async ()=>{
+                    }
+                    n.onblur = async ()=>{
                         if (n.value != val) {
                          v = await upPatInfo(n)
                         }
@@ -240,7 +258,7 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,z,notificationlinks
                             n.value = sessiondata('pinfo').name
                             n.setAttribute('data-id',sessiondata('pinfo').patient)
                         }
-                    })
+                    }
                     async function upPatInfo(n) {
                         if (n.value) {
                             n.parentNode.querySelector('span').classList.replace('hidden','center-2')
@@ -560,7 +578,7 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,z,notificationlinks
                             button.classList.replace('btn-label-primary','btn-label-secondary')
                         }
                     }
-                    button.addEventListener('click', async  e=>{
+                    button.onclick =  async  e=>{
                         e.preventDefault();
                         if (button.classList.contains('loading')) {
                             return 0
@@ -597,7 +615,7 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,z,notificationlinks
                                 button.classList.remove('loading')
                             }
                         }
-                    })
+                    }
                 })
             }
             

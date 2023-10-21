@@ -63,7 +63,6 @@ const verification = async (req,res)=>{
             }
             let token 
             if (select.role != 'patient' && select.role != 'Admin' && select.role != 'householder' && select.role != 'insurance_manager' && select.role != 'mohs') {
-                console.log(hospital)
                 if (!hospital.length && !('id' in hospital)) {
                    return res.status(403).send({success: false, message: errorMessage.emp_inassigned_to_hp_error_message}) 
                 }

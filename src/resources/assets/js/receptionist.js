@@ -1,5 +1,5 @@
 let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,z,x,c,v,b,n,m
-import { alertMessage, getdata, getschema, postschema, request,initializeCleave, checkEmpty,cpgcntn, showRecs, getchips,getPath, addUprofile,showAvaiEmps, deletechild, geturl, addsCard,showAvaiAssurances, addLoadingTab } from "../../../utils/functions.controller.js";
+import { alertMessage, getdata, getschema, postschema, request,initializeCleave, checkEmpty,cpgcntn, showRecs, getchips,getPath, addUprofile,showAvaiEmps, deletechild, geturl, addsCard,showAvaiAssurances, addLoadingTab, uprofileStf } from "../../../utils/functions.controller.js";
 import {pushNotifs, userinfo,expirateMssg, getNfPanelLinks,m as messages} from "./nav.js";
 
 (async function () {
@@ -138,122 +138,6 @@ c.forEach((cudstp)=>{
         b.removeAttribute('disabled')
         if (!r.success) return alertMessage(r.message)
         uprofileStf(r)
-        async function uprofileStf(r) {
-            d = addUprofile(r.message);
-            x = document.createElement('div')
-            d.appendChild(x)
-            x.className = `p-f b-0 p-20p bsbb zi-1000 center w-100 l-0`
-            x.innerHTML = `<button type="button" class="btn rounded-pill btn-primary capitalize">notify consultant</button>` 
-            x = x.querySelector('button');
-            let a = await showAvaiAssurances(r.message.assurances)
-            l = Array.from(a.querySelectorAll('li.assurance'))
-            let beneficiaries = Array.from(d.querySelectorAll('li.benef'))
-            for (const benef of beneficiaries) {
-                benef.addEventListener('click',async function(event){
-                    event.preventDefault();
-                    this.classList.add('selected')
-                    let beneficiary = this.getAttribute('data-id');
-                    addLoadingTab(d)
-                    r = await request(`patient/${beneficiary}`,postschema)
-                    if (!r.success) return alertMessage(r.message)
-                    deletechild(d.parentNode,d.parentNode.parentNode)
-                    uprofileStf(r)
-                  });
-              }
-            for (const lis of l) {
-              lis.addEventListener('click',async function(event){
-                  event.preventDefault();
-                  this.classList.add('selected')
-                  let assurance = this.getAttribute('data-id');
-                  if (assurance == "null") {
-                    assurance = null
-                  }
-                  r.message.assurances = assurance
-                  deletechild(a,a.parentNode)
-                  addsCard('Assurance Selected',true)
-                });
-            }
-            x.addEventListener('click',async event=>{
-                event.preventDefault()
-                p = await showAvaiEmps(users);
-                let emps = Array.from(p.querySelectorAll('.emp'))
-                let deps = Array.from(p.querySelectorAll('.dep'))
-                  for (const lis of emps) {
-                    lis.addEventListener('click',async function(event){
-                        event.preventDefault();
-                        this.classList.add('selected')
-                        let employee = this.getAttribute('data-id')
-                        j = JSON.parse(postschema.body)
-                        Object.assign(j,
-                            {
-                                title:'incoming patient',
-                                receiver: employee,
-                                type: 'p_message', 
-                                content: `there is an incoming patient called ${r.message.Full_name}`,
-                                extra: {
-                                    name: r.message.Full_name,
-                                    patient: r.message.id,nid:r.message.nid,
-                                    assurance: r.message.assurances
-                                },
-                                controller: {
-                                    looping: false,
-                                    recipients: []
-                                }
-                            }
-                        )
-                        postschema.body = JSON.stringify(j)
-                        deletechild(p,p.parentNode)
-                        x.setAttribute('disabled',true)
-                        x.innerText = 'notifying the receiver...'
-                        r =  await request('send-message',postschema)
-                        x.removeAttribute('disabled')
-                        x.innerText = 'consultant notified !'
-                        x.classList.replace('btn-primary','btn-success')
-                        deletechild(d.parentNode,d.parentNode.parentNode)
-                        addsCard('consultant notified !',true)
-                      });
-                  }
-                  for (const dep of deps) {
-                    dep.addEventListener('click',async function(event){
-                        let emps = Array.from(dep.parentNode.parentElement.querySelectorAll('.emp'))
-                        emps = emps.map(function (employee) {
-                            return employee.getAttribute('data-id')
-                        })
-                        j = JSON.parse(postschema.body)
-                        Object.assign(j,
-                            {
-                                title:'incoming patient',
-                                receiver: emps,
-                                type: 'p_message', 
-                                content: `there is an incoming patient called ${r.message.Full_name}`,
-                                extra: {
-                                    name: r.message.Full_name,
-                                    patient: r.message.id,
-                                    nid:r.message.nid,
-                                    assurance: r.message.assurances
-                                },
-                                controller: {
-                                    looping: true,
-                                    recipients: emps
-                                }
-                            }
-                        )
-                        postschema.body = JSON.stringify(j)
-                        deletechild(p,p.parentNode)
-                        x.setAttribute('disabled',true)
-                        x.innerText = 'notifying the receiver...'
-                        r =  await request('send-message',postschema)
-                        x.removeAttribute('disabled')
-                        x.innerText = 'consultant notified !'
-                        x.classList.replace('btn-primary','btn-success')
-                        deletechild(d.parentNode,d.parentNode.parentNode)
-                        addsCard('consultant notified !',true)
-                    });
-                  }
-            })
-            
-        }
-
       }
     }else if (x == 'my-account') {
         console.log(userinfo)

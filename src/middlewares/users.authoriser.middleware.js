@@ -200,7 +200,6 @@ export const authorizeMultipleRoles = async (req, res, next, roles) => {
     const {token} = req.body;
       const decoded = authenticateToken(token);
       if (!decoded.success) return res.status(500).send({ message: errorMessage.is_error, success: false });
-
       let id = decoded.token.id
       let q = await query(`select role from users where id = ?`,[id])
 

@@ -104,7 +104,7 @@ export const addUserAssurance = async (req,res)=>{
     }
 }
 export async function selectPatient(patient) {
-    let p = await query('select id, Full_name, email, phone from patients where id = ?',[patient])
+    let p = await query('select id, Full_name, email, phone, FA from patients where id = ?',[patient])
     if (!p) {
         return null
     }else{

@@ -36,9 +36,10 @@ import { addEquipment, getEquipments } from '../controllers/equipments.controlle
 import { organiseTitles, titles } from '../utils/titles.controller';
 import { checkTest } from '../middlewares/tests.middleware';
 import { insightsStats } from '../controllers/insights.controller';
+import { addPati2fa } from '../middlewares/user.2fa.access.middleware';
 const router = express.Router({ strict: false });
 router.post('/verify',verification)
-router.post('/get-user-medical-history/:userid?',authorizeRole,authorizeHcp_ptnt,getUsessions)
+router.post('/get-user-medical-history/:userid?',authorizeRole,authorizeHcp_ptnt,addPati2fa,getUsessions)
 router.post('/get-hospital-medical-history',authorizeRole,getHpsessions)
 router.post('/get-hcp-sessions',authorizeRole,authorizeHc_provider,getHc_pSessions)
 router.post('/session/:session',authorizeRole,session)

@@ -197,7 +197,7 @@ const hps = await request('gethospitals',postschema);
                                                     <div class="p-15p">
                                                         <h5 class="card-title capitalize">${session.hp_info.name}</h5>
                                                         <p class="px-5p">
-                                                        <span class="capitalize fs-15p">session at ${session.hp_info.name} on ${new Intl.DateTimeFormat('en-US',{weekday: 'long',year: 'numeric',month: 'long',day: 'numeric', hour: '2-digit', minute: '2-digit'}).format(new Date(session.dateadded))}</span>
+                                                        <span class="capitalize fs-15p">session at ${session.hp_info.name} on ${fT(session.dateadded)}</span>
                                                         </p>
                                                         <span class="capitalize fs-14p block">${session.hp_info.location}<span>
                                                     </div>
@@ -270,7 +270,6 @@ const hps = await request('gethospitals',postschema);
                                         </div>`
                         const sessionHol = li.querySelector(`div.session-holder`)
                         for (const session of month.sessions) {
-                            console.log(session.status)
                             if (session.status != 'open') {
                                 let ss = document.createElement('div')
                                 sessionHol.appendChild(ss)

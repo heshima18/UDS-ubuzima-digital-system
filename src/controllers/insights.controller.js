@@ -336,8 +336,6 @@ function getDateIntervalDescription(startDate, endDate) {
     const luxonEndDate = DateTime.fromJSDate(endDate);
     
     const diff = luxonEndDate.diff(luxonStartDate, ["years", "months", "days"]).toObject();
-    
-    console.log(diff)
     if (diff.years > 0) {
       return "year";
     } else if (diff.months > 0) {

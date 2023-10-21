@@ -2,6 +2,7 @@
 .p-f{
   position: fixed;
 }
+
 .sticky{
   position: sticky;
 }
@@ -446,6 +447,9 @@ input::placeholder{
   animation-iteration-count: unset;
   transition: .3s;
 
+}
+.strech{
+  transform: scaleX(0.5);
 }
 .popup-card-fadding{
   animation-name: remove-entrance;

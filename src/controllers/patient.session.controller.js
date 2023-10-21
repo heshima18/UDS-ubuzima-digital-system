@@ -162,7 +162,7 @@ export const getUsessions = async (req,res)=>{
       INNER JOIN payments as pm ON mh.id = pm.session
     WHERE mh.patient = ?
     GROUP BY mh.id
-    ORDER BY mh.dateadded desc;
+    ORDER BY mh.dateclosed DESC;
     `,[userid])
       if(!response) return res.status(500).send({success: false, message: errorMessage.is_error})
       for (const mh of response) {
@@ -252,6 +252,7 @@ export const session = async (req,res)=>{
     mh.medicines as raw_medicines,
     mh.decision as decisions,
     mh.dateadded as dateadded,
+    mh.dateclosed as dateclosed,
     GROUP_CONCAT(
       DISTINCT 
       JSON_OBJECT('id', p.id, 'name', p.Full_name, 'weight', mh.p_weight, 'dob', p.dob,'phone', p.phone,'nid', p.nid, 'location', 
