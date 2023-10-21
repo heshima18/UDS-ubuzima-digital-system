@@ -97,11 +97,11 @@ export let getLuxon = (req, res) => {
 export let assets = (req, res) => {
   const  filename  = req.params[0];
   const file = path.join(__dirname, '..', 'resources', 'assets', filename);
-  console.log(file)
   fs.readFile(file, (err, data) => {
     if (err) {
-      res.status(404).send('File not Found');
-      return;
+      res.status(500).send('File not Found');
+      console.log(err)
+      return
     }
     let ext = file.substring((file.lastIndexOf('.')+1))
     let header
