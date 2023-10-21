@@ -1,5 +1,5 @@
 
-export let config = {
+const config = {
     colors: {
         primary: "#696cff",
         secondary: "#8592a3",
@@ -31,3 +31,4 @@ export let config = {
         displayCustomizer: 0,
         defaultShowDropdownOnHover: !0,
     }));
+export {config}
