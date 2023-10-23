@@ -45,19 +45,23 @@ export const getAppointmentETA = async (req, res) => {
       time = now
       time = calculateMissingHours(time);
       time = time.plus({ minutes: 45 });
-      return res.send({success: true, message: time.toFormat('yyyy-MM-dd HH:mm:ss')})
+      time = time.toFormat('yyyy-MM-dd HH:mm:ss')
+      return res.send({success: true, message: time.toString()})
     }  
     [q]=q
     q.time = DateTime.fromISO(q.time)
     if (now.toFormat('yyyy-MM-dd HH:mm:ss') <= q.time.toFormat('yyyy-MM-dd HH:mm:ss')){
       q.time = q.time.plus({minutes : 50});
       q.time =  calculateMissingHours(q.time);
-      return res.send({ message: q.time.toFormat('yyyy-MM-dd HH:mm:ss'), success: true })
+      q.time = q.time.toFormat('yyyy-MM-dd HH:mm:ss')
+      return res.send({ message: q.time.toString(), success: true,time:'dd' })
     };
     // time = calculateMissingHours(time)
     // time.setMinutes(time.getMinutes() + 50)
     // if (time.getHours() >= 18 || time.getHours() <= 8) return res.send({ message: errorMessage._err_hcp_unav, success: false });
-    return res.send({ message: time, success: true })
+    time = time.plus({ minutes: 45 });
+    time = time.toFormat('yyyy-MM-dd HH:mm:ss')
+    return res.send({ message: time.toString(), success: true })
   } catch (error) {
     console.log(error)
     res.status(500).send({ message: errorMessage.is_error, success: false });

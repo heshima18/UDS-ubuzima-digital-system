@@ -5,7 +5,8 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>Director of Finance - Home | UDS</title>
     <link rel="stylesheet" type="text/css" href="/styles/styling.css">
-    <link rel="icon" type="image/x-icon" href="/assets/svg/logo.svg" />
+    <link rel="icon" type="image/x-icon" href="/assets/img/icons/logo/logo-alt.png" />
+
 
     <link rel="stylesheet" href="/assets/vendor/fonts/boxicons.css" />
     <link rel="stylesheet" href="/assets/vendor/fonts/fontawesome.css" />
@@ -39,8 +40,10 @@
         <div class="w-100 h-a bsbb m-0 t-0 p-f p-10p zi-100">
             <nav class="w-100 card-2 bc-white br-5p flex jc-sb pr-15p pl-15p" id="layout-navbar">
                 <div class="h-54p center">
-                    <a class="nav-item nav-link px-0 me-xl-4" href="javascript:void(0)">
-                        <i class="">UDS_logo</i>
+                    <a class="nav-item nav-link px-0 me-xl-4 flex" href="javascript:void(0)">
+                        <span>
+                            <img src="/assets/img/icons/logo/logo-alt.png" alt="logo" class="w-a contain h-50p">
+                        </span>
                     </a>
                 </div>
                 <div class="h-54p center" id="navbar-collapse">
@@ -185,7 +188,7 @@
 							<!-- home section -->
 							<div class="br-5p w-100 h-100 p-r ovh block tr-0-3 pagecontentsection zi-10" id="home">
 								<div class="w-100 h-a p-10p bsbb">
-									<span class="theme capitalize left flex bold fs-20p verdana h-100 pl-10p"><span class="dgray capitalize">insurance manager / </span>&nbsp;Home</span>
+									<span class="theme capitalize left flex bold fs-20p verdana h-100 pl-10p"><span class="dgray capitalize">Director of finance / </span>&nbsp;Home</span>
 								</div>
 								<div class="pg-cntnt w-100 h-90 bh-80-resp scroll-3 p-20p bsbb ovys left bp-0-resp">
 									<div class="home row p-5p bsbb">
@@ -290,12 +293,42 @@
                                         </div>
                                     </div>
                                 </div>
+                                <div class="modal fade ovh">
+                                    <div class="cntr bc-white p-15p w-400p h-220p h-a bsbb br-5p card-6"  id="edit-medicine">
+                                        <div class="">
+                                            <div class="modal-header text-uppercase">
+                                                <span class="card-header capitalize fs-18p">edit Inventory medication</span>
+                                            </div>
+                                            <div class="modal-body">
+                                                <div class="body w-100 h-a p-5p grid">
+                                                    <form method="post" id="edit-medicine-form" name="edit-medicine-form">
+                                                        <div class="col-md-12 p-10p bsbb mb-5p p-r">
+                                                            <label for="medicines" class="form-label">medicine</label>
+                                                            <input type="text" class="form-control bevalue" id="medicine" placeholder="Demo medicine" name="medicine">
+                                                            <small class="hidden w-100 red pl-3p verdana"></small>
+                                                        </div>
+                                                        <div class="col-md-12 p-10p bsbb mb-5p p-r">
+                                                            <label for="quantity" class="form-label">quantity</label>
+                                                            <input type="number" class="form-control" id="quantity" placeholder="Demo quantity" name="quantity">
+                                                            <small class="hidden w-100 red pl-3p verdana"></small>
+                                                        </div>
+                                                        <div class="col-12 text-center d-flex gap-3 justify-content-end my-10p">
+                                                            <button type="reset" class="btn btn-label-secondary"
+                                                                data-bs-dismiss="modal" aria-label="Close">Cancel</button>
+                                                            <button type="submit" class="btn btn-primary">proceed</button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
 							</div>
 							<!-- end of manage restricted medications section -->
                             <!-- manage tests inventory section -->
 							<div class="br-5p w-100 h-100 p-a ovh hidden t-0 tr-0-3 pagecontentsection" id="tests-inventory">
 								<div class="w-100 h-a p-10p bsbb">
-									<span class="theme capitalize left flex bold fs-20p verdana h-100 pl-10p"><span class="dgray capitalize">insurance manager / </span>&nbsp;tests inventory</span>
+									<span class="theme capitalize left flex bold fs-20p verdana h-100 pl-10p"><span class="dgray capitalize">Director of finance / </span>&nbsp;tests inventory</span>
 								</div>
 								<div class="pg-cntnt w-100 h-90 p-20p bp-0-resp bsbb ovys left scroll-2">
                                     <div class="card">
@@ -334,12 +367,42 @@
                                         </div>
                                     </div>
                                 </div>
+                                <div class="modal fade ovh">
+                                    <div class="cntr bc-white p-15p w-400p h-220p h-a bsbb br-5p card-6"  id="edit-test">
+                                        <div class="">
+                                            <div class="modal-header text-uppercase">
+                                                <span class="card-header capitalize fs-18p">edit inventory test</span>
+                                            </div>
+                                            <div class="modal-body">
+                                                <div class="body w-100 h-a p-5p grid">
+                                                    <form method="post" id="edit-test-form" name="edit-test-form">
+                                                        <div class="col-md-12 p-10p bsbb mb-5p p-r">
+                                                            <label for="test" class="form-label">test</label>
+                                                            <input type="text" class="form-control no-extra-info-addin" id="test" placeholder="Demo test" name="test">
+                                                            <small class="hidden w-100 red pl-3p verdana"></small>
+                                                        </div>
+                                                        <div class="col-md-12 p-10p bsbb mb-5p p-r">
+                                                            <label for="price" class="form-label">price</label>
+                                                            <input type="number" class="form-control" id="price" placeholder="Demo price" name="price">
+                                                            <small class="hidden w-100 red pl-3p verdana"></small>
+                                                        </div>
+                                                        <div class="col-12 text-center d-flex gap-3 justify-content-end p-10p my-10p">
+                                                            <button type="reset" class="btn btn-label-secondary"
+                                                                data-bs-dismiss="modal" aria-label="Close">Cancel</button>
+                                                            <button type="submit" class="btn btn-primary">proceed</button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
 							</div>
 							<!-- end of manage tests inventory section -->
                             <!-- manage operations inventory section -->
 							<div class="br-5p w-100 h-100 p-a ovh hidden t-0 tr-0-3 pagecontentsection" id="operations-inventory">
 								<div class="w-100 h-a p-10p bsbb">
-									<span class="theme capitalize left flex bold fs-20p verdana h-100 pl-10p"><span class="dgray capitalize">insurance manager / </span>&nbsp;operations inventory</span>
+									<span class="theme capitalize left flex bold fs-20p verdana h-100 pl-10p"><span class="dgray capitalize">Director of finance / </span>&nbsp;operations inventory</span>
 								</div>
 								<div class="pg-cntnt w-100 h-90 p-20p bp-0-resp bsbb ovys left scroll-2">
                                     <div class="card">
@@ -379,12 +442,42 @@
                                         </div>
                                     </div>
                                 </div>
+                                <div class="modal fade ovh">
+                                    <div class="cntr bc-white p-15p w-400p h-220p h-a bsbb br-5p card-6"  id="edit-operation">
+                                        <div class="">
+                                            <div class="modal-header text-uppercase">
+                                                <span class="card-header capitalize fs-18p">edit inventory operation</span>
+                                            </div>
+                                            <div class="modal-body">
+                                                <div class="body w-100 h-a p-5p grid">
+                                                    <form method="post" id="edit-operation-form" name="edit-operation-form">
+                                                        <div class="col-md-12 p-10p bsbb mb-5p p-r">
+                                                            <label for="operation" class="form-label">operation</label>
+                                                            <input type="text" class="form-control no-extra-info-addin" id="operation" placeholder="Demo operation" name="operation">
+                                                            <small class="hidden w-100 red pl-3p verdana"></small>
+                                                        </div>
+                                                        <div class="col-md-12 p-10p bsbb mb-5p p-r">
+                                                            <label for="price" class="form-label">price</label>
+                                                            <input type="number" class="form-control" id="price" placeholder="Demo price" name="price">
+                                                            <small class="hidden w-100 red pl-3p verdana"></small>
+                                                        </div>
+                                                        <div class="col-12 text-center d-flex gap-3 justify-content-end p-10p my-10p">
+                                                            <button type="reset" class="btn btn-label-secondary"
+                                                                data-bs-dismiss="modal" aria-label="Close">Cancel</button>
+                                                            <button type="submit" class="btn btn-primary">proceed</button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
 							</div>
 							<!-- end of manage operations inventory section -->
                              <!-- manage equipments inventory section -->
 							<div class="br-5p w-100 h-100 p-a ovh hidden t-0 tr-0-3 pagecontentsection" id="equipments-inventory">
 								<div class="w-100 h-a p-10p bsbb">
-									<span class="theme capitalize left flex bold fs-20p verdana h-100 pl-10p"><span class="dgray capitalize">insurance manager / </span>&nbsp;equipments inventory</span>
+									<span class="theme capitalize left flex bold fs-20p verdana h-100 pl-10p"><span class="dgray capitalize">Director of finance / </span>&nbsp;equipments inventory</span>
 								</div>
 								<div class="pg-cntnt w-100 h-90 p-20p bp-0-resp bsbb ovys left scroll-2">
                                     <div class="card">
@@ -423,12 +516,42 @@
                                         </div>
                                     </div>
                                 </div>
+                                <div class="modal fade ovh">
+                                    <div class="cntr bc-white p-15p w-400p h-220p h-a bsbb br-5p card-6"  id="edit-equipment">
+                                        <div class="">
+                                            <div class="modal-header text-uppercase">
+                                                <span class="card-header capitalize fs-18p">edit Inventory equipment</span>
+                                            </div>
+                                            <div class="modal-body">
+                                                <div class="body w-100 h-a p-5p grid">
+                                                    <form method="post" id="edit-equipment-form" name="edit-equipment-form">
+                                                        <div class="col-md-12 p-10p bsbb mb-5p p-r">
+                                                            <label for="equipments" class="form-label">equipment</label>
+                                                            <input type="text" class="form-control bevalue" id="equipment" placeholder="Demo equipment" name="equipment">
+                                                            <small class="hidden w-100 red pl-3p verdana"></small>
+                                                        </div>
+                                                        <div class="col-md-12 p-10p bsbb mb-5p p-r">
+                                                            <label for="quantity" class="form-label">quantity</label>
+                                                            <input type="number" class="form-control" id="quantity" placeholder="Demo quantity" name="quantity">
+                                                            <small class="hidden w-100 red pl-3p verdana"></small>
+                                                        </div>
+                                                        <div class="col-12 text-center d-flex gap-3 justify-content-end my-10p">
+                                                            <button type="reset" class="btn btn-label-secondary"
+                                                                data-bs-dismiss="modal" aria-label="Close">Cancel</button>
+                                                            <button type="submit" class="btn btn-primary">proceed</button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
 							</div>
 							<!-- end of manage equipments inventory section -->
                             <!-- manage services inventory section -->
 							<div class="br-5p w-100 h-100 p-a ovh hidden t-0 tr-0-3 pagecontentsection" id="services-inventory">
 								<div class="w-100 h-a p-10p bsbb">
-									<span class="theme capitalize left flex bold fs-20p verdana h-100 pl-10p"><span class="dgray capitalize">insurance manager / </span>&nbsp;services inventory</span>
+									<span class="theme capitalize left flex bold fs-20p verdana h-100 pl-10p"><span class="dgray capitalize">Director of finance / </span>&nbsp;services inventory</span>
 								</div>
 								<div class="pg-cntnt w-100 h-90 p-20p bp-0-resp bsbb ovys left scroll-2">
                                     <div class="card">
@@ -457,6 +580,36 @@
                                                             <small class="hidden w-100 red pl-3p verdana"></small>
                                                         </div>
                                                         <div class="col-12 text-center d-flex gap-3 justify-content-end my-10p">
+                                                            <button type="reset" class="btn btn-label-secondary"
+                                                                data-bs-dismiss="modal" aria-label="Close">Cancel</button>
+                                                            <button type="submit" class="btn btn-primary">proceed</button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal fade ovh">
+                                    <div class="cntr bc-white p-15p w-400p h-220p h-a bsbb br-5p card-6"  id="edit-service">
+                                        <div class="">
+                                            <div class="modal-header text-uppercase">
+                                                <span class="card-header capitalize fs-18p">edit inventory service</span>
+                                            </div>
+                                            <div class="modal-body">
+                                                <div class="body w-100 h-a p-5p grid">
+                                                    <form method="post" id="edit-service-form" name="edit-service-form">
+                                                        <div class="col-md-12 p-10p bsbb mb-5p p-r">
+                                                            <label for="service" class="form-label">service</label>
+                                                            <input type="text" class="form-control no-extra-info-addin" id="service" placeholder="Demo service" name="service">
+                                                            <small class="hidden w-100 red pl-3p verdana"></small>
+                                                        </div>
+                                                        <div class="col-md-12 p-10p bsbb mb-5p p-r">
+                                                            <label for="price" class="form-label">price</label>
+                                                            <input type="number" class="form-control" id="price" placeholder="Demo price" name="price">
+                                                            <small class="hidden w-100 red pl-3p verdana"></small>
+                                                        </div>
+                                                        <div class="col-12 text-center d-flex gap-3 justify-content-end p-10p my-10p">
                                                             <button type="reset" class="btn btn-label-secondary"
                                                                 data-bs-dismiss="modal" aria-label="Close">Cancel</button>
                                                             <button type="submit" class="btn btn-primary">proceed</button>
@@ -585,9 +738,9 @@
 							</div>
 							<!-- end of my account section -->
 						</div>
-
 					</div>
 				</div>
+                
                 <!-- footer section -->
                 <div class="w-100 h-a p-f b-0">
                     <footer class="content-footer footer bg-footer-theme">

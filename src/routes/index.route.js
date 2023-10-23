@@ -20,7 +20,7 @@ import { CheckAppointmentTimer, getAppointmentETA } from '../middlewares/time.au
 import { addCell, addDistrict, addProvince, addSector } from '../controllers/add.location.controller';
 import getMap from '../controllers/get.locations.controller';
 import { authorizeHospital } from '../middlewares/hospital.authorizer.middleware';
-import {getInventory,addInventory, addInventoryTests, addInventoryOperations, addInventoryEquipments, addInventoryServices} from '../controllers/inventory.controller';
+import {getInventory,addInventory, addInventoryTests, addInventoryOperations, addInventoryEquipments, addInventoryServices, removeItemFromInventory, editItemFromInventory} from '../controllers/inventory.controller';
 import { getMessages, markAsSeen, sendMessage } from '../controllers/message.controller';
 import { authorizeAppointmentAccess } from '../middlewares/appointment.authorizer.middleware';
 import { authorizeSession } from '../middlewares/session.authorizer.middleware';
@@ -78,7 +78,7 @@ router.post("/mark-as-served",authorizeRole,(req,res,next) => authorizeSession(r
 router.post("/add-session-equipment",authorizeRole,(req,res,next) => authorizeSession(req,res,next,'isnotclosed'),authorizeHc_provider,addSessionEquipment)
 router.post("/add-session-service",authorizeRole,(req,res,next) => authorizeSession(req,res,next,'isnotclosed'),authorizeHc_provider,addSessionService)
 router.post("/add-session-operation",authorizeRole,(req,res,next) => authorizeSession(req,res,next,'isnotclosed'),authorizeHc_provider,addSessionOperation)
-router.post("/add-session-comment",authorizeRole,(req,res,next) => authorizeSession(req,res,next,'isnotclosed'),authorizeHc_provider,addSessionComment)
+router.post("/add-session-comment",authorizeRole,(req,res,next) => authorizeSession(req,res,next,'isnotclosed'),(req,res,next) =>authorizeMultipleRoles(req,res,next,['hc_provider','pharmacist']),addSessionComment)
 router.post("/add-session-decisions",authorizeRole,(req,res,next) => authorizeSession(req,res,next,'isnotclosed'),authorizeHc_provider,addSessionDecision)
 router.post("/add-cell",authorizeRole,authorizeAdmin,addCell)
 router.post('/addemployee',authorizeRole,authorizeAdmin,(req,res,next) => authorizeHospital(req,res,next,'isoptional'),addemployee)
@@ -96,13 +96,16 @@ router.post('/hcp-appointments',authorizeRole,authorizeHc_provider,hcpAppointmen
 router.post('/appointment/:id',authorizeRole,authorizeHc_provider,appointment)
 router.get('/medicine/:medicine',getMed);
 router.post('/search-medicine/:medicine',authorizeRole,searchMed);
+// inventoy routes
 router.post('/add-inventory',authorizeRole,(req,res,next) => authorizeMultipleRoles(req,res,next,['dof','pharmacist']),addInventory);
 router.post('/add-inventory-tests',authorizeRole,(req,res,next) => authorizeMultipleRoles(req,res,next,['dof','pharmacist']),addInventoryTests);
 router.post('/add-inventory-operations',authorizeRole,(req,res,next) => authorizeMultipleRoles(req,res,next,['dof','pharmacist']),addInventoryOperations);
 router.post('/add-inventory-equipments',authorizeRole,(req,res,next) => authorizeMultipleRoles(req,res,next,['dof','pharmacist']),addInventoryEquipments);
 router.post('/add-inventory-services',authorizeRole,(req,res,next) => authorizeMultipleRoles(req,res,next,['dof','pharmacist']),addInventoryServices);
-
-
+router.post('/get-inventory',authorizeRole,(req,res,next) => authorizeMultipleRoles(req,res,next,['dof','pharmacist']),getInventory);
+router.post("/rIFromInv/",authorizeRole,(req,res,next)=> authorizeMultipleRoles(req,res,next,['pharmacist','dof']),removeItemFromInventory)
+router.post("/eInvEnt",authorizeRole,(req,res,next)=> authorizeMultipleRoles(req,res,next,['pharmacist','dof']),editItemFromInventory)
+// end of inventory routes
 router.post('/getmeds',authorizeRole,getMeds);
 router.post('/approve-appointment',authorizeRole,authorizeHc_provider,approveAppointment);
 router.post('/getAppointmentETA',authorizeRole,authorizeHc_provider,getAppointmentETA)
@@ -111,7 +114,6 @@ router.post('/send-message',authorizeRole,sendMessage);
 router.post('/get-messages',authorizeRole,getMessages);
 router.post('/mark-as-seen',authorizeRole,markAsSeen);
 router.post('/insights',authorizeRole,(req,res,next) => authorizeMultipleRoles(req,res,next,['mohs']),insightsStats);
-router.post('/get-inventory',authorizeRole,(req,res,next) => authorizeMultipleRoles(req,res,next,['dof']),getInventory);
 router.post('/gethospitals',authorizeRole,getHPs)
 router.post('/hospital/:hospital?',authorizeRole,getHP)
 router.post('/search-hospital/:hospital',authorizeRole,searchHP)

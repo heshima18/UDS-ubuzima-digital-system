@@ -4,10 +4,13 @@ import id from "./randomInt.generator.controller";
 import authenticateToken from './token.verifier.controller';
 import { io } from '../socket.io/connector.socket.io';
 import { getMessage } from './credentials.verifier.controller';
-
+import { DateTime } from "luxon";
 export const sendMessage = async (req,res)=>{
   try {
     const sid = id();
+    const leTime = DateTime.now();
+    let now = leTime.setZone('Africa/Kigali');
+    now = now.toFormat('yyyy-MM-dd HH:mm:ss')
     let {receiver,type,content,token,extra,title,controller} = req.body
     if (controller.looping) {
       for (const ids of controller.recipients) {
@@ -17,8 +20,8 @@ export const sendMessage = async (req,res)=>{
           let insert = await query(`insert
            into messages
            (id,user,receiver,type,title,content,addins,sessionid,dateadded)
-           values(?,?,?,?,?,?,?,?,CURRENT_TIMESTAMP())`,
-           [uid,user,ids,type,title,content,JSON.stringify(extra),sid])
+           values(?,?,?,?,?,?,?,?,?)`,
+           [uid,user,ids,type,title,content,JSON.stringify(extra),sid,now])
            const recipientSocket = Array.from(io.sockets.sockets.values()).find((sock) => sock.handshake.query.id === ids)
            if (recipientSocket) {
                recipientSocket.emit('message',{id: uid,session: sid,type,title,content,sender:{name:decoded.token.Full_name,id:user},extra,dateadded: new Date})
@@ -58,13 +61,16 @@ export const sendMessage = async (req,res)=>{
   }
 }
 export async function ioSendMessage(messageInfo) {
+  const leTime = DateTime.now();
+  let now = leTime.setZone('Africa/Kigali');
+  now = now.toFormat('yyyy-MM-dd HH:mm:ss')
   let uid = id()
   const sid = id();
   let insert = await query(`insert
    into messages
    (id,user,receiver,type,title,content,addins,sessionid,dateadded)
-   values(?,?,?,?,?,?,?,?,CURRENT_TIMESTAMP())`,
-   [uid,messageInfo.sender.id,messageInfo.receiver,messageInfo.type,messageInfo.title,messageInfo.content,JSON.stringify(messageInfo.extra),sid])
+   values(?,?,?,?,?,?,?,?,?)`,
+   [uid,messageInfo.sender.id,messageInfo.receiver,messageInfo.type,messageInfo.title,messageInfo.content,JSON.stringify(messageInfo.extra),sid,now])
   if (insert) {
     return uid;
   }else{
@@ -104,7 +110,9 @@ export const getMessages = async(req,res) =>{
       q[q.indexOf(message)].sender = JSON.parse(message.sender);
       if (message.addins) {
         q[q.indexOf(message)].addins = JSON.parse(message.addins);  
+
       }
+      q[q.indexOf(message)].dateadded = DateTime.fromISO(message.dateadded).toFormat('yyyy-MM-dd HH:mm:ss')
     }
     res.send({success:true, message: q})
   } catch (error) {

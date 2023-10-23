@@ -1,5 +1,6 @@
 
-import { alertMessage, getdata, getschema, postschema, request,deletechild, checkEmpty, showRecs, getchips,getPath,calcTime, addUprofile,addsCard,cpgcntn, geturl,sessiondata,addChip, showAvaiAssurances, adcm, addshade, addLoadingTab, removeLoadingTab, showAvaiEmps, fT, promptHpsToChoose, addAuthDiv } from "../../../utils/functions.controller.js";
+import { alertMessage, getdata, getschema, postschema, request,deletechild, checkEmpty, showRecs, getchips,getPath,calcTime,addsCard,cpgcntn, geturl,sessiondata,addChip, showAvaiAssurances, adcm, addshade, addLoadingTab, removeLoadingTab, showAvaiEmps, fT, promptHpsToChoose, addAuthDiv } from "../../../utils/functions.controller.js";
+import { addUprofile } from "../../../utils/user.profile.controller.js";
 import {pushNotifs, userinfo,expirateMssg, getNfPanelLinks,m as messages, DateTime} from "./nav.js";
 let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,z,notificationlinks
 (async function () {
@@ -101,7 +102,11 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,z,notificationlinks
         cpgcntn(0,p,extra)
 
     }
-    window.onpopstate = function () {
+    window.addEventListener('popstate',  function () {
+        const evnt = new Event('urlchange', { bubbles: true });
+        window.dispatchEvent(evnt);
+    })
+    window.addEventListener('urlchange', function() {
         a = getPath(1)
         if(a){
             p.forEach(target=>{
@@ -112,6 +117,11 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,z,notificationlinks
                     })
                     c[t].classList.add('active','bb-1-s-theme','bc-tr-theme','theme')
                     cpgcntn(t,p)
+                    if (getPath(2)) {
+                        gsd(target,getPath(2))
+                    }else{
+                        gsd(target)
+                    }
                     return 0
                 }
             })
@@ -119,8 +129,8 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,z,notificationlinks
             window.history.pushState('','','./home')
             cpgcntn(0,p)
     
-        }
-    }
+        }    
+    }); 
     c.forEach((cudstp)=>{
         cudstp.addEventListener('click',()=>{
             c.forEach((cp)=>{
@@ -308,6 +318,8 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,z,notificationlinks
                         if(input.classList.contains('chips-check')){
                             if (input.name == "tests") {
                                 Object.assign(b,{[input.name]: getchips(input.parentNode.querySelector('div.chipsholder'),['id','sample','result'])})
+                            } if (input.name == "medicines") {
+                                Object.assign(b,{[input.name]: getchips(input.parentNode.querySelector('div.chipsholder'),['id','status','quantity','price','result'])})
                             }else if (input.classList.contains('extras')) {
                                 Object.assign(b,{[input.name]: getchips(input.parentNode.querySelector('div.chipsholder'),['id','quantity'])})     
                             }else if (input.name == "operations") {
@@ -338,7 +350,7 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,z,notificationlinks
                 }
             }else if (x == 'view-session') {
                 theb.innerHTML = raw
-                if (addin) {
+                if (addin && !getPath(2)) {
                     let url = new URL(window.location.href);
                     url.pathname = `/hc_provider/view-session/${addin}`;
                     window.history.pushState({},'',url.toString())
@@ -556,7 +568,12 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,z,notificationlinks
                             objectId = objectId.split('.')
                             if (objectId[1].indexOf('amount') != -1) {
                                 holder.innerText = adcm(sessiondata[objectId[0]][objectId[1]])
-                            }else{
+                            }else if (objectId[0].indexOf('p_info') != -1 && objectId[1].indexOf('name') != -1) {
+                                holder.innerText = sessiondata[objectId[0]][objectId[1]]
+                                holder.classList.add('hover-6','data-buttons')
+                                holder.setAttribute('data-role', 'show-profile')
+                                holder.setAttribute('data-id', sessiondata[objectId[0]].id)
+                            } else{
                                 holder.innerText = sessiondata[objectId[0]][objectId[1]]
                             }
                         }else{
@@ -608,12 +625,21 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,z,notificationlinks
                             let result = await request('close-session',postschema)
                             alertMessage(result.message)
                             if (result.success) {
+                                page.querySelector('[data-hold="status"]').innerText = 'closed'
+                                page.querySelector('[data-hold="status"]').classList.replace('btn-label-success',`btn-label-primary`)
                                 button.classList.replace('btn-label-primary','btn-label-secondary')
                                 button.innerText = 'closed'
                                 sessiondata.status = `closed`
                             }else{
                                 button.classList.remove('loading')
                             }
+                        }else if (role == 'show-profile') {
+                            let url = new URL(window.location.href);
+                            url.pathname = `/${getPath()[0]}/search-patient/${button.getAttribute('data-id')}`;
+                            window.history.pushState({},'',url.toString())
+                            deletechild(e,e.parentNode)
+                            const evnt = new Event('urlchange', { bubbles: true });
+                            window.dispatchEvent(evnt);
                         }
                     }
                 })

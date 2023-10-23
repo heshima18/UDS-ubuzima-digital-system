@@ -1,4 +1,4 @@
-import { alertMessage, getdata, getschema, postschema, request,initializeCleave,sessiondata,addLoadingTab,removeLoadingTab, checkEmpty, showRecs, getchips,getPath, addUprofile,addsCard,cpgcntn, geturl, adcm, addshade, deletechild } from "../../../utils/functions.controller.js";
+import { alertMessage, getdata, getschema, postschema, request,initializeCleave,sessiondata,addLoadingTab,removeLoadingTab, checkEmpty, showRecs, getchips,getPath,addsCard,cpgcntn, geturl, adcm, addshade, deletechild } from "../../../utils/functions.controller.js";
 import {expirateMssg, pushNotifs, userinfo} from "./nav.js";
 
 let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z
@@ -143,7 +143,7 @@ let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z
                 b.innerHTML = `<i class="bx bx-search h-20p w-a center"></i>`
                 b.removeAttribute('disabled')
                 if (!r.success) return alertMessage(r.message)
-                addUprofile(r.message);
+        (r.message);
           
             })
             }else if (x == 'my-account') {
@@ -173,7 +173,7 @@ let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z
                             { data: "name", title: "Name" },
                             { data: "quantity", title: "amount available" },
                             { data: "unit", title: "measuring unit" },
-                            { data: "", title: "Action", }
+                            { data: "id", title: "Action", }
                         ],
                         columnDefs: [
                             // Define column properties and rendering functions
@@ -214,8 +214,8 @@ let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z
                                 render: function (e, t, a, n) {
                                     return (
                                         `<div class="d-inline-block text-nowrap">
-                                        <button class="btn btn-sm btn-icon" data-bs-toggle="modal" data-bs-target="#update-employee"><i class="bx bx-edit"></i></button>
-                                        <button class="btn btn-sm btn-icon delete-employee"><i class="bx bx-trash"></i></button>
+                                        <button class="btn btn-sm btn-icon data-buttns" data-type="medicines" data-role="edit" data-id="${e}" data-bs-target = "#edit-medicine"><i class="bx bx-edit"></i></button>
+                                        <button class="btn btn-sm btn-icon data-buttns" data-type="medicines" data-role="delete" data-id="${e}"><i class="bx bx-trash"></i></button>
                                     </div>`
                                     );
                                 },
@@ -275,8 +275,8 @@ let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z
                         }
                     });
                 }
-                let addMedic = document.querySelector('#add-medic');
-                addMedic.addEventListener('click', function(){
+                let addMedic = document.querySelector('#add-medic'),buttons = Array.from(page.querySelectorAll('button.data-buttns'));
+                addMedic.onclick =  function(){
                     let target = this.getAttribute('data-bs-target')
                     let cloneD = document.querySelector(`div${target}`)
                     cloneD = cloneD.cloneNode(true);
@@ -311,14 +311,71 @@ let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z
             
                         }
                     })
-                })
-                t.classList.add('loaded')
-            // Delete employee when delete icon clicked
-            table.find("tbody").on("click", ".delete-employee", function () {
-                if (confirm("Are you sure you want to delete this employee?")) {
-                    e.row($(this).parents("tr")).remove().draw();
                 }
-            })
+                buttons.forEach(bttn=>{
+                    bttn.onclick = async function (event) {
+                        event.preventDefault()
+                        let role = this.getAttribute('data-role'),objId = this.getAttribute('data-id'),type = this.getAttribute('data-type')
+                        if (role == 'delete') {
+                            postschema.body = JSON.stringify({
+                                token: getdata('token'),
+                                type: type,
+                                inventory: f.message.id,
+                                needle: objId
+                            })
+                            var row = e.row(event.target.closest('tr'))
+                            row.remove().draw();
+                            let result = await request('rIFromInv',postschema)
+                            if (result.success) {
+                                alertMessage(result.message)
+                            }else{
+                                alertMessage(result.message)
+                            }
+                        }else if (role == 'edit') {
+                            let targetMed = f.message.medicines.find(function (medic) {
+                                return medic.id == objId
+                            })
+                            let target = this.getAttribute('data-bs-target')
+                            let cloneD = document.querySelector(`div${target}`)
+                            cloneD = cloneD.cloneNode(true);
+                            d = addshade();
+                            d.appendChild(cloneD);
+                            let eMform = cloneD.querySelector("form#edit-medicine-form");
+                            let input = eMform.querySelector('input[name="medicine"]');
+                            let quantity = eMform.querySelector('input[name="quantity"]');
+
+                            input.value = targetMed.name
+                            input.setAttribute('readonly', true)
+                            input.setAttribute('disabled', true)
+                            input.setAttribute('data-id',targetMed.id)
+                            quantity.value = targetMed.quantity
+                            eMform.addEventListener('submit', async event=>{
+                                event.preventDefault();
+                                    v = checkEmpty(quantity);               
+                                if (v) {
+                                let button = eMform.querySelector('button[type="submit"]')
+                                button.innerText = `Editing entry`
+                                button.setAttribute('disabled',true)
+                                    let values = {}
+                                    Object.assign(values,{needle : input.getAttribute('data-id'),upinfo: {quantity :quantity.value}, type : 'medicines' ,inventory: f.message.id})
+                                    Object.assign(values,{token: getdata('token')})
+                                    postschema.body = JSON.stringify(values)
+                                    let results = await request('eInvEnt',postschema)
+                                    if (results.success) {
+                                        deletechild(d,d.parentNode)
+                                    }
+                                    alertMessage(results.message)
+                                    button.removeAttribute('disabled')
+                                    button.innerText= 'proceed'
+                    
+                                }
+                            })  
+                        }
+                    }
+                })
+
+
+                t.classList.add('loaded')
             }else if (x == 'view-prescription') {
                 theb.innerHTML = raw
                 if (extra) {

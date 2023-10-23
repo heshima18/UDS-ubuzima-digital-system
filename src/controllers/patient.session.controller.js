@@ -7,8 +7,12 @@ import { selectPatient } from './patients.controller';
 import { ioSendMessage } from './message.controller';
 import { io } from '../socket.io/connector.socket.io';
 import { checkObjectAvai, getPayment, getSession } from './credentials.verifier.controller';
+import { DateTime } from 'luxon';
 export const addSession = async (req,res)=>{
   try {
+    const leTime = DateTime.now();
+    let now = leTime.setZone('Africa/Kigali');
+    now = now.toFormat('yyyy-MM-dd HH:mm:ss')
     let {patient,symptoms,tests,decision,departments,medicines,comment,token,assurance,close,equipments,services,operations,weight} = req.body
       let uid = id();
       tests = tests || []
@@ -91,7 +95,7 @@ export const addSession = async (req,res)=>{
       let pts = await calculatePayments(assurance,addins,'all')
       let insertpayment = await query(`insert into payments(id,user,session,amount,assurance_amount,status,date,assurance)values(?,?,?,?,?,?,CURRENT_TIMESTAMP(),?)`,[id(),patient,uid,pts.patient_amount,pts.assurance_amount,'awaiting payment',assurance])
       let insert = await query(`insert into
-       medical_history(id,patient,hospital,departments,hc_provider,symptoms,tests,medicines,decision,comment,status,assurance,services,operations,equipments,p_weight,dateadded)values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,CURRENT_TIMESTAMP())`,[uid,patient,hp,JSON.stringify(departments),hc_provider,JSON.stringify(symptoms),JSON.stringify(tests),JSON.stringify(medicines),JSON.stringify(decision),comment,(close)? "closed" :"open",assurance,JSON.stringify(services),JSON.stringify(operations),JSON.stringify(equipments),weight])
+       medical_history(id,patient,hospital,departments,hc_provider,symptoms,tests,medicines,decision,comment,status,assurance,services,operations,equipments,p_weight,dateadded)values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,[uid,patient,hp,JSON.stringify(departments),hc_provider,JSON.stringify(symptoms),JSON.stringify(tests),JSON.stringify(medicines),JSON.stringify(decision),comment,(close)? "closed" :"open",assurance,JSON.stringify(services),JSON.stringify(operations),JSON.stringify(equipments),weight,now])
       query(`update patients set last_diagnosed = CURRENT_TIMESTAMP() where id = ?`,[uid,patient])
       if (!insert || !insertpayment) {
         return res.status(500).send({success:false, message: errorMessage.is_error})
@@ -356,8 +360,9 @@ GROUP BY mh.id;
     response.raw_operations = JSON.parse(response.raw_operations);
     response.raw_equipments = JSON.parse(response.raw_equipments);
     response.raw_medicines = JSON.parse(response.raw_medicines) 
-    response.dateadded = new Intl.DateTimeFormat('en-US',{weekday: 'long',year: 'numeric',month: 'long',day: 'numeric', hour: '2-digit', minute: '2-digit'}).format(new Date(response.dateadded))
-    if (user != 'hc_provider') {
+    response.dateadded = new Intl.DateTimeFormat('en-US',{weekday: 'long',year: 'numeric',month: 'long',day: 'numeric', hour: '2-digit', minute: '2-digit'}).format(new Date(response.dateadded));
+    (response.dateclosed) ? response.dateclosed = new Intl.DateTimeFormat('en-US',{weekday: 'long',year: 'numeric',month: 'long',day: 'numeric', hour: '2-digit', minute: '2-digit'}).format(new Date(response.dateclosed)) : 'N/A';
+    if (user != 'hc_provider' && user != 'patient' && user != 'householder') {
       delete response.decisions
       delete response.symptoms
 
@@ -371,28 +376,28 @@ GROUP BY mh.id;
           status: response.raw_medicines[response.medicines.indexOf(medicine)].status
         }
       )
-      if (user != 'hc_provider') {
+      if (user != 'hc_provider' && user != 'patient' && user != 'householder') {
         if (response.raw_medicines[response.medicines.indexOf(medicine)].servedOut) {
           response.medicines.splice(response.medicines.indexOf(medicine), 1)
         }
-      }else if (user != 'cashier') {
+      }else if (user != 'cashier' && user != 'patient' && user != 'householder') {
         delete response.medicines[response.medicines.indexOf(medicine)].price
       }
     }
     for (const services of response.services) {
-      if (user != 'cashier') {
+      if (user != 'cashier' && user != 'patient' && user != 'householder') {
         delete response.services[response.services.indexOf(services)].price
       }
       Object.assign(response.services[response.services.indexOf(services)],{quantity: response.raw_services[response.services.indexOf(services)].quantity})     
     }
     for (const equipment of response.equipments) {
-      if (user != 'cashier') {
+      if (user != 'cashier' && user != 'patient' && user != 'householder') {
         delete response.equipments[response.equipments.indexOf(equipment)].price
       }
         Object.assign(response.equipments[response.equipments.indexOf(equipment)],{quantity: response.raw_equipments[response.equipments.indexOf(equipment)].quantity})
     }
     for (const tests of response.tests) {
-      if (user == 'hc_provider') {
+      if (user == 'hc_provider' || user == 'patient' || user == 'householder') {
         Object.assign(response.tests[response.tests.indexOf(tests)],{result: response.raw_tests[response.tests.indexOf(tests)].result,sample: response.raw_tests[response.tests.indexOf(tests)].sample})
       }
     }
@@ -401,14 +406,14 @@ GROUP BY mh.id;
     delete response.raw_services
     delete response.raw_equipments
     delete response.raw_medicines
-    if (user != 'hc_provider' && user != 'cashier') {
+    if (user != 'hc_provider' && user != 'cashier' && user != 'patient' && user != 'householder') {
       delete response.services
       delete response.tests
       delete response.operations
       delete response.equipments
       delete response.services
       delete response.decisions
-    }else if (user != 'cashier') {
+    }else if (user != 'cashier' && user != 'patient' && user != 'householder') {
       delete response.assurance_info
     }else if (user == 'cashier') {
       
@@ -748,10 +753,13 @@ export const approvePayment = async (req,res)=>{
 }
 export const closeSession = async (req,res)=>{
   try {
+    const leTime = DateTime.now();
+    let now = leTime.setZone('Africa/Kigali');
+    now = now.toFormat('yyyy-MM-dd HH:mm:ss')
     let {session,token} = req.body
       let decoded = authenticateToken(token)
       let Hc_provider = decoded.token.id;
-      let close = await  query(`update medical_history set status = ?, dateclosed = CURRENT_TIMESTAMP() where id = ? AND hc_provider = ?`,['closed',session,Hc_provider])
+      let close = await  query(`update medical_history set status = ?, dateclosed = ? where id = ? AND hc_provider = ?`,['closed',now,session,Hc_provider])
       if (!close) {
         return res.status(500).send({success:false, message: errorMessage.is_error})
       }else if (close.affectedRows == 0) {

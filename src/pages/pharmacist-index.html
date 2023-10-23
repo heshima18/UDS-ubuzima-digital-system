@@ -3,36 +3,36 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title>HOME | UDS</title>
+	<title>Pharmacist - HOME | UDS</title>
     <link rel="stylesheet" type="text/css" href="/styles/styling.css">
-    <link rel="icon" type="image/x-icon" href="/assets/svg/logo.svg" />
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
-        <link
-            href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&amp;display=swap"
-            rel="stylesheet" />
+    <link rel="icon" type="image/x-icon" href="/assets/img/icons/logo/logo-alt.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&amp;display=swap"
+        rel="stylesheet" />
+
+    <link rel="stylesheet" href="/assets/vendor/fonts/boxicons.css" />
+    <link rel="stylesheet" href="/assets/vendor/fonts/fontawesome.css" />
+    <link rel="stylesheet" href="/assets/vendor/libs/spinkit/spinkit.css">
+
+    <!-- Core CSS -->
+    <link rel="stylesheet" href="/assets/vendor/css/core.css" class="template-customizer-core-css" />
+    <link rel="stylesheet" href="/assets/vendor/css/theme-default.css" class="template-customizer-theme-css" />
+    <link rel="stylesheet" href="/assets/css/demo.css" />
+
+    <!-- Vendors CSS -->
+    <link rel="stylesheet" href="/assets/vendor/libs/datatables-bs5/datatables.bootstrap5.css" />
+    <link rel="stylesheet" href="/assets/vendor/libs/datatables-responsive-bs5/responsive.bootstrap5.css" />
+    <link rel="stylesheet" href="/assets/vendor/libs/datatables-buttons-bs5/buttons.bootstrap5.css" />
+    <link rel="stylesheet" href="/assets/vendor/libs/datatables-checkboxes-jquery/datatables.checkboxes.css" />
+
+    <link rel="stylesheet" href="/assets/vendor/libs/select2/select2.css" />
+    <link rel="stylesheet" href="/assets/vendor/libs/formvalidation/dist/css/formValidation.min.css" />
+    <link rel="stylesheet" href="/styles/styling.css">
+    <link rel="stylesheet" href="/assets/vendor/fonts/boxicons.css">
+    <script src="/assets/js/nav.js" type="module"></script>
     
-        <link rel="stylesheet" href="/assets/vendor/fonts/boxicons.css" />
-        <link rel="stylesheet" href="/assets/vendor/fonts/fontawesome.css" />
-        <link rel="stylesheet" href="/assets/vendor/libs/spinkit/spinkit.css">
-    
-        <!-- Core CSS -->
-        <link rel="stylesheet" href="/assets/vendor/css/core.css" class="template-customizer-core-css" />
-        <link rel="stylesheet" href="/assets/vendor/css/theme-default.css" class="template-customizer-theme-css" />
-        <link rel="stylesheet" href="/assets/css/demo.css" />
-    
-        <!-- Vendors CSS -->
-        <link rel="stylesheet" href="/assets/vendor/libs/datatables-bs5/datatables.bootstrap5.css" />
-        <link rel="stylesheet" href="/assets/vendor/libs/datatables-responsive-bs5/responsive.bootstrap5.css" />
-        <link rel="stylesheet" href="/assets/vendor/libs/datatables-buttons-bs5/buttons.bootstrap5.css" />
-        <link rel="stylesheet" href="/assets/vendor/libs/datatables-checkboxes-jquery/datatables.checkboxes.css" />
-    
-        <link rel="stylesheet" href="/assets/vendor/libs/select2/select2.css" />
-        <link rel="stylesheet" href="/assets/vendor/libs/formvalidation/dist/css/formValidation.min.css" />
-        <link rel="stylesheet" href="/styles/styling.css">
-        <link rel="stylesheet" href="/assets/vendor/fonts/boxicons.css">
-        <script src="/assets/js/nav.js" type="module"></script>
-        
     <script src="/assets/vendor/libs/jquery/jquery.js"></script>
     <script src="/assets/js/pharmacist.js" type="module"></script>
 	<script src="/getSocketIo/socket.io.min.js"></script>
@@ -40,7 +40,6 @@
     <script src="/assets/vendor/libs/cleavejs/cleave-phone.rw.js"></script>
     <script src="/assets/vendor/libs/datatables-bs5/datatables-bootstrap5.js"></script>
     <script src="/assets/vendor/js/bootstrap.js"></script>
-	<link rel="shortcut icon" href="/icons/favicon.png" type="image/x-icon">
 </head>
 <body class="p-0 m-0 w-100 h-100 p-a ovh">
 <div class="cont w-100 h-100 ovxh" id="cont">
@@ -49,8 +48,10 @@
         <div class="w-100 h-a bsbb m-0 t-0 p-f p-10p zi-100">
             <nav class="w-100 card-2 bc-white br-5p flex jc-sb pr-15p pl-15p" id="layout-navbar">
                 <div class="h-54p center">
-                    <a class="nav-item nav-link px-0 me-xl-4" href="javascript:void(0)">
-                        <i class="">UDS_logo</i>
+                    <a class="nav-item nav-link px-0 me-xl-4 flex" href="javascript:void(0)">
+                        <span>
+                            <img src="/assets/img/icons/logo/logo-alt.png" alt="logo" class="w-a contain h-50p">
+                        </span>
                     </a>
                 </div>
                 <div class="h-54p center" id="navbar-collapse">
@@ -446,6 +447,36 @@
                                                         <div class="col-md-12 p-10p bsbb mb-5p p-r">
                                                             <label for="medicines" class="form-label">medicines</label>
                                                             <input type="text" class="form-control chips-check" id="medicines" placeholder="Demo medicine" name="medicines">
+                                                            <small class="hidden w-100 red pl-3p verdana"></small>
+                                                        </div>
+                                                        <div class="col-12 text-center d-flex gap-3 justify-content-end my-10p">
+                                                            <button type="reset" class="btn btn-label-secondary"
+                                                                data-bs-dismiss="modal" aria-label="Close">Cancel</button>
+                                                            <button type="submit" class="btn btn-primary">proceed</button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal fade ovh">
+                                    <div class="cntr bc-white p-15p w-400p h-220p h-a bsbb br-5p card-6"  id="edit-medicine">
+                                        <div class="">
+                                            <div class="modal-header text-uppercase">
+                                                <span class="card-header capitalize fs-18p">edit Inventory medication</span>
+                                            </div>
+                                            <div class="modal-body">
+                                                <div class="body w-100 h-a p-5p grid">
+                                                    <form method="post" id="edit-medicine-form" name="edit-medicine-form">
+                                                        <div class="col-md-12 p-10p bsbb mb-5p p-r">
+                                                            <label for="medicines" class="form-label">medicine</label>
+                                                            <input type="text" class="form-control bevalue" id="medicine" placeholder="Demo medicine" name="medicine">
+                                                            <small class="hidden w-100 red pl-3p verdana"></small>
+                                                        </div>
+                                                        <div class="col-md-12 p-10p bsbb mb-5p p-r">
+                                                            <label for="quantity" class="form-label">quantity</label>
+                                                            <input type="number" class="form-control" id="quantity" placeholder="Demo quantity" name="quantity">
                                                             <small class="hidden w-100 red pl-3p verdana"></small>
                                                         </div>
                                                         <div class="col-12 text-center d-flex gap-3 justify-content-end my-10p">

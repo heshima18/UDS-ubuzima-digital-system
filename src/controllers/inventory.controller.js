@@ -3,7 +3,7 @@ import errorMessage from './response.message.controller'
 import authenticateToken from './token.verifier.controller';
 import { checkInventory } from '../utils/check.inventory.controller';
 import id from "./randomInt.generator.controller";
-import { checkObjectAvai } from './credentials.verifier.controller';
+import { checkArrayAvai, checkObjectAvai } from './credentials.verifier.controller';
 export const addInventory = async (req,res)=>{
   try {
     let {medicines,token} = req.body
@@ -182,6 +182,7 @@ export const getInventory = async (req,res)=>{
       if (!hospital) return res.status(403).send({ message: errorMessage._err_forbidden,success: false });
       var select = await query(`
       SELECT
+      i.id,
       i.medicines as raw_medicines,
       i.tests as raw_tests,
       i.operations as raw_operations,
@@ -274,5 +275,120 @@ export const getInventory = async (req,res)=>{
   } catch (error) {
     console.log(error)
     res.status(500).send({success:false, message: errorMessage.is_error})
+  }
+}
+export const removeItemFromInventory = async (req,res)=>{
+  try {
+      let {type, inventory, needle} = req.body
+      let ArrayAvai = await checkObjectAvai('inventories',type,'id',needle,'id',inventory)
+      if (!ArrayAvai) {
+          return res.status(500).send({success:false, message: errorMessage.is_error})
+      }
+      if (!ArrayAvai.length) {
+          return res.send({success: false, message: errorMessage.err_entr_not_avai})
+      }
+      let update = await query(`UPDATE inventories SET ${type} = JSON_REMOVE(${type},JSON_UNQUOTE(JSON_SEARCH(${type}, 'one',?))) where inventories.id = ?`,[needle,inventory]);
+      if (!update) return res.status(500).send({success:false, message: errorMessage.is_error})
+      res.send({success: true, message: errorMessage.entr_removed})
+  } catch (error) {
+      res.status(500).send({success:false, message: errorMessage.is_error})
+      console.log(error)
+  }
+}
+export const editItemFromInventory = async (req,res)=>{
+  try {
+      let {type, inventory, needle,upinfo} = req.body
+      let ArrayAvai = await checkObjectAvai('inventories',type,'id',needle,'id',inventory)
+      if (!ArrayAvai) {
+        return res.status(500).send({success:false, message: errorMessage.is_error})
+      }
+      if (!ArrayAvai.length) {
+        return res.send({success: false, message: errorMessage.err_entr_not_avai})
+      }
+      let  inv = await getInventoryEntry(inventory,type)
+      let update
+      if (type == 'medicines') {
+        inv = inv.map(function (medicine) {
+          if(medicine.id == needle){
+            return {id: medicine.id, quantity: Number(upinfo.quantity)}
+          }else{
+            return {id: medicine.id, quantity: Number(medicine.quantity)}
+          }
+        })
+      }else if (type == 'tests') {
+        inv = inv.map(function (test) {
+          if(test.id == needle){
+            return {id: test.id, price: Number(upinfo.price)}
+          }else{
+            return {id: test.id, price: Number(test.price)}
+          }
+        })
+      }else if (type == 'operations') {
+        inv = inv.map(function (operation) {
+          if(operation.id == needle){
+            return {id: operation.id, price: Number(upinfo.price)}
+          }else{
+            return {id: operation.id, price: Number(operation.price)}
+          }
+        })
+      }else if (type == 'services') {
+        inv = inv.map(function (service) {
+          if(service.id == needle){
+            return {id: service.id, price: Number(upinfo.price)}
+          }else{
+            return {id: service.id, price: Number(service.price)}
+          }
+        })
+      }else if (type == 'equipments') {
+        inv = inv.map(function (equipment) {
+          if(equipment.id == needle){
+            return {id: equipment.id, quantity: Number(upinfo.quantity)}
+          }else{
+            return {id: equipment.id, quantity: Number(equipment.quantity)}
+          }
+        })
+      }else{
+        return res.status(500).send({success:false, message: errorMessage.is_error})
+      }
+      update = await query(`
+        UPDATE inventories 
+        SET ${type} = ?
+        WHERE inventories.id = ?
+    `, [JSON.stringify(inv), inventory]);
+      if (!update) return res.status(500).send({success:false, message: errorMessage.is_error})
+      res.send({success: true, message: errorMessage.entr_updated})
+  } catch (error) {
+      res.status(500).send({success:false, message: errorMessage.is_error})
+      console.log(error)
+  }
+}
+async function getInventoryEntry(inventory,entry) {
+  try {
+    let q = await query(`SELECT
+    i.id,
+    i.${entry} as raw_${entry},
+    COALESCE(
+      CONCAT('[',
+        GROUP_CONCAT(
+          DISTINCT  CASE WHEN m.id IS NOT NULL THEN JSON_OBJECT('id', m.id, 'name', m.name, 'price', m.price) ELSE NULL END SEPARATOR ',' 
+        ),
+      ']'),
+    '[]') AS ${entry}
+    FROM inventories AS i
+    LEFT JOIN ${entry} AS m ON JSON_CONTAINS(i.${entry}, JSON_OBJECT('id', m.id), '$')
+    WHERE i.id = ?
+    GROUP BY i.id;`,[inventory]);
+    q = q[0]
+    q[entry] = JSON.parse(q[entry])
+    q[`raw_${entry}`] = JSON.parse(q[`raw_${entry}`])  
+    for (const entr of q[entry]) {
+      Object.assign(q[entry][q[entry].indexOf(entr)],{quantity: q[`raw_${entry}`][q[entry].indexOf(entr)].quantity})
+      Object.assign(q[entry][q[entry].indexOf(entr)],{price: q[`raw_${entry}`][q[entry].indexOf(entr)].price})
+    }
+    delete q[`raw_${entry}`]
+    return q[entry]
+  } catch (error) {
+    console.log(error)
+    return undefined
   }
 }

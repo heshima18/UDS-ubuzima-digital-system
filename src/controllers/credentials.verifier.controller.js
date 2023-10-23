@@ -21,10 +21,12 @@ export async function checkHouseHolder(needle) {
     return q
 }
 export async function checkObjectAvai(table, column, key, needle,entity, entityId) {
+    console.log(table, column, key, needle,entity, entityId)
     let q = await query(`SELECT id FROM ${table} where JSON_CONTAINS(${column}, JSON_OBJECT(?, ?), '$') AND ${entity} = ?`,[key,needle,entityId])
     return q
 }
 export async function checkArrayAvai(table, column, needle,entity, entityId) {
+    console.log(table, column, needle,entity, entityId)
     let q = await query(`SELECT id FROM ${table} where JSON_CONTAINS(${column}, JSON_QUOTE(?), '$') AND ${entity} = ?`,[needle,entityId])
     return q
 }
