@@ -17,6 +17,11 @@ export async function authorizeSession (req, res, next, extra){
           return res.status(403).send({success: false, message: errorMessage._err_forbidden})
         }
       }
+      if (extra == 'ismyfacilty') {
+        if (user.hospital != q.hospital) {
+          return res.status(403).send({success: false, message: errorMessage._err_forbidden})
+        }
+      }
       if (extra == 'isopen') {
         if (q.status != 'open') {
           return res.status(403).send({success: false, message: errorMessage.err_unopen_session})

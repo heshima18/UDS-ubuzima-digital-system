@@ -760,6 +760,7 @@ export async function showAvaiEmps(emps,extra){
     u.appendChild(a)
     let group = {}
     var key;
+    console.log(emps,extra)
     if (extra) {
       key = Object.keys(extra)[0]
       let suba
@@ -767,7 +768,11 @@ export async function showAvaiEmps(emps,extra){
         suba = emps.filter(function (obj) {
           return obj.department.id == extra[key] 
         })
-        Object.assign(group,{ [suba[0].department.name]: suba})
+        console.log(suba)
+        if (!suba.length) {
+          return alertMessage('no available employee to perform this task in your facility')
+        }
+        Object.assign(group,{ [key]: suba})
       }else{
         suba = emps.filter(function (obj) {
           return obj[key] == extra[key]  

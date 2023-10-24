@@ -888,6 +888,9 @@ class popups{
                 return alertMessage('Test not found')
             }
             p = await showAvaiEmps(this.users,{department: testinfo.department});
+            if (!p) {
+                return
+            }
             let emps = Array.from(p.querySelectorAll('.emp'))
             let deps = Array.from(p.querySelectorAll('.dep'))
               for (const lis of emps) {

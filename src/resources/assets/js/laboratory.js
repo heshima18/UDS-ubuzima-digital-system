@@ -1,4 +1,4 @@
-import { alertMessage, getdata, getschema, postschema, request,initializeCleave,sessiondata, checkEmpty, showRecs, getchips,getPath, addUprofile,addsCard,cpgcntn, geturl } from "../../../utils/functions.controller.js";
+import { alertMessage, getdata, getschema, postschema, request,initializeCleave,sessiondata, checkEmpty, showRecs, getchips,getPath,addsCard,cpgcntn, geturl } from "../../../utils/functions.controller.js";
 import {expirateMssg, getNfPanelLinks, pushNotifs, userinfo,m as messages} from "./nav.js";
 
 let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z,notificationlinks
@@ -219,6 +219,7 @@ async function gsd(page,extra) {
                   n.setAttribute('data-id',session.patient)
                   s.value = `${session.patient_name}'s session`
                   s.setAttribute('data-id',session.session)
+                  n.setAttribute('disabled',true),s.setAttribute('disabled',true),t.setAttribute('disabled',true)
                   t.value = `${session.t_name}`
                   t.setAttribute('data-id',session.test)
                 }

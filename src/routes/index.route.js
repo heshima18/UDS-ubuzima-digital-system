@@ -135,7 +135,7 @@ router.post('/approve-payment',authorizeRole,(req,res,next) => authorizeSession(
 router.post('/approve-assurance-payment',authorizeRole,(req,res,next) => authorizeMultipleRoles(req,res,next,['dof']),approveAssuPayment);
 router.post('/get-patients',authorizeRole,authorizeAdmin,getPatients);
 router.post('/patient/:patient',authorizeRole,getPatient);
-router.post('/close-session',authorizeRole,authorizeHc_provider,(req,res,next) => authorizeSession(req,res,next,'isowner'),closeSession);
+router.post('/close-session',authorizeRole,authorizeHc_provider,(req,res,next) => authorizeSession(req,res,next,'isowner'),(req,res,next) => authorizeSession(req,res,next,'ismyfacilty'),closeSession);
 router.get('/',homeController);
 router.post('/user-login',login);
 router.get('/assets/*',assets);

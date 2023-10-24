@@ -1489,11 +1489,6 @@ let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z
                                         },
                                     ],
                                 },
-                                {
-                                    text: '<i class="bx bx-plus me-0 me-sm-1"></i><span class="d-none d-sm-inline-block">Add New</span>',
-                                    className: "add-new btn btn-primary",
-                                    attr: { "id": "add-equipment", "data-bs-target": "#add-equipment-modal" },
-                                },
                             ],
                 
                             // Initialize filters for position, health post, and status
