@@ -73,11 +73,11 @@ export async function calculatePayments(assurance,item,type) {
           }
         }
       }
-      console.log(sum)
       return sum
     } 
     } catch (error) {
       console.log(error)
+      return undefined
     }
   }
   

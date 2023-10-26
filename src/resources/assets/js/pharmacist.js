@@ -1,7 +1,8 @@
 import { alertMessage, getdata, getschema, postschema, request,initializeCleave,sessiondata,addLoadingTab,removeLoadingTab, checkEmpty, showRecs, getchips,getPath,addsCard,cpgcntn, geturl, adcm, addshade, deletechild } from "../../../utils/functions.controller.js";
-import {expirateMssg, pushNotifs, userinfo} from "./nav.js";
+import {pushNotifs, userinfo,expirateMssg, getNfPanelLinks,m as messages, DateTime} from "./nav.js";
 
-let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z
+
+let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z,notificationlinks
 (async function () {
     z = userinfo
     let token = getdata('token')
@@ -22,6 +23,9 @@ let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z
             
             socket.on('message', (message) => {
                 pushNotifs(message);
+                messages.push(message)
+                notificationlinks = getNfPanelLinks()
+                genClicks(notificationlinks)
                 addsCard(message.title,true)
 
             });
@@ -67,7 +71,7 @@ let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z
     c = Array.from(document.querySelectorAll('span.cpcards'))
     p = Array.from(document.querySelectorAll('div.pagecontentsection'))
     const vsd = p.find(function (div) {
-        return div.id == 'view-prescription' 
+        return div.id == 'view-session' 
     })
     const theb = vsd.querySelector('div.theb')
     const raw = theb.innerHTML
@@ -126,6 +130,8 @@ let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z
             }))
         })
     })
+    notificationlinks = getNfPanelLinks()
+    genClicks(notificationlinks)
     async function gsd(page,extra) {
         try {
             x = page.id
@@ -376,11 +382,11 @@ let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z
 
 
                 t.classList.add('loaded')
-            }else if (x == 'view-prescription') {
+            }else if (x == 'view-session') {
                 theb.innerHTML = raw
                 if (extra) {
                     let url = new URL(window.location.href);
-                    url.pathname = `/pharmacist/view-prescription/${extra}`;
+                    url.pathname = `/pharmacist/view-session/${extra}`;
                     window.history.pushState({},'',url.toString())
                 }
               let session = getPath(2)
@@ -407,7 +413,7 @@ let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z
                     if (!sessiondata.success) return alertMessage(sessiondata.message)
                     session_input.value = session
                     let url = new URL(window.location.href);
-                    url.pathname = `/pharmacist/view-prescription/${session}`;
+                    url.pathname = `/pharmacist/view-session/${session}`;
                     window.history.pushState({},'',url.toString())
                     sessiondata = sessiondata.message
                     showSession(sessiondata);
@@ -649,6 +655,45 @@ let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z
           } catch (error) {
             console.log(error)
           }
+    }
+    function genClicks(notificationlinks) {
+        let messages = sessiondata('messages')
+        notificationlinks.map((link)=>{
+            link.addEventListener(`click`, ()=>{
+                if (!link.classList.contains('list-link')) {
+                    return 0
+                }
+                v = document.querySelector(`div#${link.getAttribute('data-href-target')}`)
+                let message = messages.find(function (mess) {
+                    return mess.id == link.getAttribute('data-id')
+                })
+                if (v && message) {
+                p = Array.from(v.parentElement.querySelectorAll('.pagecontentsection'))
+                
+                s = p.indexOf(v)
+                let url = new URL(window.location.href);
+                if (link.getAttribute('data-message-type') == 'session_message') {
+                    let session 
+                    if (message.addins) {
+                        session = message.addins.session
+                    }else if (message.extra) {
+                        session = message.extra.session
+                    }
+                    if (session) {
+                        url.pathname = `/${getPath()[0]}/${link.getAttribute('data-href-target')}/${session}`;
+                    }
+                }else if (link.getAttribute('data-message-type') == '__APPNTMNT_MSSG_') {
+                    appApprovalCont(message)
+                    url.pathname = `/${getPath()[0]}/${link.getAttribute('data-href-target')}`;
+                }else{
+                    url.pathname = `/${getPath()[0]}/${link.getAttribute('data-href-target')}`;
+                }
+                window.history.pushState({},'',url.toString())
+                cpgcntn(p.indexOf(v),p)
+                gsd(v,null)
+               }
+            })
+        })
     }
 })();
 

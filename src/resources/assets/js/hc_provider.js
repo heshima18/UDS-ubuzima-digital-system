@@ -1,5 +1,5 @@
 
-import { alertMessage, getdata, getschema, postschema, request,deletechild, checkEmpty, showRecs, getchips,getPath,calcTime,addsCard,cpgcntn, geturl,sessiondata,addChip, showAvaiAssurances, adcm, addshade, addLoadingTab, removeLoadingTab, showAvaiEmps, fT, promptHpsToChoose, addAuthDiv } from "../../../utils/functions.controller.js";
+import { alertMessage, getdata, getschema, postschema, request,deletechild, checkEmpty, showRecs, getchips,getPath,calcTime,addsCard,cpgcntn, geturl,sessiondata,addChip, showAvaiAssurances, adcm, addshade, addLoadingTab, removeLoadingTab, showAvaiEmps, fT, promptHpsToChoose, addAuthDiv, RemoveAuthDivs, showFingerprintDiv } from "../../../utils/functions.controller.js";
 import { addUprofile } from "../../../utils/user.profile.controller.js";
 import {pushNotifs, userinfo,expirateMssg, getNfPanelLinks,m as messages, DateTime} from "./nav.js";
 let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,z,notificationlinks
@@ -29,6 +29,10 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,z,notificationlinks
                 addsCard(message.title,true)
 
             });
+            socket.on('messagefromserver', (message) => {
+                alertMessage(message)
+
+            });;
             socket.on('accessAuth', (message) => {
                 addAuthDiv(socket,message);
 
@@ -165,6 +169,24 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,z,notificationlinks
                 b.removeAttribute('disabled')
                 if (!r.success) return alertMessage(r.message)
                 addUprofile(r.message);
+            }
+            let fingerprint = page.querySelector('span#fingerprint')
+            fingerprint.onclick = async function () {
+              let fp_data = await showFingerprintDiv('search');
+              if (fp_data) {
+                postschema.body = JSON.stringify({
+                    token: getdata('token'),
+                    fp_data,
+                    type: 'fp'
+                })
+                r = await request(`patient/`,postschema)
+                RemoveAuthDivs();
+                if (!r.success) return alertMessage(r.message)
+                addUprofile(r.message);
+                let url = new URL(window.location.href);
+                url.pathname = `/hc_provider/search-patient/${r.message.id}`;
+                window.history.pushState({},'',url.toString())
+              }
             }
             f.onsubmit = async e=>{
                 e.preventDefault();

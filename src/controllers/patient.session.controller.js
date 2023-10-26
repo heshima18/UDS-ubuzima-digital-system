@@ -4,16 +4,17 @@ import id from "./randomInt.generator.controller";
 import authenticateToken from './token.verifier.controller';
 import { calculatePayments } from '../utils/calculate.payments.controller';
 import { selectPatient } from './patients.controller';
-import { ioSendMessage } from './message.controller';
+import { ioSendMessage, ioSendMessages } from './message.controller';
 import { io } from '../socket.io/connector.socket.io';
 import { checkObjectAvai, getPayment, getSession } from './credentials.verifier.controller';
 import { DateTime } from 'luxon';
+import { getHpEmployeesByDepartment } from './employee.controller';
 export const addSession = async (req,res)=>{
   try {
     const leTime = DateTime.now();
     let now = leTime.setZone('Africa/Kigali');
     now = now.toFormat('yyyy-MM-dd HH:mm:ss')
-    let {patient,symptoms,tests,decision,departments,medicines,comment,token,assurance,close,equipments,services,operations,weight} = req.body
+    let {patient,symptoms,tests,decision,departments,medicines,comment,token,assurance,close,equipments,services,operations,weight} = req.body,notify
       let uid = id();
       tests = tests || []
       equipments = equipments || []
@@ -67,6 +68,9 @@ export const addSession = async (req,res)=>{
         if (!('servedOut' in medicines[medicines.indexOf(medicine)])) {
           Object.assign(medicines[medicines.indexOf(medicine)], {servedOut : true, price: 0})
         }
+        if (!medicine.servedOut && medicine.status != 'served') {
+          notify = true
+        }
       }
       for (const equipment of equipments) {
         var m = await query(`select price from equipments where id = ?`, [equipment.id]);
@@ -93,6 +97,10 @@ export const addSession = async (req,res)=>{
       query(`UPDATE inventories  SET medicines = ? where hospital = ?`, [JSON.stringify(meds),hp])
       let tt = itt+imt+iot+ist+iet;
       let pts = await calculatePayments(assurance,addins,'all')
+      if (!pts) {
+        console.log('error in payments calculations')
+        return res.status(500).send({success:false, message: errorMessage.is_error})
+      }
       let insertpayment = await query(`insert into payments(id,user,session,amount,assurance_amount,status,date,assurance)values(?,?,?,?,?,?,CURRENT_TIMESTAMP(),?)`,[id(),patient,uid,pts.patient_amount,pts.assurance_amount,'awaiting payment',assurance])
       let insert = await query(`insert into
        medical_history(id,patient,hospital,departments,hc_provider,symptoms,tests,medicines,decision,comment,status,assurance,services,operations,equipments,p_weight,dateadded)values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,[uid,patient,hp,JSON.stringify(departments),hc_provider,JSON.stringify(symptoms),JSON.stringify(tests),JSON.stringify(medicines),JSON.stringify(decision),comment,(close)? "closed" :"open",assurance,JSON.stringify(services),JSON.stringify(operations),JSON.stringify(equipments),weight,now])
@@ -122,6 +130,32 @@ export const addSession = async (req,res)=>{
         }else{
             console.log('recepient is not online')
         }
+      }
+      if (notify) {
+        let employees = await getHpEmployeesByDepartment(decoded.token.hospital,'1790485192')
+        if(!employees) return
+        getP = await selectPatient(patient)
+        employees = employees.map(function (emp) {
+          return emp.id
+        })
+        try {
+          let extra =  {
+            session: uid, 
+            patient: getP.id,
+            patient_name: getP.Full_name
+          }
+          let content,title,sender,type
+          content = `incoming medications request for ${getP.Full_name}`;
+          title = `medication request`
+          sender = {name: 'system',id: '196371492058'}
+          type = `session_message`
+          let messageInfo = {type,content,title,sender,receivers: employees,extra}
+          let mssg_id = await ioSendMessages(messageInfo)
+          
+        } catch (error) {
+          console.log(error)
+        }
+        
       }
   } catch (error) {
     console.log(error)
@@ -172,6 +206,9 @@ export const getUsessions = async (req,res)=>{
       for (const mh of response) {
         response[response.indexOf(mh)].hp_info = JSON.parse(mh.hp_info)
         response[response.indexOf(mh)].payment_info = JSON.parse( response[response.indexOf(mh)].payment_info)
+        if (!mh.dateclosed) {
+          response[response.indexOf(mh)].payment_info = 'N/A'
+        }
       }
       res.send({success: true, message: response})
     
@@ -361,7 +398,7 @@ GROUP BY mh.id;
     response.raw_equipments = JSON.parse(response.raw_equipments);
     response.raw_medicines = JSON.parse(response.raw_medicines) 
     response.dateadded = new Intl.DateTimeFormat('en-US',{weekday: 'long',year: 'numeric',month: 'long',day: 'numeric', hour: '2-digit', minute: '2-digit'}).format(new Date(response.dateadded));
-    (response.dateclosed) ? response.dateclosed = new Intl.DateTimeFormat('en-US',{weekday: 'long',year: 'numeric',month: 'long',day: 'numeric', hour: '2-digit', minute: '2-digit'}).format(new Date(response.dateclosed)) : 'N/A';
+    (response.dateclosed) ? response.dateclosed = new Intl.DateTimeFormat('en-US',{weekday: 'long',year: 'numeric',month: 'long',day: 'numeric', hour: '2-digit', minute: '2-digit'}).format(new Date(response.dateclosed)) : response.dateclosed = 'N/A';
     if (user != 'hc_provider' && user != 'patient' && user != 'householder') {
       delete response.decisions
       delete response.symptoms
@@ -455,6 +492,10 @@ export const addSessionTests = async (req,res)=>{
       
       if (itt == 0) return res.status(403).send({success: false, message: errorMessage._err_test_404})
       let pts = await calculatePayments(assurance,{tests: [test]},'tests')
+      if (!pts) {
+        console.log('error in payments calculations')
+        return res.status(500).send({success:false, message: errorMessage.is_error})
+      }
       let payment_info = await getPayment(session)
       if (!payment_info) {
         return res.status(500).send({success:false, message: errorMessage.is_error})
@@ -627,7 +668,7 @@ export const addSessionEquipment = async (req,res)=>{
 }
 export const addSessionMedicine = async (req,res)=>{
   try {
-    let {session,medicines,token} = req.body
+    let {session,medicines,token} = req.body,notify
       let decoded = authenticateToken(token)
       let assurance = await query(`select assurance from medical_history where id = ?`,[session])
       if(!assurance) return res.status(500).send({success: false, message: errorMessage.is_error})
@@ -652,6 +693,7 @@ export const addSessionMedicine = async (req,res)=>{
         if (objectAvai.length) {
           return res.send({success: false, message: errorMessage.err_entr_avai})
         }
+
         var m = await query(`select price from medicines where id = ?`, [medicine.id]);
         if (!m) return res.status(500).send({success:false, message: errorMessage.is_error})
         if(m.length == 0) {
@@ -677,6 +719,9 @@ export const addSessionMedicine = async (req,res)=>{
             Object.assign(medicine, {servedOut : true, status : null})
             Object.assign(medicines[medicines.indexOf(medicine)],{servedOut: true, price: 0,status : null})
           }
+          if (!medicine.servedOut && medicine.status != 'served') {
+            notify = true
+          }
           query(`update medical_history set medicines =  JSON_ARRAY_APPEND(medicines, '$', JSON_OBJECT("id", ?, "quantity", ?, "servedOut", ?, "status",?)) where id = ? AND hc_provider = ?`,[medicine.id,medicine.quantity,medicine.servedOut,medicine.status,session,hc_provider])
         }
         query(`UPDATE inventories  SET medicines = ? where hospital = ?`, [JSON.stringify(meds),decoded.token.hospital])
@@ -689,14 +734,38 @@ export const addSessionMedicine = async (req,res)=>{
       payment_info = payment_info[0] 
       payment_info.assurance_amount +=pts.assurance_amount
       payment_info.amount +=pts.patient_amount
-      // return console.log(payment_info)
       updatepayment = await query(`update payments set amount = ?,assurance_amount = ? where session = ?`,[payment_info.amount,payment_info.assurance_amount,session])
       }
       if (!updatepayment) {
         return res.status(500).send({success:false, message: errorMessage.is_error})
       }
       res.send({success: true, message: errorMessage.medicine_addedtosession_message})
-    
+      if (notify) {
+        let employees = await getHpEmployeesByDepartment(decoded.token.hospital,'1790485192')
+        if(!employees) return
+        let getS = await getSession(session),getP = await selectPatient(getS[0].patient)
+        employees = employees.map(function (emp) {
+          return emp.id
+        })
+        try {
+          let extra =  {
+            session: session, 
+            patient: getP.id,
+            patient_name: getP.Full_name
+          }
+          let content,title,sender,type
+          content = `incoming medications request for ${getP.Full_name}`;
+          title = `medication request`
+          sender = {name: 'system',id: '196371492058'}
+          type = `session_message`
+          let messageInfo = {type,content,title,sender,receivers: employees,extra}
+          let mssg_id = await ioSendMessages(messageInfo)
+          
+        } catch (error) {
+          console.log(error)
+        }
+        
+      }
   } catch (error) {
     console.log(error)
     res.status(500).send({success:false, message: errorMessage.is_error})

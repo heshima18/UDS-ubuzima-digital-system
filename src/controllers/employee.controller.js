@@ -213,3 +213,25 @@ export const removeEmployeFromHospital = async (req,res)=>{
       console.log(error)
   }
 }
+export async function getHpEmployeesByDepartment(hospital,department){
+  try {
+      let select = await query(`
+          SELECT
+           users.id,
+           users.Full_name
+          FROM
+           users inner join hospitals on JSON_CONTAINS(hospitals.employees, JSON_QUOTE(users.id), '$')
+          WHERE 
+          hospitals.id = ? AND
+          users.department = ?
+           GROUP BY users.id
+      `,[hospital,department])
+      if (!select) {
+          return null
+      }
+      return select
+  } catch (error) {
+      console.log(error)
+      return null
+  }
+}

@@ -1,4 +1,5 @@
 var q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,z,x,c,v,b,n,m
+import { ConnectDevice, GetTemplate, connectFP } from "./fingerprint.controller.js";
 import { DateTime } from "/getLuxon/luxon.js";
 export {DateTime}
 export async function request(url,options){
@@ -770,9 +771,10 @@ export async function showAvaiEmps(emps,extra){
         })
         console.log(suba)
         if (!suba.length) {
+          deletechild(u,u.parentNode)
           return alertMessage('no available employee to perform this task in your facility')
         }
-        Object.assign(group,{ [key]: suba})
+        Object.assign(group,{ [suba[0].department.name]: suba})
       }else{
         suba = emps.filter(function (obj) {
           return obj[key] == extra[key]  
@@ -1105,7 +1107,7 @@ export function addAuthDiv(socket,user){
   let q =  addshade();
   a = document.createElement('div')
   q.appendChild(a)
-  a.className = "w-360p h-a p-20p bsbb bc-white cntr zi-10000 br-10p card-5" 
+  a.className = "w-360p h-a p-20p bsbb bc-white cntr zi-10000 br-10p card-5 authDiv b-mgc-resp" 
   a.innerHTML = `<div class="head w-100 h-60p p-5p bsbb bb-1-s-dg">
                   <span class="fs-18p black capitalize igrid center h-100 verdana">access authentication</span>
                 </div>
@@ -1131,7 +1133,7 @@ export function addAuthDiv(socket,user){
                 <span class="dgray capitalize block">other methods</span>
                 </div>
                   <div class="flex">
-                  <span class="p-5p w-40p h-40p b-1-s-theme br-5p hover-2"><svg class="w-30p h-30p" fill="var(--main-color)" viewBox="0 0 463 463" xml:space="preserve">
+                  <span class="p-5p w-40p h-40p b-1-s-theme br-5p hover-2" id="fingerprint"><svg class="w-30p h-30p" fill="var(--main-color)" viewBox="0 0 463 463" xml:space="preserve">
                   <g>
                     <path d="M259.476,280.364V247.5c0-12.958-10.542-23.5-23.5-23.5s-23.5,10.542-23.5,23.5v29.672   c0,35.757-13.173,70.087-37.094,96.665l-32.981,36.646c-2.771,3.079-2.521,7.821,0.558,10.593c3.078,2.771,7.82,2.521,10.592-0.558   l32.981-36.646c26.403-29.338,40.944-67.231,40.944-106.7V247.5c0-4.687,3.813-8.5,8.5-8.5s8.5,3.813,8.5,8.5v32.864   c0,44.003-16.301,86.167-45.901,118.727l-32.149,35.364c-2.786,3.064-2.56,7.809,0.505,10.595c1.437,1.307,3.242,1.95,5.042,1.95   c2.04,0,4.072-0.827,5.552-2.455l32.148-35.364C241.789,373.854,259.476,328.106,259.476,280.364z"/>
                     <path d="M291.476,247.5c0-30.603-24.897-55.5-55.5-55.5s-55.5,24.897-55.5,55.5v29.672c0,27.839-10.256,54.566-28.879,75.258   l-23.447,26.053c-2.771,3.079-2.521,7.821,0.558,10.593c3.079,2.771,7.82,2.519,10.592-0.558l23.447-26.053   c21.106-23.451,32.73-53.742,32.73-85.293V247.5c0-22.332,18.168-40.5,40.5-40.5c22.332,0,40.5,18.168,40.5,40.5v32.864   c0,51.979-19.256,101.789-54.223,140.252l-27.125,29.839c-2.787,3.064-2.561,7.809,0.504,10.595c1.437,1.307,3.242,1.95,5.042,1.95   c2.04,0,4.072-0.827,5.552-2.455l27.126-29.839c37.481-41.23,58.123-94.622,58.123-150.342V247.5z"/>
@@ -1157,6 +1159,10 @@ export function addAuthDiv(socket,user){
                 </div>`;
   f = a.querySelector('form')
   i = f.querySelector('input')
+  let fingerprint = a.querySelector('span#fingerprint')
+  fingerprint.onclick = function () {
+    showFingerprintDiv('compare',socket,user);
+  }
   i.focus()
   initializeSpecialCleave(i,[3,3],6,' - ')
   f.onsubmit = function (event) {
@@ -1165,8 +1171,84 @@ export function addAuthDiv(socket,user){
     }
     event.preventDefault();
     v = i.value.replace(/ - /g, "")
-    socket.emit('authCode',{v,user})
+    socket.emit('authCode',{type: 'code',v,user})
     deletechild(q,q.parentElement)
   }
 
+}
+export async function showFingerprintDiv(action,socket,user) {
+  
+  let q =  addshade();
+  a = document.createElement('div')
+  q.appendChild(a)
+  a.className = "w-460p h-470p p-20p bsbb bc-white cntr zi-10000 br-10p card-5 authDiv b-mgc-resp" 
+  a.innerHTML = `<div class="head w-100 h-60p p-5p bsbb bb-1-s-dg">
+                  <span class="fs-18p black capitalize igrid center h-100 verdana">fingerprint recognition</span>
+                </div>
+                <div class="body w-100 h-350p p-5p mt-10p">
+                  <div class="w-100 h-65 p-10p bsbb">
+                   <div class="br-5p b-1-s-g w-100 h-100">
+                     <img class="contain w-100 h-100 p-r" id="fp-preview"> </img>
+                   </div>
+                  </div>
+                  <div class="status my-5p p-5p">
+                   <span class="capitalize h-30p fs-13p my-5p p-5p block w-100" id="status"></span>
+                   <span class=" block w-100 center">
+                   </span>
+                   </div>
+                   <div class="controlls w-100 h-a center-2">
+                    <button class="btn btn-label-primary d-grid w-100" id="start">start</button>
+                    <button class="btn btn-primary d-grid mx-10p w-100" id="proceed">proceed</button>
+                    <button class="btn btn-label-success d-grid mx-10p w-100" id="proceed">reconnect</button>
+
+                  </div>
+                </div>`;
+  let preview = a.querySelector('img'),status = a.querySelector('span#status'),start = a.querySelector('button#start'),proceed = a.querySelector('button#proceed')
+  let fp_data;
+  connectFP('', callback=>{
+    let st = callback.success,{type} = callback
+    if(!st){
+      status.classList.remove('red','dgray','green')
+      status.classList.add('red')
+      status.innerText = callback.message
+    }else if (st == `awaiting`) {
+      status.classList.remove('red','dgray','green')
+      status.classList.add('dgray')
+      status.innerText = callback.message
+    }else{
+      status.classList.remove('red','dgray','green')
+      status.classList.add('green')
+      status.innerText = callback.message
+    }
+    if (type) {
+      if (type == 'fp-image') {
+        preview.src = callback.data
+      }
+      if (type == 'fp-data') {
+        fp_data = callback.data
+      }
+    }
+  })
+  start.onclick = function (event) {
+    event.preventDefault();
+    GetTemplate();
+  }
+  return new Promise((resolve, reject) => {
+    proceed.onclick = function (event) {
+      event.preventDefault();
+      if (fp_data) {
+        if (action == 'compare') {
+          socket.emit('authCode',{type: 'fp',fp_data,user})
+        }else{
+          resolve(fp_data)
+        }
+      }
+    }
+  })
+}
+export function RemoveAuthDivs() {
+  let authDivs = Array.from(document.querySelectorAll('div.authDiv'))
+  authDivs.forEach(authdiv=>{
+    deletechild(authdiv.parentNode,authdiv.parentNode.parentNode)
+  })
 }

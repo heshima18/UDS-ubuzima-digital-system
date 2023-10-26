@@ -4,7 +4,8 @@ import errorMessage from "../controllers/response.message.controller";
 import authenticateToken from "../controllers/token.verifier.controller";
 export async function authorizeSession (req, res, next, extra){
     try {
-      const { session,token } = req.body
+      let { session,token } = req.body
+      if(!session) {session = req.params.session}
       let user = authenticateToken(token)
       user = user.token
       if (!session) return res.status(403).send({ message: errorMessage._err_ms_404, success: false });
@@ -17,6 +18,12 @@ export async function authorizeSession (req, res, next, extra){
           return res.status(403).send({success: false, message: errorMessage._err_forbidden})
         }
       }
+      if (extra == 'isuserorhcp') {
+        if (user.role!= 'hcp' && user.role!= 'pharmacist' && user.hospital != q.hospital && user.id != q.patient) {
+          return res.status(403).send({success: false, message: errorMessage._err_forbidden})
+        }
+        
+      }
       if (extra == 'ismyfacilty') {
         if (user.hospital != q.hospital) {
           return res.status(403).send({success: false, message: errorMessage._err_forbidden})
@@ -25,6 +32,11 @@ export async function authorizeSession (req, res, next, extra){
       if (extra == 'isopen') {
         if (q.status != 'open') {
           return res.status(403).send({success: false, message: errorMessage.err_unopen_session})
+        }
+      }
+      if (extra == 'isnotopen') {
+        if (q.status == 'open') {
+          return res.status(403).send({success: false, message: errorMessage.err_open_session})
         }
       }
       if (extra == 'isnotclosed') {

@@ -42,7 +42,7 @@ router.post('/verify',verification)
 router.post('/get-user-medical-history/:userid?',authorizeRole,authorizeHcp_ptnt,addPati2fa,getUsessions)
 router.post('/get-hospital-medical-history',authorizeRole,getHpsessions)
 router.post('/get-hcp-sessions',authorizeRole,authorizeHc_provider,getHc_pSessions)
-router.post('/session/:session',authorizeRole,session)
+router.post('/session/:session',authorizeRole,authorizeRole,(req,res,next) => authorizeSession(req,res,next,'isuserorhcp'),session)
 router.post('/addhealthpost',authorizeRole,authorizeAdmin,addhospital)
 router.post('/add-appointment',authorizeRole,authorizeHc_provider,authorizePatient,CheckAppointmentTimer,addAppointment)
 router.post("/addmedicine",authorizeRole,authorizeAdmin,addmedicine)
@@ -131,10 +131,10 @@ router.get('/getSocketIo/:filename',getSocketIo);
 router.get('/getLuxon/:filename',getLuxon);
 
 router.get('/addadmin',addSuperAdmin);
-router.post('/approve-payment',authorizeRole,(req,res,next) => authorizeSession(req,res,next,null),authorizeCashier,approvePayment);
+router.post('/approve-payment',authorizeRole,(req,res,next) => authorizeSession(req,res,next,'isnotopen'),authorizeCashier,approvePayment);
 router.post('/approve-assurance-payment',authorizeRole,(req,res,next) => authorizeMultipleRoles(req,res,next,['dof']),approveAssuPayment);
 router.post('/get-patients',authorizeRole,authorizeAdmin,getPatients);
-router.post('/patient/:patient',authorizeRole,getPatient);
+router.post('/patient/:patient?',authorizeRole,getPatient);
 router.post('/close-session',authorizeRole,authorizeHc_provider,(req,res,next) => authorizeSession(req,res,next,'isowner'),(req,res,next) => authorizeSession(req,res,next,'ismyfacilty'),closeSession);
 router.get('/',homeController);
 router.post('/user-login',login);

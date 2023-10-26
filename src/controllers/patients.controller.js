@@ -1,6 +1,10 @@
+import { MatchTemplate, connectFP } from './fingerprint.controller';
 import query from './query.controller'
 import errorMessage from './response.message.controller'
 import authenticateToken from './token.verifier.controller';
+import EventEmitter from 'events';
+class MyEventEmitter extends EventEmitter {}
+const event = new MyEventEmitter();
 export const getPatients = async (req,res)=>{
         try {
             let select = await query(`
@@ -18,7 +22,47 @@ export const getPatients = async (req,res)=>{
 }
 export const getPatient = async (req,res)=>{
     try {
-        let {patient} = req.params
+        var {patient} = req.params
+        let {fp_data,type} = req.body
+        if (!patient && type == 'fp') {
+            let patiFps = await selectPatientFP();
+            let ogUser = await new Promise(async (resolve) => {
+                let foundPatient = null; // Initialize a variable to store the found patient
+                for (const user of patiFps) {
+                    let check = await new Promise(async (resolve2, reject) => {
+                        connectFP('', (callback) => {
+                          if (callback.type && callback.type == 'comparison' && callback.success) {
+                            event.emit('responseReceived',user)
+                          } else if (callback.type && callback.type == 'comparison' && !callback.success) {
+                            event.emit('responseReceived',null)
+                          }
+                          if (callback.type == 'connection' && callback.success) {
+                            resolve2(1);
+                          } else if (callback.type == 'connection' && !callback.success) {
+                            // Handle connection failure
+                            reject(0);
+                          }
+                        });
+                    })
+              
+                    if (check) {
+                        MatchTemplate(fp_data, user.data);
+                    }
+                    foundPatient = await new Promise((resolve4)=>{
+                    event.on('responseReceived', (userdata)=>{
+                       resolve4(userdata)
+                    })
+                  })
+                  if (foundPatient) {
+                    return resolve(foundPatient); // Resolve with the found patient (may be null if not found)
+                  }else{
+                    resolve(foundPatient);
+                  }
+                }
+              });
+              if (!ogUser) return res.status(404).send({success: false, message: errorMessage._err_u_404})
+              patient = ogUser.user
+        }
         let select = await query(`
             SELECT
                 patients.id,
@@ -104,11 +148,43 @@ export const addUserAssurance = async (req,res)=>{
     }
 }
 export async function selectPatient(patient) {
-    let p = await query('select id, Full_name, email, phone, FA from patients where id = ?',[patient])
-    if (!p) {
+    try {
+        let p = await query('select id, Full_name, email, phone, FA from patients where id = ?',[patient])
+        if (!p) {
+            return null
+        }else{
+            p  = p[0]
+            return p
+        }
+        
+    } catch (error) {
+        console.log(error)
         return null
-    }else{
-        p  = p[0]
-        return p
+    }
+}
+export async function selectPatientFP(patient) {
+    try {
+        let p
+        if(patient){
+            p = await query('select data, user from fingerprints where user = ?',[patient])
+            if (!p) {
+                return null
+            }else{
+                p  = p[0]
+                return p
+            }
+
+        }else{
+            p = await query('select data, user from fingerprints',[])
+            if (!p) {
+                return null
+            }else{
+                return p
+            }
+        }
+        
+    } catch (error) {
+        console.log(error)
+        return null
     }
 }

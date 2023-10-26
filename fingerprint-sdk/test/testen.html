@@ -1,0 +1,297 @@
+﻿<html> 
+ 
+<head> 
+    <title>Fingerprint Browser Test</title>
+
+    <script src="jquery-1.3.2.min.js" type="text/javascript"></script>
+    <script type="text/javascript">
+    var ws;
+    $(document).ready(function () {
+
+        // test if the browser supports web sockets
+        if ("WebSocket" in window) {
+            debug("Browser supports web sockets!", 'success');
+            connect("ws://127.0.0.1:21187/fps");
+            $('#console_send').removeAttr('disabled');
+        } else {
+            debug("Browser does not support web sockets", 'error');
+        };
+
+        // function to send data on the web socket
+        function ws_send(str) {
+            try {
+                ws.send(str);
+            } catch (err) {
+                debug(err, 'error');
+            }
+        }
+
+        // connect to the specified host
+        function connect(host) {
+
+            //debug("Connecting to " + host + " ...");
+            try {
+                ws = new WebSocket(host); // create the web socket
+            } catch (err) {
+                debug(err, 'error');
+            }
+            $('#host_connect').attr('disabled', true); // disable the 'reconnect' button
+
+            ws.onopen = function () {
+                cleardebug();
+                debug("connected... ", 'success'); // we are in! :D
+
+                $('#es').val('Connected OK!');
+            };
+
+            ws.onmessage = function (evt) {
+                //debug(evt.data, 'response'); // we got some data - show it omg!!
+                var obj = eval("("+evt.data+")");                
+                var status = document.getElementById("es");
+                switch (obj.workmsg) {
+                    case 1:
+                        status.value = "Please Open Device";
+                        break;
+                    case 2:
+                        status.value = "Place Finger";
+                        break;
+                    case 3:
+                        status.value = "Lift Finger";
+                        break;
+                    case 4:
+                        //status.value = "";
+                        break;
+                    case 5:                        
+                        if (obj.retmsg == 1) {
+                            status.value = "Get Template OK";
+                            if (obj.data1 == "null") {
+
+                            } else {
+                                var en2 = document.getElementById("e2");
+                                en2.value = obj.data1;
+                            }
+                        } else {
+                            status.value = "Get Template Fail";
+                        }                        
+                        break;
+                    case 6:                        
+                        if (obj.retmsg == 1) {
+                            status.value = "Enrol Template OK";
+                            if (obj.data1 == "null") {
+
+                            } else {
+                                var en1 = document.getElementById("e1");
+                                en1.value = obj.data1;
+                            }
+                        } else {
+                            status.value = "Enrol Template Fail";
+                        }
+                        break;
+                    case 7:
+                        if (obj.image == "null") {
+                        } else {
+                            var img = document.getElementById("imgDiv");
+                            img.src = "data:image/png;base64,"+obj.image;                            
+                            
+							var en3 = document.getElementById("e3");
+                            en3.value = obj.image;
+                        }
+                        break;
+                    case 8:
+                        status.value = "Time Out";
+                        break;
+                    case 9:
+                        status.value = "Match Result:"+obj.retmsg;
+                        break;
+					case 10:
+						if (obj.image == "null") {
+                        } else {
+							var en4 = document.getElementById("e4");
+                            en4.value = obj.image;
+                        }
+						break;
+                    case 15:
+                        if (obj.retmsg == 1) {
+                            status.value = "Device Link OK";
+                        } else {
+                            status.value = "Device Link Fail";
+                        }
+                        break;
+                    case 18:
+                        if (obj.image == "null") {
+                        } else {
+                            var img = document.getElementById("imgDiv");
+                            img.src = "data:image/jpeg;base64," + obj.image;
+                        }
+                        break;
+                    case 19:
+                            status.value = obj.image;
+                        break;
+                }
+            };
+
+            ws.onclose = function () {
+                debug("Socket closed!", 'error'); // the socket was closed (this could be an error or simply that there is no server)
+                $('#host_connect').attr('disabled', false); // re-enable the 'reconnect button
+            };
+        };
+
+        // function to display stuff, the second parameter is the class of the <p> (used for styling)
+        function debug(msg, type) {
+            $("#console").append('<p class="' + (type || '') + '">' + msg + '</p>');
+        };
+
+        function cleardebug() {
+            $("#console").empty();
+        }
+
+        // the user clicked to 'reconnect' button
+        $('#host_connect').click(function () {
+            debug("\n");
+            connect("ws://127.0.0.1:21187/fps");
+        });
+        
+        $('#host_close').click(function () {
+            debug("\n");
+            ws.close();
+        });
+    });
+
+    function EnrollTemplate() {
+        try {
+            var v1 = "0";       //fingerprint   0 black,1 red,2 green,3 blue
+            var v2 = "0";       //background    1 alpha,0 whiter
+            var cmd = "{\"cmd\":\"enrol\",\"data1\":\"" + v1 + "\",\"data2\":\"" + v2 + "\"}";
+            ws.send(cmd);
+        } catch (err) {
+        }
+        document.getElementById("es").value = "Place Finger";
+    }
+
+    function GetTemplate() {
+        try {
+            var v1 = "1";   //fingerprint   0 black,1 red,2 green,3 blue
+            var v2 = "0";   //background    1 alpha,0 whiter
+            var cmd = "{\"cmd\":\"capture\",\"data1\":\"" + v1 + "\",\"data2\":\"" + v2 + "\"}";
+            ws.send(cmd);
+        } catch (err) {
+        }
+        document.getElementById("es").value = "Place Finger";
+    }
+
+    /*
+    function MatchTemplate() {
+        var v1=document.getElementById("e1").value;
+        var v2 = document.getElementById("e2").value;
+        var cmd = "{\"cmd\":\"match\",\"data1\":\"" + v1 + "\",\"data2\":\"" + v2 + "\"}";
+        try {
+            ws.send(cmd);
+        } catch (err) {
+        }        
+    }
+    */
+
+    ///*
+    function MatchTemplate() {
+        var v1 = document.getElementById("e1").value;
+        var v2 = document.getElementById("e2").value;
+        try {
+            var cmd = "{\"cmd\":\"setdata\",\"data1\":\"" + v1 + "\",\"data2\":\""  + "\"}";
+            ws.send(cmd);
+            var cmd = "{\"cmd\":\"setdata\",\"data1\":\"" + "\",\"data2\":\"" + v2 + "\"}";
+            ws.send(cmd);
+            var cmd = "{\"cmd\":\"match\",\"data1\":\"\",\"data2\":\"\"}";
+            ws.send(cmd);
+        } catch (err) {
+        }
+    }
+    //*/
+
+    function RelinkDevice() {
+        try {
+            var cmd = "{\"cmd\":\"opendevice\",\"data1\":\"\",\"data2\":\"\"}";
+            ws.send(cmd);
+        } catch (err) {
+        }
+    }
+
+    function GetDeviceSN() {
+        try {
+            var cmd = "{\"cmd\":\"getsn\",\"data1\":\"\",\"data2\":\"\"}";
+            ws.send(cmd);
+        } catch (err) {
+        }
+    }
+
+    function AboutImage() {
+        try {
+            var cmd = "{\"cmd\":\"aboutimage\",\"data1\":\"\",\"data2\":\"\"}";
+            ws.send(cmd);
+        } catch (err) {
+        }
+    }
+</script> 
+ 
+<style type="text/css"> 
+	.error {color: red;}
+	.success {color: green;}
+	#console_wrapper {background-color: black; color:white;padding:5px;}
+	#console p {padding:0;margin:0;}
+</style> 
+</head> 
+ 
+<body> 
+ 
+    <h1>Fingerprint Browser Test</h1> 
+    <div id="server_wrapper">
+        <p>
+            <input type="submit" name="host_connect" id="host_connect" value="Reconnect!" />
+            <input type="submit" name="host_close" id="host_close" value="Close!" />
+        </p>
+    </div> 
+
+
+    <div id="console_wrapper">
+        <pre id="console"></pre>
+    </div> 
+
+    <table width="100%" border="1" cellspacing="0">
+        <tr align="center">
+            <td width="35%">
+                <div style="width:256px; height:360px;">
+                    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAAkCAYAAABIdFAMAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAHhJREFUeNo8zjsOxCAMBFB/KEAUFFR0Cbng3nQPw68ArZdAlOZppPFIBhH5EAB8b+Tlt9MYQ6i1BuqFaq1CKSVcxZ2Acs6406KUgpt5/LCKuVgz5BDCSb13ZO99ZOdcZGvt4mJjzMVKqcha68iIePB86GAiOv8CDADlIUQBs7MD3wAAAABJRU5ErkJggg==" alt="" style="width:100%;" id="imgDiv" align="middle" />
+                </div>                
+            </td>
+            <td width="15%"><input type="button" value="Enrol Template" name="B2" ONCLICK=EnrollTemplate()></td>
+            <td width="15%"><input type="button" value="Get Template" name="B3" ONCLICK=GetTemplate()></td>
+            <td width="15%"><input type="button" value="Match Template" name="B4" ONCLICK=MatchTemplate()></td>
+            <td width="20%">
+	<input type="button" value="Relink Device" name="B5" ONCLICK=RelinkDevice()>
+	<p></p>
+	<input type="button" value="Get Device SN" name="B6" ONCLICK=GetDeviceSN()>
+	<p></p>
+	<input type="button" value="About Image" name="B7" ONCLICK=AboutImage()>
+	</td>
+        </tr>
+        <tr align="center">
+            <td width="35%"><input name="es" type="text" id="es" value="" readonly /></td>
+            <td width="15%">Place Two</td>
+            <td width="15%">Place One</td>
+            <td width="15%">&nbsp;</td>
+            <td width="20%">&nbsp;</td>
+        </tr>
+    </table>
+
+<h3>Fingerprint Template (Enrol / base64)</h3>
+    <p><textarea rows="10" name="S1" id="e1" cols="155"></textarea></p>
+<h3>Fingerprint Template (Match / base64)</h3>    
+    <p><textarea rows="6" name="S2" id="e2" cols="155"></textarea></p>
+<h3>Fingerprint Image (PNG Image / base64)</h3>    
+    <p><textarea rows="12" name="S2" id="e3" cols="155"></textarea></p>
+<h3>Fingerprint Image (WSQ Image / base64)</h3>    
+    <p><textarea rows="12" name="S2" id="e4" cols="155"></textarea></p>    
+    
+</body> 
+ 
+</html>
+

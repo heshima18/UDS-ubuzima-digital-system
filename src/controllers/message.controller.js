@@ -32,7 +32,7 @@ export const sendMessage = async (req,res)=>{
             return res.status(500).send({success:false, message: errorMessage.is_error})
           }
       }
-      res.send({success: true, message: errorMessage.ms_message})     
+      return res.send({success: true, message: errorMessage.ms_message})     
       }else{
         let uid = id()
         let decoded = authenticateToken(token)
@@ -76,6 +76,35 @@ export async function ioSendMessage(messageInfo) {
   }else{
     return null
   }
+}
+export async function ioSendMessages(messageInfo) {
+  const leTime = DateTime.now();
+  let now = leTime.setZone('Africa/Kigali');
+  now = now.toFormat('yyyy-MM-dd HH:mm:ss')
+  const sid = id();
+  let {receivers,type,content,extra,title,sender} = messageInfo
+  console.log(receivers)
+  try {
+    
+    for (const ids of receivers) {
+      let uid = id()
+        let insert = await query(`insert
+         into messages
+         (id,user,receiver,type,title,content,addins,sessionid,dateadded)
+         values(?,?,?,?,?,?,?,?,?)`,
+         [uid,sender.id,ids,type,title,content,JSON.stringify(extra),sid,now])
+         const recipientSocket = Array.from(io.sockets.sockets.values()).find((sock) => sock.handshake.query.id === ids)
+         if (recipientSocket) {
+             recipientSocket.emit('message',{id: uid,session: sid,type,title,content,sender,extra,dateadded: now})
+         }else{
+             console.log('recepient is not online')
+         }
+    }
+    return true
+  } catch (error) {
+    console.log(error)
+    return false
+  } 
 }
 export const getMessages = async(req,res) =>{
   try {

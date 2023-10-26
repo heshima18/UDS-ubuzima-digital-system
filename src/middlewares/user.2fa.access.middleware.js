@@ -5,7 +5,8 @@ import errorMessage from '../controllers/response.message.controller';
 import generate2FAcode from '../controllers/2FA.code.generator.controller';
 import { ioSendMessage } from '../controllers/message.controller';
 import { io } from '../socket.io/connector.socket.io';
-import { selectPatient } from '../controllers/patients.controller';
+import { selectPatient, selectPatientFP } from '../controllers/patients.controller';
+import { MatchTemplate,connectFP } from '../controllers/fingerprint.controller';
 export const  addPati2fa = async (req,res,next) =>{
     try {
         const {token} = req.body;
@@ -41,12 +42,41 @@ export const  addPati2fa = async (req,res,next) =>{
             if (ReqSocket) {
                 const dec = await new Promise((resolve, reject) => {
                     ReqSocket.on('authCode', async (code)=>{
-                        let p = await selectPatient(code.user)
-                        if (!p) resolve(0);
-                        if (p.FA != code.v) {
-                            resolve(0);
+
+                        if (code.type == 'code') {
+                            let p = await selectPatient(code.user)
+                            if (!p) reject(0);
+                            if (p.FA != code.v) {
+                                reject(0);
+                            }else{
+                                resolve(1);
+                            }
+                            
+                        }else if (code.type == 'fp') {
+                           let fp_data = code.fp_data
+                           let p = await selectPatientFP(code.user)
+                           if (!p) return reject(0);
+                           let connection = await new Promise((resolve2, reject2) => {
+                               connectFP('',callback=>{
+                                if (callback.type && callback.type == 'comparison' && callback.success) {
+                                    resolve(1)
+                                    ReqSocket.emit('RemoveAuthDivs',true)
+
+                                }else if (callback.type && callback.type == 'comparison' && !callback.success) {
+                                    ReqSocket.emit('messagefromserver','incorrect fingerprint try again')
+                                    // resolve(0)
+                                }
+                                if (callback.type == `connection` && callback.success) {
+                                    resolve2(1)
+                                }else if(callback.type == `connection` && !callback.success){
+                                    reject2(0)
+                                }
+                               })
+                           })
+                           if (connection) {
+                               MatchTemplate(fp_data,p.data)
+                           }
                         }
-                        resolve(1);
                     })
                   });
                 if (!dec) return res.status(401).send({ message: errorMessage._err_forbidden, success: false });

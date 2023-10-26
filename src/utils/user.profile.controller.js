@@ -1,4 +1,4 @@
-import { addLoadingTab, addsCard, addshade, alertMessage, calcTime, deletechild, getPath, getdata, postschema, request, showAvaiAssurances, showAvaiEmps } from "./functions.controller.js";
+import { RemoveAuthDivs, addLoadingTab, addsCard, addshade, alertMessage, calcTime, deletechild, getPath, getdata, postschema, request, showAvaiAssurances, showAvaiEmps } from "./functions.controller.js";
 let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,z,x,c,v,b,n,m
 export function addUprofile(data){
     e = addshade();
@@ -150,6 +150,7 @@ export function addUprofile(data){
           loadMHButton.removeAttribute('disabled')
           return alertMessage(r.message)
         }
+        RemoveAuthDivs()
         mhBody.innerHTML  = null
         let mhHol = document.createElement('ul')
         mhHol.className = `timeline w-100`
