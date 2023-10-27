@@ -27,27 +27,30 @@ export const getPatient = async (req,res)=>{
         if (!patient && type == 'fp') {
             let patiFps = await selectPatientFP();
             if (!patiFps)  return res.status(500).send({success:false, message: errorMessage.is_error})
-            let ogUser = await new Promise(async (resolve) => {
+            let ogUser = await new Promise(async (resolve,reject) => {
                 let foundPatient = null; // Initialize a variable to store the found patient
                 for (const user of patiFps) {
-                    let check = await new Promise(async (resolve2, reject) => {
-                        connectFP('', (callback) => {
+                    let check
+                    try {
+                        check = await  connectFP('', (callback) => {
                           if (callback.type && callback.type == 'comparison' && callback.success) {
                             event.emit('responseReceived',user)
                           } else if (callback.type && callback.type == 'comparison' && !callback.success) {
                             event.emit('responseReceived',null)
                           }
-                          if (callback.type == 'connection' && callback.success) {
-                            resolve2(1);
-                          } else if (callback.type == 'connection' && !callback.success) {
-                            // Handle connection failure
+                          if (callback.type == 'connection' && !callback.success) {
                             reject(0);
                           }
-                        });
-                    })
-              
+                        })
+                        
+                    } catch (error) {
+                        console.log(error)
+                        check = !1
+                    }
                     if (check) {
                         MatchTemplate(fp_data, user.data);
+                    }else{
+                        reject(0)
                     }
                     foundPatient = await new Promise((resolve4)=>{
                     event.on('responseReceived', (userdata)=>{
