@@ -1593,7 +1593,7 @@
 
 
   "start": "nodemon --exec \"node -r esm\" app.js",
-  "sto2": "pkill -f 'node app.js'",
+  "stop2": "pkill -f 'node app.js'",
   "stop": "taskkill /F /IM node.exe"
   
 
