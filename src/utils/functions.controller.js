@@ -761,7 +761,6 @@ export async function showAvaiEmps(emps,extra){
     u.appendChild(a)
     let group = {}
     var key;
-    console.log(emps,extra)
     if (extra) {
       key = Object.keys(extra)[0]
       let suba
@@ -990,8 +989,10 @@ export function adcm(n) {
 }
 export function calcTime(targetTime) {
   targetTime = new Date(targetTime)
-  let currentTime = new Date();
-  currentTime.setHours(currentTime.getHours() - 1)
+  const leTime = DateTime.now();
+  let now = leTime.setZone('Africa/Kigali');
+  now = now.toFormat('yyyy-MM-dd HH:mm:ss')
+  let currentTime = new Date(now)
   const timeDifference = currentTime - targetTime;
 
   const seconds = Math.floor(timeDifference / 1000);

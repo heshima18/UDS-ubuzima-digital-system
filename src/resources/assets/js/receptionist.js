@@ -1,7 +1,7 @@
 let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,z,x,c,v,b,n,m,notificationlinks
-import { alertMessage, getdata, getschema, postschema, request,initializeCleave, checkEmpty,cpgcntn, showRecs, getchips,getPath,showAvaiEmps, deletechild, geturl, addsCard,showAvaiAssurances, addLoadingTab } from "../../../utils/functions.controller.js";
+import { alertMessage, getdata, getschema, postschema, request,initializeCleave, checkEmpty,cpgcntn, showRecs, getchips,getPath,showAvaiEmps, deletechild, geturl, addsCard,showAvaiAssurances, addLoadingTab, RemoveAuthDivs, showFingerprintDiv, sessiondata } from "../../../utils/functions.controller.js";
 import {pushNotifs, userinfo,expirateMssg, getNfPanelLinks,m as messages} from "./nav.js";
-import { addUprofile } from "../../../utils/user.profile.controller.js";
+import { addUprofile, uprofileStf } from "../../../utils/user.profile.controller.js";
 
 (async function () {
     z = userinfo
@@ -87,107 +87,6 @@ if(a){
     cpgcntn(0)
 
 }
-async function uprofileStf(r) {
-    d = addUprofile(r.message);
-    x = document.createElement('div')
-    d.appendChild(x)
-    x.className = `p-f b-0 p-20p bsbb zi-1000 center w-100 l-0`
-    x.innerHTML = `<button type="button" class="btn rounded-pill btn-primary capitalize">notify consultant</button>` 
-    x = x.querySelector('button');
-    let a = await showAvaiAssurances(r.message.assurances)
-    l = Array.from(a.querySelectorAll('li.assurance'))
-    for (const lis of l) {
-      lis.addEventListener('click',async function(event){
-          event.preventDefault();
-          this.classList.add('selected')
-          let assurance = this.getAttribute('data-id');
-          if (assurance == "null") {
-            assurance = null
-          }
-          r.message.assurances = assurance
-          deletechild(a,a.parentNode)
-          addsCard('Assurance Selected',true)
-        });
-    }
-    x.addEventListener('click',async event=>{
-        event.preventDefault()
-        p = await showAvaiEmps(users);
-        let emps = Array.from(p.querySelectorAll('.emp'))
-        let deps = Array.from(p.querySelectorAll('.dep'))
-          for (const lis of emps) {
-            lis.addEventListener('click',async function(event){
-                event.preventDefault();
-                this.classList.add('selected')
-                let employee = this.getAttribute('data-id')
-                j = JSON.parse(postschema.body)
-                Object.assign(j,
-                    {
-                        title:'incoming patient',
-                        receiver: employee,
-                        type: 'p_message', 
-                        content: `there is an incoming patient called ${r.message.Full_name}`,
-                        extra: {
-                            name: r.message.Full_name,
-                            patient: r.message.id,nid:r.message.nid,
-                            assurance: r.message.assurances
-                        },
-                        controller: {
-                            looping: false,
-                            recipients: []
-                        }
-                    }
-                )
-                postschema.body = JSON.stringify(j)
-                deletechild(p,p.parentNode)
-                x.setAttribute('disabled',true)
-                x.innerText = 'notifying the receiver...'
-                r =  await request('send-message',postschema)
-                x.removeAttribute('disabled')
-                x.innerText = 'consultant notified !'
-                x.classList.replace('btn-primary','btn-success')
-                deletechild(d.parentNode,d.parentNode.parentNode)
-                addsCard('consultant notified !',true)
-              });
-          }
-          for (const dep of deps) {
-            dep.addEventListener('click',async function(event){
-                let emps = Array.from(dep.parentNode.parentElement.querySelectorAll('.emp'))
-                emps = emps.map(function (employee) {
-                    return employee.getAttribute('data-id')
-                })
-                j = JSON.parse(postschema.body)
-                Object.assign(j,
-                    {
-                        title:'incoming patient',
-                        receiver: emps,
-                        type: 'p_message', 
-                        content: `there is an incoming patient called ${r.message.Full_name}`,
-                        extra: {
-                            name: r.message.Full_name,
-                            patient: r.message.id,
-                            nid:r.message.nid,
-                            assurance: r.message.assurances
-                        },
-                        controller: {
-                            looping: true,
-                            recipients: emps
-                        }
-                    }
-                )
-                postschema.body = JSON.stringify(j)
-                deletechild(p,p.parentNode)
-                x.setAttribute('disabled',true)
-                x.innerText = 'notifying the receiver...'
-                r =  await request('send-message',postschema)
-                x.removeAttribute('disabled')
-                x.innerText = 'consultant notified !'
-                x.classList.replace('btn-primary','btn-success')
-                deletechild(d.parentNode,d.parentNode.parentNode)
-                addsCard('consultant notified !',true)
-            });
-          }
-    }) 
-  }
     window.onpopstate = function () {
         a = getPath(1)
         if(a){
@@ -226,35 +125,53 @@ c.forEach((cudstp)=>{
   async function gsd(page) {
     x = page.id
     if (x == 'search-patient') {
-      f = page.querySelector('form[name="sp-form"]');
-      s = f.querySelector('input[type="text"]')
-      setTimeout(e=>{s.focus()},200)
-      b = f.querySelector('button[type="submit"]')
-            if (getPath(2)) {
-                b.innerHTML = `<span class="spinner-border" role="status" aria-hidden="true"></span>`
-                b.setAttribute('disabled',true)
-                r = await request(`patient/${getPath(2)}`,postschema)
-                s.value = getPath(2)
-                b.innerHTML = `<i class="bx bx-search h-20p w-a center"></i>`
-                b.removeAttribute('disabled')
-                if (!r.success) return alertMessage(r.message)
-                uprofileStf(r)
-                
-            }
-      f.onsubmit = async e=>{
-        e.preventDefault();
-        if (!s.value) return 0
-        b.innerHTML = `<span class="spinner-border" role="status" aria-hidden="true"></span>`
-        b.setAttribute('disabled',true)
-        r = await request(`patient/${s.value}`,postschema)
-        b.innerHTML = `<i class="bx bx-search h-20p w-a center"></i>`
-        b.removeAttribute('disabled')
-        if (!r.success) return alertMessage(r.message)
-        let url = new URL(window.location.href);
-        url.pathname = `/${getPath()[0]}/search-patient/${s.value}`;
-        window.history.pushState({},'',url.toString())
-        uprofileStf(r)
-      }
+        f = page.querySelector('form[name="sp-form"]');
+        s = f.querySelector('input[type="text"]')
+        setTimeout(e=>{s.focus()},200)
+        b = f.querySelector('button[type="submit"]')
+        if (getPath(2)) {
+            b.innerHTML = `<span class="spinner-border" role="status" aria-hidden="true"></span>`
+            b.setAttribute('disabled',true)
+            r = await request(`patient/${getPath(2)}`,postschema)
+            s.value = getPath(2)
+            b.innerHTML = `<i class="bx bx-search h-20p w-a center"></i>`
+            b.removeAttribute('disabled')
+            if (!r.success) return alertMessage(r.message)
+            uprofileStf(r,users)
+            
+        }
+        let fingerprint = page.querySelector('span#fingerprint')
+        fingerprint.onclick = async function () {
+          let fp_data = await showFingerprintDiv('search');
+          if (fp_data) {
+            postschema.body = JSON.stringify({
+                token: getdata('token'),
+                fp_data,
+                type: 'fp'
+            })
+            r = await request(`patient/`,postschema)
+            RemoveAuthDivs();
+            if (!r.success) return alertMessage(r.message)
+            uprofileStf(r,users);
+            let url = new URL(window.location.href);
+            url.pathname = `/receptionist/search-patient/${r.message.id}`;
+            window.history.pushState({},'',url.toString())
+          }
+        }   
+        f.onsubmit = async e=>{
+            e.preventDefault();
+            if (!s.value) return 0
+            b.innerHTML = `<span class="spinner-border" role="status" aria-hidden="true"></span>`
+            b.setAttribute('disabled',true)
+            r = await request(`patient/${s.value}`,postschema)
+            b.innerHTML = `<i class="bx bx-search h-20p w-a center"></i>`
+            b.removeAttribute('disabled')
+            if (!r.success) return alertMessage(r.message)
+            let url = new URL(window.location.href);
+            url.pathname = `/${getPath()[0]}/search-patient/${s.value}`;
+            window.history.pushState({},'',url.toString())
+            uprofileStf(r,users)
+        }
     }else if (x == 'my-account') {
         console.log(userinfo)
         n = document.querySelector('span.name')
@@ -468,11 +385,6 @@ function genClicks(notificationlinks) {
                 if (session) {
                     url.pathname = `/${getPath()[0]}/${link.getAttribute('data-href-target')}/${session}`;
                 }
-            }else if (link.getAttribute('data-message-type') == '__APPNTMNT_MSSG_') {
-                appApprovalCont(message)
-                url.pathname = `/${getPath()[0]}/${link.getAttribute('data-href-target')}`;
-            }else{
-                url.pathname = `/${getPath()[0]}/${link.getAttribute('data-href-target')}`;
             }
             window.history.pushState({},'',url.toString())
             cpgcntn(p.indexOf(v),p)

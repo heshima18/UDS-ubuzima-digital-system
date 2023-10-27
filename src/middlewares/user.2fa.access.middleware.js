@@ -56,25 +56,27 @@ export const  addPati2fa = async (req,res,next) =>{
                            let fp_data = code.fp_data
                            let p = await selectPatientFP(code.user)
                            if (!p) return reject(0);
-                           let connection = await new Promise((resolve2, reject2) => {
-                               connectFP('',callback=>{
-                                if (callback.type && callback.type == 'comparison' && callback.success) {
-                                    resolve(1)
-                                    ReqSocket.emit('RemoveAuthDivs',true)
-
-                                }else if (callback.type && callback.type == 'comparison' && !callback.success) {
-                                    ReqSocket.emit('messagefromserver','incorrect fingerprint try again')
-                                    // resolve(0)
-                                }
-                                if (callback.type == `connection` && callback.success) {
-                                    resolve2(1)
-                                }else if(callback.type == `connection` && !callback.success){
-                                    reject2(0)
-                                }
+                           let connection
+                           try {
+                               connection = await connectFP('',callback=>{
+                                    if (callback.type && callback.type == 'comparison' && callback.success) {
+                                        resolve(1)
+                                        ReqSocket.emit('RemoveAuthDivs',true)
+    
+                                    }else if (callback.type && callback.type == 'comparison' && !callback.success) {
+                                        ReqSocket.emit('messagefromserver','incorrect fingerprint try again')
+                                        // resolve(0)
+                                    }
+                                    
                                })
-                           })
+                            
+                           } catch (error) {
+                            connection = !1
+                           }
                            if (connection) {
                                MatchTemplate(fp_data,p.data)
+                           }else{
+                               reject(0)
                            }
                         }
                     })

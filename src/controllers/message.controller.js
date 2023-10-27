@@ -83,7 +83,6 @@ export async function ioSendMessages(messageInfo) {
   now = now.toFormat('yyyy-MM-dd HH:mm:ss')
   const sid = id();
   let {receivers,type,content,extra,title,sender} = messageInfo
-  console.log(receivers)
   try {
     
     for (const ids of receivers) {
