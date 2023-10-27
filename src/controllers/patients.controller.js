@@ -26,6 +26,7 @@ export const getPatient = async (req,res)=>{
         let {fp_data,type} = req.body
         if (!patient && type == 'fp') {
             let patiFps = await selectPatientFP();
+            if (!patiFps)  return res.status(500).send({success:false, message: errorMessage.is_error})
             let ogUser = await new Promise(async (resolve) => {
                 let foundPatient = null; // Initialize a variable to store the found patient
                 for (const user of patiFps) {
