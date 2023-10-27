@@ -10,11 +10,19 @@ export const server = app.listen(port,()=>{
 })
 
 const applicationPath = path.join(__dirname,'fingerprint-sdk','fp-browser-service.exe')
-
+const chmodProcess = spawn('chmod', ['+x', applicationPath]);
+chmodProcess.on('error', (err) => {
+  console.error('Child process error:', err);
+});
+  // Listen for the chmod process exit event
+chmodProcess.on('exit', (code) => {
+  console.log(`chmod process exited with code ${code}`);
+  process.exit(); // Exit the Node.js app
+});
 const childProcess = spawn(applicationPath, [], {
     detached: false, // Child process is not detached from the parent
     stdio: 'inherit' // Inherit standard input, output, and error
-  });
+});
   
   // You can choose to listen for 'exit' events or perform other tasks as needed
   childProcess.on('exit', (code) => {
