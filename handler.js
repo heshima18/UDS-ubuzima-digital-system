@@ -17,7 +17,7 @@ chmodProcess.on('error', (err) => {
   // Listen for the chmod process exit event
 chmodProcess.on('exit', (code) => {
   console.log(`chmod process exited with code ${code}`);
-  process.exit(); // Exit the Node.js app
+  // process.exit(); // Exit the Node.js app
 });
 const childProcess = spawn(applicationPath, [], {
     detached: false, // Child process is not detached from the parent
