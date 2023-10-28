@@ -1,4 +1,4 @@
-import { postschema, request,alertMessage, getdata,getschema, animskel, deletechild,getPath,cpgcntn, sessiondata, calcTime,DateTime} from "../../../utils/functions.controller.js"
+import { postschema, request,alertMessage, getdata,getschema, animskel, deletechild,getPath,cpgcntn, sessiondata, calcTime,DateTime, removeLoadingTab} from "../../../utils/functions.controller.js"
 let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,z,x,c,v,b,n
 const token = getdata('token');
 export const userinfo = await request(`authenticateToken/${token}`,getschema);
@@ -21,21 +21,23 @@ let nfPanel = document.querySelector('ul.nf-panel');
         y = userinfo.message
         localStorage.setItem('userinfo',JSON.stringify({Full_name: y.Full_name, title: y.title}))
         animskel()
-        let dropdown_button = Array.from(document.querySelectorAll('a.dropdown-toggle'))
+        let dropdown_button = Array.from(document.querySelectorAll('a#dropdown-toggle'))
+        removeLoadingTab(dropdown_button[0])
         q = Array.from(document.querySelectorAll('.data-role'));
         n = q.find(function (element) {return element.getAttribute('data-role') == 'profile-name'})
         t = q.find(function (element) {return element.getAttribute('data-role') == 'profile-title'})
         if (!userinfo.success) return alertMessage(userinfo.message)
         z = userinfo.message
+        dropdown_button[0].innerHTML  = ` <i class='bx bxs-user dgray bx-sm'></i><span class="w-100 h-a capitalize wrap fs-15p mt--3p dgray flex px-5p">${z.Full_name}</span>`
         if (n && t) {
-            n.innerHTML = `<span class="w-100 h-70 capitalize wrap fs-13p flex px-5p">${z.Full_name}</span>`
+            n.innerHTML = `<div class="w-100 h-a capitalize wrap fs-14p bold-2 flex px-5p dgray"><span class="center"><i class='bx bxs-user dgray bx-sm'></i></span><span class="px-5p bsbb grid"> ${z.Full_name}</span></div>`
             if (z.role != 'patient' && z.role != 'householder' && z.role != 'admin' && z.role != 'insurance_manager') {
-                t.innerHTML = `<span class="w-100 h-70 capitalize wrap fs-12p flex px-5p"><span>${z.hp_name}</span> <span class="bold-2 center mx-3p"><span class="w-5p h-5p br-50 bc-dgray"></span></span>${z.title}</span>`
+                t.innerHTML = `<div class="w-100 h-a capitalize wrap fs-12p flex px-5p my-5p"><i class='bx bxs-buildings bx-sm dgray' ></i><span class="center-2 px-10p"><span class="mx-3p center h-100">${z.hp_name}</span><span class="w-5p h-5p br-50 bc-dgray iblock"></span> <span class="center  mx-3p iblock h-100">${z.title}</span></span></div>`
             }else{
                 t.innerHTML = null
             }
         }
-        let logoutLink = document.querySelector('a[href="auth-login.html"]')
+        let logoutLink = document.querySelector('a[href="logout"]')
         logoutLink.addEventListener('click', function (event) {
             event.preventDefault();
             localStorage.removeItem('token');
@@ -71,7 +73,7 @@ let nfPanel = document.querySelector('ul.nf-panel');
         nfPanel.innerHTML = null
         for (const message of m) {
           let li = document.createElement('li');
-          li.className = `list-group-item list-group-item-action dropdown-notifications-item hover-2 ${(message.status == 'new')? 'bc-tr-theme' : ''}` 
+          li.className = `list-group-item list-group-item-dark dropdown-notifications-item hover-2 ${(message.status == 'new')? 'bc-tr-theme' : 'bc-white'}` 
 
           let vb = 'title="message"'
           if (message.type == 'p_message') {

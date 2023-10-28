@@ -161,7 +161,7 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,z,notificationlinks
             setTimeout(e=>{s.focus()},200)
             b = f.querySelector('button[type="submit"]')
             if (getPath(2)) {
-                b.innerHTML = `<span class="spinner-border" role="status" aria-hidden="true"></span>`
+                b.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`
                 b.setAttribute('disabled',true)
                 r = await request(`patient/${getPath(2)}`,postschema)
                 s.value = getPath(2)
@@ -191,7 +191,7 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,z,notificationlinks
             f.onsubmit = async e=>{
                 e.preventDefault();
                 if (!s.value) return 0
-                b.innerHTML = `<span class="spinner-border" role="status" aria-hidden="true"></span>`
+                b.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`
                 b.setAttribute('disabled',true)
                 r = await request(`patient/${s.value}`,postschema)
                 b.innerHTML = `<i class="bx bx-search h-20p w-a center"></i>`
@@ -390,7 +390,7 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,z,notificationlinks
                     session = session_input.value;
                     postschema.body = JSON.stringify({token: getdata('token')})
                     addLoadingTab(page.querySelector('div.theb'));
-                    session_s_button.innerHTML = `<span class="spinner-border" role="status" aria-hidden="true"></span>`
+                    session_s_button.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`
                     session_s_button.setAttribute('disabled',true)
                     let sessiondata =  await request(`session/${session}`,postschema)
                     if (sessiondata.success) {
@@ -744,7 +744,7 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,z,notificationlinks
                         dateadded : message.dateadded
                     })
                     button.classList.add('loading')
-                    button.innerHTML = `<span class="spinner-border" role="status" aria-hidden="true"></span>`
+                    button.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`
                     let addApp = await request('add-appointment',postschema)
                     button.innerHTML = `approve`
                     button.classList.remove('loading')
@@ -797,7 +797,7 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,z,notificationlinks
                                     dateadded : message.dateadded
                                 })
                                 button.classList.add('loading')
-                                button.innerHTML = `<span class="spinner-border" role="status" aria-hidden="true"></span>`
+                                button.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`
                                 let addApp = await request('add-appointment',postschema)
                                 button.innerHTML = `proceed`
                                 button.classList.remove('loading')
@@ -1020,7 +1020,7 @@ class popups{
             }
             if (l) {
             let button = form.querySelector('button[type="submit"]')
-            button.innerHTML = `<span class="spinner-border" role="status" aria-hidden="true"></span>`
+            button.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`
             button.setAttribute('disabled',true)
                 let values = {}
                 for (const input of inputs) {
@@ -1081,7 +1081,7 @@ class popups{
             }
             if (l) {
             let button = form.querySelector('button[type="submit"]')
-            button.innerHTML = `<span class="spinner-border" role="status" aria-hidden="true"></span>`
+            button.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`
             button.setAttribute('disabled',true)
                 let values = {}
                 for (const input of inputs) {
@@ -1167,7 +1167,7 @@ class popups{
             }
             if (l) {
             let button = form.querySelector('button[type="submit"]')
-            button.innerHTML = `<span class="spinner-border" role="status" aria-hidden="true"></span>`
+            button.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`
             button.setAttribute('disabled',true)
                 let values = {}
                 for (const input of inputs) {
@@ -1245,7 +1245,7 @@ class popups{
             }
             if (l) {
             let button = form.querySelector('button[type="submit"]')
-            button.innerHTML = `<span class="spinner-border" role="status" aria-hidden="true"></span>`
+            button.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`
             button.setAttribute('disabled',true)
                 let values = {}
                 for (const input of inputs) {
@@ -1323,7 +1323,7 @@ class popups{
             }
             if (l) {
             let button = form.querySelector('button[type="submit"]')
-            button.innerHTML = `<span class="spinner-border" role="status" aria-hidden="true"></span>`
+            button.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`
             button.setAttribute('disabled',true)
                 let values = {}
                 for (const input of inputs) {
@@ -1379,7 +1379,7 @@ class popups{
             }
             if (l) {
             let button = form.querySelector('button[type="submit"]')
-            button.innerHTML = `<span class="spinner-border" role="status" aria-hidden="true"></span>`
+            button.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`
             button.setAttribute('disabled',true)
                 let values = {}
                 for (const input of inputs) {
@@ -1450,7 +1450,7 @@ class popups{
             }
             if (l) {
             let button = form.querySelector('button[type="submit"]')
-            button.innerHTML = `<span class="spinner-border" role="status" aria-hidden="true"></span>`
+            button.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`
             button.setAttribute('disabled',true)
                 let values = {}
                 for (const input of inputs) {
