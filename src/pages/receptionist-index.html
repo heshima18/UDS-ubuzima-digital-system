@@ -13,30 +13,17 @@
             href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&amp;display=swap"
             rel="stylesheet" />
     
-        <link rel="stylesheet" href="/assets/vendor/fonts/boxicons.css" />
-        <link rel="stylesheet" href="/assets/vendor/fonts/fontawesome.css" />
-        <link rel="stylesheet" href="/assets/vendor/libs/spinkit/spinkit.css">
-    
+        
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/boxicons/2.1.4/css/boxicons.min.css" integrity="sha512-cn16Qw8mzTBKpu08X0fwhTSv02kK/FojjNLz0bwp2xJ4H+yalwzXKFw/5cLzuBZCxGWIA+95X4skzvo8STNtSg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" integrity="sha512-b2QcS5SsA8tZodcDtGRELiGv5SaKSk1vDHDaQRda0htPYWZ6046lr3kJ5bAAQdpV2mmA/4v0wQF9MyU6/pDIAg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/spinkit/2.0.0/spinkit.min.css" integrity="sha512-kRYkjiYH/VXxoiaDK2oGNMKIi8VQVfie1lkYGX3kmfzWNR2kfaF5ze0885W3/eE6lIiURBsZA91M/WNvCajHMw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
         <!-- Core CSS -->
-        <link rel="stylesheet" href="/assets/vendor/css/core.css" class="template-customizer-core-css" />
-        <link rel="stylesheet" href="/assets/vendor/css/theme-default.css" class="template-customizer-theme-css" />
-        <link rel="stylesheet" href="/assets/css/demo.css" />
-    
-        <!-- Vendors CSS -->
-        <link rel="stylesheet" href="/assets/vendor/libs/datatables-bs5/datatables.bootstrap5.css" />
-        <link rel="stylesheet" href="/assets/vendor/libs/datatables-responsive-bs5/responsive.bootstrap5.css" />
-        <link rel="stylesheet" href="/assets/vendor/libs/datatables-buttons-bs5/buttons.bootstrap5.css" />
-        <link rel="stylesheet" href="/assets/vendor/libs/datatables-checkboxes-jquery/datatables.checkboxes.css" />
-    
-        <link rel="stylesheet" href="/assets/vendor/libs/select2/select2.css" />
-        <link rel="stylesheet" href="/assets/vendor/libs/formvalidation/dist/css/formValidation.min.css" />
         <link rel="stylesheet" type="text/css" href="/styles/styling.css">
-        <link rel="stylesheet" href="/assets/vendor/fonts/boxicons.css">
 
     <script src="/assets/js/receptionist.js" type="module"></script>
-    <script src="/assets/js/nav.js" type="module"></script>
-	<script src="/getSocketIo/socket.io.min.js"></script>
-    <script src="/assets/vendor/libs/cleavejs/cleave.js"></script>
+    <script src="/assets/js/nav.js" type="module"></script> <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.min.js" integrity="sha512-Xm9qbB6Pu06k3PUwPj785dyTl6oHxgsv9nHp7ej7nCpAqGZT3OZpsELuCYX05DdonFpTlBpXMOxjavIAIUwr0w==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cleave.js/1.6.0/cleave.min.js" integrity="sha512-KaIyHb30iXTXfGyI9cyKFUIRSSuekJt6/vqXtyQKhQP6ozZEGY8nOtRS6fExqE4+RbYHus2yGyYg1BrqxzV6YA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="/assets/vendor/libs/cleavejs/cleave-phone.rw.js"></script>
 	<link rel="shortcut icon" href="/icons/favicon.png" type="image/x-icon">
 </head>
@@ -46,7 +33,7 @@
 	<div id="body" class="bc-gray w-100 h-100 p-r bsbb">
         
         <div class="w-100 h-a bsbb m-0 t-0 p-f p-10p zi-100">
-            <nav class="w-100 card-2 bc-white br-5p flex jc-sb pr-15p pl-15p" id="layout-navbar">
+            <nav class="w-100 card-1 bc-white br-5p flex jc-sb pr-15p pl-15p" id="layout-navbar">
                 <div class="h-54p center">
                     <a class="nav-item nav-link px-0 me-xl-4 flex" href="javascript:void(0)">
                         <span>
@@ -55,24 +42,68 @@
                     </a>
                 </div>
                 <div class="h-54p center" id="navbar-collapse">
-                    <ul class="navbar-nav flex-row align-items-center ms-auto">
-                        <li class="nav-item navbar-dropdown dropdown p-5p bsbb mr-5p">
-                            <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="notification-dropdown" data-bs-auto-close="outside">
-                                <i class="bx bx-bell bx-sm"></i>
+                    <ul class="flex h-54p p-0 m-0 ls-none">
+                        <li class="center-2 px-10p">
+                            <a class="td-none center-2 " id="dropdown-toggle" href="javascript:void(0);" data-bs-toggle="profile-dropdown">
+                                    <div class="sk-wave sk-primary w-25p shaddow">
+                                        <div class="bc-theme sk-wave-rect"></div>
+                                        <div class="bc-theme sk-wave-rect"></div>
+                                        <div class="bc-theme sk-wave-rect"></div>
+                                        <div class="bc-theme sk-wave-rect"></div>
+                                        <div class="bc-theme sk-wave-rect"></div>
+                                    </div>
+                            </a>
+                            <ul class="profile-dropdown bc-white card-5 h-a w-250p bsbb t-80p p-f mr-20p r-0 ls-none br-10p p-0 hidden" name="profile-dropdown">
+                                <li class="px-10p bsbb py-2p my-10p w-100 h-a">
+                                    <a class="dropdown-item" href="#">
+                                        <div class="flex px-5p py-10p bsbb">
+                                            <div class="left w-100">
+                                                <span class="fw-semibold d-bloc data-role bsbb" data-role="profile-name"><span class="skel w-65p h-10p br-2p block my-5p"></span></span>
+                                                <small class="text-muted block data-role" data-role="profile-title"><span class="skel w-50p h-10p br-2p block my-5p"></span></small>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </li>
+                                <li class="bsbb py-2p">
+                                    <div class="dropdown-divider bb-1-s-g"></div>
+                                </li>
+                                <li class="px-10p bsbb py-2p my-10p w-100 h-a">
+                                    <a class="left td-none dgray" href="../my-account">
+                                        <div class="center-2 w-a">
+                                            <i class="bx bxs-user-account px-10p bx-sm"></i>
+                                            <span class="dgray mt--5p">My Account</span>
+                                        </div>
+                                    </a>
+                                </li>
+                                <li class="bsbb py-2p">
+                                    <div class="dropdown-divider bb-1-s-g"></div>
+                                </li>
+                                <li class="px-10p bsbb py-2p my-10p w-100 h-a">
+                                    <a class="left td-none dgray" href="logout" target="_blank">
+                                        <div class="center-2 w-a">
+                                            <i class="bx bx-log-out px-10p bx-sm"></i>
+                                            <span class="dgray mt--5p">Log Out</span>
+                                        </div>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li class="center-2">
+                            <a class="p-r p-10p bsbb center td-none" id="dropdown-toggle" href="javascript:void(0);" data-bs-toggle="notification-dropdown" data-bs-auto-close="outside">
+                                <i class="bx bx-bell bx-sm dgray"></i>
                                 <span class="p-a bc-red br-50 w-15p h-15p fs-9p white hidden t-5p r-0  data-role" data-role="notification-count-badge">0</span>
                             </a>
-                            <ul class="notification-dropdown bc-white card h-400p w-390p p-0 t-80p p-f mr-20p r-0 ls-none bw-90-500-resp bm-x-10p-resp hidden" data-bs-popper="static" name="notification-dropdown" id="notification-dropdown">
-                                <li class="dropdown-menu-header border-bottom px-10p py-5p bsbb">
+                            <ul class="notification-dropdown bc-white card-5 br-10p h-500p w-390p p-0 t-80p p-f mr-20p r-0 ls-none bw-90-500-resp bm-x-10p-resp hidden" data-bs-popper="static" name="notification-dropdown" id="notification-dropdown">
+                                <li class="dropdown-menu-header border-bottom px-15p py-15p bsbb">
                                     <div class="dropdown-header d-flex align-items-center py-10p">
-                                        <h5 class="text-body mb-0 me-auto capitalize">Notifications</h5>
-                                        <a href="javascript:void(0)" class="dropdown-notifications-all text-body" data-bs-toggle="tooltip" data-bs-placement="top" aria-label="Mark all as read" data-bs-original-title="Mark all as read"><i class="bx fs-4 bx-envelope-open"></i></a>
+                                        <i class='bx bx-notification px-10p bx-sm dgray'></i><h5 class=" mb-0 me-auto capitalize dgray">Notifications</h5>
                                     </div>
                                 </li>
-                                <li class="dropdown-notifications-list scrollable-container h-80 ovys scroll-3">
+                                <li class="dropdown-notifications-list scrollable-container h-78 ovys scroll-3">
                                     <ul class="list-group list-group-flush nf-panel h-100">
                                        <li class="w-100 h-100 center">
                                         <div class="center">
-                                            <div class="sk-grid sk-primary">
+                                            <div class="sk-grid sk-blue">
                                                 <div class="sk-grid-cube"></div>
                                                 <div class="sk-grid-cube"></div>
                                                 <div class="sk-grid-cube"></div>
@@ -88,60 +119,14 @@
                                        </li>
                                     </ul>
                                 </li>
-                                <li class="dropdown-menu-footer border-top">
+                                <li class="dropdown-menu-footer border-top h-50p center-2">
                                     <a href="javascript:void(0);" class="dropdown-item d-flex justify-content-center p-3">
                                         Mark all as seen
                                     </a>
                                 </li>
                             </ul>
                         </li>
-                        <li class="nav-item navbar-dropdown dropdown-user dropdown ml-5p">
-                            <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="profile-dropdown">
-                                <div class="avatar avatar-online">
-                                    <img src="/assets/img/avatar-1.png" alt="" class="w-px-40 h-auto rounded-circle">
-                                </div>
-                            </a>
-                            <ul class="profile-dropdown bc-white card h-200p w-200p p-0 t-80p p-f mr-20p r-0 ls-none hidden" name="profile-dropdown">
-                                <li>
-                                    <a class="dropdown-item" href="pages-account-settings-account.html">
-                                        <div class="flex px-5p py-10p bsbb">
-                                            <div class="left mx-5p">
-                                                <div class="avatar avatar-online">
-                                                    <img src="/assets/img/avatar-1.png" alt="" class="w-px-40 h-auto rounded-circle">
-                                                </div>
-                                            </div>
-                                            <div class="left">
-                                                <span class="fw-semibold d-bloc data-role bsbb" data-role="profile-name"><span class="skel w-65p h-10p br-2p block my-5p"></span></span>
-                                                <small class="text-muted block data-role" data-role="profile-title"><span class="skel w-50p h-10p br-2p block my-5p"></span></small>
-                                            </div>
-                                        </div>
-                                    </a>
-                                </li>
-                                <li class="px-10p bsbb py-2p">
-                                    <div class="dropdown-divider"></div>
-                                </li>
-                                <li class="px-10p bsbb py-2p">
-                                    <a class="dropdown-item left" href="../my-account">
-                                        <i class="bx bx-user me-2"></i>
-                                        <span class="align-middle">My Account</span>
-                                    </a>
-                                </li>
-                                <li class="px-10p bsbb py-2p">
-                                    <div class="dropdown-divider"></div>
-                                </li>
-                                <li class="px-10p bsbb py-2p">
-                                    <a class="dropdown-item left" href="auth-login.html" target="_blank">
-                                        <i class="bx bx-power-off me-2"></i>
-                                        <span class="align-middle">Log Out</span>
-                                    </a>
-                                </li>
-                            </ul>
-                        </li>
                     </ul>
-                </div>
-                <div class="navbar-search-wrapper search-input-wrapper d-none">
-                    <input type="text" name="search" class="form-control search-input container-xxl border-0" placeholder="Search..." aria-label="Search..." autofocus="true">
-                    <i class="bx bx-x bx-sm search-toggler cursor-pointer"></i>
                 </div>
             </nav>
         </div>
@@ -154,16 +139,36 @@
 								<div class="the-h w-210p m-a bfull-resp bsbb h-a ovxs scroll-3">
 									<ul class="ls-none p-0 m-0 jc-sb w-100 bflex-resp">
 										<li class="p-5p bsbb">
-											<span class="w-100 h-100 p-10p hover-2 cpcards bsbb iblock verdana nowrap capitalize fs-13p br-5p active bb-1-s-theme bc-tr-theme theme" data-item-type="home">Home</span>
+											<span class="w-100 h-100 p-10p hover-7 cpcards bsbb flex verdana nowrap capitalize fs-13p br-5p active bb-1-s-theme bc-tr-theme theme dgray" data-item-type="home">
+                                                <span class="w-a h-19p mr-10p"><i class='bx bx-home-alt bx-sm'></i></span>
+                                                <span class="center pt-2p bsbb">
+                                                     Home
+                                                </span>
+                                            </span>
 										</li>
 										<li class="p-5p bsbb">
-											<span class="w-100 h-100 p-10p hover-2 cpcards bsbb iblock verdana nowrap capitalize fs-13p br-5p" data-item-type="search-patient">search patient</span>
+											<span class="w-100 h-100 p-10p hover-7 cpcards bsbb flex verdana nowrap capitalize fs-13p br-5p dgray" data-item-type="search-patient">
+                                                <span class="w-a h-19p mr-10p"><i class='bx bx-search bx-sm' ></i></span>
+                                                <span class="center pt-2p bsbb mt--2p">
+                                                     search patient
+                                                </span>
+                                            </span>
 										</li>
                                         <li class="p-5p bsbb">
-											<span class="w-100 h-100 p-10p hover-2 cpcards bsbb iblock verdana nowrap capitalize fs-13p br-5p" data-item-type="register-patient">register patient</span>
+											<span class="w-100 h-100 p-10p hover-7 cpcards bsbb flex verdana nowrap capitalize fs-13p br-5p dgray" data-item-type="register-patient">
+                                                <span class="w-a h-19p mr-10p"><i class='fas fa-user-plus fs-18p' ></i></span>
+                                                <span class="center pt-2p bsbb mt--2p">
+                                                    register patient
+                                                </span>
+                                            </span>
 										</li>
 										<li class="p-5p bsbb">
-											<span class="w-100 h-100 p-10p hover-2 cpcards bsbb iblock verdana nowrap capitalize fs-13p br-5p" data-item-type="my-account">my account</span>
+											<span class="w-100 h-100 p-10p hover-7 cpcards bsbb flex verdana nowrap capitalize fs-13p br-5p dgray" data-item-type="my-account"> 
+                                                <span class="w-a h-19p mr-10p"><i class="bx bxs-user-account bx-sm"></i></span>
+                                                <span class="center pt-2p bsbb">
+                                                    my account
+                                                </span>
+                                            </span>
 										</li>
 									</ul>
 								</div>
@@ -178,44 +183,59 @@
 								<div class="pg-cntnt w-100 h-90 bh-80-resp scroll-3 p-20p bsbb ovys left bp-0-resp">
 									<div class="home row p-5p bsbb">
                                         <div class="col-md-6 col-lg-4 mb-3">
-                                            <div class="card">
-                                                <div class="card-header">
-                                                    Patients
+                                            <div class="b-1-s-gray p-20p br-5p">
+                                                <div class="capitalize px-5p">
+                                                    <span>
+                                                        <i class="fas fa-hospital-user dgray fs-16p"></i>
+                                                    </span>
+                                                    <span class="fs-18p bold-2 dgray bold-2 dgray">
+                                                        Patients
+                                                    </span>
                                                 </div>
-                                                <div class="card-body">
-                                                    <h5 class="card-title">Today's patients</h5>
+                                                <div class="mt-10p px-15p bsbb">
+                                                    <h5 class="dgray capitalize">today's patients</h5>
                                                     <p class="card-text">
                                                         <span class="bold-2">30</span> Patients
                                                     </p>
-                                                    <a href="pendingApplications/" class="btn btn-primary">View</a>
+                                                    <a href="pendingApplications/" class="btn btn-transparent white bc-theme">View</a>
                                                 </div>
                                             </div>
                                         </div>
                                         <div class="col-md-6 col-lg-4 mb-3">
-                                            <div class="card">
-                                                <div class="card-header">
-                                                    Patients
+                                            <div class="b-1-s-gray p-20p br-5p">
+                                                <div class="capitalize px-5p">
+                                                    <span>
+                                                        <i class="fas fa-hospital-user dgray fs-16p"></i>
+                                                    </span>
+                                                    <span class="fs-18p bold-2 dgray bold-2 dgray">
+                                                        Patients
+                                                    </span>
                                                 </div>
-                                                <div class="card-body">
-                                                    <h5 class="card-title">today's pending patients</h5>
+                                                <div class="mt-10p px-15p bsbb">
+                                                    <h5 class="dgray capitalize">today's pending patients</h5>
                                                     <p class="card-text">
                                                         <span class="bold-2">30</span> Patients
                                                     </p>
-                                                    <a href="pendingApplications/" class="btn btn-primary">View</a>
+                                                    <a href="pendingApplications/" class="btn btn-transparent white bc-theme">View</a>
                                                 </div>
                                             </div>
                                         </div>
                                         <div class="col-md-6 col-lg-4 mb-3">
-                                            <div class="card">
-                                                <div class="card-header">
-                                                    Patients
+                                            <div class="b-1-s-gray p-20p br-5p">
+                                                <div class="capitalize px-5p">
+                                                    <span>
+                                                        <i class="fas fa-hospital-user dgray fs-16p"></i>
+                                                    </span>
+                                                    <span class="fs-18p bold-2 dgray bold-2 dgray">
+                                                        Patients
+                                                    </span>
                                                 </div>
-                                                <div class="card-body">
-                                                    <h5 class="card-title">today's served patients</h5>
+                                                <div class="mt-10p px-15p bsbb">
+                                                    <h5 class="dgray capitalize">today's served patients</h5>
                                                     <p class="card-text">
                                                         <span class="bold-2">30</span> Patients
                                                     </p>
-                                                    <a href="pendingApplications/" class="btn btn-primary">View</a>
+                                                    <a href="pendingApplications/" class="btn btn-transparent white bc-theme">View</a>
                                                 </div>
                                             </div>
                                         </div>
@@ -224,18 +244,18 @@
 							</div>
 							<!-- end of home section -->
 							<!-- search patient section -->
-							<div class="bc-white  br-5p w-100 h-100 p-a ovh hidden t-0 tr-0-3 pagecontentsection" id="search-patient">
+							<div class="br-5p w-100 h-100 p-a ovh hidden t-0 tr-0-3 pagecontentsection" id="search-patient">
 								<div class="w-100 h-a p-10p bsbb">
-									<span class="theme capitalize left flex bold fs-20p verdana h-100 pl-10p"><span class="dgray capitalize">Receptionist / </span>&nbsp;Search patient</span>
+									<span class="theme capitalize left flex bold fs-20p verdana h-100 pl-10p"><span class="dgray capitalize">HCP / </span>&nbsp;Search patient</span>
 								</div>
-								<div class="pg-cntnt w-100 h-90 p-20p bp-0-resp bsbb ovys left">
+								<div class="pg-cntnt w-100 h-90 p-20p bp-0-resp bsbb ovys left bc-white br-5p">
 									<div>
 										<div class="w-100 h-a p-20p bsbb bp-0-resp flex">
                                             <form method="post" class="sp-form w-100" id="sp-form" name="sp-form">
                                                 <div class="input-group input-group-merge">
                                                     <input type="text" class="form-control" placeholder="NID, Phone number, email" aria-label="Search patient" aria-describedby="basic-addon-search31">
                                                     <span class="input-group-text hover-2" id="basic-addon-search31">
-                                                        <button type="submit" class="btn btn-primary">
+                                                        <button type="submit" class="btn btn-transparent">
                                                                 <i class="bx bx-search h-20p w-a center"></i>
                                                         </button>
                                                     </span>
@@ -280,25 +300,25 @@
 								<div class="pg-cntnt w-100 h-90 p-20p bp-0-resp bsbb ovys left">
 									<div>
                                         <form id="add-patient-form" class="mb-2" name="add-patient-form" id="add-patient-form" action="../" method="POST">
-                                            <div class="flex">
+                                            <div class="flex bblock-resp">
                                                 <div class="mb-2 block pl-5p pr-5p w-100">
-                                                    <label for="firstname" class="form-label">Firstname</label>
+                                                    <label for="firstname" class="form-label uppercase dgray">Firstname</label>
                                                     <input type="text" class="form-control" id="firstname" name="firstname" placeholder="Enter your Firstname" autofocus>
                                                     <small class="hidden w-100 red pl-3p verdana"></small>
                                                 </div>
                                                 <div class="mb-2 block pl-5p pr-5p w-100">
-                                                    <label for="lastname" class="form-label">Lastname</label>
+                                                    <label for="lastname" class="form-label uppercase dgray">Lastname</label>
                                                     <input type="text" class="form-control" id="lastname" name="lastname" placeholder="Enter your Lastname" autofocus>
                                                     <small class="hidden w-100 red pl-3p verdana"></small>
                                                 </div>
                                             </div>
                                             <div class="mb-2">
-                                                <label for="NID" class="form-label">NID</label>
+                                                <label for="NID" class="form-label uppercase dgray">NID</label>
                                                 <input type="text" class="form-control national-id-no-mask optional" id="nid" name="nid" placeholder="Enter your NID">
                                                 <small class="hidden w-100 red pl-3p verdana"></small>
                                             </div>
                                             <div class="mb-2 block pl-5p pr-5p">
-                                                <label for="role" class="form-label block">Role</label>
+                                                <label for="role" class="form-label uppercase dgray block">Role</label>
                                                 <div class="flex jc-sb">
                                                     <span class="center-2">
                                                         <input type="radio" name="role" class="p-5p bsbb hover-2 us-none mx-5p" value="householder"><span class="capitalize pi-none us-none">i am a householder</span>
@@ -310,18 +330,18 @@
                                                 </div>
                                             </div>
                                             <div class="mb-2 block">
-                                                <label for="NID" class="form-label">House Holder's NID</label>
+                                                <label for="NID" class="form-label uppercase dgray">House Holder's NID</label>
                                                 <input type="text" class="form-control hh-national-id-no-mask" id="householder" name="householder" placeholder="Enter your house holder's NID">
                                                 <small class="hidden w-100 red pl-3p verdana"></small>
                                             </div>
-                                            <div class="flex">
+                                            <div class="flex bblock-resp">
                                                 <div class="w-100 pr-5p">
-                                                    <label for="DOB" class="form-label">DOB</label>
+                                                    <label for="DOB" class="form-label uppercase dgray">DOB</label>
                                                     <input type="date" class="form-control" id="dob" name="dob" placeholder="Enter your DOB">
                                                     <small class="hidden w-100 red pl-3p verdana"></small>
                                                 </div>
                                                 <div class="w-100 pl-5p">
-                                                    <label for="gender" class="form-label">Gender</label>
+                                                    <label for="gender" class="form-label uppercase dgray">Gender</label>
                                                     <select name="gender" id="gender" class="form-select">
                                                         <option value="">Choose</option>
                                                         <option value="male">Male</option>
@@ -332,36 +352,36 @@
                                                 </div>
                                             </div>
                                             <div class="mb-2 p-r">
-                                                <label for="Insurances" class="form-label">Insurances</label>
+                                                <label for="Insurances" class="form-label uppercase dgray">Insurances</label>
                                                 <input type="text" class="form-control chips-check" id="assurances" name="assurances" placeholder="Select your Insurances">
                                                 <small class="hidden w-100 red pl-3p verdana"></small>
                                             </div>
-                                            <div class="flex">
+                                            <div class="flex bblock-resp">
                                                 <div class="w-100 pr-5p">
-                                                    <label for="ahp-location-province" class="form-label">Province</label>
+                                                    <label for="ahp-location-province" class="form-label uppercase dgray">Province</label>
                                                     <select name="province" id="ahp-location-province" class="address-field form-select">
                                                         <option value="">Select Province</option>
                                                     </select>
                                                     <small class="red fs-14p"></small>
                                                 </div>
                                                 <div class="w-100 pl-5p">
-                                                    <label for="ahp-location-district" class="form-label">District</label>
+                                                    <label for="ahp-location-district" class="form-label uppercase dgray">District</label>
                                                     <select name="district" id="ahp-location-district" class="address-field form-select">
                                                         <option value="">Select District</option>
                                                     </select>
                                                     <small class="red fs-14p"></small>
                                                 </div>
                                             </div>
-                                            <div class="flex">
+                                            <div class="flex bblock-resp">
                                                 <div class="w-100 pr-5p">
-                                                    <label for="ahp-location-sector" class="form-label">Sector</label>
+                                                    <label for="ahp-location-sector" class="form-label uppercase dgray">Sector</label>
                                                     <select name="sector" id="ahp-location-sector" class="address-field form-select">
                                                         <option value="">Select Sector</option>
                                                     </select>
                                                     <small class="red fs-14p"></small>
                                                 </div>
                                                 <div class="w-100 pl-5p">
-                                                    <label for="ahp-location-cell" class="form-label">Cell</label>
+                                                    <label for="ahp-location-cell" class="form-label uppercase dgray">Cell</label>
                                                     <select name="cell" id="ahp-location-cell" class="address-field form-select">
                                                         <option value="">Select Cell</option>
                                                     </select>
@@ -369,22 +389,29 @@
                                                 </div>
                                             </div>
                                             <div class="mb-2">
-                                                <label for="email" class="form-label">Email</label>
+                                                <label for="email" class="form-label uppercase dgray">Email</label>
                                                 <input type="text" class="form-control optional" id="email" name="email" placeholder="Enter your email">
                                                 <small class="hidden w-100 red pl-3p verdana"></small>
                                             </div>
                                             <div class="mb-2">
-                                                <label for="phone" class="form-label">phone</label>
+                                                <label for="phone" class="form-label uppercase dgray">phone</label>
                                                 <input type="text" class="form-control phone-number-mask optional" id="phone" name="phone" placeholder="Enter your Phone Number">
                                                 <small class="hidden w-100 red pl-3p verdana"></small>
                                             </div>
                                             <div class="mb-2 form-password-toggle">
-                                                <label class="form-label" for="password">Password</label>
+                                                <label class="form-label uppercase dgray" for="password">Password</label>
                                                 <div class="input-group input-group-merge">
                                                     <input type="password" id="password" class="form-control" name="password" placeholder="&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;" aria-describedby="password" />
                                                     <span class="input-group-text cursor-pointer"><i class="bx bx-hide"></i></span>
                                                     <small class="hidden w-100 red pl-3p verdana"></small>
                                                 </div>
+                                            </div>
+                                            <div class="mb-2">
+                                                <span class="text-muted uppercase mb-5p block">other info</span>
+                                                <span class="flex">
+                                                    <button type="button" class="btn btn-sm bc-tr-theme theme capitalize" id="add-fp">add fingerprint</button>
+                                                    <span class=" mx-5p pb-3p w-30p h-30p bsbb bc-gray dgray center" id="fp_ind">...</span>
+                                                </span>
                                             </div>
                                             <div class="mb-2">
                                                 <div class="form-check">
@@ -397,6 +424,7 @@
                                                     <small class="hidden w-100 red pl-3p verdana"></small>
                                                 </div>
                                             </div>
+
                                             <button type="submit" class="btn btn-primary d-grid w-100">
                                                 Sign up
                                             </button>

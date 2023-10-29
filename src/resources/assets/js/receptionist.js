@@ -130,7 +130,7 @@ c.forEach((cudstp)=>{
         setTimeout(e=>{s.focus()},200)
         b = f.querySelector('button[type="submit"]')
         if (getPath(2)) {
-            b.innerHTML = `<span class="spinner-border" role="status" aria-hidden="true"></span>`
+            b.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`
             b.setAttribute('disabled',true)
             r = await request(`patient/${getPath(2)}`,postschema)
             s.value = getPath(2)
@@ -161,7 +161,7 @@ c.forEach((cudstp)=>{
         f.onsubmit = async e=>{
             e.preventDefault();
             if (!s.value) return 0
-            b.innerHTML = `<span class="spinner-border" role="status" aria-hidden="true"></span>`
+            b.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`
             b.setAttribute('disabled',true)
             r = await request(`patient/${s.value}`,postschema)
             b.innerHTML = `<i class="bx bx-search h-20p w-a center"></i>`
@@ -173,7 +173,6 @@ c.forEach((cudstp)=>{
             uprofileStf(r,users)
         }
     }else if (x == 'my-account') {
-        console.log(userinfo)
         n = document.querySelector('span.name')
         n.textContent = userinfo.message.Full_name
         i = document.querySelector('span.n-img');
@@ -190,6 +189,7 @@ c.forEach((cudstp)=>{
         try {
                 
                 f = document.querySelector('form#add-patient-form')
+                let fp = f.querySelector('button#add-fp'),fp_data,fp_ind = f.querySelector('span#fp_ind')
                 s = Array.from(f.querySelectorAll('select.address-field'));
                 g = Array.from(f.querySelectorAll('select.form-select'));
                 i = Array.from(f.querySelectorAll('input'))
@@ -282,7 +282,19 @@ c.forEach((cudstp)=>{
                             }
                         }
                     })
+                }
+                fp.onclick = async function (event) {
+                    event.preventDefault()
+                    fp_data = await showFingerprintDiv('register');
+                    if (fp_data) {
+                        RemoveAuthDivs()
+                       fp_ind.classList.replace('bc-gray','bc-tr-green')
+                       fp_ind.classList.replace('dgray','green')
+                       fp_ind.classList.remove('mt--2p')
+                       fp_ind.innerHTML = `<i class="fas fa-check"></i>`
+                    }
                 } 
+
                 f.addEventListener('submit', async e =>{
                     let a,b,n,u,r;
                     n = '';
@@ -327,8 +339,7 @@ c.forEach((cudstp)=>{
                         }
                     }
                     if (v) {
-                        Object.assign(b,{ Full_name: n})
-                        Object.assign(b,{ username: u})
+                        Object.assign(b,{ Full_name: n,username: u,fp_data})
                         postschema.body = JSON.stringify(b)
                         console.log(b)
                         r = await request('api/signup',postschema);

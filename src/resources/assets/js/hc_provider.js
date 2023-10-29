@@ -461,9 +461,9 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,z,notificationlinks
                         let li = document.createElement('li')
                         li.className = `ovh`
                         appointmentsHolder.appendChild(li)
-                        li.innerHTML = `<div class="w-100 h-70p p-5p my-10p ovh">
+                        li.innerHTML = `<div class="w-100 h-70p p-5p my-10p">
                                             <div class="w-100 h-100 bc-tr-white">
-                                                <div class="header w-100 h-60p card br-5p bc-white p-r block hover-2">
+                                                <div class="header w-100 h-60p card-1 br-5p bc-white p-r block hover-2">
                                                     <div class="w-100 h-100 flex jc-sb p-5p bsbb">
                                                         <span class="dgray center capitalize px-10p fs-16p">${month.month} / ${year.year}</span>
                                                         <span class="px-25p center spanner hover-2" data-role="span">

@@ -1,5 +1,5 @@
 var q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,z,x,c,v,b,n,m
-import { ConnectDevice, GetTemplate, connectFP } from "./fingerprint.controller.js";
+import { ConnectDevice, EnrollTemplate, GetTemplate, connectFP } from "./fingerprint.controller.js";
 import { DateTime } from "/getLuxon/luxon.js";
 export {DateTime}
 export async function request(url,options){
@@ -59,15 +59,15 @@ export function addLoadingTab(parent) {
     var loading = document.createElement('div');
     loading.className = "p-a cntr w-70p h-70p ovh";
     loading.innerHTML = `<div class="sk-grid sk-primary">
-                          <div class="sk-grid-cube"></div>
-                          <div class="sk-grid-cube"></div>
-                          <div class="sk-grid-cube"></div>
-                          <div class="sk-grid-cube"></div>
-                          <div class="sk-grid-cube"></div>
-                          <div class="sk-grid-cube"></div>
-                          <div class="sk-grid-cube"></div>
-                          <div class="sk-grid-cube"></div>
-                          <div class="sk-grid-cube"></div>
+                          <div class="sk-grid-cube bc-theme"></div>
+                          <div class="sk-grid-cube bc-theme"></div>
+                          <div class="sk-grid-cube bc-theme"></div>
+                          <div class="sk-grid-cube bc-theme"></div>
+                          <div class="sk-grid-cube bc-theme"></div>
+                          <div class="sk-grid-cube bc-theme"></div>
+                          <div class="sk-grid-cube bc-theme"></div>
+                          <div class="sk-grid-cube bc-theme"></div>
+                          <div class="sk-grid-cube bc-theme"></div>
                         </div>`;
     shaddow.appendChild(loading)
     
@@ -796,24 +796,24 @@ export async function showAvaiEmps(emps,extra){
       }
     }
     a.className = "w-40 h-55 p-10p bsbb ovh bc-white cntr zi-10000 br-10p card b-mgc-resp"
-    a.innerHTML = `<div class="card-header d-flex align-items-center justify-content-between p-10p mb-10p bsbb">
+    a.innerHTML = `<div class=" d-flex align-items-center justify-content-between p-10p mb-10p bsbb">
                       <h5 class="card-title m-0 me-2 capitalize">select the receiver</h5>
                   </div>
                   <div class="ovys w-100 h-85 scroll-2 menu-vertical">
-                    <ul class="menu-inner py-1 the-cont">
+                    <ul class="menu-inner py-1 the-cont td-none ls-none pl-5p">
                     </ul>
                   </div>
                   `
     c = a.querySelector('ul')
     for (const department of Object.keys(group)) {
       d = document.createElement('li')
-      d.className = 'w-100 menu-item'
-      d.innerHTML = `<a href="javascript:void(0);" class="menu-link dgray fs-18 capitalize hover-2">
+      d.className = 'w-100 px-5p py-10p'
+      d.innerHTML = `<a href="javascript:void(0);" class="menu-link dgray fs-18 capitalize hover-2 td-none flex p-r">
                         <div class="dep" data-id="${(extra)? (key == 'department') ?group[department][0].department.id : group[department][0][key] :group[department][0].department.id}">${department}</div>
                         <div class="p-a drop-buttons p-10p bsbb hover-2 center r-0"><div class="right-arrow p-r tr-0-3"></div></div>
                     </a>`
       let ul = document.createElement('ul')
-      ul.className = 'hidden trigger-show'
+      ul.className = 'hidden trigger-show ls-none px-4p'
       d.appendChild(ul)
       for (const employee of group[department]) {
         let subm = document.createElement('li')
@@ -821,14 +821,16 @@ export async function showAvaiEmps(emps,extra){
         subm.innerHTML = `
                         <div class="d-flex">
                               <div class="flex-shrink-0 me-3">
-                                <div class="avatar ${(employee.online)? 'avatar-online':'avatar-offline'} ">
-                                  <span class="w-40p h-40p br-50 center bc-tr-theme capitalize">${employee.Full_name.substring(0,1)}</span>
+                                <div class="avatar">
+                                  <span class="w-40p h-40p br-50 center bc-tr-theme capitalize dgray bold-2">${employee.Full_name.substring(0,1)}</span>
                                 </div>
                               </div>
                               <div class="flex-grow-1 hover-2 emp" data-id="${employee.id}">
-                                  <h6 class="mb-1 capitalize">${employee.Full_name}</h6>
-                                  <p class="mb-0 capitalize">${employee.title}</p>
-                                  <!-- <small class="text-muted">last seen 1h ago</small> -->
+                                  <h6 class="mb-1 capitalize dgray">${employee.Full_name}</h6>
+                                  <p class="mb-0 flex">
+                                    <span class=" capitalize dgray">${employee.title}</span>
+                                    <small class=" ml-5p px-5p pb-3p br-5p ${(employee.online)? 'green bc-tr-green':'text-muted bc-gray'}">${(employee.online)? 'online':'offline'}</small>
+                                  </p>
                               </div>
                               
                           </div>`
@@ -869,8 +871,8 @@ export async function showAvaiAssurances(assurances){
     d.innerHTML = `
                      <div class="d-flex">
                           <div class="flex-grow-1">
-                              <h6 class="mb-1 capitalize">${assurance.name}</h6>
-                              <p class="mb-0 capitalize"><span class ="btn btn-sm ${(assurance.eligibility == 'eligible')?'btn btn-label-success':'btn-label-danger'}">${assurance.eligibility}</span></p>
+                              <h6 class="mb-1 capitalize dgray">${assurance.name}</h6>
+                              <p class="mb-0 capitalize"><span class ="btn btn-sm ${(assurance.eligibility == 'eligible')?'bc-tr-green green':'bc-tr-red red'}">${assurance.eligibility}</span></p>
                           </div>
                           
                       </div>`
@@ -882,8 +884,8 @@ export async function showAvaiAssurances(assurances){
   d.innerHTML = `
                    <div class="d-flex">
                         <div class="flex-grow-1">
-                            <h6 class="mb-1 capitalize">Private</h6>
-                            <p class="mb-0 capitalize"><span class ="btn btn-sm btn-label-secondary">no assurance used</span></p>
+                            <h6 class="mb-1 capitalize dgray">Private</h6>
+                            <p class="mb-0 capitalize"><span class ="btn btn-sm bc-gray dgray">no assurance used</span></p>
                         </div>
                         
                     </div>`
@@ -1074,12 +1076,12 @@ export function promptHpsToChoose(hps) {
   u = addshade();
   a = document.createElement('div')
   u.appendChild(a)
-  a.className = "w-350p h-30 p-10p bsbb ovh bc-white cntr zi-10000 br-10p card b-mgc-resp"
-  a.innerHTML = `<div class="card-header d-flex align-items-center justify-content-between p-10p mb-10p bsbb">
-                    <h4 class="card-title m-0 me-2 capitalize">select a health facility</h4>
+  a.className = "w-350p h-30 p-10p bsbb ovh bc-white cntr zi-10000 br-10p card-5 b-mgc-resp"
+  a.innerHTML = `<div class=" d-flex align-items-center justify-content-between py-10p bsbb">
+                    <h4 class="card-title m-0 px-10p capitalize">select a health facility</h4>
                 </div>
                 <div class="ovys w-100 h-85 scroll-2 menu-vertical">
-                  <ul class="menu-inner py-1 the-cont">
+                  <ul class="menu-inner py-1 the-cont ls-none">
                   </ul>
                 </div>
                 `
@@ -1198,9 +1200,9 @@ export async function showFingerprintDiv(action,socket,user) {
                    </span>
                    </div>
                    <div class="controlls w-100 h-a center-2">
-                    <button class="btn btn-label-primary d-grid w-100" id="start">start</button>
+                    <button class="btn btn-success white d-grid w-100" id="start">start</button>
                     <button class="btn btn-primary d-grid mx-10p w-100" id="proceed">proceed</button>
-                    <button class="btn btn-label-success d-grid mx-10p w-100" id="proceed">reconnect</button>
+                    <button class="btn btn-warning d-grid mx-10p w-100" id="proceed">reconnect</button>
 
                   </div>
                 </div>`;
@@ -1216,7 +1218,7 @@ export async function showFingerprintDiv(action,socket,user) {
       status.classList.remove('red','dgray','green')
       status.classList.add('dgray')
       status.innerText = callback.message
-    }else{
+    }else if (st){
       status.classList.remove('red','dgray','green')
       status.classList.add('green')
       status.innerText = callback.message
@@ -1232,7 +1234,11 @@ export async function showFingerprintDiv(action,socket,user) {
   })
   start.onclick = function (event) {
     event.preventDefault();
-    GetTemplate();
+    if (action == 'search' || action == 'compare') {
+      GetTemplate();
+    }else if (action == 'register') {
+      EnrollTemplate()
+    }
   }
   return new Promise((resolve, reject) => {
     proceed.onclick = function (event) {

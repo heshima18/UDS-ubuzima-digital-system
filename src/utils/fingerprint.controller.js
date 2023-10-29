@@ -49,7 +49,7 @@ export function connectFP(host,callback) {
                         // en2.value = obj.data1;
                     }
                 } else {
-                    callback("Failed to collect fingerprint template")
+                    callback({success: false, message: "Failed to collect fingerprint template"})
                 }
                 break;
             case 6:
@@ -68,7 +68,7 @@ export function connectFP(host,callback) {
             case 7:
                 if (obj.image == "null") {
                 } else {
-                    callback({success: true, message: "Registered fingerprint template successfully", type: 'fp-image', data: "data:image/png;base64," + obj.image})
+                    callback({success: 'awaiting', message: "Processing, place your finger again...", type: 'fp-image', data: "data:image/png;base64," + obj.image})
                     // var img = document.getElementById("fpimage");
                     // img.src = "data:image/png;base64," + obj.image;
 
@@ -123,13 +123,15 @@ export function Relink() {
 
 export function EnrollTemplate() {
     try {
+        console.log('enrolling')
         var v1 = "0";       //Fingerprint color   0 red,1 red,2 green,3 blue
         var v2 = "0";       //background color    1 transparent,0 White
         var cmd = "{\"cmd\":\"enrol\",\"data1\":\"" + v1 + "\",\"data2\":\"" + v2 + "\"}";
         ws.send(cmd);
     } catch (err) {
     }
-    document.getElementById("state").value = "Place Finger";
+    return {success: 'awaiting', message : 'place your finger'}
+
 }
 
 export function GetTemplate() {

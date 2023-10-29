@@ -30,6 +30,7 @@ export const getPatient = async (req,res)=>{
             let ogUser = await new Promise(async (resolve,reject) => {
                 let foundPatient = null; // Initialize a variable to store the found patient
                 for (const user of patiFps) {
+                    // console.log(user)
                     let check
                     try {
                         check = await  connectFP('', (callback) => {
@@ -53,14 +54,16 @@ export const getPatient = async (req,res)=>{
                         reject(0)
                     }
                     foundPatient = await new Promise((resolve4)=>{
-                    event.on('responseReceived', (userdata)=>{
+                    event.once('responseReceived', (userdata)=>{
                        resolve4(userdata)
                     })
                   })
                   if (foundPatient) {
                     return resolve(foundPatient); // Resolve with the found patient (may be null if not found)
                   }else{
-                    resolve(foundPatient);
+                    if (patiFps.indexOf(user) + 1 == patiFps.length && !foundPatient) {
+                        resolve(foundPatient);
+                   }
                   }
                 }
               });
@@ -72,6 +75,9 @@ export const getPatient = async (req,res)=>{
                 patients.id,
                 COALESCE( CONCAT('[', GROUP_CONCAT(DISTINCT CASE WHEN assurances.id IS NOT NULL THEN JSON_OBJECT('id', assurances.id, 'name', assurances.name) ELSE NULL END ), ']'), '[]') AS assurances,
                 COALESCE( CONCAT('[', GROUP_CONCAT(DISTINCT CASE WHEN p2.id IS NOT NULL THEN JSON_OBJECT('id', p2.id, 'name', p2.Full_name) ELSE NULL END SEPARATOR ','), ']'), '[]') AS beneficiaries,
+                COALESCE( GROUP_CONCAT(
+                    DISTINCT CASE WHEN p3.id IS NOT NULL THEN JSON_OBJECT('id', p3.id, 'name', p3.Full_name) ELSE NULL END
+                    ), null) AS householder,
                 patients.Full_name,
                 patients.assurances as raw_assurances,
                 patients.phone,
@@ -79,6 +85,7 @@ export const getPatient = async (req,res)=>{
                 patients.gender,
                 patients.nid,
                 patients.dob,
+                patients.role,
                 provinces.name as province,
                 districts.name as district,
                 sectors.name as sector,
@@ -86,6 +93,7 @@ export const getPatient = async (req,res)=>{
                 patients.status
             FROM patients
                 LEFT JOIN patients as p2 on p2.householder = patients.id
+                LEFT JOIN patients as p3 on p3.id = patients.householder
                 LEFT JOIN assurances on JSON_CONTAINS(patients.assurances, JSON_OBJECT('id',assurances.id), '$')
                 INNER JOIN provinces on patients.resident_province = provinces.id
                 INNER JOIN districts on patients.resident_district = districts.id
@@ -106,6 +114,9 @@ export const getPatient = async (req,res)=>{
         if (select.length == 0) return res.status(404).send({success: false, message: errorMessage._err_u_404})
         select = select[0]
         select.assurances = JSON.parse(select.assurances)
+        if (select.householder) {
+            select.householder = JSON.parse(select.householder)
+        }
         select.beneficiaries = JSON.parse(select.beneficiaries)
         select.raw_assurances = JSON.parse(select.raw_assurances)
         for (const assurance of select.assurances) {

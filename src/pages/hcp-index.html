@@ -18,10 +18,8 @@
     <!-- Vendors CSS -->
     <script src="/assets/js/nav.js" type="module"></script>
     <script src="/assets/js/hc_provider.js" type="module"></script>
-	<script src="/getSocketIo/socket.io.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.min.js" integrity="sha512-Xm9qbB6Pu06k3PUwPj785dyTl6oHxgsv9nHp7ej7nCpAqGZT3OZpsELuCYX05DdonFpTlBpXMOxjavIAIUwr0w==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cleave.js/1.6.0/cleave.min.js" integrity="sha512-KaIyHb30iXTXfGyI9cyKFUIRSSuekJt6/vqXtyQKhQP6ozZEGY8nOtRS6fExqE4+RbYHus2yGyYg1BrqxzV6YA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script src="/assets/vendor/libs/cleavejs/cleave-phone.rw.js"></script>
-
 
 </head>
 <body class="p-0 m-0 w-100 h-100 p-a ovh">
@@ -29,7 +27,7 @@
 	<div class="theshade w-100 h-100 p-f bc-tr-black zi-20 pl-300p bsbb tr-0-3 hidden"></div>
 	<div id="body" class="bc-gray w-100 h-100 p-r bsbb">
         <div class="w-100 h-a bsbb m-0 t-0 p-f p-10p zi-100">
-            <nav class="w-100 card-5 bc-white br-5p flex jc-sb pr-15p pl-15p" id="layout-navbar">
+            <nav class="w-100 card-1 bc-white br-5p flex jc-sb pr-15p pl-15p" id="layout-navbar">
                 <div class="h-54p center">
                     <a class="nav-item nav-link px-0 me-xl-4 flex" href="javascript:void(0)">
                         <span>
@@ -135,7 +133,7 @@
 								<div class="the-h w-210p m-a bfull-resp bsbb h-a ovxs scroll-3 p-5p br-5p bsbb bc-white">
 									<ul class="ls-none p-0 m-0 jc-sb w-100 bflex-resp">
 										<li class="p-5p bsbb">
-											<span class="w-100 h-100 p-10p hover-7 cpcards bsbb flex verdana nowrap capitalize fs-13p br-5p active bb-1-s-theme bc-tr-theme theme" data-item-type="home">
+											<span class="w-100 h-100 p-10p hover-7 cpcards bsbb flex verdana nowrap capitalize fs-13p br-5p active bb-1-s-theme bc-tr-theme theme dgray" data-item-type="home">
                                                 <span class="w-a h-19p mr-10p"><i class='bx bx-home-alt bx-sm'></i></span>
                                                 <span class="center pt-2p bsbb">
                                                      Home
@@ -206,11 +204,11 @@
                                                     </span>
                                                 </div>
                                                 <div class="mt-10p px-15p bsbb">
-                                                    <h5 class="card-title capitalize">incoming patients</h5>
+                                                    <h5 class="dgray capitalize">incoming patients</h5>
                                                     <p class="card-text">
                                                         <span class="bold-2">30</span> Patients
                                                     </p>
-                                                    <a href="pendingApplications/" class="btn btn-primary">View</a>
+                                                    <a href="pendingApplications/" class="btn btn-transparent white bc-theme">View</a>
                                                 </div>
                                             </div>
                                         </div>
@@ -225,11 +223,11 @@
                                                     </span>
                                                 </div>
                                                 <div class="mt-10p px-15p bsbb">
-                                                    <h5 class="card-title capitalize">today's served patients</h5>
+                                                    <h5 class="dgray capitalize">today's served patients</h5>
                                                     <p class="card-text">
                                                         <span class="bold-2">30</span> Patients
                                                     </p>
-                                                    <a href="pendingApplications/" class="btn btn-primary">View</a>
+                                                    <a href="pendingApplications/" class="btn btn-transparent white bc-theme">View</a>
                                                 </div>
                                             </div>
                                         </div>
@@ -244,11 +242,11 @@
                                                     </span>
                                                 </div>
                                                 <div class="mt-10p px-15p bsbb">
-                                                    <h5 class="card-title capitalize">today's pending sessions</h5>
+                                                    <h5 class="dgray capitalize">today's pending sessions</h5>
                                                     <p class="card-text">
                                                         <span class="bold-2">30</span> sessions
                                                     </p>
-                                                    <a href="pendingApplications/" class="btn btn-primary">View</a>
+                                                    <a href="pendingApplications/" class="btn btn-transparent white bc-theme">View</a>
                                                 </div>
                                             </div>
                                         </div>
@@ -263,11 +261,11 @@
                                                     </span>
                                                 </div>
                                                 <div class="mt-10p px-15p bsbb">
-                                                    <h5 class="card-title capitalize">today's pending sessions</h5>
+                                                    <h5 class="dgray capitalize">today's pending sessions</h5>
                                                     <p class="card-text">
                                                         <span class="bold-2">30</span> sessions
                                                     </p>
-                                                    <a href="pendingApplications/" class="btn btn-primary">View</a>
+                                                    <a href="pendingApplications/" class="btn btn-transparent white bc-theme">View</a>
                                                 </div>
                                             </div>
                                         </div>
@@ -287,7 +285,7 @@
                                                 <div class="input-group input-group-merge">
                                                     <input type="text" class="form-control" placeholder="NID, Phone number, email" aria-label="Search patient" aria-describedby="basic-addon-search31">
                                                     <span class="input-group-text hover-2" id="basic-addon-search31">
-                                                        <button type="submit" class="btn btn-primary">
+                                                        <button type="submit" class="btn btn-transparent">
                                                                 <i class="bx bx-search h-20p w-a center"></i>
                                                         </button>
                                                     </span>
@@ -329,24 +327,24 @@
 								<div class="w-100 h-a bsbb my-10p">
 									<span class="theme capitalize left flex bold fs-20p verdana h-100"><span class="dgray capitalize">HCP / </span>&nbsp;create a session</span>
 								</div>
-								<div class="pg-cntnt w-100 h-90 p-20p bp-0-resp bsbb ovys left bc-white br-5p card scroll-2">
+								<div class="pg-cntnt w-100 h-90 p-20p bp-0-resp bsbb ovys left bc-white br-5p scroll-2">
 									<div class="w-90 m-a bfull-resp">
 										<form id="create-session-form" name="create-session-form" class="mb-2" action="../" method="POST">
                                             <div class="col-md-12 p-10p bsbb mb-5p">
                                                 <label for="patient" class="form-label">Patient</label>
                                                 <div class="input-group">
                                                     <input type="text" class="form-control bevalue" placeholder="NID, Phone number, email" name="patient" id="patient">
-                                                    <span class="p-5p b-1-s-dgray hidden">
-                                                        <div class="sk-grid sk-primary">
-                                                            <div class="sk-grid-cube"></div>
-                                                            <div class="sk-grid-cube"></div>
-                                                            <div class="sk-grid-cube"></div>
-                                                            <div class="sk-grid-cube"></div>
-                                                            <div class="sk-grid-cube"></div>
-                                                            <div class="sk-grid-cube"></div>
-                                                            <div class="sk-grid-cube"></div>
-                                                            <div class="sk-grid-cube"></div>
-                                                            <div class="sk-grid-cube"></div>
+                                                    <span class="p-5p b-1-s-dgray">
+                                                        <div class="sk-grid sk-primary h-25p w-25p">
+                                                            <div class="sk-grid-cube bc-theme"></div>
+                                                            <div class="sk-grid-cube bc-theme"></div>
+                                                            <div class="sk-grid-cube bc-theme"></div>
+                                                            <div class="sk-grid-cube bc-theme"></div>
+                                                            <div class="sk-grid-cube bc-theme"></div>
+                                                            <div class="sk-grid-cube bc-theme"></div>
+                                                            <div class="sk-grid-cube bc-theme"></div>
+                                                            <div class="sk-grid-cube bc-theme"></div>
+                                                            <div class="sk-grid-cube bc-theme"></div>
                                                         </div>
                                                     </span>
                                                     <small class="hidden w-100 red pl-3p verdana"></small>
@@ -374,11 +372,8 @@
                                             </div>
                                             <div class="col-md-12 p-10p bsbb mb-5p p-r">
                                                 <label for="tests" class="form-label">tests</label>
-                                                <div class="input-group">
-                                                    <input type="text" class="form-control extras chips-check chips-trigger" id="tests" placeholder="Demo test" data-optional="true" name="tests" data-chips-trigger="send-for-tests">
-                                                    <span class="px-5p py-2p input-group-text hover-2 us-none hidden" id="send-for-tests" name="send-for-tests"><button type="button" class="h-30p px-8p btn btn-primary">send for testing</button></span>
-                                                    <small class="hidden w-100 red pl-3p verdana"></small>
-                                                </div>
+                                                <input type="text" class="form-control extras chips-check chips-trigger" id="tests" placeholder="Demo test" data-optional="true" name="tests" data-chips-trigger="send-for-tests">
+                                                <small class="hidden w-100 red pl-3p verdana"></small>
                                             </div>
                                             <div class="col-md-12 p-10p bsbb mb-5p p-r">
                                                 <label for="medicines" class="form-label">medicines</label>

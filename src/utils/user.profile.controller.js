@@ -15,10 +15,10 @@ export function addUprofile(data){
         <span class="fw-semibold mx-2">Name:</span> <span>${assurance.name}</span>
       </li>
       <li class="ls-none flex p-5p bsbb">
-        <span class="fw-semibold mx-2">Number:</span> <span>${assurance.number}</span>
+        <span class="fw-semibold mx-2">Number:</span> <span>${assurance.number || 'N/A'}</span>
       </li>
       <li class="ls-none flex p-5p bsbb">
-        <span class="fw-semibold mx-2">Status:</span> <span class="${(assurance.eligibility == 'eligible') ?  'btn btn-sm btn-label-success' : 'btn btn-sm btn-label-danger' }">${assurance.eligibility}</span>
+        <span class="fw-semibold mx-2">Status:</span> <span class="br-5p py-2p px-10p bsbb ${(assurance.eligibility == 'eligible') ?  'bc-tr-green green' : 'bc-tr-red red' }">${assurance.eligibility}</span>
       </li>
     `
   }
@@ -29,6 +29,13 @@ export function addUprofile(data){
       </li>
     `
   }
+  if (data.householder) {
+    q = `
+    <li class="ls-none flex p-5p bsbb benef hover-6" data-id="${data.householder.id}">
+      <span class="px-5p"><i class="bx bx-user"></i></span><span class="capitalize fw-semibold">${data.householder.name}</span>
+    </li>
+  `
+  }
   data.dob = ` ${new Date(data.dob).getDay()}/${new Date(data.dob).getMonth()}/${new Date(data.dob).getFullYear()}`
   if (!b) b = ` <li class="ls-none flex p-5p bsbb"><span class="btn btn-sm btn-label-danger">N/A</span></li>`
   if (!q) q = ` <li class="ls-none flex p-5p bsbb"><span class="btn btn-sm btn-label-secondary">N/A</span></li>`
@@ -36,7 +43,7 @@ export function addUprofile(data){
   a.className = "w-80 h-80 p-20p bsbb ovh bc-white cntr zi-10000 br-10p card-5 b-mgc-resp"
   a.innerHTML = `
     <div class="p-5p bsbb ovys w-100 h-100">
-      <div class="row h-100">
+      <div class="row h-100 w-100">
         <div class="col-xl-4 col-lg-5 h-100 ovh col-md-5 ovh">
             <!-- About User -->
             <div class=" mb-4 ovh h-100">
@@ -44,50 +51,51 @@ export function addUprofile(data){
                     <small class="text-muted text-uppercase">About</small>
                     <ul class="list-unstyled mb-4 mt-3">
                         <li class="d-flex align-items-center mb-3">
-                          <i class="bx bx-user"></i><span class="fw-semibold mx-2">Full Name:</span> <span>${data.Full_name}</span>
+                          <i class="bx bx-user"></i><span class="fw-semibold dgray mx-2">Full Name:</span> <span class="capitalize">${data.Full_name}</span>
                         </li>
                         <li class="d-flex align-items-center mb-3">
-                          <i class="bx bx-detail"></i><span class="fw-semibold mx-2">Gender:</span> <span>${data.gender}</span>
+                          <i class="fas fa-venus-mars"></i><span class="fw-semibold dgray mx-2">Gender:</span> <span class="capitalize">${data.gender}</span>
                         </li>
                         <li class="d-flex align-items-center mb-3">
-                          <i class="bx bx-detail"></i><span class="fw-semibold mx-2">DOB:</span> <span>${data.dob}</span>
+                          <i class="bx bx-calendar"></i><span class="fw-semibold dgray mx-2">DOB:</span> <span>${data.dob}</span>
                         </li>
                         <li class="d-flex align-items-center mb-3">
-                          <i class="bx bx-check"></i><span class="fw-semibold mx-2">NID:</span> <span>${data.nid}</span>
+                          <i class="far fa-id-card"></i><span class="fw-semibold dgray mx-2">NID:</span> <span>${data.nid}</span>
                         </li>
                         <li class="align-items-center mb-3">
-                          <i class="bx bx-detail"></i><span class="fw-semibold mx-2">Assurances:</span> <span class="block">
+                          <i class="fas fa-hand-holding-medical"></i><span class="fw-semibold dgray mx-2">Insurance(s):</span> <span class="block">
                             <ul>
                               ${b}
                             </ul>
                               </span>
                         </li>
                         <li class="align-items-center mb-3">
-                          <i class="bx bx-detail"></i><span class="fw-semibold mx-2">Beneficiaries:</span> <span class="block">
+                        <i class="fas fa-users"></i><span class="fw-semibold dgray mx-2">${(data.role == 'householder')? 'Beneficiaries:': 'Parent' }</span> <span class="block">
                             <ul class="px-3p">
                               ${q}
                             </ul>
                             </span>
                         </li>
-                        <li class="d-flex align-items-center mb-3">
-                            <i class="bx bx-check"></i><span class="fw-semibold mx-2">Province:</span> <span>${data.province}</span>
+                        <small class="text-muted text-uppercase"><i class="fas fa-map-marker-alt pr-10p"></i> <span class="iblock mt--5p">Location</span></small>
+                        <li class="d-flex align-items-center mb-3 mt-5p">
+                            <i class="bx bx-check"></i><span class="fw-semibold dgray mx-2">Province:</span> <span>${data.province}</span>
                         </li><li class="d-flex align-items-center mb-3">
-                          <i class="bx bx-check"></i><span class="fw-semibold mx-2">District:</span> <span>${data.district}</span>
+                          <i class="bx bx-check"></i><span class="fw-semibold dgray mx-2">District:</span> <span>${data.district}</span>
                         </li><li class="d-flex align-items-center mb-3">
-                          <i class="bx bx-check"></i><span class="fw-semibold mx-2">Sector:</span> <span>${data.sector}</span>
+                          <i class="bx bx-check"></i><span class="fw-semibold dgray mx-2">Sector:</span> <span>${data.sector}</span>
                         </li><li class="d-flex align-items-center mb-3">
-                          <i class="bx bx-check"></i><span class="fw-semibold mx-2">Cell:</span> <span>${data.cell}</span>
+                          <i class="bx bx-check"></i><span class="fw-semibold dgray mx-2">Cell:</span> <span>${data.cell}</span>
                         </li><li class="d-flex align-items-center mb-3">
-                          <i class="bx bx-check"></i><span class="fw-semibold mx-2">Status:</span> <span>${data.status}</span>
+                          <i class="bx bx-check"></i><span class="fw-semibold dgray mx-2">Status:</span> <span>${data.status}</span>
                         </li><li class="d-flex align-items-center mb-3">
-                          <i class="bx bx-star"></i><span class="fw-semibold mx-2">Title:</span> <span>patient</span>
+                          <i class="fas fa-user-tag"></i><span class="fw-semibold dgray mx-2">Title:</span> <span>patient</span>
                         </li>
                     </ul>
                     <small class="text-muted text-uppercase">Contacts</small>
                     <ul class="list-unstyled mb-4 mt-3">
-                        <li class="d-flex align-items-center mb-3"><i class="bx bx-phone"></i><span class="fw-semibold mx-2">Phone number:</span> <span>${data.phone}</span>
+                        <li class="d-flex align-items-center mb-3"><i class="bx bx-phone"></i><span class="fw-semibold dgray mx-2">Phone number:</span> <span>${data.phone}</span>
                         </li>
-                        <li class="d-flex align-items-center mb-3"><i class="bx bx-envelope"></i><span class="fw-semibold mx-2">Email:</span>
+                        <li class="d-flex align-items-center mb-3"><i class="bx bx-envelope"></i><span class="fw-semibold dgray mx-2">Email:</span>
                             <span>${data.email}</span>
                         </li>
                     </ul>
@@ -99,7 +107,7 @@ export function addUprofile(data){
             <!-- Activity Timeline -->
             <div class="br-5p h-100 ovh">
                 <div class="py-20p h-70p">
-                    <h5 class="card-action-title mb-0 left"><span class="center-2"><span class="center"><i class="bx bx-list-ul me-2"></i></span><span class="capitalize">medical history</span></span></h5>
+                    <h5 class="card-action-title mb-0 left dgray"><span class="center-2"><span class="center"><i class="fas fa-file-medical pr-10p"></i></span><span class="capitalize">medical history</span></span></h5>
                 </div>
                 <div class="p-10p p-r w-100 h-90 ovys scroll-2" id="mh-body">
                     

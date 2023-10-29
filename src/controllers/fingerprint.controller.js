@@ -69,7 +69,7 @@ export async  function connectFP(host,callback) {
                     callback({success: false, message: "time out"})
                     break;
                 case 9:
-                    if (obj.retmsg < 60) {
+                    if (obj.retmsg < 80) {
                         callback({success: false, message: "Comparison score:",type: 'comparison', data: obj.retmsg})
                         
                     }else{

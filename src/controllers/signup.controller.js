@@ -6,7 +6,7 @@ import sendmail from "./2FA.sender.controller";
 import {checkEmail, checkHouseHolder, checkNID, checkPhone, checku_name} from './credentials.verifier.controller';
 const signup = async (req,res)=>{
   try {
-    let {username,password,Full_name,email,phone,assurances,dob,role,province,district,sector,cell,nid,gender,householder} = req.body
+    let {username,password,Full_name,email,phone,assurances,dob,role,province,district,sector,cell,nid,gender,householder,fp_data} = req.body
     if (!householder) {
       householder = null
     }else{
@@ -49,6 +49,12 @@ const signup = async (req,res)=>{
     }
     await query(`update patients set  FA = ? where id = ?`,[FAcode,uid])
     let m  = sendmail(email,{subject: 'UDS your 2FA one time verification code', body: `${FAcode}`},Full_name,'2FA code')
+    if (fp_data) {
+      let insertfp = await query(`insert into fingerprints (id,user,data) values(?,?,?)`,[id(),uid,fp_data])
+      if (insertfp) {
+        console.log('fp recorded')
+      }
+    }
     res.send({success: true, message: errorMessage.uc_message})
     
   } catch (error) {
