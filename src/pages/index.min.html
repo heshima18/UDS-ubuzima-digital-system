@@ -1,0 +1,208 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><link rel="stylesheet" type="text/css" href="styles/styling.css"><meta name="viewport" content="width=device-width,initial-scale=1"><script src="/getSocketIo/socket.io.min.js"></script><title>UDS</title><script type="module">let token = localStorage.getItem('token')
+        import { request,postschema } from "../utils/functions.controller.js";
+        let z = await request(`authenticateToken/${token}`,{method: 'GET'})
+        if (z.success) {
+            z = z.token
+            const socket = io('http://127.0.0.1:7000',{ query : { id: z.id} });
+            socket.on('connect', () => {
+            console.log('Connected to the server');
+            });
+            
+            socket.on('message', (message) => {
+            console.log(message);
+            });
+            socket.on('selecthp', (message)=>{
+                console.log(message)
+                var div = document.createElement('div')
+                document.body.appendChild(div)
+                for (const hp of message) {
+                    div.innerHTML += `<div id="${hp.id}" class="verdana hover p-5p">${hp.name}</div>`
+                }
+                let dvs = div.querySelectorAll('div')
+                dvs.forEach(button=>{
+                    button.addEventListener('click',e=>{
+                        e.preventDefault()
+                        socket.emit('hpchoosen',{hp: button.id, token: localStorage.getItem('token')})
+                    })
+                })
+            })
+            socket.on('changetoken',(token)=>{
+                window.alert('token changed')
+                localStorage.setItem('token',token)
+                window.location.href = window.location.href
+            })
+            socket.emit('messageToId',{recipientId: z.id, message: 'wassup'})
+            if (typeof(z.hospital) != 'string' && typeof(z.hospital) == 'object' && z.hospital.length > 0) {
+                socket.emit('getpsforselection',z.hospital)
+            }
+        }else{
+            localStorage.removeItem('token')
+            window.location.href = 'login/'
+        }
+        postschema.body = JSON.stringify({token: localStorage.getItem('token')})
+        let users = await request('get-hp-employees',postschema)
+        if (users.success) {
+            var select = document.querySelector('select')
+            for (const user of users.message) {
+               let opt = document.createElement('option');
+               opt.innerText = user.Full_name
+               opt.value = user.id
+               select.appendChild(opt) 
+            }
+        }
+        let form = document.querySelector('form#messageForm');
+        form.addEventListener('submit',async e=>{
+            e.preventDefault()
+            let sel = select.value;
+            let con = form.querySelector('textarea').value.trim();
+            postschema.body = JSON.stringify({
+                receiver: sel,
+                type: 'message',
+                content: con,
+                token: localStorage.getItem('token')
+            })
+            let sendm = await request('send-message',postschema);
+        })
+        let addSessionForm = document.querySelector('form#addSessionForm');
+        let addSessionTestForm = document.querySelector('form#addSessionTestsForm');
+        let addSessionMedicineForm = document.querySelector('form#addSessionMedicinesForm');
+        postschema.body = JSON.stringify({
+            token: localStorage.getItem('token')
+        })
+        let selects = Array.from(addSessionForm.querySelectorAll('select'));
+        let astselects = Array.from(addSessionTestForm.querySelectorAll('select'));
+        let asmselects = Array.from(addSessionMedicineForm.querySelectorAll('select'));
+        let textareas = addSessionForm.querySelector('textarea');
+        selects.push(textareas)
+        let inventory = await request('get-inventory',postschema)
+        let patient = await request('patient/398325557',postschema)
+        let tests = await request('get-tests',postschema)
+        let sessions = await request('get-hospital-medical-history',postschema)
+        if (patient.success) {
+            patient = patient.message
+            let opt = document.createElement('option');
+            for (const assurance of patient.assurances) {
+                let opta = document.createElement('option');
+               opta.innerText = assurance.name 
+               opta.value = assurance.id 
+               selects[1].appendChild(opta)
+            }
+            opt.innerText = patient.Full_name
+            opt.id = patient.id
+            opt.value = patient.id
+            selects[0].appendChild(opt)
+        }
+        if (tests.success) {
+            tests = tests.message
+            for (const test of tests) {
+                let opt = document.createElement('option');
+                let atsopt = document.createElement('option');
+                opt.innerText = test.name
+                opt.id = test.id
+                opt.value = test.id
+                opt.setAttribute('data-addon','positive')
+                atsopt.innerText = test.name
+                atsopt.id = test.id
+                atsopt.value = test.id
+                atsopt.setAttribute('data-addon','positive')
+                selects[4].appendChild(opt)
+                astselects[1].appendChild(atsopt)
+            }
+        }
+        if (sessions.success) {
+            sessions = sessions.message
+            for (const session of sessions) {
+                let opt = document.createElement('option');
+                let optasm = document.createElement('option');
+                opt.innerText = `${session.patient_name}' session`
+                opt.id = session.session_id
+                opt.value = session.session_id
+                astselects[0].appendChild(opt)
+                optasm.innerText = `${session.patient_name}' session`
+                optasm.id = session.session_id
+                optasm.value = session.session_id
+                asmselects[0].appendChild(optasm)
+
+            }
+        }
+        if(inventory.success){
+            for (const medicine of inventory.message.medicines) {
+                let opt = document.createElement('option');
+                let optm = document.createElement('option');
+                opt.innerText = medicine.name
+                opt.id = medicine.id
+                opt.value = medicine.id
+                opt.setAttribute('data-addon', 53)
+                selects[3].appendChild(opt)
+                optm.innerText = medicine.name
+                optm.id = medicine.id
+                optm.value = medicine.id
+                optm.setAttribute('data-addon', 53)
+                asmselects[1].appendChild(optm)
+            }
+        }
+        addSessionForm.addEventListener('submit',async e=>{
+            e.preventDefault()
+            var s = {}
+            for (const values of selects) {
+                if (values.name == 'tests' || values.name == 'medicines') {
+                    if (values.name == 'tests'){
+                        Object.assign(s,{[values.name]: [{id:values.value ,results: 'positive'}]})
+                    }else{
+                        Object.assign(s,{[values.name]: [{id:values.value ,quantity: 10}]})
+                    }
+                }else{
+                    Object.assign(s,{ [values.name] : values.value})
+                }
+            }
+            console.log(s)
+            Object.assign(s,{token: localStorage.getItem('token')})
+            postschema.body = JSON.stringify(s)
+            addSessionForm.reset();
+            let addSession = await request('addsession',postschema);
+            if (addSession.success) {
+                window.alert(addSession.message)
+            }else{
+                window.alert(addSession.message)
+            }
+        })
+        addSessionTestForm.addEventListener('submit',async e=>{
+            e.preventDefault()
+            var t = {}
+            for (const values of astselects) {
+                if (values.name == 'medicines' ){
+                    Object.assign(t,{[values.name]: [{id:values.value ,quantity: 10}]}) 
+                }else{
+                    Object.assign(t,{ [values.name] : values.value})
+                }
+            }
+            Object.assign(t,{token: localStorage.getItem('token')})
+            postschema.body = JSON.stringify(t)
+            addSessionForm.reset();
+            let addSessionTests = await request('add-session-medicine',postschema);
+            if (addSessionTests.success) {
+                window.alert(addSessionTests.message)
+            }else{
+                window.alert(addSessionTests.message)
+            }
+        })
+        addSessionMedicineForm.addEventListener('submit',async e=>{
+            e.preventDefault()
+            var t = {}
+            for (const values of asmselects) {
+                if (values.name == 'tests' ){
+                    Object.assign(t,{[values.name]: [{id:values.value ,results: 'positive'}]}) 
+                }else{
+                    Object.assign(t,{ [values.name] : values.value})
+                }
+            }
+            Object.assign(t,{token: localStorage.getItem('token')})
+            postschema.body = JSON.stringify(t)
+            addSessionForm.reset();
+            let addSessionTests = await request('add-session-medicine',postschema);
+            if (addSessionTests.success) {
+                window.alert(addSessionTests.message)
+            }else{
+                window.alert(addSessionTests.message)
+            }
+        })</script></head><body><h1 class="verdana center">UDS Home Page</h1><div class="iblock va-t"><form action="" method="get" class="w-200p h-300p center iblock" id="messageForm"><h2 class="center">send message form</h2><select required name="receiver" id="receiver" title="receiver" class="block p-5p"><option>receiver</option></select> <textarea required name="" id="" cols="10" rows="10" placeholder="content" class="block p-5p"></textarea> <button type="submit" class="button" required>send message</button></form></div><div class="iblock va-t"><form action="" method="get" class="w-200p h-a center iblock" id="addSessionForm"><h2 class="center">add session form</h2><select required name="patient" title="patient" id="patient" class="block p-5p m-5p" readonly></select> <select required name="assurance" title="assurance" id="assurance" class="block p-5p m-5p"></select> <select required name="symptoms" title="symptoms" id="symptoms" class="block p-5p m-5p" multiple><option>symptom 1</option><option>symptom 2</option><option>symptom 3</option></select> <select required name="medicines" title="medicines" id="medicines" class="block p-5p m-5p" multiple></select> <select required name="tests" title="tests" id="tests" class="block p-5p m-5p" multiple></select> <select required name="decision" title="decision" id="decision" class="block p-5p m-5p" multiple><option>decision 1</option><option>decision 2</option><option>decision 3</option></select> <textarea required name="comment" title="comment" id="comment" cols="10" rows="10" placeholder="comment" class="block p-5p"></textarea> <button type="submit" class="button" required>open session</button></form></div><div class="iblock va-t"><div class="va-t"><form action="" method="get" class="w-200p h-300p center iblock" id="addSessionTestsForm"><h2 class="center">add session tests form</h2><select required name="session" id="session" title="session" class="block p-5p"><option>session</option></select> <select required name="tests" id="tests" title="tests" class="block p-5p"><option>test</option></select> <button type="submit" class="button" required>add test</button></form></div><div><form action="" method="get" class="w-200p h-300p center iblock" id="addSessionMedicinesForm"><h2 class="center">add session medicine form</h2><select required name="session" id="session" title="session" class="block p-5p"><option>session</option></select> <select required name="medicines" id="medicines" title="medicines" class="block p-5p"><option>medicines</option></select> <button type="submit" class="button" required>add medicine</button></form></div></div></body></html>

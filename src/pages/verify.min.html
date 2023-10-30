@@ -1,0 +1,18 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><link rel="stylesheet" type="text/css" href="../styles/styling.css"><meta name="viewport" content="width=device-width,initial-scale=1"><script src="/getSocketIo/socket.io.min.js"></script><title>UDS</title><script type="module">import { request,postschema } from "../utils/functions.controller.js";
+        const loginForm = document.querySelector('form#login-form')
+        loginForm.onsubmit = async function (event) {
+            event.preventDefault();
+            let ins =Array.from(loginForm.querySelectorAll('input'))
+            postschema.body = JSON.stringify({
+                        "email":localStorage.getItem('userid'),
+                        "_2FA_code": ins[0].value.trim()
+                    })
+            let req = await request('verify',postschema)
+            if (req.success) {
+                localStorage.removeItem('userid')
+                localStorage.setItem('token',req.message)
+                window.location.href = '../'
+            }else{
+                window.alert(req.message)
+            }
+        }</script></head><body><h1 class="verdana center">2 FA verification</h1><form action="" method="post" id="login-form"><input type="text" id="code" placeholder="2 FA code"> <button class="">verify</button></form></body></html>

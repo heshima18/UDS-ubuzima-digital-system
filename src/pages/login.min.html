@@ -1,0 +1,18 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><link rel="stylesheet" type="text/css" href="../styles/styling.css"><meta name="viewport" content="width=device-width,initial-scale=1"><script src="/getSocketIo/socket.io.min.js"></script><script defer src="../utils/functions.controller.js"></script><title>UDS</title><script type="module">import { request,postschema } from "../utils/functions.controller.js";
+        const loginForm = document.querySelector('form#login-form')
+        loginForm.onsubmit = async function (event) {
+            event.preventDefault();
+            let ins =Array.from(loginForm.querySelectorAll('input'))
+            postschema.body = JSON.stringify({
+                        "username":ins[0].value.trim(),
+                        "password": ins[1].value.trim()
+                    })
+            let req = await request('user-login',postschema)
+            if (req.success) {
+                window.alert(req.message)
+                localStorage.setItem('userid',ins[0].value.trim())
+                window.location.href = '../auth/'
+            }else{
+                window.alert(req.message)
+            }
+        }</script></head><body><h1 class="verdana center">login</h1><form action="" method="post" id="login-form"><input type="text" id="username" placeholder="username"> <input type="text" id="password" placeholder="password"> <button class="">login</button></form></body></html>

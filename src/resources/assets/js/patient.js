@@ -2,8 +2,8 @@ import { alertMessage, getdata, getschema, postschema, request,deletechild, chec
 import {expirateMssg, pushNotifs, userinfo} from "./nav.js";
 
 let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z
-const hps = await request('gethospitals',postschema);
 (async function () {
+    const hps = await request('gethospitals',postschema);
     z = userinfo
     let token = getdata('token')
     if (!token) {

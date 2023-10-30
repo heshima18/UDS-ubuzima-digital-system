@@ -7,7 +7,6 @@ form.addEventListener('submit',async e=>{
     e.preventDefault();
     subbut.setAttribute('disabled',true)
     subbut.innerText = 'Sending Link...'
-    console.log(user.value.trim())
     postschema.body = JSON.stringify(
         {
             email: user
