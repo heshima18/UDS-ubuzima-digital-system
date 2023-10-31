@@ -27,7 +27,6 @@ export const insightsStats = async (req,res)=>{
            range.start = start_date,range.stop = now.toFormat('yyyy-MM-dd HH:mm:ss')
         }
         let dateGroupType = getDateIntervalDescription(new Date(range.start), new Date(range.stop));
-        console.log(dateGroupType)
         let results = await query(`
             SELECT
              mh.decision,
@@ -334,7 +333,6 @@ function formatDate(date,type) {
 function getDateIntervalDescription(startDate, endDate) {
     const luxonStartDate = DateTime.fromJSDate(startDate);
     const luxonEndDate = DateTime.fromJSDate(endDate);
-    
     const diff = luxonEndDate.diff(luxonStartDate, ["years", "months", "days"]).toObject();
     if (diff.years > 0) {
       return "year";
