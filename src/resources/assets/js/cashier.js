@@ -1,8 +1,8 @@
-import { alertMessage, getdata, getschema, postschema, request,initializeCleave,sessiondata,addLoadingTab,removeLoadingTab, checkEmpty, showRecs, getchips,getPath,addsCard,cpgcntn, geturl, adcm, addshade, deletechild } from "../../../utils/functions.controller.js";
+import { alertMessage, getdata, getschema, postschema, request,initializeCleave,sessiondata,addLoadingTab,removeLoadingTab, checkEmpty, showRecs, getchips,getPath,addsCard,cpgcntn, geturl, adcm, addshade, deletechild, RemoveAuthDivs, showFingerprintDiv, addAuthDiv } from "../../../utils/functions.controller.js";
 import { addUprofile } from "../../../utils/user.profile.controller.js";
 import {expirateMssg, pushNotifs, userinfo} from "./nav.js";
 
-let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z,session_input,session_s_button,eventadded
+let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z,r,session_input,session_s_button,eventadded
 (async function () {
     z = userinfo
     let token = getdata('token')
@@ -24,6 +24,14 @@ let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z,session_input,session_s_bu
             socket.on('message', (message) => {
                 pushNotifs(message);
                 addsCard(message.title,true)
+
+            });
+            socket.on('messagefromserver', (message) => {
+                alertMessage(message)
+
+            });;
+            socket.on('accessAuth', (message) => {
+                addAuthDiv(socket,message);
 
             });
             socket.on('expiratemssg', (message) => {
@@ -66,7 +74,7 @@ let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z,session_input,session_s_bu
     c = Array.from(document.querySelectorAll('span.cpcards'))
     p = Array.from(document.querySelectorAll('div.pagecontentsection'))
     const vsd = p.find(function (div) {
-        return div.id == 'view-prescription' 
+        return div.id == 'view-session' 
     })
     const theb = vsd.querySelector('div.theb')
     const raw = theb.innerHTML
@@ -88,7 +96,11 @@ let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z,session_input,session_s_bu
         cpgcntn(0,p,extra)
 
     }
-    window.onpopstate = function () {
+    window.addEventListener('popstate',  function () {
+        const evnt = new Event('urlchange', { bubbles: true });
+        window.dispatchEvent(evnt);
+    })
+    window.addEventListener('urlchange', function() {
         a = getPath(1)
         if(a){
             p.forEach(target=>{
@@ -99,17 +111,20 @@ let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z,session_input,session_s_bu
                     })
                     c[t].classList.add('active','bb-1-s-theme','bc-tr-theme','theme')
                     cpgcntn(t,p)
-                    gsd(target)
+                    if (getPath(2)) {
+                        gsd(target,getPath(2))
+                    }else{
+                        gsd(target)
+                    }
                     return 0
                 }
             })
         }else{
             window.history.pushState('','','./home')
             cpgcntn(0,p)
-            gsd(p[0])
     
-        }
-    }
+        }    
+    }); 
     c.forEach((cudstp)=>{
         cudstp.addEventListener('click',()=>{
             c.forEach((cp)=>{
@@ -129,39 +144,55 @@ let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z,session_input,session_s_bu
         try {
             x = page.id
             if (x == 'search-patient') {
+                
                 f = page.querySelector('form[name="sp-form"]');
-                s = f.querySelector('input[type="text"]')
+                s = f.querySelector('input[type="text"]');
                 setTimeout(e=>{s.focus()},200)
                 b = f.querySelector('button[type="submit"]')
-                f.addEventListener('submit',async e=>{
+                if (getPath(2)) {
+                    b.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`
+                    b.setAttribute('disabled',true)
+                    r = await request(`patient/${getPath(2)}`,postschema)
+                    s.value = getPath(2)
+                    b.innerHTML = `<i class="bx bx-search h-20p w-a center"></i>`
+                    b.removeAttribute('disabled')
+                    if (!r.success) return alertMessage(r.message)
+                    addUprofile(r.message);
+                }
+                let fingerprint = page.querySelector('span#fingerprint')
+                fingerprint.onclick = async function () {
+                let fp_data = await showFingerprintDiv('search');
+                if (fp_data) {
+                    postschema.body = JSON.stringify({
+                        token: getdata('token'),
+                        fp_data,
+                        type: 'fp'
+                    })
+                    r = await request(`patient/`,postschema)
+                    RemoveAuthDivs();
+                    if (!r.success) return alertMessage(r.message)
+                    addUprofile(r.message);
+                    let url = new URL(window.location.href);
+                    url.pathname = `/cashier/search-patient/${r.message.id}`;
+                    window.history.pushState({},'',url.toString())
+                }
+                }
+                f.onsubmit = async e=>{
                     e.preventDefault();
                     if (!s.value) return 0
-                    b.innerHTML = `<span class="spinner-border" role="status" aria-hidden="true"></span>`
+                    b.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`
                     b.setAttribute('disabled',true)
                     r = await request(`patient/${s.value}`,postschema)
                     b.innerHTML = `<i class="bx bx-search h-20p w-a center"></i>`
                     b.removeAttribute('disabled')
                     if (!r.success) return alertMessage(r.message)
                     addUprofile(r.message);
-              
-                })
-            }else if (x == 'search-session') {
-            f = page.querySelector('form[name="sp-form"]');
-            s = f.querySelector('input[type="text"]')
-            setTimeout(e=>{s.focus()},200)
-            b = f.querySelector('button[type="submit"]')
-            f.addEventListener('submit',async e=>{
-                e.preventDefault();
-                if (!s.value) return 0
-                b.innerHTML = `<span class="spinner-border" role="status" aria-hidden="true"></span>`
-                b.setAttribute('disabled',true)
-                r = await request(`patient/${s.value}`,postschema)
-                b.innerHTML = `<i class="bx bx-search h-20p w-a center"></i>`
-                b.removeAttribute('disabled')
-                if (!r.success) return alertMessage(r.message)
-                addUprofile(r.message);
-          
-            })
+                    let url = new URL(window.location.href);
+                    url.pathname = `/hc_provider/search-patient/${s.value}`;
+                    window.history.pushState({},'',url.toString())
+            
+                }
+            
             }else if (x == 'my-account') {
                 n = page.querySelector('span.name')
                 z = getdata('userinfo')
@@ -176,11 +207,11 @@ let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z,session_input,session_s_bu
                     })
                 }
           
-            }else if (x == 'view-prescription') {
+            }else if (x == 'view-session') {
                 theb.innerHTML = raw
                 if (extra) {
                     let url = new URL(window.location.href);
-                    url.pathname = `/cashier/view-prescription/${extra}`;
+                    url.pathname = `/cashier/view-session/${extra}`;
                     window.history.pushState({},'',url.toString())
                 }
                 let session = getPath(2)
@@ -197,7 +228,7 @@ let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z,session_input,session_s_bu
                         session = session_input.value;
                         postschema.body = JSON.stringify({token: getdata('token')})
                         addLoadingTab(page.querySelector('div.theb'));
-                        session_s_button.innerHTML = `<span class="spinner-border" role="status" aria-hidden="true"></span>`
+                        session_s_button.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`
                         session_s_button.setAttribute('disabled',true)
                         let sessiondata =  await request(`session/${session}`,postschema)
                         if (sessiondata.success) {
@@ -208,7 +239,7 @@ let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z,session_input,session_s_bu
                         if (!sessiondata.success) return alertMessage(sessiondata.message)
                         session_input.value = session
                         let url = new URL(window.location.href);
-                        url.pathname = `/cashier/view-prescription/${session}`;
+                        url.pathname = `/cashier/view-session/${session}`;
                         window.history.pushState({},'',url.toString())
                         sessiondata = sessiondata.message
                         showSession(sessiondata);
@@ -257,7 +288,7 @@ let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z,session_input,session_s_bu
                         }else if (dataHolder.getAttribute('data-hold').indexOf('status') != -1) {
                             if (data[dataHolder.getAttribute('data-hold')] != 'served') {
                                 dataHolder.innerText = `mark as served`
-                                dataHolder.classList.replace('btn-label-secondary','btn-label-primary')
+                                dataHolder.classList.replace('bc-gray','btn-label-primary')
                                 dataHolder.setAttribute('data-active', true)
                             }else{
                                 dataHolder.innerText = data[dataHolder.getAttribute('data-hold')]
@@ -280,7 +311,7 @@ let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z,session_input,session_s_bu
                                 holder.innerText = adcm(sessiondata[objectId[0]][objectId[1]])
                             }else if (objectId[1].indexOf('status') != -1 && objectId[0].indexOf('payment_info') != -1) {
                                 if (sessiondata[objectId[0]][objectId[1]] == 'paid') {
-                                    holder.classList.replace('btn-label-secondary','btn-label-success')
+                                    holder.classList.replace('bc-gray','bc-tr-green')
                                 }
                                 holder.innerText = sessiondata[objectId[0]][objectId[1]]
                                 
@@ -290,7 +321,7 @@ let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z,session_input,session_s_bu
                         }else{
                             if (holder.getAttribute('data-hold').indexOf('status') != -1) {
                                 if (sessiondata[holder.getAttribute('data-hold')] == "open") {
-                                    holder.classList.replace('btn-label-secondary','btn-label-success')
+                                    holder.classList.replace('bc-gray','bc-tr-green')
                                 }
                             }
                             holder.innerText = sessiondata[objectId]
@@ -312,7 +343,7 @@ let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z,session_input,session_s_bu
                         medicines : [medid],
                         session: sessiondata.session_id
                     })
-                    button.innerHTML = `<span class="spinner-border"></span>`
+                    button.innerHTML = `<span class="spinner-border spinner-border-sm"></span>`
                     button.setAttribute('disabled',true)
                     let results = await request('mark-as-served',postschema)
                     button.classList.remove('loading')
@@ -352,7 +383,7 @@ let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z,session_input,session_s_bu
                                 session: sessiondata.session_id,
                                 token: getdata('token')
                             })
-                            button.innerHTML = `<span class="spinner-border" role="status" aria-hidden="true"></span>`
+                            button.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`
                             button.setAttribute('disabled',true)
                             let result = await request('approve-payment',postschema)
                             if (result.success) {
@@ -404,7 +435,7 @@ let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z,session_input,session_s_bu
                                 }
                                 if (l) {
                                 let button = form.querySelector('button[type="submit"]')
-                                button.innerHTML = `<span class="spinner-border" role="status" aria-hidden="true"></span>`
+                                button.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`
                                 button.setAttribute('disabled',true)
                                     let values = {}
                                     for (const input of inputs) {

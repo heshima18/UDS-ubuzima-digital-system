@@ -165,13 +165,12 @@ export const addSession = async (req,res)=>{
 export const getUsessions = async (req,res)=>{
   try { 
       let {userid} = req.params
-      let {token} = req.body
+      let {token} = req.body,role
+      token = authenticateToken(token)
+      token = token.token
+      role = token.role
       if (!userid || userid == null) {
-        userid = authenticateToken(token)
-        if (!userid.success) {
-            return res.status(500).send({success:false, message: errorMessage.is_error})
-        }
-        userid = userid.token.id
+        userid = token.id
       }
       let response = await query(`SELECT 
       mh.id AS session_id,
@@ -198,7 +197,7 @@ export const getUsessions = async (req,res)=>{
       INNER JOIN payments ON mh.id = payments.session
       INNER JOIN hospitals ON mh.hospital = hospitals.id
       INNER JOIN payments as pm ON mh.id = pm.session
-    WHERE mh.patient = ?
+    WHERE mh.patient = ? ${(role != 'hc_provider' && role != 'patient' && role != 'householder' ) ? `AND mh.hospital = ${token.hospital}` : ''}
     GROUP BY mh.id
     ORDER BY mh.dateclosed DESC;
     `,[userid])

@@ -73,7 +73,7 @@ let nfPanel = document.querySelector('ul.nf-panel');
         nfPanel.innerHTML = null
         for (const message of m) {
           let li = document.createElement('li');
-          li.className = `list-group-item list-group-item-dark dropdown-notifications-item hover-2 ${(message.status == 'new')? 'bc-tr-theme' : 'bc-white'}` 
+          li.className = `py-10p bb-1-s-g px-15p bsbb dropdown-notifications-item hover-2 ${(message.status == 'new')? 'bc-tr-theme' : 'bc-white'}` 
 
           let vb = 'title="message"'
           if (message.type == 'p_message') {
@@ -90,11 +90,11 @@ let nfPanel = document.querySelector('ul.nf-panel');
           li.innerHTML = `<div class="d-flex capitalize left w-100">
                             <div class="flex-shrink-0 me-3 ${(message.status == 'expired')? 'op-0-3': ''}">
                                 <div class="avatar">
-                                    <span class="w-40p h-40p rounded-circle bc-tr-theme center bold-2">${message.sender.name.substring(0,1)}</span>
+                                    <span class="w-40p h-40p rounded-circle bc-tr-theme center bold-2 dgray">${message.sender.name.substring(0,1)}</span>
                                 </div>
                             </div>
-                            <div class="flex-grow-1 list-link" data-id='${message.id}' data-message-type = "${message.type}" ${vb}>
-                                <h6 class="mb-1 ttls ${(message.status == 'expired')? 'op-0-3': ''}">${message.title}</h6>
+                            <div class="flex-grow-1 ${(message.status != 'expired')? 'list-link': ''}" data-id='${message.id}' data-message-type = "${message.type}" ${vb}>
+                                <h6 class="mb-1 ttls dblue ${(message.status == 'expired')? 'op-0-3': ''}">${message.title}</h6>
                                 <p class="mb-0 ttls ${(message.status == 'expired')? 'op-0-3': ''}">${message.content}</p>
                                 <p class="mb-0 fs-11p ttls ${(message.status == 'expired')? 'op-0-3': ''}">from <b>${message.sender.name}</b></p>
                                 <small class="text-muted fs-11p">${calcTime(message.dateadded)}</small>

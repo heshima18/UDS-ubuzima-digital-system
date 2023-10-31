@@ -32,6 +32,14 @@ import { addUprofile, uprofileStf } from "../../../utils/user.profile.controller
                 addsCard(message.title,true)
 
             });
+            socket.on('messagefromserver', (message) => {
+                alertMessage(message)
+
+            });;
+            socket.on('accessAuth', (message) => {
+                addAuthDiv(socket,message);
+
+            });
             socket.on('expiratemssg', (message) => {
                 expirateMssg(message);
             });
@@ -87,26 +95,35 @@ if(a){
     cpgcntn(0)
 
 }
-    window.onpopstate = function () {
-        a = getPath(1)
-        if(a){
-            p.forEach(target=>{
-                if (a == target.id) {
-                    t = p.indexOf(target)
-                    c.forEach((cp)=>{
-                        cp.classList.remove('active','bb-1-s-theme','bc-tr-theme','theme')
-                    })
-                    c[t].classList.add('active','bb-1-s-theme','bc-tr-theme','theme')
-                    cpgcntn(t,p)
-                    return 0
+window.addEventListener('popstate',  function () {
+    const evnt = new Event('urlchange', { bubbles: true });
+    window.dispatchEvent(evnt);
+})
+window.addEventListener('urlchange', function() {
+    a = getPath(1)
+    if(a){
+        p.forEach(target=>{
+            if (a == target.id) {
+                t = p.indexOf(target)
+                c.forEach((cp)=>{
+                    cp.classList.remove('active','bb-1-s-theme','bc-tr-theme','theme')
+                })
+                c[t].classList.add('active','bb-1-s-theme','bc-tr-theme','theme')
+                cpgcntn(t,p)
+                if (getPath(2)) {
+                    gsd(target,getPath(2))
+                }else{
+                    gsd(target)
                 }
-            })
-        }else{
-            window.history.pushState('','','./home')
-            cpgcntn(0,p)
+                return 0
+            }
+        })
+    }else{
+        window.history.pushState('','','./home')
+        cpgcntn(0,p)
 
-        }
-    }
+    }    
+}); 
 c.forEach((cudstp)=>{
     cudstp.addEventListener('click',()=>{
         c.forEach((cp)=>{
@@ -288,6 +305,7 @@ c.forEach((cudstp)=>{
                     fp_data = await showFingerprintDiv('register');
                     if (fp_data) {
                         RemoveAuthDivs()
+                        console.log(fp_data)
                        fp_ind.classList.replace('bc-gray','bc-tr-green')
                        fp_ind.classList.replace('dgray','green')
                        fp_ind.classList.remove('mt--2p')

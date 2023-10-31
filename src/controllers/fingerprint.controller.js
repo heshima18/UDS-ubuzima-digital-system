@@ -75,6 +75,7 @@ export async  function connectFP(host,callback) {
                     }else{
                         callback({success: true, message: "Comparison score:",type: 'comparison', data: obj.retmsg})
                     }
+                    console.log(obj.retmsg)
                     ws.close();
                     break;
                 case 10:

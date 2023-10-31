@@ -140,13 +140,11 @@ export function addUprofile(data){
   addLoadingTab(mhBody)
   let loadMH = document.createElement(`div`);
   loadMH.classList = `p-a zi-100 cntr mt-50p`
-  loadMH.innerHTML = `<button class="btn ${(getPath()[0] != 'hc_provider') ? 'btn-secondary' : 'btn-primary'}" ${(getPath()[0] != 'hc_provider') ? 'disabled="true"' : ''}>Load medical history</button>`
+  loadMH.innerHTML = `<button class="btn btn-primary">Load medical history</button>`
   let loadMHButton = loadMH.querySelector('button')
   loadMHButton.onclick = async function (event) {
     event.preventDefault();
-    if (getPath()[0] != 'hc_provider') {
-      alertMessage('you are not authorized to perform this action')
-    }else{
+    
       postschema.body = JSON.stringify({
         token: getdata('token')
       })
@@ -189,7 +187,6 @@ export function addUprofile(data){
           window.dispatchEvent(evnt);
         })
       })
-    }
   }
   mhBody.appendChild(loadMH)
   return a

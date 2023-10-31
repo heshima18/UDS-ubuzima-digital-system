@@ -210,7 +210,6 @@ export const authorizeMultipleRoles = async (req, res, next, roles) => {
       if (!(roles.indexOf(q.role) in roles)) {
         return res.status(401).send({ message: errorMessage._err_forbidden, success: false })
       }
-      console.log('body for multiple users check check')
       next();
 
   } catch (error) {

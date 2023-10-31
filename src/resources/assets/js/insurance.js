@@ -151,7 +151,7 @@ let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z
                 if (!t.classList.contains('loaded')) {
                     e = table.DataTable({
                         // Define the structure of the table
-                        dom: '<"row mx-2"<"col-md-2"<"me-3"l>><"col-md-10"<"dt-action-buttons text-xl-end text-lg-start text-md-end text-start d-flex align-items-center justify-content-end flex-md-row flex-column mb-3 mb-md-0"fB>>>t<"row mx-2"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>',
+                        dom: '<"row mx-2"<"col-md-2 p-10p"<"me-3"l>><"col-md-10 p-10p"<"dt-action-buttons text-xl-end text-lg-start text-md-end text-start d-flex align-items-center justify-content-end flex-md-row flex-column mb-3 mb-md-0"fB>>>t<"row mx-2"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>',
                         language: { sLengthMenu: "_MENU_", search: "", searchPlaceholder: "Search..." },
                         columns: [
                             { data: "",title: "" }, // Responsive Control column
@@ -213,7 +213,7 @@ let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z
                         buttons: [
                             {
                                 extend: "collection",
-                                className: "btn btn-outline-secondary dropdown-toggle mx-3",
+                                className: "btn btn-primary dropdown-toggle mx-3",
                                 text: '<i class="bx bx-export me-1"></i>Export',
                                 buttons: [
                                     {
@@ -302,7 +302,7 @@ let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z
                             }
                             if (l) {
                             let button = aMform.querySelector('button[type="submit"]')
-                            button.innerHTML = `<span class="spinner-border" role="status" aria-hidden="true"></span>`
+                            button.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`
                             button.setAttribute('disabled',true)
                                 let values = {}
                                 for (const input of inputs) {
@@ -338,7 +338,7 @@ let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z
                 if (!t.classList.contains('loaded')) {
                     e = table.DataTable({
                         // Define the structure of the table
-                        dom: '<"row mx-2"<"col-md-2"<"me-3"l>><"col-md-10"<"dt-action-buttons text-xl-end text-lg-start text-md-end text-start d-flex align-items-center justify-content-end flex-md-row flex-column mb-3 mb-md-0"fB>>>t<"row mx-2"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>',
+                        dom: '<"row mx-2"<"col-md-2 p-10p"<"me-3"l>><"col-md-10 p-10p"<"dt-action-buttons text-xl-end text-lg-start text-md-end text-start d-flex align-items-center justify-content-end flex-md-row flex-column mb-3 mb-md-0"fB>>>t<"row mx-2"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>',
                         language: { sLengthMenu: "_MENU_", search: "", searchPlaceholder: "Search..." },
                         columns: [
                             { data: "",title: "" }, // Responsive Control column
@@ -400,7 +400,7 @@ let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z
                         buttons: [
                             {
                                 extend: "collection",
-                                className: "btn btn-outline-secondary dropdown-toggle mx-3",
+                                className: "btn btn-primary dropdown-toggle mx-3",
                                 text: '<i class="bx bx-export me-1"></i>Export',
                                 buttons: [
                                     {
@@ -490,7 +490,7 @@ let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z
                         }
                         if (l) {
                         let button = aMform.querySelector('button[type="submit"]')
-                        button.innerHTML = `<span class="spinner-border" role="status" aria-hidden="true"></span>`
+                        button.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`
                         button.setAttribute('disabled',true)
                             let values = {}
                             for (const input of inputs) {
@@ -525,7 +525,7 @@ let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z
                 if (!t.classList.contains('loaded')) {
                     e = table.DataTable({
                         // Define the structure of the table
-                        dom: '<"row mx-2"<"col-md-2"<"me-3"l>><"col-md-10"<"dt-action-buttons text-xl-end text-lg-start text-md-end text-start d-flex align-items-center justify-content-end flex-md-row flex-column mb-3 mb-md-0"fB>>>t<"row mx-2"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>',
+                        dom: '<"row mx-2"<"col-md-2 p-10p"<"me-3"l>><"col-md-10 p-10p"<"dt-action-buttons text-xl-end text-lg-start text-md-end text-start d-flex align-items-center justify-content-end flex-md-row flex-column mb-3 mb-md-0"fB>>>t<"row mx-2"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>',
                         language: { sLengthMenu: "_MENU_", search: "", searchPlaceholder: "Search..." },
                         columns: [
                             { data: "",title: "" }, // Responsive Control column
@@ -587,7 +587,7 @@ let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z
                         buttons: [
                             {
                                 extend: "collection",
-                                className: "btn btn-outline-secondary dropdown-toggle mx-3",
+                                className: "btn btn-primary dropdown-toggle mx-3",
                                 text: '<i class="bx bx-export me-1"></i>Export',
                                 buttons: [
                                     {
@@ -678,7 +678,7 @@ let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z
                         }
                         if (l) {
                         let button = aMform.querySelector('button[type="submit"]')
-                        button.innerHTML = `<span class="spinner-border" role="status" aria-hidden="true"></span>`
+                        button.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`
                         button.setAttribute('disabled',true)
                             let values = {}
                             for (const input of inputs) {
@@ -713,7 +713,7 @@ let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z
                 if (!t.classList.contains('loaded')) {
                     e = table.DataTable({
                         // Define the structure of the table
-                        dom: '<"row mx-2"<"col-md-2"<"me-3"l>><"col-md-10"<"dt-action-buttons text-xl-end text-lg-start text-md-end text-start d-flex align-items-center justify-content-end flex-md-row flex-column mb-3 mb-md-0"fB>>>t<"row mx-2"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>',
+                        dom: '<"row mx-2"<"col-md-2 p-10p"<"me-3"l>><"col-md-10 p-10p"<"dt-action-buttons text-xl-end text-lg-start text-md-end text-start d-flex align-items-center justify-content-end flex-md-row flex-column mb-3 mb-md-0"fB>>>t<"row mx-2"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>',
                         language: { sLengthMenu: "_MENU_", search: "", searchPlaceholder: "Search..." },
                         columns: [
                             { data: "",title: "" }, // Responsive Control column
@@ -775,7 +775,7 @@ let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z
                         buttons: [
                             {
                                 extend: "collection",
-                                className: "btn btn-outline-secondary dropdown-toggle mx-3",
+                                className: "btn btn-primary dropdown-toggle mx-3",
                                 text: '<i class="bx bx-export me-1"></i>Export',
                                 buttons: [
                                     {
@@ -867,7 +867,7 @@ let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z
                         }
                         if (l) {
                         let button = aMform.querySelector('button[type="submit"]')
-                        button.innerHTML = `<span class="spinner-border" role="status" aria-hidden="true"></span>`
+                        button.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`
                         button.setAttribute('disabled',true)
                             let values = {}
                             for (const input of inputs) {
@@ -902,7 +902,7 @@ let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z
                 if (!t.classList.contains('loaded')) {
                     e = table.DataTable({
                         // Define the structure of the table
-                        dom: '<"row mx-2"<"col-md-2"<"me-3"l>><"col-md-10"<"dt-action-buttons text-xl-end text-lg-start text-md-end text-start d-flex align-items-center justify-content-end flex-md-row flex-column mb-3 mb-md-0"fB>>>t<"row mx-2"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>',
+                        dom: '<"row mx-2"<"col-md-2 p-10p"<"me-3"l>><"col-md-10 p-10p"<"dt-action-buttons text-xl-end text-lg-start text-md-end text-start d-flex align-items-center justify-content-end flex-md-row flex-column mb-3 mb-md-0"fB>>>t<"row mx-2"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>',
                         language: { sLengthMenu: "_MENU_", search: "", searchPlaceholder: "Search..." },
                         columns: [
                             { data: "",title: "" }, // Responsive Control column
@@ -964,7 +964,7 @@ let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z
                         buttons: [
                             {
                                 extend: "collection",
-                                className: "btn btn-outline-secondary dropdown-toggle mx-3",
+                                className: "btn btn-primary dropdown-toggle mx-3",
                                 text: '<i class="bx bx-export me-1"></i>Export',
                                 buttons: [
                                     {
@@ -1055,7 +1055,7 @@ let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z
                         }
                         if (l) {
                         let button = aMform.querySelector('button[type="submit"]')
-                        button.innerHTML = `<span class="spinner-border" role="status" aria-hidden="true"></span>`
+                        button.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`
                         button.setAttribute('disabled',true)
                             let values = {}
                             for (const input of inputs) {
@@ -1107,7 +1107,7 @@ let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z
                         assurance: extra.id
                     })
                     let session_s_button = hp_form.querySelector('button');
-                    session_s_button.innerHTML = `<span class="spinner-border" role="status" aria-hidden="true"></span>`
+                    session_s_button.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`
                     session_s_button.setAttribute('disabled',true)
                     let mh = await request('gAsSuMH',postschema)
                     session_s_button.innerHTML = `<i class="bx bx-search h-20p w-a center"></i>`
@@ -1128,7 +1128,7 @@ let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z
                         }
                         e = table.DataTable({
                             // Define the structure of the table
-                            dom: '<"row mx-2"<"col-md-2"<"me-3"l>><"col-md-10"<"dt-action-buttons text-xl-end text-lg-start text-md-end text-start d-flex align-items-center justify-content-end flex-md-row flex-column mb-3 mb-md-0"fB>>>t<"row mx-2"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>',
+                            dom: '<"row mx-2"<"col-md-2 p-10p"<"me-3"l>><"col-md-10 p-10p"<"dt-action-buttons text-xl-end text-lg-start text-md-end text-start d-flex align-items-center justify-content-end flex-md-row flex-column mb-3 mb-md-0"fB>>>t<"row mx-2"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>',
                             language: { sLengthMenu: "_MENU_", search: "", searchPlaceholder: "Search..." },
                             columns: [
                                 { data: "",title: "" }, // Responsive Control column
@@ -1223,7 +1223,7 @@ let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z
                             buttons: [
                                 {
                                     extend: "collection",
-                                    className: "btn btn-outline-secondary dropdown-toggle mx-3",
+                                    className: "btn btn-primary dropdown-toggle mx-3",
                                     text: '<i class="bx bx-export me-1"></i>Export',
                                     buttons: [
                                         {

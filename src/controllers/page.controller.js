@@ -309,10 +309,10 @@ export function page (req,res,page){
             case 'home':
                 file = path.join(__dirname,'..','pages', 'cashier-index.html')
                 break;
-            case 'view-prescription/':
+            case 'view-session/':
                 file = path.join(__dirname,'..','pages', 'cashier-index.html')
                 break;
-            case 'view-prescription':
+            case 'view-session':
                 file = path.join(__dirname,'..','pages', 'cashier-index.html')
                 break;
             case 'search-patient/':

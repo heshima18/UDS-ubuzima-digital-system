@@ -29,6 +29,14 @@ let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z,notificationlinks
                 addsCard(message.title,true)
 
             });
+            socket.on('messagefromserver', (message) => {
+                alertMessage(message)
+
+            });;
+            socket.on('accessAuth', (message) => {
+                addAuthDiv(socket,message);
+
+            });
             socket.on('expiratemssg', (message) => {
                 expirateMssg(message);
             });
@@ -93,7 +101,11 @@ let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z,notificationlinks
         cpgcntn(0,p,extra)
 
     }
-    window.onpopstate = function () {
+    window.addEventListener('popstate',  function () {
+        const evnt = new Event('urlchange', { bubbles: true });
+        window.dispatchEvent(evnt);
+    })
+    window.addEventListener('urlchange', function() {
         a = getPath(1)
         if(a){
             p.forEach(target=>{
@@ -104,17 +116,20 @@ let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z,notificationlinks
                     })
                     c[t].classList.add('active','bb-1-s-theme','bc-tr-theme','theme')
                     cpgcntn(t,p)
-                    gsd(target)
+                    if (getPath(2)) {
+                        gsd(target,getPath(2))
+                    }else{
+                        gsd(target)
+                    }
                     return 0
                 }
             })
         }else{
             window.history.pushState('','','./home')
             cpgcntn(0,p)
-            gsd(p[0])
     
-        }
-    }
+        }    
+    }); 
     c.forEach((cudstp)=>{
         cudstp.addEventListener('click',()=>{
             c.forEach((cp)=>{
@@ -172,7 +187,7 @@ let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z,notificationlinks
                 if (!t.classList.contains('loaded')) {
                     e = table.DataTable({
                         // Define the structure of the table
-                        dom: '<"row mx-2"<"col-md-2"<"me-3"l>><"col-md-10"<"dt-action-buttons text-xl-end text-lg-start text-md-end text-start d-flex align-items-center justify-content-end flex-md-row flex-column mb-3 mb-md-0"fB>>>t<"row mx-2"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>',
+                        dom: '<"row mx-2"<"col-md-2 py-10p"<"me-3"l>><"col-md-10 py-10p"<"dt-action-buttons text-xl-end text-lg-start text-md-end text-start d-flex align-items-center justify-content-end flex-md-row flex-column mb-3 mb-md-0"fB>>>t<"row mx-2"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>',
                         language: { sLengthMenu: "_MENU_", search: "", searchPlaceholder: "Search..." },
                         columns: [
                             { data: "" }, // Responsive Control column
@@ -236,7 +251,7 @@ let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z,notificationlinks
                         buttons: [
                             {
                                 extend: "collection",
-                                className: "btn btn-outline-secondary dropdown-toggle mx-3",
+                                className: "btn btn-primary dropdown-toggle mx-3",
                                 text: '<i class="bx bx-export me-1"></i>Export',
                                 buttons: [
                                     {
