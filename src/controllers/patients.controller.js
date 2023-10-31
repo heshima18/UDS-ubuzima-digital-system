@@ -203,3 +203,17 @@ export async function selectPatientFP(patient) {
         return null
     }
 }
+export const addPatiBg = async (req,res) => {
+    try {
+        let {b_group,patient} = req.body
+        var t = await query(`update patients set b_group = ? where id = ?`, [b_group,patient]); 
+        if (!t) {
+          return res.status(500).send({success:false, message: errorMessage.is_error})  
+        }
+        res.send({success: true, message: errorMessage.bg_added_to_user_message})
+        
+      } catch (error) {
+        console.log(error)
+        res.status(500).send({success:false, message: errorMessage.is_error})
+      }
+}

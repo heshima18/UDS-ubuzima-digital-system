@@ -295,7 +295,7 @@ export const session = async (req,res)=>{
     mh.dateclosed as dateclosed,
     GROUP_CONCAT(
       DISTINCT 
-      JSON_OBJECT('id', p.id, 'name', p.Full_name, 'weight', mh.p_weight, 'dob', p.dob,'phone', p.phone,'nid', p.nid, 'location', 
+      JSON_OBJECT('id', p.id, 'name', p.Full_name, 'weight', mh.p_weight,'bgroup', p.b_group, 'dob', p.dob,'phone', p.phone,'nid', p.nid, 'location', 
         CONCAT(
           (SELECT name From provinces Where id = p.resident_province),' , ',
           (SELECT name From districts Where id = p.resident_district),' , ',

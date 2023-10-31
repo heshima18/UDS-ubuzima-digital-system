@@ -485,7 +485,7 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,z,notificationlinks
                                                             <div class="flex">
                                                                 <span class="black fs-20p px-5p hover-2">#</span><span class="center hover-2">${appointment.id}</span>
                                                             </div>
-                                                            <span class="btn  btn-sm ${(appointment.status == 'declined')? 'btn-label-danger' : (appointment.status == 'approved') ? 'btn-label-success' : (appointment.status == 'finished') ? 'btn-label-secondary' : 'btn-label-secondary' }" data-role="button">${appointment.status}</span>  
+                                                            <span class="btn  btn-sm ${(appointment.status == 'declined')? 'bc-tr-red red' : (appointment.status == 'approved') ? 'bc-tr-theme theme' : (appointment.status == 'finished') ? 'bc-gray dgray' : 'bc-gray dgray' }" data-role="button">${appointment.status}</span>  
                                                         </div>
                                                         <div class="p-15p hover-2" data-role="button" data-id="${appointment.id}" id ="view-appointment">
                                                             <h5 class="card-title capitalize">${appointment.subject}</h5>
@@ -542,6 +542,73 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,z,notificationlinks
                 Object.assign(sessiondata.payment_info,{total_amount: Number(sessiondata.payment_info.a_amount) + Number(sessiondata.payment_info.p_amount)})
                 const dataHolders = Array.from(document.querySelectorAll('span[name="info-hol"]'))
                 const loopingDataHolders = Array.from(document.querySelectorAll('ul[name="looping-info"]'))
+                if (!sessiondata.p_info.bgroup) {
+                    let abgparent = document.querySelector('[data-hold="p_info.bgroup"]').parentElement,abgbutton = document.createElement('button')
+                    abgparent.appendChild(abgbutton)
+                    abgbutton.className = `btn-primary btn capitalize btn-sm mt--2p mx-10p`
+                    abgbutton.innerText = `add`
+                    abgbutton.onclick = function (event) {
+                        event.preventDefault();
+                        v = addshade();
+                        let cont = document.createElement('div')
+                        v.appendChild(cont)
+                        cont.className = `br-10p cntr card p-10p bsbb w-450p h-a b-mgc-resp`
+                        cont.className = `br-10p cntr card p-10p bsbb w-450p h-a b-mgc-resp`
+                        cont.innerHTML = `<div class="w-100 h-100 p-5p bp-0-resp">
+                            <div class="head w-100 px-5p py-10p bsbb">
+                                <span class="capitalize bold-2 fs-20p">add blood group</span>
+                            </div>
+                            <div class="body p-5p bsbb w-100 h-91">
+                                <div class="w-100 h-100">
+                                    <div class="w-100 h-50p my-10p p-r">
+                                        <input class="form-control bevalue">
+                                        <small class="red capitalize hidden"></small>
+                                    </div>
+                                    <div class="w-100 h-a py-10p mt-20p flex">
+                                        <span class="px-10p bsbb">
+                                            <button type="button" class="btn btn-primary capitalize" data-role="button" id="process">proceed</button>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>`
+                        let inp = cont.querySelector('input');
+                        b = cont.querySelector('button');
+                        inp.onfocus = function (event) {
+                            event.preventDefault()
+                            let data = [
+                                {id: 'A+', name: 'A+'},
+                                {id: 'A-', name: 'A-'},
+                                {id: 'B+', name: 'B+'},
+                                {id: 'B-', name: 'B-'},
+                                {id: 'AB+', name: 'AB+'},
+                                {id: 'AB-', name: 'AB-'},
+                                {id: 'O+', name: 'O+'},
+                                {id: 'O-', name: 'O-'},
+                            ]
+                            showRecs(inp,data,'other')
+                        }
+                        b.onclick = async  function (event) {
+                            event.preventDefault();
+                            if (inp.value.trim()) {
+                                let val = inp.value
+                                postschema.body = JSON.stringify({
+                                    b_group: val,
+                                    token: getdata('token'),
+                                    patient : sessiondata.p_info.id
+                                })
+                                let response = await request('addPatiBg',postschema)
+                                if (response.success) {
+                                    alertMessage(response.message)
+                                    deletechild(v,v.parent)
+                                    deletechild(abgbutton,abgparent)
+                                }else{
+                                    alertMessage(response.message)
+                                }
+                            }
+                        }
+                    }
+                }
                 for (const element of loopingDataHolders) {
                     let dataToHold = element.getAttribute('data-hold');
                     let dataToShow = sessiondata[dataToHold]
@@ -573,7 +640,7 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,z,notificationlinks
                                 dataHolder.classList.add('red')
                             }
                             dataHolder.innerText = data[dataHolder.getAttribute('data-hold')]
-                        }else if (dataToHold == 'decisions' && !dataHolder.getAttribute('data-hold')) {
+                        }else if ((dataToHold == 'decisions' && !dataHolder.getAttribute('data-hold')) || dataToHold == 'symptoms' && !dataHolder.getAttribute('data-hold')) {
                             dataHolder.innerText = data
                         }else{
                             dataHolder.innerText = data[dataHolder.getAttribute('data-hold')]
@@ -601,7 +668,7 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,z,notificationlinks
                         }else{
                             if (holder.getAttribute('data-hold').indexOf('status') != -1) {
                                 if (sessiondata[holder.getAttribute('data-hold')] == "open") {
-                                    holder.classList.replace('btn-label-secondary','btn-label-success')
+                                    holder.classList.replace('bc-gray','bc-tr-theme')
                                 }
                             }
                             holder.innerText = sessiondata[objectId]
@@ -614,7 +681,7 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,z,notificationlinks
                         if (sessiondata.status == `closed`) {
                             deletechild(button,button.parentNode)
                             button.classList.add('loading')
-                            button.classList.replace('btn-label-primary','btn-label-secondary')
+                            button.classList.replace('bc-tr-theme','bc-gray')
                         }
                     }
                     button.onclick =  async  e=>{
@@ -648,8 +715,8 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,z,notificationlinks
                             alertMessage(result.message)
                             if (result.success) {
                                 page.querySelector('[data-hold="status"]').innerText = 'closed'
-                                page.querySelector('[data-hold="status"]').classList.replace('btn-label-success',`btn-label-primary`)
-                                button.classList.replace('btn-label-primary','btn-label-secondary')
+                                page.querySelector('[data-hold="status"]').classList.replace('bc-tr-theme',`bc-tr-theme`)
+                                button.classList.replace('bc-tr-theme','bc-gray')
                                 button.innerText = 'closed'
                                 sessiondata.status = `closed`
                             }else{
@@ -887,7 +954,7 @@ class popups{
                                 </div>
                                 <div class="wrap center-2 px-10p bsbb bblock-resp">
                                     <button type="submit" class="btn btn-primary bfull-resp mr-10p bm-a-resp bmy-10p-resp">Proceed</button>
-                                    <button type="button" class="btn btn-label-primary ml-10p capitalize bfull-resp bm-a-resp bmy-10p-resp">Request for tesing</button>
+                                    <button type="button" class="btn bc-tr-theme ml-10p capitalize bfull-resp bm-a-resp bmy-10p-resp">Request for tesing</button>
                                 </div>
                             </form>
                         </div>`
@@ -953,7 +1020,7 @@ class popups{
                         }
                         notify_button.removeAttribute('disabled')
                         notify_button.innerText = 'receiver notified !'
-                        notify_button.classList.replace('btn-label-primary','btn-label-success')
+                        notify_button.classList.replace('bc-tr-theme','bc-tr-theme')
                         addsCard('receiver notified !',true)
                     } catch (error) {
                         console.log(error)
@@ -1001,7 +1068,7 @@ class popups{
                         deletechild(testsP,testsP.parentNode)
                         notify_button.removeAttribute('disabled')
                         notify_button.innerText = 'receivers notified !'
-                        notify_button.classList.replace('btn-label-primary','btn-label-success')
+                        notify_button.classList.replace('bc-tr-theme','bc-tr-theme')
                         addsCard('receivers notified !',true)
                     } catch (error) {
                         console.log(error)
@@ -1118,7 +1185,7 @@ class popups{
                                 </div>
                                 <div class="wrap center-2 px-10p bsbb bblock-resp">
                                     <button type="submit" class="btn btn-primary bfull-resp mr-10p  bm-a-resp bmy-10p-resp">Proceed</button>
-                                    <button type="button" class="btn btn-label-primary ml-10p  capitalize bfull-resp bm-a-resp bmy-10p-resp">Request for tesing</button>
+                                    <button type="button" class="btn bc-tr-theme ml-10p  capitalize bfull-resp bm-a-resp bmy-10p-resp">Request for tesing</button>
                                 </div>
                             </form>
                         </div>`

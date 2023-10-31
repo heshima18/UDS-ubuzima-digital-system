@@ -195,7 +195,7 @@
 									<div class="home row p-5p bsbb">
                                         <div class="col-md-6 col-lg-4 mb-3">
                                             <div class="card">
-                                                <div class="capitalize px-5p">
+                                                <div class="capitalize px-5p card-header">
                                                     <span>
                                                         <i class="fas fa-hospital-user dgray fs-16p"></i>
                                                     </span>
@@ -203,7 +203,7 @@
                                                         Patients
                                                     </span>
                                                 </div>
-                                                <div class="mt-10p px-15p bsbb">
+                                                <div class="px-15p bsbb card-body">
                                                     <h5 class="dgray capitalize">incoming patients</h5>
                                                     <p class="card-text">
                                                         <span class="bold-2">30</span> Patients
@@ -214,7 +214,7 @@
                                         </div>
                                          <div class="col-md-6 col-lg-4 mb-3">
                                             <div class="card">
-                                                <div class="capitalize px-5p">
+                                                <div class="capitalize px-5p card-header">
                                                     <span>
                                                         <i class="fas fa-hospital-user dgray fs-16p"></i>
                                                     </span>
@@ -222,7 +222,7 @@
                                                         Patients
                                                     </span>
                                                 </div>
-                                                <div class="mt-10p px-15p bsbb">
+                                                <div class="px-15p bsbb card-body">
                                                     <h5 class="dgray capitalize">today's served patients</h5>
                                                     <p class="card-text">
                                                         <span class="bold-2">30</span> Patients
@@ -233,7 +233,7 @@
                                         </div>
                                         <div class="col-md-6 col-lg-4 mb-3">
                                             <div class="card">
-                                                <div class="capitalize px-5p">
+                                                <div class="capitalize px-5p card-header">
                                                     <span>
                                                         <i class="fas fa-file-medical dgray fs-16p"></i>
                                                     </span>
@@ -241,7 +241,7 @@
                                                         sessions
                                                     </span>
                                                 </div>
-                                                <div class="mt-10p px-15p bsbb">
+                                                <div class="px-15p bsbb card-body">
                                                     <h5 class="dgray capitalize">today's pending sessions</h5>
                                                     <p class="card-text">
                                                         <span class="bold-2">30</span> sessions
@@ -252,7 +252,7 @@
                                         </div>
                                         <div class="col-md-6 col-lg-4 mb-3">
                                             <div class="card">
-                                                <div class="capitalize px-5p">
+                                                <div class="capitalize px-5p card-header">
                                                     <span>
                                                         <i class="fas fa-file-medical dgray fs-16p"></i>
                                                     </span>
@@ -260,7 +260,7 @@
                                                         sessions
                                                     </span>
                                                 </div>
-                                                <div class="mt-10p px-15p bsbb">
+                                                <div class="px-15p bsbb card-body">
                                                     <h5 class="dgray capitalize">today's pending sessions</h5>
                                                     <p class="card-text">
                                                         <span class="bold-2">30</span> sessions
@@ -436,7 +436,7 @@
                                                 <ul class="ls-none px-3p flex bblock-resp">
                                                     <li class="py-8p bsbb flex bblock-resp bfull-resp bsbb">
                                                         <span class="pname dgray fs-14p pr-5p center hidden-resp">status : </span>
-                                                        <span class="btn btn-sm btn-label-secondary mx-5p bfull-resp" name="info-hol" data-hold="status">[Session's-Status]</span>
+                                                        <span class="btn btn-sm bc-gray dgray mx-5p bfull-resp" name="info-hol" data-hold="status">[Session's-Status]</span>
                                                     </li>
                                                     <li  class="p-2p bsbb flex bblock-resp bfull-resp">
                                                         <ul class="ls-none px-3p py-5p flex">
@@ -444,10 +444,10 @@
                                                                 <span class="px-5p dgray center">Action : </span>
                                                             </li>
                                                             <li class="p-2p bsbb flex">
-                                                                <span class="btn btn-sm btn-label-primary mx-5p data-buttons" data-role="close" data-identifier="true">close</span>
+                                                                <span class="btn btn-sm bc-tr-theme mx-5p data-buttons" data-role="close" data-identifier="true">close</span>
                                                             </li>
                                                             <li class="p-2p bsbb flex">
-                                                                <span class="btn btn-sm btn-label-secondary mx-5p data-buttons" data-identifier="true">transfer</span>
+                                                                <span class="btn btn-sm bc-gray dgray mx-5p data-buttons" data-identifier="true">transfer</span>
                                                             </li>
                                                         </ul>
                                                     </li>
@@ -500,6 +500,10 @@
                                                             <span class="dgray fs-12p px-2p">KG</span>
                                                         </li>
                                                         <li class="p-2p bsbb flex ">
+                                                            <span class="pname dgray fs-14p pr-5p">blood group : </span>
+                                                            <span class="pdob dgray fs-14p" name="info-hol" data-hold="p_info.bgroup">[patients's-bloog group]</span>
+                                                        </li>
+                                                        <li class="p-2p bsbb flex ">
                                                             <span class="pname dgray fs-14p pr-5p">location : </span>
                                                             <span class="plocation dgray fs-14p" name="info-hol" data-hold="p_info.location">[patient's-location]</span>
                                                         </li>
@@ -515,13 +519,25 @@
                                                 </div>
                                                 <div class="pinfo my-15p">
                                                     <div class="flex jc-sb my-20p bsbb">
+                                                        <span class="title bold-2 fs-16p capitalize center">symptoms recorded</span>
+                                                    </div>
+                                                    <div class="my-2p px-1p">
+                                                        <ul class=" my-10p px-5p mx-5p my-5p bfull-resp bm-y-10p-resp bm-x-0-resp bblock-resp" name="looping-info" data-hold="symptoms">
+                                                            <li class="p-2p bsbb">
+                                                                <span class="bold-2 dgray card-title" name="looping-info-hol" data-hold="" data-secondary-holder="true">[symptom's-name]</span>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                                <div class="pinfo my-15p">
+                                                    <div class="flex jc-sb my-20p bsbb">
                                                         <span class="title bold-2 fs-16p capitalize block">Applied medications</span>
                                                         <div class="p-2p bsbb flex jc-sb">
-                                                            <span class="btn-primary btn capitalize data-buttons btn-sm" name="btn-label-primary btn" data-role="medication">add medication</span>
+                                                            <span class="btn-primary btn capitalize data-buttons btn-sm" name="bc-tr-theme btn" data-role="medication">add medication</span>
                                                         </div>
                                                     </div>
                                                     <div class="my-10p px-1p">
-                                                        <ul class="card  ls-none my-10p iblock p-20p mx-5p my-5p bfull-resp bm-y-10p-resp bm-x-0-resp bblock-resp" name="looping-info" data-hold="medicines">
+                                                        <ul class="card-1 br-5p  ls-none my-10p iblock p-20p mx-5p my-5p bfull-resp bm-y-10p-resp bm-x-0-resp bblock-resp" name="looping-info" data-hold="medicines">
                                                             <li class="p-2p bsbb flex">
                                                                 <span class="bold-2 dgray card-title fs-20p" name="looping-info-hol" data-hold="name" data-secondary-holder="true">[medication's-name]</span>
                                                             </li>
@@ -542,7 +558,7 @@
                                                         </div>
                                                     </div>
                                                     <div class="my-2p px-1p">
-                                                        <ul class="card  ls-none my-10p iblock p-20p mx-5p my-5p bfull-resp bm-y-10p-resp bm-x-0-resp bblock-resp" name="looping-info" data-hold="tests">
+                                                        <ul class="card-1 br-5p  ls-none my-10p iblock p-20p mx-5p my-5p bfull-resp bm-y-10p-resp bm-x-0-resp bblock-resp" name="looping-info" data-hold="tests">
                                                             <li class="p-2p bsbb flex">
                                                                 <span class="bold-2 dgray card-title fs-20p" name="looping-info-hol" data-hold="name" data-secondary-holder="true">[tets's-name]</span>
                                                             </li>
@@ -569,7 +585,7 @@
                                                         </div>
                                                     </div>
                                                     <div class="my-2p px-1p">
-                                                        <ul class="card  ls-none my-10p iblock p-20p mx-5p my-5p bfull-resp bm-y-10p-resp bm-x-0-resp bblock-resp" name="looping-info" data-hold="equipments">
+                                                        <ul class="card-1 br-5p  ls-none my-10p iblock p-20p mx-5p my-5p bfull-resp bm-y-10p-resp bm-x-0-resp bblock-resp" name="looping-info" data-hold="equipments">
                                                             <li class="p-2p bsbb flex">
                                                                 <span class="bold-2 dgray card-title fs-20p" name="looping-info-hol" data-hold="name" data-secondary-holder="true">[consumable's-name]</span>
                                                             </li>
@@ -590,7 +606,7 @@
                                                         </div>
                                                     </div>
                                                     <div class="my-2p px-1p">
-                                                        <ul class="card  ls-none my-10p iblock p-20p mx-5p my-5p bfull-resp bm-y-10p-resp bm-x-0-resp bblock-resp" name="looping-info" data-hold="services">
+                                                        <ul class="card-1 br-5p  ls-none my-10p iblock p-20p mx-5p my-5p bfull-resp bm-y-10p-resp bm-x-0-resp bblock-resp" name="looping-info" data-hold="services">
                                                             <li class="p-2p bsbb flex">
                                                                 <span class="bold-2 dgray card-title fs-20p" name="looping-info-hol" data-hold="name" data-secondary-holder="true">[service's-name]</span>
                                                             </li>
@@ -611,7 +627,7 @@
                                                         </div>
                                                     </div>
                                                     <div class="my-2p px-1p">
-                                                        <ul class="card  ls-none my-10p iblock p-20p mx-5p my-5p bfull-resp bm-y-10p-resp bm-x-0-resp bblock-resp" name="looping-info" data-hold="operations">
+                                                        <ul class="card-1 br-5p  ls-none my-10p iblock p-20p mx-5p my-5p bfull-resp bm-y-10p-resp bm-x-0-resp bblock-resp" name="looping-info" data-hold="operations">
                                                             <li class="p-2p bsbb flex">
                                                                 <span class="bold-2 dgray card-title" name="looping-info-hol" data-hold="name" data-secondary-holder="true">[operation's-name]</span>
                                                             </li>

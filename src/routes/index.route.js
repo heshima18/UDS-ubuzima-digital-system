@@ -24,7 +24,7 @@ import {getInventory,addInventory, addInventoryTests, addInventoryOperations, ad
 import { getMessages, markAsSeen, sendMessage } from '../controllers/message.controller';
 import { authorizeAppointmentAccess } from '../middlewares/appointment.authorizer.middleware';
 import { authorizeSession } from '../middlewares/session.authorizer.middleware';
-import { addUserAssurance, getPatient, getPatients } from '../controllers/patients.controller';
+import { addPatiBg, addUserAssurance, getPatient, getPatients } from '../controllers/patients.controller';
 import { addAssurance, addEquipmentToAssuranceRestrictedList, addMedicineToAssuranceRestrictedList, addOperationToAssuranceRestrictedList, addServiceToAssuranceRestrictedList, addTestToAssuranceRestrictedList, assurance, getAssurances, removeItemFromAssurancelist,assuranceHP } from '../controllers/assurance.controller';
 import { authorizeUserAssurance } from '../middlewares/assurance.authorizer.middleware';
 import { at } from '../controllers/token.verifier.controller';
@@ -92,6 +92,7 @@ router.get('/get-map',getMap);
 router.get('/get-assurances',getAssurances);
 router.post('/appointment/:id',authorizeRole,authorizeAppointmentAccess,appointment)
 router.post('/my-appointments',authorizeRole,authorizePatientToken,myAppointments)
+router.post('/addPatiBg',authorizeRole,authorizePatient,addPatiBg)
 router.post('/hcp-appointments',authorizeRole,authorizeHc_provider,hcpAppointments)
 router.post('/appointment/:id',authorizeRole,authorizeHc_provider,appointment)
 router.get('/medicine/:medicine',getMed);

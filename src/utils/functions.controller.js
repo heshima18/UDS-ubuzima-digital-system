@@ -257,7 +257,7 @@ export function showRecs(input, data,type) {
   try {
     let div =  document.createElement('div');
     let parent = input.parentNode
-    div.className = `p-a w-300p h-250p bsbb card-2 zi-1000 bc-white scroll-2 ovys t-0 mt-70p br-5p`
+    div.className = `p-a w-300p h-250p bsbb card-2 zi-1000 bc-white scroll-2 ovys t-0 mt-50p br-5p`
     div.innerHTML = `<div class="w-100 h-100 p-5p bsbb"><ul class="ls-none p-0 m-0"></ul></div>`
     for(const info of data){
       let item = document.createElement('li');
