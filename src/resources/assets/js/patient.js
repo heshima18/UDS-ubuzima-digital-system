@@ -190,7 +190,7 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z
                                                             <span class="black fs-20p px-5p">#</span><span class="center">${session.session_id}</span>
                                                         </div>
                                                         <div class="center-2">
-                                                        <span class="btn ${(session.status == 'open')? 'btn-label-success' : 'btn-label-secondary' } btn-xs mx-5p">${session.status}</span>
+                                                        <span class="btn ${(session.status == 'open')? 'bc-tr-theme' : 'bc-gray' } btn-sm mx-5p">${session.status}</span>
                                                         <span class="btn btn-primary btn-sm view-session-butt" data-id="${session.session_id}">View</span>
                                                         </div>
                                                     </div>
@@ -307,7 +307,7 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z
                             }else{
                                 if (holder.getAttribute('data-hold').indexOf('status') != -1) {
                                     if (sessiondata[holder.getAttribute('data-hold')] == "open") {
-                                        holder.classList.replace('btn-label-secondary','btn-label-success')
+                                        holder.classList.replace('bc-gray','bc-tr-theme')
                                     }
                                 }
                                 if (!objectId in sessiondata || !sessiondata[objectId]) {
@@ -382,7 +382,7 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z
                                                             <div class="flex">
                                                                 <span class="black fs-20p px-5p">#</span><span class="center">${session.payment_info.id}</span>
                                                             </div>
-                                                            ${(session.payment_info.status == 'paid')? '<span class="btn btn-label-success btn-sm">paid</span>' : '<span class="btn btn-label-primary btn-sm">pay</span>'}
+                                                            ${(session.payment_info.status == 'paid')? '<span class="btn bc-tr-theme btn-sm">paid</span>' : '<span class="btn bc-tr-theme btn-sm">pay</span>'}
                                                             
                                                         </div>
                                                         <div class="p-15p">
@@ -480,7 +480,7 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z
                                                             <div class="flex">
                                                                 <span class="black fs-20p px-5p hover-2">#</span><span class="center hover-2">${appointment.id}</span>
                                                             </div>
-                                                            <span class="btn  btn-sm ${(appointment.status == 'declined')? 'btn-label-danger' : (appointment.status == 'approved') ? 'btn-label-success' : (appointment.status == 'finished') ? 'btn-label-secondary' : 'btn-label-secondary' }" data-role="button">${appointment.status}</span>  
+                                                            <span class="btn  btn-sm ${(appointment.status == 'declined')? 'btn-label-danger' : (appointment.status == 'approved') ? 'bc-tr-theme' : (appointment.status == 'finished') ? 'bc-gray' : 'bc-gray' }" data-role="button">${appointment.status}</span>  
                                                         </div>
                                                         <div class="p-15p hover-2" data-role="button" data-id="${appointment.id}" id ="view-appointment">
                                                             <h5 class="card-title capitalize">${appointment.subject}</h5>

@@ -142,7 +142,7 @@ import {config} from "./config.js"
                             but.setAttribute('data-target','groupBy');
                             but.setAttribute('type','button');
                             but.setAttribute('data-role','custom-buttns');
-                            but.className = `capitalize btn-label-primary btn btn-sm my-4p mx-2p`
+                            but.className = `capitalize theme bc-tr-theme btn btn-sm my-4p mx-2p`
                             but.innerText = group
                             but.id = (group == 'provinces')? 'groupByProvinces': (group == 'districts')? 'groupByDistricts': (group == 'sectors')? 'groupBySectors': (group == 'cells')? 'groupByCells': (group == 'health facilities')? 'groupByHps': '';
                             container.appendChild(but);

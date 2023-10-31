@@ -19,8 +19,6 @@
         <!-- Core CSS -->
 
     <!-- Vendors CSS -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/css/dataTables.bootstrap.min.css" integrity="sha512-BMbq2It2D3J17/C7aRklzOODG1IQ3+MHw3ifzBHMBwGO/0yUqYmsStgBjI0z5EYlaDEFnvYV7gNYdD3vFLRKsA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <link rel="stylesheet" href="/assets/vendor/libs/datatables-buttons-bs5/buttons.bootstrap5.css" />
     <link rel="stylesheet" href="/styles/styling.css">
     <script src="/assets/js/nav.js" type="module"></script>
     
@@ -28,8 +26,6 @@
     <script src="/assets/js/pharmacist.js" type="module"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.min.js" integrity="sha512-Xm9qbB6Pu06k3PUwPj785dyTl6oHxgsv9nHp7ej7nCpAqGZT3OZpsELuCYX05DdonFpTlBpXMOxjavIAIUwr0w==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cleave.js/1.6.0/cleave.min.js" integrity="sha512-KaIyHb30iXTXfGyI9cyKFUIRSSuekJt6/vqXtyQKhQP6ozZEGY8nOtRS6fExqE4+RbYHus2yGyYg1BrqxzV6YA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script src="/assets/vendor/libs/cleavejs/cleave-phone.rw.js"></script>
-    <script src="/assets/vendor/libs/datatables-bs5/datatables-bootstrap5.js"></script>
 </head>
 <body class="p-0 m-0 w-100 h-100 p-a ovh">
 <div class="cont w-100 h-100 ovxh" id="cont">
@@ -102,7 +98,7 @@
                                         <i class='bx bx-notification px-10p bx-sm dgray'></i><h5 class=" mb-0 me-auto capitalize dgray">Notifications</h5>
                                     </div>
                                 </li>
-                                <li class="dropdown-notifications-list scrollable-container h-78 ovys scroll-3">
+                                <li class="dropdown-notifications-list scrollable-container h-73 ovys scroll-3">
                                     <ul class="list-group list-group-flush nf-panel h-100">
                                        <li class="w-100 h-100 center">
                                         <div class="center">
@@ -133,9 +129,9 @@
                 </div>
             </nav>
         </div>
-		<div class="thebody w-100 h-90 p-r pt-100p bsbb">
+		<div class="thebody w-100 h-90 p-r pt-60p bsbb">
 			<div class="w-100 h-100 mb-10p">
-				<div class="w-90 m-a h-100 p-10p br-10p mb-30p bsbb">
+				<div class="w-100 m-a h-100 p-10p br-10p mb-30p bsbb">
 					<div class="w-100 h-100 p-10p bsbb flex bblock-resp bp-0-resp bc-white br-10p" aria-controls="cont">
 						<div class="w-240p bfull-resp h-100 bh-70p-resp p-10p bsbb the-h">
 							<div class="cont w-100 h-100">
@@ -269,10 +265,10 @@
 							<div class=" br-5p w-100 h-100 p-a ovh hidden t-0 tr-0-3 pagecontentsection" id="view-session">
                                 <div class="w-100 h-a p-10p bsbb">
 									<span class="theme capitalize left flex bold fs-20p verdana h-100 pl-10p"><span class="dgray capitalize">pharmacist / </span>&nbsp;medication session</span>
-                                    <span class="inp-session-id px-10p bsbb p-r bp-y-10p-resp right bc-white br-5p p-8p w-300p">
-                                        <div class="p-r">
-                                            <input type="text" class="w-100 no-outline b-none dgray" id="session-id" placeholder="Session ID">
-                                            <button class="btn btn-primary btn-sm p-a t-0 r-0 mt--2p" name="session-search"><i class="bx bx-search h-20p w-a "></i></button>
+                                    <span class="inp-session-id px-10p bsbb p-r bp-y-10p-resp right h-50p br-5p p-8p b-1-s-gray w-300p">
+                                        <div class="p-r h-100">
+                                            <input type="text" class="w-100 no-outline b-none dgray pb-5p bsbb h-100" id="session-id" placeholder="Session ID">
+                                            <button class="btn btn-primary btn-sm p-a t-0 r-0" name="session-search"><i class="bx bx-search h-20p w-a "></i></button>
                                         </div>
                                     </span>
 								</div>

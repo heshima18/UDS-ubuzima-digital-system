@@ -214,7 +214,7 @@ export function page (req,res,page){
                     file = 'N/A'
                 break;
         } 
-    }else if (user == 'patient') {
+    }else if (user == 'patient' || user == 'householder') {
         switch (filename) {
             case '':
                 file = path.join(__dirname,'..','pages', 'patient-index.html')
