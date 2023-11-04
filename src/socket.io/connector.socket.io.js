@@ -3,6 +3,7 @@ import query from "../controllers/query.controller";
 import addToken from "../controllers/token.signer.controller";
 import authenticateToken from "../controllers/token.verifier.controller";
 import server from "./holder.socket"
+import { findRecs } from "./recs.socket";
 export const io = require('socket.io')(server, {
     cors: {
       origin: '*',
@@ -33,6 +34,19 @@ export const io = require('socket.io')(server, {
             }
             
         }
+      })
+      socket.on('searchForRecs',(data)=>{
+        let {type,entity,needle,datatofetch,coltosearch} = data
+        switch (entity) {
+          case 'facility':
+            entity = 'hospitals'
+            break;
+        
+          default:
+            entity = undefined
+            break;
+        }
+        findRecs(socket,entity,needle,type,datatofetch,coltosearch)
       })
   })
   

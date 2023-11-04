@@ -1,7 +1,8 @@
 let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,z,x,c,v,b,n,m,notificationlinks
-import { alertMessage, getdata, getschema, postschema, request,initializeCleave, checkEmpty,cpgcntn, showRecs, getchips,getPath,showAvaiEmps, deletechild, geturl, addsCard,showAvaiAssurances, addLoadingTab, RemoveAuthDivs, showFingerprintDiv, sessiondata } from "../../../utils/functions.controller.js";
+import { alertMessage, getdata, getschema, postschema, request,initializeCleave, checkEmpty,cpgcntn, showRecs, getchips,getPath,showAvaiEmps, deletechild, geturl, addsCard,showAvaiAssurances, addLoadingTab, RemoveAuthDivs, showFingerprintDiv, sessiondata,addAuthDiv } from "../../../utils/functions.controller.js";
 import {pushNotifs, userinfo,expirateMssg, getNfPanelLinks,m as messages} from "./nav.js";
 import { addUprofile, uprofileStf } from "../../../utils/user.profile.controller.js";
+import { viewTransfer } from "./transfer.js";
 
 (async function () {
     z = userinfo
@@ -73,6 +74,8 @@ import { addUprofile, uprofileStf } from "../../../utils/user.profile.controller
 postschema.body = JSON.stringify({token: localStorage.getItem('token')})
 let users = await request('get-hp-employees',postschema)
 if (!users) return alertMessage(users.message)
+notificationlinks = getNfPanelLinks()
+genClicks(notificationlinks)
 users = users.message
 a = getPath(1)
 c = Array.from(document.querySelectorAll('span.cpcards'))
@@ -399,25 +402,14 @@ function genClicks(notificationlinks) {
             let message = messages.find(function (mess) {
                 return mess.id == link.getAttribute('data-id')
             })
-            if (v && message) {
-            p = Array.from(v.parentElement.querySelectorAll('.pagecontentsection'))
-            
-            s = p.indexOf(v)
-            let url = new URL(window.location.href);
-            if (link.getAttribute('data-message-type') == 'test_res_message' || link.getAttribute('data-message-type') == 'session_message') {
-                let session 
-                if (message.addins) {
-                    session = message.addins.session
-                }else if (message.extra) {
-                    session = message.extra.session
+            if (message) {
+                if (link.getAttribute('data-message-type') == 'transfer_message' ) {
+                    if ('extra' in message) {
+                        viewTransfer(message.extra.transfer)
+                    }else if ('addins' in message) {
+                        viewTransfer(message.addins.transfer)
+                    }
                 }
-                if (session) {
-                    url.pathname = `/${getPath()[0]}/${link.getAttribute('data-href-target')}/${session}`;
-                }
-            }
-            window.history.pushState({},'',url.toString())
-            cpgcntn(p.indexOf(v),p)
-            gsd(v,null)
            }
         })
     })

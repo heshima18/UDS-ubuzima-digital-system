@@ -14,8 +14,13 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" integrity="sha512-b2QcS5SsA8tZodcDtGRELiGv5SaKSk1vDHDaQRda0htPYWZ6046lr3kJ5bAAQdpV2mmA/4v0wQF9MyU6/pDIAg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/spinkit/2.0.0/spinkit.min.css" integrity="sha512-kRYkjiYH/VXxoiaDK2oGNMKIi8VQVfie1lkYGX3kmfzWNR2kfaF5ze0885W3/eE6lIiURBsZA91M/WNvCajHMw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/css/dataTables.bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/css/jquery.dataTables.min.css">
+
     <!-- Core CSS -->
     <!-- Vendors CSS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/jquery.dataTables.min.js" integrity="sha512-BkpSL20WETFylMrcirBahHfSnY++H2O1W+UnEEO4yNIl+jI2+zowyoGJpbtk6bx97fBXf++WJHSSK2MV4ghPcg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="/assets/js/nav.js" type="module"></script>
     <script src="/assets/js/hc_provider.js" type="module"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.min.js" integrity="sha512-Xm9qbB6Pu06k3PUwPj785dyTl6oHxgsv9nHp7ej7nCpAqGZT3OZpsELuCYX05DdonFpTlBpXMOxjavIAIUwr0w==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
@@ -88,7 +93,7 @@
                                 <span class="p-a bc-red br-50 w-15p h-15p fs-9p white hidden t-5p r-0  data-role" data-role="notification-count-badge">0</span>
                             </a>
                             <ul class="notification-dropdown bc-white card-5 br-10p h-500p w-390p p-0 t-80p p-f mr-20p r-0 ls-none bw-90-500-resp bm-x-10p-resp hidden" data-bs-popper="static" name="notification-dropdown" id="notification-dropdown">
-                                <li class="dropdown-menu-header border-bottom px-15p py-5p bsbb">
+                                <li class="dropdown-menu-header border-bottom px-15p py-15p bsbb">
                                     <div class="dropdown-header d-flex align-items-center py-10p">
                                         <i class='bx bx-notification px-10p bx-sm dgray'></i><h5 class=" mb-0 me-auto capitalize dgray">Notifications</h5>
                                     </div>
@@ -162,6 +167,14 @@
                                                 <span class="w-a h-19p mr-10p"><i class="bx bx-show-alt bx-sm"></i></span>
                                                 <span class="center pt-2p bsbb">
                                                     view session
+                                                </span>
+                                            </span>
+										</li>
+                                        <li class="p-5p bsbb">
+											<span class="w-100 h-100 p-10p hover-7 cpcards bsbb flex verdana nowrap capitalize fs-13p br-5p dgray" data-item-type="my-sessions">
+                                                <span class="w-a h-19p ml-5p mr-8p" ><i class="fas fa-notes-medical fs-20p "></i></span>
+                                                <span class="center bsbb">
+                                                    my sessions
                                                 </span>
                                             </span>
 										</li>
@@ -418,8 +431,7 @@
 							</div>
 							<!-- end of add session section -->
                             <!-- view session  -->
-							<div class="br-5p w-100 h-100 p-a ovh hidden t-0 tr-0-3 pagecontentsection" id="view-session">
-								
+							<div class="br-5p w-100 h-100 p-a ovh hidden t-0 tr-0-3 pagecontentsection" id="view-session">			
                                 <div class="w-100 h-a bsbb my-10p jc-sb">
                                     <div class="theme capitalize left flex bold fs-20p verdana h-100"><span class="dgray capitalize">HCP / </span>&nbsp;view a session</div>
                                     <span class="inp-session-id px-10p bsbb p-r bp-y-10p-resp right bc-white br-5p p-5p w-300p b-1-s-gray">
@@ -439,7 +451,7 @@
                                                         <span class="btn btn-sm bc-gray dgray mx-5p bfull-resp" name="info-hol" data-hold="status">[Session's-Status]</span>
                                                     </li>
                                                     <li  class="p-2p bsbb flex bblock-resp bfull-resp">
-                                                        <ul class="ls-none px-3p py-5p flex">
+                                                        <ul class="ls-none px-3p py-5p flex buttons-holder">
                                                             <li class="p-2p bsbb flex">
                                                                 <span class="px-5p dgray center">Action : </span>
                                                             </li>
@@ -447,7 +459,7 @@
                                                                 <span class="btn btn-sm bc-tr-theme mx-5p data-buttons" data-role="close" data-identifier="true">close</span>
                                                             </li>
                                                             <li class="p-2p bsbb flex">
-                                                                <span class="btn btn-sm bc-gray dgray mx-5p data-buttons" data-identifier="true">transfer</span>
+                                                                <span class="btn btn-sm bc-gray dgray mx-5p data-buttons" data-identifier="true" data-role="transfer">transfer</span>
                                                             </li>
                                                         </ul>
                                                     </li>
@@ -721,6 +733,49 @@
 								</div>
 							</div>
 							<!-- end of view session  -->
+                             <!-- manage medical prescriptions section -->
+							<div class="br-5p w-100 h-100 p-a ovh hidden t-0 tr-0-3 pagecontentsection" id="my-sessions">
+								<div class="w-100 h-a p-10p bsbb">
+									<span class="bblock-resp theme capitalize left flex bold fs-20p verdana h-100 pl-10p"><span class="dgray capitalize">HCP / </span>&nbsp;medical sessions</span>
+								</div>
+								<div class="pg-cntnt w-100 h-90 p-20p bp-0-resp bsbb ovys left scroll-2">
+                                    <div class="w-100 h-100 theb p-r"> 
+                                        <div class="card">
+                                            <div class="card-header border-bottom text-center">
+                                                <div class="d-flex justify-content-between align-items-center row pt-3 gap-3 gap-md-0">
+                                                    <div class="col-md-4 health-facility"></div>
+                                                    <div class="col-md-6 date-range flex">
+                                                        <form action="" method="post" name="date-range" class="flex">
+                                                            <div class="">
+                                                                <div class="col-md-10">
+                                                                    <label for="start" class="form-label">Start Date</label>
+                                                                    <input class="form-control" type="date" id="start">
+                                                                </div>
+                                                            </div>
+                                                            <div class="">
+                                                                <div class="col-md-10">
+                                                                    <label for="start" class="form-label">End Date</label>
+                                                                    <input class="form-control" type="date" id="end">
+                                                                </div>
+                                                            </div>
+                                                            <div class="">
+                                                                <div class="col-md-10">
+                                                                    <label for="start" class="form-label">filter</label>
+                                                                    <button class="btn btn-primary" type="submit">Filter</button>
+                                                                </div>
+                                                            </div>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="card-datatable mb-3 table-responsive">
+                                                <table class="datatables datatables-prescriptions my-3 table border-top"></table>
+                                            </div>
+                                        </div>
+                                    </div>
+								</div>
+							</div>
+							<!-- end of manage medical prescriptions section -->
                              <!-- manage appointments history section -->
 							<div class="br-5p w-100 h-100 p-a ovh hidden t-0 tr-0-3 pagecontentsection" id="appointments">
 								<div class="w-100 h-a p-10p bsbb flex">

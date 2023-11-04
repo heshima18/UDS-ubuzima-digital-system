@@ -40,8 +40,8 @@ export const sendMessage = async (req,res)=>{
         let insert = await query(`insert
          into messages
          (id,user,receiver,type,title,content,addins,sessionid,dateadded)
-         values(?,?,?,?,?,?,?,?,CURRENT_TIMESTAMP())`,
-         [uid,user,receiver,type,title,content,JSON.stringify(extra),sid])
+         values(?,?,?,?,?,?,?,?,?)`,
+         [uid,user,receiver,type,title,content,JSON.stringify(extra),sid,now])
          const recipientSocket = Array.from(io.sockets.sockets.values()).find((sock) => sock.handshake.query.id === receiver)
          if (recipientSocket) {
              recipientSocket.emit('message',{id: uid,session: sid,type,title,content,sender:{name:decoded.token.Full_name,id:user},extra})

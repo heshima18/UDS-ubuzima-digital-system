@@ -1,5 +1,5 @@
 export const roles = [
-    "Admin",
+    "admin",
     "mohs" ,
     "dof" ,
     "pharmacist" ,

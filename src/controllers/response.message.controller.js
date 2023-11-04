@@ -18,6 +18,7 @@ const errorMessage = {
     oc_message:'operation recorded successfully',
     sc_message:'service recorded successfully',
     ms_message:'message sent successfully',
+    transc_message:'transfer created successfully',
     me_message:'message edited successfully',
     dc_message:'department created successfully',
     appoi_appr_message:'appointment approved successfully',
@@ -45,6 +46,7 @@ const errorMessage = {
     _err_u_404: 'user not found',
     _err_p_404: 'patient not found',
     _err_sess_404: 'the requested session was not found',
+    _err_trans_404: 'the requested transfer was not found',
     _err_med_404: 'medicine(s) not found',
     _err_recs_404: 'no records found',
 

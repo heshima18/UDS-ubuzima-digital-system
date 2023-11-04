@@ -37,6 +37,7 @@ import { organiseTitles, titles } from '../utils/titles.controller';
 import { checkTest } from '../middlewares/tests.middleware';
 import { insightsStats } from '../controllers/insights.controller';
 import { addPati2fa } from '../middlewares/user.2fa.access.middleware';
+import { createTransfer, viewTransfer } from '../controllers/transfer.controller';
 const router = express.Router({ strict: false });
 router.post('/verify',verification)
 router.post('/get-user-medical-history/:userid?',authorizeRole,addPati2fa,getUsessions)
@@ -80,6 +81,9 @@ router.post("/add-session-service",authorizeRole,(req,res,next) => authorizeSess
 router.post("/add-session-operation",authorizeRole,(req,res,next) => authorizeSession(req,res,next,'isnotclosed'),authorizeHc_provider,addSessionOperation)
 router.post("/add-session-comment",authorizeRole,(req,res,next) => authorizeSession(req,res,next,'isnotclosed'),(req,res,next) =>authorizeMultipleRoles(req,res,next,['hc_provider','pharmacist']),addSessionComment)
 router.post("/add-session-decisions",authorizeRole,(req,res,next) => authorizeSession(req,res,next,'isnotclosed'),authorizeHc_provider,addSessionDecision)
+router.post("/crTrns",authorizeRole,(req,res,next) => authorizeSession(req,res,next,'isnotclosed'),authorizeHc_provider,createTransfer)
+router.post("/getTrNsfr",authorizeRole,(req,res,next) => authorizeMultipleRoles(req,res,next,['receptionist','hc_provider']),viewTransfer)
+
 router.post("/add-cell",authorizeRole,authorizeAdmin,addCell)
 router.post('/addemployee',authorizeRole,authorizeAdmin,(req,res,next) => authorizeHospital(req,res,next,'isoptional'),addemployee)
 router.post('/add-employee-to-hp',authorizeRole,authorizeAdmin,authorizeHospital,addEmployeetoHp)

@@ -253,11 +253,19 @@ export function initializeSpecialCleave(element,blocks,length,delimitator) {
     }
   });
 }
-export function showRecs(input, data,type) {
+export function removeRec(input) {
+  try {
+    let parent = input.parentNode
+    parent.removeChild(parent.querySelector('div.rec'))
+  } catch (error) {
+  }
+  
+}
+export function showRecs(input, data,type,noInpAction) {
   try {
     let div =  document.createElement('div');
     let parent = input.parentNode
-    div.className = `p-a w-300p h-250p bsbb card-2 zi-1000 bc-white scroll-2 ovys t-0 mt-50p br-5p`
+    div.className = `p-a w-300p h-250p bsbb card-2 zi-1000 bc-white scroll-2 ovys t-0 mt-70p br-5p rec`
     div.innerHTML = `<div class="w-100 h-100 p-5p bsbb"><ul class="ls-none p-0 m-0"></ul></div>`
     for(const info of data){
       let item = document.createElement('li');
@@ -366,24 +374,25 @@ export function showRecs(input, data,type) {
         
       }
     })
-    input.onkeyup = function () {
-     let value = this.value.trim(),pattern = new RegExp(`.*${value.split('').join('.*')}.*`, "i"),match = 0
-     items.forEach(item =>{
-      if (!pattern.test(item.textContent)) {
-        item.classList.add('hidden')
-        if (match == 0) {
-          input.removeAttribute('data-id')
+    if (!noInpAction) {
+      input.onkeyup = function () {
+       let value = this.value.trim(),pattern = new RegExp(`.*${value.split('').join('.*')}.*`, "i"),match = 0
+       items.forEach(item =>{
+        if (!pattern.test(item.textContent)) {
+          item.classList.add('hidden')
+          if (match == 0) {
+            input.removeAttribute('data-id')
+          }
+        }else{
+          item.classList.remove('hidden')
+          match = 1
+          if ((input.value.toLowerCase() === item.textContent.toLowerCase())) {
+            input.setAttribute('data-id',item.getAttribute('data-id'))
+          }
+    
         }
-      }else{
-        item.classList.remove('hidden')
-        match = 1
-        console.log(input.value.toLowerCase() === item.textContent.toLowerCase())
-        if ((input.value.toLowerCase() === item.textContent.toLowerCase())) {
-          input.setAttribute('data-id',item.getAttribute('data-id'))
-        }
-  
+       })
       }
-     })
     }
   } catch (error) {
     
@@ -795,7 +804,7 @@ export async function showAvaiEmps(emps,extra){
         }
       }
     }
-    a.className = "w-40 h-55 p-10p bsbb ovh bc-white cntr zi-10000 br-10p card b-mgc-resp"
+    a.className = "w-40 h-55 p-10p bsbb ovh bc-white cntr zi-10000 br-10p card-1 b-mgc-resp"
     a.innerHTML = `<div class=" d-flex align-items-center justify-content-between p-10p mb-10p bsbb">
                       <h5 class="card-title m-0 me-2 capitalize">select the receiver</h5>
                   </div>
@@ -847,6 +856,31 @@ export async function showAvaiEmps(emps,extra){
         show.classList.toggle('hidden')
 
       })
+    })
+    let employees = Array.from(a.querySelectorAll('.emp'))
+    let deps = Array.from(a.querySelectorAll('.dep'))
+    return new Promise((resolve) =>{
+      for (const lis of employees) {
+        lis.addEventListener('click',async function(event){
+          event.preventDefault();
+          this.classList.add('selected')
+          let employee = this.getAttribute('data-id')
+          resolve(employee)
+          deletechild(u,u.parentElement)
+        })
+      }
+      for (const dep of deps) {
+        dep.addEventListener('click',async function(event){
+          let emps = Array.from(dep.parentNode.parentElement.querySelectorAll('.emp'))
+          emps = emps.map(function (employee) {
+              return employee.getAttribute('data-id')
+          })
+          resolve(emps)
+          deletechild(u,u.parentElement)
+
+        })
+      }
+
     })
    return u
 }

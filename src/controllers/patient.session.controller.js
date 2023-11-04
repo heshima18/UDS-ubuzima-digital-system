@@ -224,47 +224,24 @@ export const getHc_pSessions = async (req,res)=>{
       if (!hcp) {hcp = req.body.hcp}
       let response = await query(`SELECT 
       mh.id AS session_id,
-      mh.tests as raw_tests,
-      mh.comment as comment,
       mh.status as status,
-      mh.medicines as raw_medicines,
-      payments.amount as payment_amount,
+      mh.dateadded as date,
       patients.Full_name as patient_name,
       patients.id as patient_id,
-      payments.status as payment_status,
-      mh.decision as decision,
-      CONCAT('[', GROUP_CONCAT(DISTINCT CONCAT('{"name": "', m.name, '"}')), ']') AS medicines,
-      COALESCE( CONCAT('[', GROUP_CONCAT(DISTINCT CONCAT('{"name": "', t.name, '"}')), ']'), '[]') AS tests
+      COALESCE(assurances.name, 'private') as assurance
     FROM
       medical_history mh
-      INNER JOIN payments ON mh.id = payments.session
       INNER JOIN patients ON mh.patient = patients.id
-      INNER JOIN medicines AS m ON JSON_CONTAINS(mh.medicines, JSON_OBJECT('id', m.id), '$')
-      LEFT JOIN tests AS t ON JSON_CONTAINS(mh.tests, JSON_OBJECT('id', t.id), '$')
-    WHERE mh.hcp_provider = ?
+      LEFT JOIN assurances ON mh.assurance = assurances.id
+    WHERE mh.hc_provider = ?
     GROUP BY
     mh.id;
     `,[hcp])
       if(!response) return res.status(500).send({success: false, message: errorMessage.is_error})
-      for (const mh of response) {
-        response[response.indexOf(mh)].medicines = JSON.parse(mh.medicines);
-        response[response.indexOf(mh)].decision = JSON.parse(mh.decision);
-        response[response.indexOf(mh)].tests = JSON.parse(mh.tests)
-        response[response.indexOf(mh)].raw_tests = JSON.parse(mh.raw_tests);
-        response[response.indexOf(mh)].raw_medicines = JSON.parse(mh.raw_medicines)    
-        for (const medicine of mh.medicines) {
-            Object.assign(response[response.indexOf(mh)].medicines[mh.medicines.indexOf(medicine)],{quantity: response[response.indexOf(mh)].raw_medicines[mh.medicines.indexOf(medicine)].quantity, servedOut: response[response.indexOf(mh)].raw_medicines[mh.medicines.indexOf(medicine)].servedOut})
-        }
-        for (const tests of mh.tests) {
-          try {
-            Object.assign(response[response.indexOf(mh)].tests[mh.tests.indexOf(tests)],{result: response[response.indexOf(mh)].raw_tests[mh.tests.indexOf(tests)].result,tester: response[response.indexOf(mh)].raw_tests[mh.tests.indexOf(tests)].tester})
-          } catch (error) {
-            
-          }
-        }
-        delete response[response.indexOf(mh)].raw_tests
-        delete response[response.indexOf(mh)].raw_medicines
-      }
+      response = response.map(function (res) {
+        res.date = DateTime.fromISO(res.date).toFormat('yyyy-MM-dd')
+        return res
+      })
       res.send({success: true, message: response})
     
   } catch (error) {

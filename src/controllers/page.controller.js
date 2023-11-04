@@ -204,6 +204,12 @@ export function page (req,res,page){
             case 'view-session':
                 file = path.join(__dirname,'..','pages', 'hcp-index.html')
                 break;
+             case 'my-sessions/':
+                file = path.join(__dirname,'..','pages', 'hcp-index.html')
+                break;
+            case 'my-sessions':
+                file = path.join(__dirname,'..','pages', 'hcp-index.html')
+                break;
             case 'appointments/':
                 file = path.join(__dirname,'..','pages', 'hcp-index.html')
                 break;

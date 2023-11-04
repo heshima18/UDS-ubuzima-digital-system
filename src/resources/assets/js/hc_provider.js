@@ -1,8 +1,9 @@
 
-import { alertMessage, getdata, getschema, postschema, request,deletechild, checkEmpty, showRecs, getchips,getPath,calcTime,addsCard,cpgcntn, geturl,sessiondata,addChip, showAvaiAssurances, adcm, addshade, addLoadingTab, removeLoadingTab, showAvaiEmps, fT, promptHpsToChoose, addAuthDiv, RemoveAuthDivs, showFingerprintDiv } from "../../../utils/functions.controller.js";
+import { alertMessage, getdata, getschema, postschema, request,deletechild, checkEmpty, showRecs, getchips,getPath,calcTime,addsCard,cpgcntn, geturl,sessiondata,addChip, showAvaiAssurances, adcm, addshade, addLoadingTab, removeLoadingTab, showAvaiEmps, fT, promptHpsToChoose, addAuthDiv, RemoveAuthDivs, showFingerprintDiv, removeRec } from "../../../utils/functions.controller.js";
 import { addUprofile } from "../../../utils/user.profile.controller.js";
 import {pushNotifs, userinfo,expirateMssg, getNfPanelLinks,m as messages, DateTime} from "./nav.js";
-let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,z,notificationlinks
+import { viewTransfer } from "./transfer.js";
+let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,z,notificationlinks,socket
 (async function () {
     z = userinfo
     let token = getdata('token')
@@ -16,7 +17,7 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,z,notificationlinks
     if (z.success) {
         z = z.message
         try {
-            const socket = io(geturl(),{ query : { id: z.id} });
+            socket = io(geturl(),{ query : { id: z.id} });
             socket.on('connect', () => {
             console.log('Connected to the server');
             });
@@ -71,11 +72,6 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,z,notificationlinks
     l = await request('get-equipments',postschema)
     k = await request('get-services',postschema)
     j = await request('get-operations',postschema)
-    let appointment = await request('hcp-appointments',postschema)
-    if (!appointment.success) {
-        return alertMessage(appointment.message)
-    }
-    const appointments = appointment.message
     if (!q.success || !f.success || !l.success || !k.success || !j.success || !users.success) {
         return 0
     }
@@ -167,8 +163,11 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,z,notificationlinks
                 s.value = getPath(2)
                 b.innerHTML = `<i class="bx bx-search h-20p w-a center"></i>`
                 b.removeAttribute('disabled')
-                if (!r.success) return alertMessage(r.message)
-                addUprofile(r.message);
+                if (!r.success) {
+                    alertMessage(r.message)
+                }else{
+                    addUprofile(r.message);
+                }
             }
             let fingerprint = page.querySelector('span#fingerprint')
             fingerprint.onclick = async function () {
@@ -181,11 +180,14 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,z,notificationlinks
                 })
                 r = await request(`patient/`,postschema)
                 RemoveAuthDivs();
-                if (!r.success) return alertMessage(r.message)
-                addUprofile(r.message);
-                let url = new URL(window.location.href);
-                url.pathname = `/hc_provider/search-patient/${r.message.id}`;
-                window.history.pushState({},'',url.toString())
+                if (!r.success){
+                    alertMessage(r.message)
+                }else{
+                    addUprofile(r.message);
+                    let url = new URL(window.location.href);
+                    url.pathname = `/hc_provider/search-patient/${r.message.id}`;
+                    window.history.pushState({},'',url.toString())
+                }
               }
             }
             f.onsubmit = async e=>{
@@ -196,11 +198,14 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,z,notificationlinks
                 r = await request(`patient/${s.value}`,postschema)
                 b.innerHTML = `<i class="bx bx-search h-20p w-a center"></i>`
                 b.removeAttribute('disabled')
-                if (!r.success) return alertMessage(r.message)
-                addUprofile(r.message);
-                let url = new URL(window.location.href);
-                url.pathname = `/hc_provider/search-patient/${s.value}`;
-                window.history.pushState({},'',url.toString())
+                if (!r.success){ 
+                    return alertMessage(r.message)
+                }else{
+                    addUprofile(r.message);
+                    let url = new URL(window.location.href);
+                    url.pathname = `/hc_provider/search-patient/${s.value}`;
+                    window.history.pushState({},'',url.toString())
+                }
           
             }
             }else if (x == 'my-account') {
@@ -396,16 +401,17 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,z,notificationlinks
                     if (sessiondata.success) {
                         theb.innerHTML = raw
                         sessionStorage.removeItem('minfo')
+                        session_input.value = session
+                        let url = new URL(window.location.href);
+                        url.pathname = `/hc_provider/view-session/${session}`;
+                        window.history.pushState({},'',url.toString())
+                        sessiondata = sessiondata.message
+                        showSession(sessiondata);
                     }
                     session_s_button.innerHTML = `<i class="bx bx-search h-20p w-a center"></i>`
                     session_s_button.removeAttribute('disabled')
-                    if (!sessiondata.success) return alertMessage(sessiondata.message)
-                    session_input.value = session
-                    let url = new URL(window.location.href);
-                    url.pathname = `/hc_provider/view-session/${session}`;
-                    window.history.pushState({},'',url.toString())
-                    sessiondata = sessiondata.message
-                    showSession(sessiondata);
+                    if (!sessiondata.success) {alertMessage(sessiondata.message)}
+                    
                 }
               }
               if (session) {
@@ -413,129 +419,334 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,z,notificationlinks
                 let sessiondata =  await request(`session/${session}`,postschema)
                 if (!sessiondata.success){
                     sessionStorage.removeItem('minfo')
-                    return alertMessage(sessiondata.message)
+                    alertMessage(sessiondata.message)
+                }else{
+                    session_input.value = session
+                    sessiondata = sessiondata.message
+                    showSession(sessiondata);
                 }
-                session_input.value = session
-                sessiondata = sessiondata.message
-                showSession(sessiondata);
-                
-
               }
             }else if (x == 'appointments') {
-                let appointmentsHolder = page.querySelector('ul[data-role="appointments-holder"]')
-                appointmentsHolder.innerHTML = null
-                // Create a map to store users grouped by year and month
-                const groupedAppointments = new Map();
-
-                // Iterate through each user
-                appointments.forEach(appointment => {
-                    const registrationDate = new Date(appointment.date_booked);
-                    const year = registrationDate.getFullYear();
-                    registrationDate.setMonth(registrationDate.getMonth())
-                    const month = new Intl.DateTimeFormat('en-US',{month: 'long',}).format(registrationDate); // Month is zero-based
-
-                    // Create the year container if it doesn't exist
-                    if (!groupedAppointments.has(year)) {
-                        groupedAppointments.set(year, new Map());
+                if (!page.classList.contains('loaded')) {
+                    let appointments = await request('hcp-appointments',postschema)
+                    if (appointments.success) {
+                        appointments = appointments.message
+                    }else{
+                        return alertMessage(appointments.message)
                     }
-
-                    // Create the month container if it doesn't exist inside the year container
-                    if (!groupedAppointments.get(year).has(month)) {
-                        groupedAppointments.get(year).set(month, []);
-                    }
-
-                    // Add the appointment to the appropriate month container inside the year container
-                    groupedAppointments.get(year).get(month).push(appointment);
-                });
-
-                // Convert the map to an array for a structured result
-                const structuredArray = Array.from(groupedAppointments, ([year, months]) => ({
-                    year: year,
-                    months: Array.from(months, ([month, appointments]) => ({
-                        month: month,
-                        appointments: appointments
-                    }))
-                }));
-                for (const year of structuredArray) {
-                    for (const month of year.months) {
-                        let li = document.createElement('li')
-                        li.className = `ovh`
-                        appointmentsHolder.appendChild(li)
-                        li.innerHTML = `<div class="w-100 h-70p p-5p my-10p">
-                                            <div class="w-100 h-100 bc-tr-white">
-                                                <div class="header w-100 h-60p card-1 br-5p bc-white p-r block hover-2">
-                                                    <div class="w-100 h-100 flex jc-sb p-5p bsbb">
-                                                        <span class="dgray center capitalize px-10p fs-16p">${month.month} / ${year.year}</span>
-                                                        <span class="px-25p center spanner hover-2" data-role="span">
-                                                            <span class="right-arrow tr-0-3"></span>
-                                                        </span>
+                    let appointmentsHolder = page.querySelector('ul[data-role="appointments-holder"]')
+                    appointmentsHolder.innerHTML = null
+                    // Create a map to store users grouped by year and month
+                    const groupedAppointments = new Map();
+    
+                    // Iterate through each user
+                    appointments.forEach(appointment => {
+                        const registrationDate = new Date(appointment.date_booked);
+                        const year = registrationDate.getFullYear();
+                        registrationDate.setMonth(registrationDate.getMonth())
+                        const month = new Intl.DateTimeFormat('en-US',{month: 'long',}).format(registrationDate); // Month is zero-based
+    
+                        // Create the year container if it doesn't exist
+                        if (!groupedAppointments.has(year)) {
+                            groupedAppointments.set(year, new Map());
+                        }
+    
+                        // Create the month container if it doesn't exist inside the year container
+                        if (!groupedAppointments.get(year).has(month)) {
+                            groupedAppointments.get(year).set(month, []);
+                        }
+    
+                        // Add the appointment to the appropriate month container inside the year container
+                        groupedAppointments.get(year).get(month).push(appointment);
+                    });
+    
+                    // Convert the map to an array for a structured result
+                    const structuredArray = Array.from(groupedAppointments, ([year, months]) => ({
+                        year: year,
+                        months: Array.from(months, ([month, appointments]) => ({
+                            month: month,
+                            appointments: appointments
+                        }))
+                    }));
+                    for (const year of structuredArray) {
+                        for (const month of year.months) {
+                            let li = document.createElement('li')
+                            li.className = `ovh`
+                            appointmentsHolder.appendChild(li)
+                            li.innerHTML = `<div class="w-100 h-70p p-5p my-10p">
+                                                <div class="w-100 h-100 bc-tr-white">
+                                                    <div class="header w-100 h-60p card-1 br-5p bc-white p-r block hover-2">
+                                                        <div class="w-100 h-100 flex jc-sb p-5p bsbb">
+                                                            <span class="dgray center capitalize px-10p fs-16p">${month.month} / ${year.year}</span>
+                                                            <span class="px-25p center spanner hover-2" data-role="span">
+                                                                <span class="right-arrow tr-0-3"></span>
+                                                            </span>
+                                                        </div>
                                                     </div>
+                                                    <div class="w-100 h-a p-10p bsbb appointment-holder"></div>
                                                 </div>
-                                                <div class="w-100 h-a p-10p bsbb appointment-holder"></div>
-                                            </div>
-                                        </div>`
-                        const appointmentHol = li.querySelector(`div.appointment-holder`)
-                        for (const appointment of month.appointments) {
-                            if (appointment.status != 'open') {
-                                let ss = document.createElement('div')
-                                appointmentHol.appendChild(ss)
-                                ss.className = `w-250p h-a bfull-resp p-5p bsbb iblock`
-                                ss.innerHTML = `<div class="card">
-                                                        <div class="p-15p capitalize dgray flex jc-sb">
-                                                            <div class="flex">
-                                                                <span class="black fs-20p px-5p hover-2">#</span><span class="center hover-2">${appointment.id}</span>
+                                            </div>`
+                            const appointmentHol = li.querySelector(`div.appointment-holder`)
+                            for (const appointment of month.appointments) {
+                                if (appointment.status != 'open') {
+                                    let ss = document.createElement('div')
+                                    appointmentHol.appendChild(ss)
+                                    ss.className = `w-250p h-a bfull-resp p-5p bsbb iblock`
+                                    ss.innerHTML = `<div class="card">
+                                                            <div class="p-15p capitalize dgray flex jc-sb">
+                                                                <div class="flex">
+                                                                    <span class="black fs-20p px-5p hover-2">#</span><span class="center hover-2">${appointment.id}</span>
+                                                                </div>
+                                                                <span class="btn  btn-sm ${(appointment.status == 'declined')? 'bc-tr-red red' : (appointment.status == 'approved') ? 'bc-tr-theme theme' : (appointment.status == 'finished') ? 'bc-gray dgray' : 'bc-gray dgray' }" data-role="button">${appointment.status}</span>  
                                                             </div>
-                                                            <span class="btn  btn-sm ${(appointment.status == 'declined')? 'bc-tr-red red' : (appointment.status == 'approved') ? 'bc-tr-theme theme' : (appointment.status == 'finished') ? 'bc-gray dgray' : 'bc-gray dgray' }" data-role="button">${appointment.status}</span>  
-                                                        </div>
-                                                        <div class="p-15p hover-2" data-role="button" data-id="${appointment.id}" id ="view-appointment">
-                                                            <h5 class="card-title capitalize">${appointment.subject}</h5>
-                                                            <p class="px-5p">
-                                                            <span class="capitalize fs-14p">appointment with ${appointment.patient}</span>
-                                                            </p>
-                                                            <p class="px-5p">
-                                                            <span class="capitalize fs-14p">on ${fT(appointment.time)}</span>
-                                                            </p>
-                                                            <p class="flex">
-                                                                <span class="dgray fs-15p px-5p">${calcTime(appointment.date_booked)}</span>
-                                                            </p>
-                                                        </div>
-                                                    </div>`
+                                                            <div class="p-15p hover-2" data-role="button" data-id="${appointment.id}" id ="view-appointment">
+                                                                <h5 class="card-title capitalize">${appointment.subject}</h5>
+                                                                <p class="px-5p">
+                                                                <span class="capitalize fs-14p">appointment with ${appointment.patient}</span>
+                                                                </p>
+                                                                <p class="px-5p">
+                                                                <span class="capitalize fs-14p">on ${fT(appointment.time)}</span>
+                                                                </p>
+                                                                <p class="flex">
+                                                                    <span class="dgray fs-15p px-5p">${calcTime(appointment.date_booked)}</span>
+                                                                </p>
+                                                            </div>
+                                                        </div>`
+                                }
                             }
-                        }
-                        if (!appointmentHol.innerHTML) {
-                            let div = document.createElement('div')
-                            div.className = `ovh center-2`
-                            appointmentHol.appendChild(div)
-                            div.innerHTML = `<span class="capitalize dgray flex fs-16p bold-2">no entries available</span>`
+                            if (!appointmentHol.innerHTML) {
+                                let div = document.createElement('div')
+                                div.className = `ovh center-2`
+                                appointmentHol.appendChild(div)
+                                div.innerHTML = `<span class="capitalize dgray flex fs-16p bold-2">no entries available</span>`
+                            }
                         }
                     }
-                }
-                let spans = Array.from(page.querySelectorAll('[data-role="span"]'))
-                for (const spanner of spans) {
-                    spanner.parentNode.parentNode.addEventListener('click', event=>{
-                        event.preventDefault()
-                        spanner.children[0].classList.toggle('down-arrow');
-                        spanner.children[0].classList.toggle('left-arrow');
-                        let lep = spanner.parentNode.parentNode.parentNode.parentNode
-                        lep.classList.toggle('h-a')
-                    })
-                }
-                let buttons = Array.from(page.querySelectorAll('[data-role="button"]'))
-                buttons.map(button=>{
-                    button.onclick = function (event) {
-                        if (button.classList.contains('loading')) {
-                            return 0
-                        }
-                        event.preventDefault();
-                        if (button.id == 'appointment') {
-                                addAppointmentDiv()
-                                
-                            }else if (button.id == 'view-appointment') {
-                                let appointment = button.getAttribute('data-id');
-                                viewAppointmentDiv(appointment)
+                    let spans = Array.from(page.querySelectorAll('[data-role="span"]'))
+                    for (const spanner of spans) {
+                        spanner.parentNode.parentNode.addEventListener('click', event=>{
+                            event.preventDefault()
+                            spanner.children[0].classList.toggle('down-arrow');
+                            spanner.children[0].classList.toggle('left-arrow');
+                            let lep = spanner.parentNode.parentNode.parentNode.parentNode
+                            lep.classList.toggle('h-a')
+                        })
+                    }
+                    let buttons = Array.from(page.querySelectorAll('[data-role="button"]'))
+                    buttons.map(button=>{
+                        button.onclick = function (event) {
+                            if (button.classList.contains('loading')) {
+                                return 0
                             }
-                        }
+                            event.preventDefault();
+                            if (button.id == 'appointment') {
+                                    addAppointmentDiv()
+                                    
+                                }else if (button.id == 'view-appointment') {
+                                    let appointment = button.getAttribute('data-id');
+                                    viewAppointmentDiv(appointment)
+                                }
+                            }
+                        })
+                    page.classList.add('loaded')
+                    
+                }
+            }else if (x == 'my-sessions') {
+                let t = page.querySelector('table')
+                if (!t.classList.contains('loaded')) {
+                    addLoadingTab(page.querySelector('div.theb'));
+                    postschema.body = JSON.stringify({
+                        token: getdata('token')
                     })
+                    let mh  = await request('get-hcp-sessions',postschema)
+                    if (mh.success) {
+                        initTable(mh.message)
+                    }else{
+                        alertMessage(mh.message)
+                    }
+                }
+                // Delete employee when delete icon clicked
+                function initTable(data) {
+                    removeLoadingTab(page.querySelector('div.theb'))
+                    let table = $('.datatables-prescriptions');
+                        if (t.classList.contains('loaded')) {
+                            e.destroy()
+                        }
+                        e = table.DataTable({
+                            // Define the structure of the table
+                            dom: '<"row mx-2"<"col-md-2 p-10p"<"me-3"l>><"col-md-10 p-10p"<"dt-action-buttons text-xl-end text-lg-start text-md-end text-start d-flex align-items-center justify-content-end flex-md-row flex-column mb-3 mb-md-0"fB>>>t<"row mx-2"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>',
+                            language: { sLengthMenu: "_MENU_", search: "", searchPlaceholder: "Search..." },
+                            columns: [
+                                { data: "",title: "" }, // Responsive Control column
+                                { data: "patient_name", title: "patient" },
+                                { data: "assurance", title: "insurance" },
+                                { data: "status", title: "Status" },
+                                { data: "date", title: "date" },
+                                { title: "Action", data: 'session_id'}
+                            ],
+                            columnDefs: [
+                                // Define column properties and rendering functions
+                                {
+                                    className: "control",
+                                    searchable: !1,
+                                    orderable: !1,
+                                    responsivePriority: 2,
+                                    targets: 0,
+                                    render: function () {
+                                        return "";
+                                    },
+                                },
+                                {
+                                    targets: 1,
+                                    searchable: 1,
+                                    orderable: 1,
+                                    render: function (e, t, a, n) {
+                                        return (
+                                            `<span class="capitalize">${e}</span>`
+                                        );
+                                    },
+                                },
+                                {
+                                    targets: 2,
+                                    searchable: 1,
+                                    orderable: 1,
+                                    render: function (e, t, a, n) {
+                                        return (
+                                            `<span class="">${e}</span>`
+                                        );
+                                    },
+                                },
+                                {
+                                    targets: 3,
+                                    searchable: 1,
+                                    orderable: !1,
+                                    render: function (e, t, a, n) {
+                                        return (
+                                            `<span class=" btn btn-sm ${(e == 'open')? 'bc-tr-green green' : 'bc-gray dgray'}">${e}</span>`
+                                        );
+                                    },
+                                },
+                                {
+                                    targets: 3,
+                                    searchable: 1,
+                                    orderable: !1,
+                                    render: function (e, t, a, n) {
+                                        return (
+                                            `<span class="">${e}</span>`
+                                        );
+                                    },
+                                },
+                                {
+                                    targets: -1,
+                                    searchable: !1,
+                                    orderable: !1,
+                                    render: function (e, t, a, n) {
+                                        return (
+                                            `<div class="d-inline-block text-nowrap">
+                                            <button class="btn btn-sm btn-icon view" data-id="${e}"><i class="bx bx-show"></i></button>
+                                        </div>`
+                                        );
+                                    },
+                                },
+                            ],
+                            order: [[1, "asc"]], // Initial sorting
+                
+                            // Provide the data from the imported inventory
+                            data: data,
+                
+                            // Define buttons for exporting and adding new inventory
+                            buttons: [
+                                {
+                                    extend: "collection",
+                                    className: "btn btn-primary dropdown-toggle mx-3",
+                                    text: '<i class="bx bx-export me-1"></i>Export',
+                                    buttons: [
+                                        {
+                                            extend: "print",
+                                            text: '<i class="bx bx-printer me-2" ></i>Print',
+                                            className: "dropdown-item",
+                                        },
+                                        {
+                                            extend: "excel",
+                                            text: '<i class="bx bxs-file-export me-2"></i>Excel',
+                                            className: "dropdown-item",
+                                        },
+                                        {
+                                            extend: "pdf",
+                                            text: '<i class="bx bxs-file-pdf me-2"></i>Pdf',
+                                            className: "dropdown-item",
+                                        },
+                                    ],
+                                },
+                                
+                            ],
+                
+                            // Initialize filters for position, health post, and status
+                            initComplete: function () {
+                                // Filter by Position
+                                t.classList.add('loaded')
+                                this.api().columns(2).every(function () {
+                                    var t = this,
+                                        a = $('<select class="form-select text-capitalize"><option value=""> filter by Insurance</option></select>')
+                                            .appendTo(".health-facility")
+                                            .on("change", function () {
+                                                var e = $.fn.dataTable.util.escapeRegex($(this).val());
+                                                t.search(e ? "^" + e + "$" : "", !0, !1).draw();
+                                            });
+                                    t.data().unique().sort().each(function (e, t) {
+                                        a.append('<option value="' + e + '">' + e + "</option>");
+                                    });
+                                });
+                            }
+                        });
+                    }
+                    $.fn.dataTable.ext.search.push(function (settings, data, dataIndex) {
+                        if (settings.nTable.classList.contains('datatables-prescriptions')) {
+                            let min = minDate.value;
+                            let max = maxDate.value;
+                            let date = new Date(data[4]).toISOString().split('T')[0]; // Assuming the date is in a format compatible with JavaScript Date objects
+                            if (
+                                (min === "" && max === "") ||
+                                (min === "" && date <= max) ||
+                                (min <= date && max === "") ||
+                                (min <= date && date <= max)
+                            ) {
+                                return true;
+                            }
+                            return false;
+                        }
+                        return true
+                    })
+                    let viewbut = Array.from(page.querySelectorAll('button.view'))
+                    viewbut.forEach(button => {
+                        button.onclick = async function (event) {
+                            event.preventDefault();
+                            let url = new URL(window.location.href);
+                            url.pathname = `/hc_provider/view-session/${this.getAttribute('data-id')}`;
+                            window.history.pushState({},'',url.toString())
+                            const evnt = new Event('urlchange', { bubbles: true });
+                            window.dispatchEvent(evnt);
+                        }
+                    });
+                    let dateRangeForm = page.querySelector('form[name="date-range"]')
+                    let inputs = Array.from(dateRangeForm.querySelectorAll('input'))
+                    let minDate = inputs[0]
+                    let maxDate = inputs[1]
+                    dateRangeForm.onsubmit = function (event) {
+                        event.preventDefault();
+                        let values = {}
+                        e.draw();
+                        // let fileredData = e.rows({ search: 'applied'}).data().toArray();
+                        // console.log(fileredData)
+                        for (const input of inputs) {
+                            if (!input.value) {
+                                return 0
+                            }
+                            Object.assign(values,{[input.id]: new Date(input.value).toISOString().split('T')[0]})
+                        }
+                    }
+                   
+                    
             }
             function showSession(sessiondata) {
                 removeLoadingTab(page.querySelector('div.theb'))
@@ -609,6 +820,17 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,z,notificationlinks
                         }
                     }
                 }
+                if (sessiondata.status == 'transferred') {
+                    let vtb = document.createElement('li'),bh = page.querySelector('ul.buttons-holder')
+                    bh.appendChild(vtb)
+                    vtb.innerHTML = `<span class="btn btn-sm btn-primary mx-5p">view transfer info</span>`
+                    vtb.className = `p-2p bsbb flex`
+                    vtb.setAttribute('data-id', sessiondata.session_id)
+                    vtb.onclick = function (Event) {
+                        Event.preventDefault();
+                        viewTransfer(sessiondata.session_id)
+                    }
+                }
                 for (const element of loopingDataHolders) {
                     let dataToHold = element.getAttribute('data-hold');
                     let dataToShow = sessiondata[dataToHold]
@@ -677,8 +899,8 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,z,notificationlinks
                 let Modals = new popups(sessiondata,extra.users)
                 const dataButtons = Array.from(page.querySelectorAll('span.data-buttons'))
                 dataButtons.map(function (button) {
-                    if (button.getAttribute(`data-role`) == 'close') {
-                        if (sessiondata.status == `closed`) {
+                    if (button.getAttribute(`data-role`) == 'close' || button.getAttribute(`data-role`) == 'transfer') {
+                        if (sessiondata.status == `closed` || sessiondata.status == `transferred`) {
                             deletechild(button,button.parentNode)
                             button.classList.add('loading')
                             button.classList.replace('bc-tr-theme','bc-gray')
@@ -702,9 +924,10 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,z,notificationlinks
                             Modals.operation(extra.operations)
                         }else if (role == 'comment') {
                             Modals.comment(sessiondata.comment)
-                        }
-                        else if (role == 'decision') {
+                        }else if (role == 'decision') {
                             Modals.decision()
+                        }else if (role == 'transfer') {
+                            Modals.transfer(extra.users,socket);
                         }else if (role == 'close') {
                             postschema.body = JSON.stringify({
                                 session: sessiondata.session_id,
@@ -762,15 +985,15 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,z,notificationlinks
                         <span class="black capitalize block" data-holder="date">
                             <div class="w-30p h-30p px-5p bsbb my-5p">
                                 <div class="sk-grid sk-primary">
-                                    <div class="sk-grid-cube"></div>
-                                    <div class="sk-grid-cube"></div>
-                                    <div class="sk-grid-cube"></div>
-                                    <div class="sk-grid-cube"></div>
-                                    <div class="sk-grid-cube"></div>
-                                    <div class="sk-grid-cube"></div>
-                                    <div class="sk-grid-cube"></div>
-                                    <div class="sk-grid-cube"></div>
-                                    <div class="sk-grid-cube"></div>
+                                    <div class="sk-grid-cube bc-theme"></div>
+                                    <div class="sk-grid-cube bc-theme"></div>
+                                    <div class="sk-grid-cube bc-theme"></div>
+                                    <div class="sk-grid-cube bc-theme"></div>
+                                    <div class="sk-grid-cube bc-theme"></div>
+                                    <div class="sk-grid-cube bc-theme"></div>
+                                    <div class="sk-grid-cube bc-theme"></div>
+                                    <div class="sk-grid-cube bc-theme"></div>
+                                    <div class="sk-grid-cube bc-theme"></div>
                                 </div>
                             </div>
                         </span>
@@ -843,7 +1066,6 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,z,notificationlinks
                                         </div>
                                     </div>` 
                     let sbs = Array.from(scont.querySelectorAll('[data-role="button"]'))
-                    console.log(message)
                     sbs.map(function (button) {
                         button.addEventListener('click', async()=>{
                             if (button.classList.contains('loading')) {
@@ -1536,6 +1758,135 @@ class popups{
 
             }
         })
+    }
+    async transfer(users,socket){
+        const session = this.session
+        let b = addshade();
+        a = document.createElement('div');
+        b.appendChild(a)
+        a.className = "w-350p h-a p-10p bsbb bc-white cntr zi-10000 br-5p b-mgc-resp card" 
+        a.innerHTML  =`<div class="head w-100 h-50p py-10p px-10p bsbb">
+                            <span class="fs-20p bold-2 dgray capitalize igrid h-100 card-title">select transfer type</span>
+                        </div>
+                        <div class="body w-100 h-a p-5p grid">
+                            <ul class="ls-none px-4p">
+                                <li class="menu-item my-8p px-6p bsbb" id="external">
+                                    <div class="d-flex">
+                                        <div class="flex-grow-1 hover-2 emp">
+                                            <h6 class="mb-1 capitalize dgray">external transfer</h6>
+                                            <p class="mb-0 flex">
+                                            <small class=" capitalize dgray"> For sending patients to another healthcare facility.</small>
+                                            </p>
+                                        </div>
+                                     </div>
+                                </li>
+                                <li class="menu-item my-8p px-6p bsbb" id="internal">
+                                    <div class="d-flex">
+                                        <div class="flex-grow-1 hover-2 emp">
+                                            <h6 class="mb-1 capitalize dgray">internal transfer</h6>
+                                            <p class="mb-0 flex">
+                                            <small class=" capitalize dgray">For moving patients within the same facility (different department or health care provider)</small>
+                                            </p>
+                                        </div>
+                                     </div>
+                                </li>
+                            </ul>
+                        </div>`
+                        let lis = Array.from(a.querySelectorAll('li'))
+                        let type = new Promise((resolve)=>{
+                            lis.forEach(li=>{
+                                li.onclick = function () {
+                                    resolve(this.id)
+                                    deletechild(b,b.parentElement)
+                                }
+                            })
+                        })
+                        if (await type == 'internal') {
+                            let emps = await  showAvaiEmps(users)
+                            console.log(emps)
+                        }else{
+                            let transnFormHol = addshade(),
+                            transFormDiv = document.createElement('div')
+                            transFormDiv.className = `w-70 h-a p-10p bsbb bc-white cntr zi-10000 br-5p b-mgc-resp card-1`
+                            transnFormHol.appendChild(transFormDiv)
+                            transFormDiv.innerHTML = `<div class="head w-100 h-50p py-10p px-15p bsbb">
+                                                            <span class="fs-18p bold-2 dgray capitalize igrid h-100 card-title">create external transfer</span>
+                                                        </div>
+                                                        <div class="body w-100 h-a p-5p grid">
+                                                            <form method="post" id="transfer-form" name="transfer-form">
+                                                                <div class="col-md-12 px-10p bsbb p-r h-94p">
+                                                                    <label for="test" class="form-label uppercase dgray">session</label>
+                                                                    <input type="text" class="form-control bevalue" id="session" placeholder="Demo session" name="session" readonly disabled="true" value="${session.session_id}" data-id="${session.session_id}">
+                                                                    <small class="w-100 red pl-3p verdana"></small>
+                                                                </div>
+                                                                <div class="col-md-12 px-10p bsbb p-r h-94p">
+                                                                    <label for="test" class="form-label uppercase dgray">patient</label>
+                                                                    <input type="text" class="form-control bevalue capitalize" id="patient" placeholder="Patient to be transfered" name="patient" readonly disabled="true" data-id="${session.p_info.id}" value="${session.p_info.name}">
+                                                                    <small class="w-100 red pl-3p verdana"></small>
+                                                                </div>
+                                                                <div class="col-md-12 px-10p bsbb p-r h-94p">
+                                                                    <label for="test" class="form-label uppercase dgray">facility</label>
+                                                                    <input type="text" class="form-control bevalue" id="facility" placeholder="Receiving facility" name="facility">
+                                                                    <small class="w-100 red pl-3p verdana"></small>
+                                                                </div>
+                                                                <div class="col-md-12 px-10p bsbb p-r h-130p">
+                                                                    <label for="test" class="form-label uppercase dgray">reason</label>
+                                                                    <textarea type="text" class="form-control h-100p" id="reason" placeholder="Reason For Transfer" name="reason"></textarea>
+                                                                    <small class="w-100 red pl-3p verdana"></small>
+                                                                </div>
+                                                                <div class="wrap bsbb bblock-resp">
+                                                                    <button type="submit" class="btn btn-primary bfull-resp mr-10p  bm-a-resp bmy-10p-resp right m-0">Proceed</button>
+                                                                </div>
+                                                            </form>
+                                                        </div>`
+                            let hc_inp = transFormDiv.querySelector('input[name="facility"]'),form = transFormDiv.querySelector('form'),inputs = Array.from(transFormDiv.querySelectorAll('.form-control'))
+                            hc_inp.onkeyup = function (event){
+                                let val = this.value.trim();
+                                val = val.replace(/[^A-Za-z0-9\s]/g, '');
+                                let payload = {
+                                    needle: val,
+                                    type: 'search',
+                                    entity: 'facility',
+                                    datatofetch: ['id','name'],
+                                    coltosearch: 'name'
+
+                                }
+                                if (val) {
+                                    removeRec(hc_inp)
+                                    socket.emit('searchForRecs',payload)
+                                }
+                            }
+                            socket.on('RecsRes', (data)=>{
+                                if (data.length) {
+                                    showRecs(hc_inp,data,'hospitals','noinptAction')
+                                }
+                            })
+                            form.addEventListener('submit', async event=>{
+                                event.preventDefault();
+                                let v,t = 1,values = {},button = form.querySelector('button')
+                                for (const input of inputs) {
+                                  v = checkEmpty(input)
+                                  if (!v) {
+                                      t = 0
+                                    }else{
+                                      Object.assign(values,{[input.name]: (input.classList.contains('bevalue')? input.getAttribute('data-id') : input.value.trim())})
+
+                                  }  
+                                }
+                                if (t) {
+                                    
+                                    Object.assign(values,{ token: getdata('token')})
+                                    postschema.body = JSON.stringify(values)
+                                    button.setAttribute('disabled',true)
+                                    button.textContent = 'recording transfer info...'
+                                    r = await request('crTrns',postschema);
+                                    button.removeAttribute('disabled',true)
+                                    deletechild(transnFormHol,transnFormHol.parentElement)
+                                    alertMessage(r.message)
+                                }
+                            })
+                        }
+
     }    
 }
 async function viewAppointmentDiv(appointment) {
