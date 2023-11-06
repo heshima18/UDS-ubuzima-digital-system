@@ -891,7 +891,7 @@ export const assuranceMH = async (req,res)=>{
     ) AS hp_info,
     GROUP_CONCAT(
       DISTINCT
-        JSON_OBJECT('id', pm.id, 'status', pm.status, 'a_amount', pm.assurance_amount, 'p_amount', pm.amount, 'datepaid', pm.datepaid, 'date', pm.date)
+        JSON_OBJECT('id', pm.id, 'status', pm.assu_paym_status, 'a_amount', pm.assurance_amount, 'p_amount', pm.amount, 'datepaid', pm.datepaid, 'date', pm.date)
       ) AS payment_info
 
 FROM

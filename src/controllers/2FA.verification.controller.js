@@ -62,7 +62,7 @@ const verification = async (req,res)=>{
                 query(`update users set fa = null ${(select.status === 'unverified')? ',status = "active"' : ''} where id = ?`,[select.id]);
             }
             let token 
-            if (select.role != 'patient' && select.role != 'Admin' && select.role != 'householder' && select.role != 'insurance_manager' && select.role != 'mohs') {
+            if (select.role != 'patient' && select.role != 'admin' && select.role != 'householder' && select.role != 'insurance_manager' && select.role != 'mohs') {
                 if (!hospital.length && !('id' in hospital)) {
                    return res.status(403).send({success: false, message: errorMessage.emp_inassigned_to_hp_error_message}) 
                 }

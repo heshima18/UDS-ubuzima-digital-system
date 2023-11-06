@@ -265,7 +265,8 @@ export function showRecs(input, data,type,noInpAction) {
   try {
     let div =  document.createElement('div');
     let parent = input.parentNode
-    div.className = `p-a w-300p h-250p bsbb card-2 zi-1000 bc-white scroll-2 ovys t-0 mt-70p br-5p rec`
+    div.style.marginTop = parent.offsetHeight + 'px'
+    div.className = `p-a w-300p h-250p bsbb card-2 zi-1000 bc-white scroll-2 ovys t-0 br-5p rec`
     div.innerHTML = `<div class="w-100 h-100 p-5p bsbb"><ul class="ls-none p-0 m-0"></ul></div>`
     for(const info of data){
       let item = document.createElement('li');
@@ -395,7 +396,7 @@ export function showRecs(input, data,type,noInpAction) {
       }
     }
   } catch (error) {
-    
+    console.log(error)
   }
 
 }
@@ -777,7 +778,6 @@ export async function showAvaiEmps(emps,extra){
         suba = emps.filter(function (obj) {
           return obj.department.id == extra[key] 
         })
-        console.log(suba)
         if (!suba.length) {
           deletechild(u,u.parentNode)
           return alertMessage('no available employee to perform this task in your facility')

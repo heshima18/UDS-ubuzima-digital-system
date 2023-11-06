@@ -1,8 +1,9 @@
 import { alertMessage, getdata, getschema, postschema, request,initializeCleave,sessiondata,addLoadingTab,removeLoadingTab, checkEmpty, showRecs, getchips,getPath,addsCard,cpgcntn, geturl, adcm, addshade, deletechild, RemoveAuthDivs, showFingerprintDiv, addAuthDiv } from "../../../utils/functions.controller.js";
 import { addUprofile } from "../../../utils/user.profile.controller.js";
-import {expirateMssg, pushNotifs, userinfo} from "./nav.js";
+import {pushNotifs, userinfo,expirateMssg, getNfPanelLinks,m as messages, DateTime} from "./nav.js";
 
-let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z,r,session_input,session_s_button,eventadded
+
+let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z,r,session_input,session_s_button,eventadded,notificationlinks
 (async function () {
     z = userinfo
     let token = getdata('token')
@@ -23,6 +24,9 @@ let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z,r,session_input,session_s_
             
             socket.on('message', (message) => {
                 pushNotifs(message);
+                messages.push(message)
+                notificationlinks = getNfPanelLinks()
+                genClicks(notificationlinks)
                 addsCard(message.title,true)
 
             });
@@ -140,6 +144,8 @@ let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z,r,session_input,session_s_
             }))
         })
     })
+    notificationlinks = getNfPanelLinks()
+    genClicks(notificationlinks)
     async function gsd(page,extra) {
         try {
             x = page.id
@@ -464,6 +470,49 @@ let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z,r,session_input,session_s_
           } catch (error) {
             console.log(error)
           }
+    }
+    function genClicks(notificationlinks) {
+        let messages = sessiondata('messages')
+        notificationlinks.map((link)=>{
+            link.addEventListener(`click`, ()=>{
+                if (!link.classList.contains('list-link')) {
+                    return 0
+                }
+                let message = messages.find(function (mess) {
+                    return mess.id == link.getAttribute('data-id')
+                })
+                if (message) {
+                let url = new URL(window.location.href);
+                if (link.getAttribute('data-message-type') == 'session_message') {
+                    let session 
+                    if (message.addins) {
+                        session = message.addins.session
+                    }else if (message.extra) {
+                        session = message.extra.session
+                    }
+                    if (session) {
+                        url.pathname = `/${getPath()[0]}/${link.getAttribute('data-href-target')}/${session}`;
+                    }
+                }else if (link.getAttribute('data-message-type') == 'transfer_message' ) {
+                    if ('extra' in message) {
+                        viewTransfer(message.extra.transfer)
+                    }else if ('addins' in message) {
+                        viewTransfer(message.addins.transfer)
+                    }
+                }else{
+                    url.pathname = `/${getPath()[0]}/${link.getAttribute('data-href-target')}`;
+                }
+                v = document.querySelector(`div#${link.getAttribute('data-href-target')}`)
+                if (v) {
+                    
+                    p = Array.from(v.parentElement.querySelectorAll('.pagecontentsection'))
+                    window.history.pushState({},'',url.toString())
+                    cpgcntn(p.indexOf(v),p)
+                    gsd(v,null)
+                }
+               }
+            })
+        })
     }
 })();
 

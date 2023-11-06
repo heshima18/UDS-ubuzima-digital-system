@@ -100,7 +100,7 @@ export async function viewTransfer(trId) {
                         </span>
                     </div>
                     <div class="w-100 h-a my-10p card mx-5p bm-y-10p-resp bm-x-0-resp">
-                        <span class="dgray capitalize block card-header">transferring facility info </span>
+                        <span class="dgray capitalize block card-header">receiving facility info </span>
                         <span class="card-body">
                             <ul class="w-100 px-2p bsbb m-0 ls-none">
                                 <li class="dgray capitalize py-10p bsbb">

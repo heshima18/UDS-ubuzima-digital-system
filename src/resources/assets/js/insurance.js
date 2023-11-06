@@ -1115,7 +1115,7 @@ let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z
                     if (!mh.success) {
                         return alertMessage( mh.message)
                     }
-                    page.querySelector('.health-facility').innerHTML = null
+                    page.querySelector('.status').innerHTML = null
                     initTable(mh.message)
                     
                 }
@@ -1136,6 +1136,7 @@ let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z
                                 { data: "hp_info.name", title: "health facility" },
                                 { data: "p_info.insurance.number", title: "insurance number" },
                                 { data: "payment_info.a_amount", title: "amount (RWF)" },
+                                { data: "payment_info.status", title: "status" },
                                 { data: "dateclosed", title: "date" },
                                 { title: "Action", data: 'id'}
                             ],
@@ -1197,6 +1198,16 @@ let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z
                                     orderable: 1,
                                     render: function (e, t, a, n) {
                                         return (
+                                            `<span class="btn btn-sm ${(e == 'pending') ? 'bc-gray dgray' : 'bc-tr-green green'}">${e}</span>`
+                                        );
+                                    },
+                                },
+                                {
+                                    targets: 6,
+                                    searchable: 1,
+                                    orderable: 1,
+                                    render: function (e, t, a, n) {
+                                        return (
                                             `<span class="">${e}</span>`
                                         );
                                     },
@@ -1250,10 +1261,12 @@ let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z
                             initComplete: function () {
                                 // Filter by Position
                                 t.classList.add('loaded')
-                                this.api().columns(2).every(function () {
+                                    // Filter by Position
+                                t.classList.add('loaded')
+                                this.api().columns(5).every(function () {
                                     var t = this,
-                                        a = $('<select class="form-select text-capitalize"><option value=""> Select Health Facility </option></select>')
-                                            .appendTo(".health-facility")
+                                        a = $('<select class="form-select text-capitalize"><option value=""> Select Status </option></select>')
+                                            .appendTo(".status")
                                             .on("change", function () {
                                                 var e = $.fn.dataTable.util.escapeRegex($(this).val());
                                                 t.search(e ? "^" + e + "$" : "", !0, !1).draw();
@@ -1262,6 +1275,7 @@ let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z
                                         a.append('<option value="' + e + '">' + e + "</option>");
                                     });
                                 });
+                                
                             }
                         });
                     }
@@ -1269,7 +1283,7 @@ let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z
                         if (settings.nTable.classList.contains('datatables-prescriptions')) {
                             let min = minDate.value;
                             let max = maxDate.value;
-                            let date = new Date(data[5]).toISOString().split('T')[0]; // Assuming the date is in a format compatible with JavaScript Date objects
+                            let date = new Date(data[6]).toISOString().split('T')[0]; // Assuming the date is in a format compatible with JavaScript Date objects
                             if (
                                 (min === "" && max === "") ||
                                 (min === "" && date <= max) ||
@@ -1301,6 +1315,7 @@ let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z
                             }
                         }
                     });
+                    let fileredData
                     let dateRangeForm = page.querySelector('form[name="date-range"]')
                     let inputs = Array.from(dateRangeForm.querySelectorAll('input'))
                     let minDate = inputs[0]
@@ -1309,8 +1324,7 @@ let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z
                         event.preventDefault();
                         let values = {}
                         e.draw();
-                        // let fileredData = e.rows({ search: 'applied'}).data().toArray();
-                        // console.log(fileredData)
+                        fileredData = e.rows({ search: 'applied'}).data().toArray();
                         for (const input of inputs) {
                             if (!input.value) {
                                 return 0
@@ -1318,6 +1332,48 @@ let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z
                             Object.assign(values,{[input.id]: new Date(input.value).toISOString().split('T')[0]})
                         }
                     }
+                    let actButton  = page.querySelector('.act-button');
+                    let actDiv = page.querySelector('#act-div');
+                    actButton.onclick = function (event) {
+                        event.preventDefault();
+                        actDiv.classList.toggle('hidden')  
+                    }
+                    let actButtons = Array.from(actDiv.querySelectorAll('.act-buttons'));
+                    actButtons.forEach(button=>{
+                        button.onclick = async function (event) {
+                            actDiv.classList.toggle('hidden')
+                            event.preventDefault();
+                            if (!fileredData) {
+                                alertMessage('please filter data first')
+                                return 0
+                            }
+                            let amounts = fileredData.map(function (data) {
+                                return data.payment_info.a_amount
+                            })
+                            if (button.id == 'calculate-total-price') {
+                                let sum = 0
+                                amounts.map(function (value) {
+                                    return sum+=value
+                                })
+                                alertMessage(`the sum of the selected entries is <b>${adcm(sum)} RWF</b>`)
+                            }else if (button.id == 'mark-as-paid') {
+                                let min = inputs[0].value
+                                let max = inputs[1].value
+                                if (min,max) {
+                                    let dates_interval = {min,max}
+                                    let assurance = hp_in.getAttribute('data-id')
+                                    postschema.body = JSON.stringify({
+                                        token: getdata('token'),
+                                        range: dates_interval,
+                                        assurance
+                                    })
+                                    let update = await request('approve-assurance-payment',postschema)
+                                    alertMessage(update.message)
+                                }
+                            }
+
+                        }
+                    })
                    
                     
             }

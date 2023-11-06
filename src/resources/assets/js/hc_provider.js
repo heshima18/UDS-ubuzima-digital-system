@@ -924,6 +924,8 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,z,notificationlinks,socket
                             Modals.operation(extra.operations)
                         }else if (role == 'comment') {
                             Modals.comment(sessiondata.comment)
+                        }else if (role == 'notify') {
+                            Modals.notify()
                         }else if (role == 'decision') {
                             Modals.decision()
                         }else if (role == 'transfer') {
@@ -1110,14 +1112,10 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,z,notificationlinks,socket
                 if (!link.classList.contains('list-link')) {
                     return 0
                 }
-                v = document.querySelector(`div#${link.getAttribute('data-href-target')}`)
                 let message = messages.find(function (mess) {
                     return mess.id == link.getAttribute('data-id')
                 })
-                if (v && message) {
-                p = Array.from(v.parentElement.querySelectorAll('.pagecontentsection'))
-                
-                s = p.indexOf(v)
+                if (message) {
                 let url = new URL(window.location.href);
                 if (link.getAttribute('data-message-type') == 'test_res_message' || link.getAttribute('data-message-type') == 'session_message') {
                     let session 
@@ -1132,12 +1130,23 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,z,notificationlinks,socket
                 }else if (link.getAttribute('data-message-type') == '__APPNTMNT_MSSG_') {
                     appApprovalCont(message)
                     url.pathname = `/${getPath()[0]}/${link.getAttribute('data-href-target')}`;
+                }else if (link.getAttribute('data-message-type') == 'transfer_message' ) {
+                    if ('extra' in message) {
+                        viewTransfer(message.extra.transfer)
+                    }else if ('addins' in message) {
+                        viewTransfer(message.addins.transfer)
+                    }
                 }else{
                     url.pathname = `/${getPath()[0]}/${link.getAttribute('data-href-target')}`;
                 }
-                window.history.pushState({},'',url.toString())
-                cpgcntn(p.indexOf(v),p)
-                gsd(v,null)
+                v = document.querySelector(`div#${link.getAttribute('data-href-target')}`)
+                if (v) {
+                    
+                    p = Array.from(v.parentElement.querySelectorAll('.pagecontentsection'))
+                    window.history.pushState({},'',url.toString())
+                    cpgcntn(p.indexOf(v),p)
+                    gsd(v,null)
+                }
                }
             })
         })
@@ -1198,105 +1207,94 @@ class popups{
             if (!testinfo) {
                 return alertMessage('Test not found')
             }
-            p = await showAvaiEmps(this.users,{department: testinfo.department});
-            if (!p) {
+            let emps = await showAvaiEmps(this.users,{department: testinfo.department});
+            if (!emps) {
                 return
             }
-            let emps = Array.from(p.querySelectorAll('.emp'))
-            let deps = Array.from(p.querySelectorAll('.dep'))
-              for (const lis of emps) {
-                lis.addEventListener('click',async function(event){
-                    event.preventDefault();
-                    let employee = this.getAttribute('data-id')
-                    j = JSON.parse(postschema.body)
-                    Object.assign(j,
-                        {
-                            title:'incoming test request',
-                            token: getdata('token'),
-                            receiver: employee,
-                            type: 'req_test_message', 
-                            content: `there is an incoming test request called ${testinfo.name} for  ${session.p_info.name}`,
-                            extra: {
-                                test: testinfo.id,
-                                t_name: testinfo.name,
-                                session: session.session_id, 
-                                patient: session.p_info.id,
-                                nid:session.p_info.nid,
-                                patient_name:session.p_info.name,
-                                symptoms: session.symptoms
-                            },
-                            controller: {
-                                looping: false,
-                                recipients: []
-                            }
+            if (('object' == typeof emps)) {
+                j = JSON.parse(postschema.body)
+                Object.assign(j, 
+                    {
+                        title:'incoming test request',
+                        token: getdata('token'),
+                        receiver: [emps],
+                        type: 'req_test_message', 
+                        content: `there is an incoming test request called ${testinfo.name} for  ${session.p_info.name}`,
+                        extra: {
+                            test: testinfo.id,
+                            t_name: testinfo.name,
+                            session: session.session_id, 
+                            patient: session.p_info.id,
+                            nid:session.p_info.nid,
+                            patient_name:session.p_info.name,
+                            symptoms: session.symptoms
+                        },
+                        controller: {
+                            looping: true,
+                            recipients: emps
                         }
-                    )
-                    try {
-                        postschema.body = JSON.stringify(j)
-                        deletechild(p,p.parentNode)
-                        notify_button.setAttribute('disabled',true)
-                        notify_button.innerText = 'notifying the receiver...'
-                        r =  await request('send-message',postschema)
-                        if (!r.success) {
-                            return alertMessage(r.message)
-                        }
-                        notify_button.removeAttribute('disabled')
-                        notify_button.innerText = 'receiver notified !'
-                        notify_button.classList.replace('bc-tr-theme','bc-tr-theme')
-                        addsCard('receiver notified !',true)
-                    } catch (error) {
-                        console.log(error)
                     }
-                  });
-              }
-              for (const dep of deps) {
-                dep.addEventListener('click',async function(event){
-                    let emps = Array.from(dep.parentNode.parentElement.querySelectorAll('.emp'))
-                    emps = emps.map(function (employee) {
-                        return employee.getAttribute('data-id')
-                    })
-                    j = JSON.parse(postschema.body)
-                    Object.assign(j, 
-                        {
-                            title:'incoming test request',
-                            token: getdata('token'),
-                            receiver: [emps],
-                            type: 'req_test_message', 
-                            content: `there is an incoming test request called ${testinfo.name} for  ${session.p_info.name}`,
-                            extra: {
-                                test: testinfo.id,
-                                t_name: testinfo.name,
-                                session: session.session_id, 
-                                patient: session.p_info.id,
-                                nid:session.p_info.nid,
-                                patient_name:session.p_info.name,
-                                symptoms: session.symptoms
-                            },
-                            controller: {
-                                looping: true,
-                                recipients: emps
-                            }
-                        }
-                    )
-                    try {
-                        postschema.body = JSON.stringify(j)
-                        notify_button.setAttribute('disabled',true)
-                        notify_button.innerText = 'notifying the receivers...'
-                        r =  await request('send-message',postschema)
-                        if (!r.success) {
-                            return alertMessage(r.message)
-                        }
-                        deletechild(p,p.parentElement)
-                        deletechild(testsP,testsP.parentNode)
-                        notify_button.removeAttribute('disabled')
-                        notify_button.innerText = 'receivers notified !'
-                        notify_button.classList.replace('bc-tr-theme','bc-tr-theme')
-                        addsCard('receivers notified !',true)
-                    } catch (error) {
-                        console.log(error)
+                )
+                try {
+                    postschema.body = JSON.stringify(j)
+                    notify_button.setAttribute('disabled',true)
+                    notify_button.innerText = 'notifying the receivers...'
+                    r =  await request('send-message',postschema)
+                    if (!r.success) {
+                        return alertMessage(r.message)
                     }
-                });
-              }
+                    deletechild(p,p.parentElement)
+                    deletechild(testsP,testsP.parentNode)
+                    notify_button.removeAttribute('disabled')
+                    notify_button.innerText = 'receivers notified !'
+                    notify_button.classList.replace('bc-tr-theme','bc-tr-theme')
+                    addsCard('receivers notified !',true)
+                } catch (error) {
+                    console.log(error)
+                }
+                        
+            }else{
+                j = JSON.parse(postschema.body)
+                Object.assign(j,
+                    {
+                        title:'incoming test request',
+                        token: getdata('token'),
+                        receiver: emps,
+                        type: 'req_test_message', 
+                        content: `there is an incoming test request called ${testinfo.name} for  ${session.p_info.name}`,
+                        extra: {
+                            test: testinfo.id,
+                            t_name: testinfo.name,
+                            session: session.session_id, 
+                            patient: session.p_info.id,
+                            nid:session.p_info.nid,
+                            patient_name:session.p_info.name,
+                            symptoms: session.symptoms
+                        },
+                        controller: {
+                            looping: false,
+                            recipients: []
+                        }
+                    }
+                )
+                try {
+                    postschema.body = JSON.stringify(j)
+                    deletechild(p,p.parentNode)
+                    notify_button.setAttribute('disabled',true)
+                    notify_button.innerText = 'notifying the receiver...'
+                    r =  await request('send-message',postschema)
+                    if (!r.success) {
+                        return alertMessage(r.message)
+                    }
+                    notify_button.removeAttribute('disabled')
+                    notify_button.innerText = 'receiver notified !'
+                    notify_button.classList.replace('bc-tr-theme','bc-tr-theme')
+                    addsCard('receiver notified !',true)
+                } catch (error) {
+                    console.log(error)
+                }
+               
+            }
         })
         form.addEventListener('submit', async event=>{
             event.preventDefault();
@@ -1755,6 +1753,78 @@ class popups{
                 alertMessage(results.message)
                 button.removeAttribute('disabled')
                 button.innerHTML= 'proceed'
+
+            }
+        })
+    }
+    notify(){
+        const session = this.session
+        let notifyP = addshade();
+        a = document.createElement('div');
+        notifyP.appendChild(a)
+        a.className = "w-350p h-a p-10p bsbb bc-white cntr zi-10000 br-5p b-mgc-resp card" 
+        a.innerHTML  =`<div class="head w-100 h-50p py-10p px-15p bsbb">
+                            <span class="fs-18p bold-2 dgray capitalize igrid h-100 card-title">notify users on this session</span>
+                        </div>
+                        <div class="body w-100 h-a p-5p grid">
+                            <form method="post" id="notify" name="notify">
+                                <div class="col-md-12 px-10p py-6p bsbb p-r">
+                                    <label for="test" class="form-label uppercase dgray">message</label>
+                                    <textarea class="form-control" id="message" placeholder="Text message" name="message"></textarea>
+                                    <small class="w-100 red pl-3p verdana"></small>
+                                </div>
+                                <div class="wrap center-2 px-10p bsbb bblock-resp">
+                                    <button type="submit" class="btn btn-primary bfull-resp bm-a-resp bmy-10p-resp">Proceed</button>
+                                </div>
+                            </form>
+                        </div>`
+        let form = a.querySelector("form");
+        let input = form.querySelector('.form-control')
+        form.addEventListener('submit', async event=>{
+            
+            event.preventDefault();
+            l = 1
+            v = checkEmpty(input);
+            if (!v) {
+                l = 0
+            }
+            
+            if (l) {
+                let button = form.querySelector('button[type="submit"]')
+                button.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`
+                button.setAttribute('disabled',true)
+                let employees = await showAvaiEmps(this.users)
+                if (!employees) {
+                    return
+                }
+                j = JSON.parse(postschema.body)
+                console.log(input.value.trim())
+                Object.assign(j, 
+                    {
+                        title:'session preview request',
+                        token: getdata('token'),
+                        receiver: ('object' == typeof employees)? employees : employees,
+                        type: 'session_message', 
+                        content: input.value.trim(),
+                        extra: {
+                            session: session.session_id, 
+                        },
+                        controller: {
+                            looping: ('object' == typeof employees)? true : false ,
+                            recipients: ('object' == typeof employees)? employees : null 
+                        }
+                    }
+                )
+                postschema.body = JSON.stringify(j)
+                deletechild(notifyP,notifyP.parentNode)
+                r =  await request('send-message',postschema)
+                if (!r.success) {
+                    return alertMessage(r.message)
+                }
+                addsCard('receiver (s) notified !',true)
+
+         
+            
 
             }
         })

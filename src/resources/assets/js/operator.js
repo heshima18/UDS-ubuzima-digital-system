@@ -279,11 +279,9 @@ async function gsd(page,extra) {
                                     }
                                 }
                             )
+                            sessionStorage.removeItem('pinfo')
                             try {
                                 postschema.body = JSON.stringify(j)
-                                if (!session) {
-                                    return 0
-                                }
                                 r =  await request('send-message',postschema)
                                 if (!r.success) {
                                     return alertMessage(r.message)

@@ -16,7 +16,7 @@ export const authorizeAdmin = async (req, res, next) => {
       if (q.length == 0) return res.status(404).send({ message: errorMessage._err_u_404, success: false });
 
       [q] = q
-      if (q.role != 'Admin') {console.log('not admin'); return res.status(401).send({ message: errorMessage._err_forbidden, success: false });}
+      if (q.role != 'admin') {console.log('not admin'); return res.status(401).send({ message: errorMessage._err_forbidden, success: false });}
       next();
     } catch (error) {
       console.log(error)

@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Surgeon - Home | UDS</title>
+    <link rel="stylesheet" type="text/css" href="/styles/styling.css">
+    <link rel="icon" type="image/x-icon" href="/assets/img/icons/logo/logo-alt.png" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&amp;display=swap"
+            rel="stylesheet" />
+    
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/boxicons/2.1.4/css/boxicons.min.css" integrity="sha512-cn16Qw8mzTBKpu08X0fwhTSv02kK/FojjNLz0bwp2xJ4H+yalwzXKFw/5cLzuBZCxGWIA+95X4skzvo8STNtSg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" integrity="sha512-b2QcS5SsA8tZodcDtGRELiGv5SaKSk1vDHDaQRda0htPYWZ6046lr3kJ5bAAQdpV2mmA/4v0wQF9MyU6/pDIAg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/spinkit/2.0.0/spinkit.min.css" integrity="sha512-kRYkjiYH/VXxoiaDK2oGNMKIi8VQVfie1lkYGX3kmfzWNR2kfaF5ze0885W3/eE6lIiURBsZA91M/WNvCajHMw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <!-- Core CSS -->
+        <link rel="stylesheet" type="text/css" href="/styles/styling.css">
+        <script src="/assets/js/nav.js" type="module"></script>
+    <script src="/assets/js/laboratory.js" type="module"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.min.js" integrity="sha512-Xm9qbB6Pu06k3PUwPj785dyTl6oHxgsv9nHp7ej7nCpAqGZT3OZpsELuCYX05DdonFpTlBpXMOxjavIAIUwr0w==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+</head>
+<body class="p-0 m-0 w-100 h-100 p-a ovh">
+<div class="cont w-100 h-100 ovxh" id="cont">
+	<div class="theshade w-100 h-100 p-f bc-tr-black zi-20 pl-300p bsbb tr-0-3 hidden"></div>
+	<div id="body" class="bc-gray w-100 h-100 p-r bsbb">
+        <div class="w-100 h-a bsbb m-0 t-0 p-f p-10p zi-100">
+            <nav class="w-100 card-1 bc-white br-5p flex jc-sb pr-15p pl-15p" id="layout-navbar">
+                <div class="h-54p center">
+                    <a class="nav-item nav-link px-0 me-xl-4 flex" href="javascript:void(0)">
+                        <span>
+                            <img src="/assets/img/icons/logo/logo-alt.png" alt="logo" class="w-a contain h-50p">
+                        </span>
+                    </a>
+                </div>
+                <div class="h-54p center" id="navbar-collapse">
+                    <ul class="flex h-54p p-0 m-0 ls-none">
+                        <li class="center-2 px-10p">
+                            <a class="td-none center-2 " id="dropdown-toggle" href="javascript:void(0);" data-bs-toggle="profile-dropdown">
+                                    <div class="sk-wave sk-primary w-25p shaddow">
+                                        <div class="bc-theme sk-wave-rect"></div>
+                                        <div class="bc-theme sk-wave-rect"></div>
+                                        <div class="bc-theme sk-wave-rect"></div>
+                                        <div class="bc-theme sk-wave-rect"></div>
+                                        <div class="bc-theme sk-wave-rect"></div>
+                                    </div>
+                            </a>
+                            <ul class="profile-dropdown bc-white card-5 h-a w-250p bsbb t-80p p-f mr-20p r-0 ls-none br-10p p-0 hidden" name="profile-dropdown">
+                                <li class="px-10p bsbb py-2p my-10p w-100 h-a">
+                                    <a class="dropdown-item" href="#">
+                                        <div class="flex px-5p py-10p bsbb">
+                                            <div class="left w-100">
+                                                <span class="fw-semibold d-bloc data-role bsbb" data-role="profile-name"><span class="skel w-65p h-10p br-2p block my-5p"></span></span>
+                                                <small class="text-muted block data-role" data-role="profile-title"><span class="skel w-50p h-10p br-2p block my-5p"></span></small>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </li>
+                                <li class="bsbb py-2p">
+                                    <div class="dropdown-divider bb-1-s-g"></div>
+                                </li>
+                                <li class="px-10p bsbb py-2p my-10p w-100 h-a">
+                                    <a class="left td-none dgray" href="../my-account">
+                                        <div class="center-2 w-a">
+                                            <i class="bx bxs-user-account px-10p bx-sm"></i>
+                                            <span class="dgray mt--5p">My Account</span>
+                                        </div>
+                                    </a>
+                                </li>
+                                <li class="bsbb py-2p">
+                                    <div class="dropdown-divider bb-1-s-g"></div>
+                                </li>
+                                <li class="px-10p bsbb py-2p my-10p w-100 h-a">
+                                    <a class="left td-none dgray" href="logout" target="_blank">
+                                        <div class="center-2 w-a">
+                                            <i class="bx bx-log-out px-10p bx-sm"></i>
+                                            <span class="dgray mt--5p">Log Out</span>
+                                        </div>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li class="center-2">
+                            <a class="p-r p-10p bsbb center td-none" id="dropdown-toggle" href="javascript:void(0);" data-bs-toggle="notification-dropdown" data-bs-auto-close="outside">
+                                <i class="bx bx-bell bx-sm dgray"></i>
+                                <span class="p-a bc-red br-50 w-15p h-15p fs-9p white hidden t-5p r-0  data-role" data-role="notification-count-badge">0</span>
+                            </a>
+                            <ul class="notification-dropdown bc-white card-5 br-10p h-500p w-390p p-0 t-80p p-f mr-20p r-0 ls-none bw-90-500-resp bm-x-10p-resp hidden" data-bs-popper="static" name="notification-dropdown" id="notification-dropdown">
+                                <li class="dropdown-menu-header border-bottom px-15p py-5p bsbb">
+                                    <div class="dropdown-header d-flex align-items-center py-10p">
+                                        <i class='bx bx-notification px-10p bx-sm dgray'></i><h5 class=" mb-0 me-auto capitalize dgray">Notifications</h5>
+                                    </div>
+                                </li>
+                                <li class="dropdown-notifications-list scrollable-container h-78 ovys scroll-3">
+                                    <ul class="list-group list-group-flush nf-panel h-100">
+                                       <li class="w-100 h-100 center">
+                                        <div class="center">
+                                            <div class="sk-grid sk-blue">
+                                                <div class="sk-grid-cube"></div>
+                                                <div class="sk-grid-cube"></div>
+                                                <div class="sk-grid-cube"></div>
+                                                <div class="sk-grid-cube"></div>
+                                                <div class="sk-grid-cube"></div>
+                                                <div class="sk-grid-cube"></div>
+                                                <div class="sk-grid-cube"></div>
+                                                <div class="sk-grid-cube"></div>
+                                                <div class="sk-grid-cube"></div>
+                                            </div>
+                                        </div>
+                                        <div class="w-100 h-a dgray capitalize">loading...</div>
+                                       </li>
+                                    </ul>
+                                </li>
+                                <li class="dropdown-menu-footer border-top h-50p center-2">
+                                    <a href="javascript:void(0);" class="dropdown-item d-flex justify-content-center p-3">
+                                        Mark all as seen
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+        </div>
+		<div class="thebody w-100 h-90 p-r pt-60p bsbb">
+			<div class="w-100 h-100 mb-10p">
+				<div class="w-100 m-a h-100 p-10p br-10p mb-30p bsbb">
+					<div class="w-100 h-100 p-10p bsbb flex bblock-resp bp-0-resp bc-white br-10p" aria-controls="cont">
+						<div class="w-240p bfull-resp h-a bh-70p-resp p-10p bsbb the-h">
+							<div class="cont w-100 h-100">
+								<div class="the-h w-210p m-a bfull-resp bsbb h-a ovxs scroll-3 p-5p br-5p bsbb bc-white">
+									<ul class="ls-none p-0 m-0 jc-sb w-100 bflex-resp">
+										<li class="p-5p bsbb">
+											<span class="w-100 h-100 p-10p hover-7 cpcards bsbb flex verdana nowrap capitalize fs-13p br-5p active bb-1-s-theme bc-tr-theme theme dgray" data-item-type="home">
+                                                <span class="w-a h-19p mr-10p"><i class='bx bx-home-alt bx-sm'></i></span>
+                                                <span class="center pt-2p bsbb">
+                                                     Home
+                                                </span>
+                                             </span>
+										</li>
+                                        <li class="p-5p bsbb">
+											<span class="w-100 h-100 p-10p hover-7 cpcards bsbb flex verdana nowrap capitalize fs-13p br-5p active bb-1-s-theme bc-tr-theme theme dgray" data-item-type="record-tests">
+                                                <span class="w-a h-19p mr-10p"><i class="fas fa-microscope fs-18p"></i></span>
+                                                <span class="center pt--2p bsbb">
+                                                     Record Tests
+                                                </span>
+                                            </span>
+										</li>
+										<li class="p-5p bsbb">
+											<span class="w-100 h-100 p-10p hover-7 cpcards bsbb flex verdana nowrap capitalize fs-13p br-5p dgray" data-item-type="my-account"> 
+                                                <span class="w-a h-19p mr-10p"><i class="bx bxs-user-account bx-sm"></i></span>
+                                                <span class="center pt-2p bsbb">
+                                                    my account
+                                                </span>
+                                            </span>
+										</li>
+									</ul>
+								</div>
+							</div>
+						</div>
+						<div class="the-b w-100 h-90 p-r ovxh">
+							<!-- home section -->
+							<div class="br-5p w-100 h-100 p-r ovh block tr-0-3 pagecontentsection zi-10" id="home">
+								<div class="w-100 h-a p-10p bsbb">
+									<span class="theme capitalize left flex bold fs-20p verdana h-100 pl-10p"><span class="dgray capitalize">Laboratory / </span>&nbsp;Home</span>
+								</div>
+								<div class="pg-cntnt w-100 h-90 bh-80-resp scroll-3 p-20p bsbb ovys left bp-0-resp">
+									<div class="home row p-5p bsbb">
+                                        <div class="col-md-6 col-lg-4 mb-3">
+                                            <div class="b-1-s-gray p-20p br-5p">
+                                                <div class="capitalize px-5p">
+                                                    <span>
+                                                        <i class="fas fa-hospital-user dgray fs-16p"></i>
+                                                    </span>
+                                                    <span class="fs-18p bold-2 dgray bold-2 dgray">
+                                                        Patients
+                                                    </span>
+                                                </div>
+                                                <div class="mt-10p px-15p bsbb">
+                                                    <h5 class="dgray capitalize">incoming patients</h5>
+                                                    <p class="card-text">
+                                                        <span class="bold-2">30</span> Patients
+                                                    </p>
+                                                    <a href="pendingApplications/" class="btn btn-transparent white bc-theme">View</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 col-lg-4 mb-3">
+                                            <div class="b-1-s-gray p-20p br-5p">
+                                                <div class="capitalize px-5p">
+                                                    <span>
+                                                        <i class="fas fa-hospital-user dgray fs-16p"></i>
+                                                    </span>
+                                                    <span class="fs-18p bold-2 dgray">
+                                                        Patients
+                                                    </span>
+                                                </div>
+                                                <div class="mt-10p px-15p bsbb">
+                                                    <h5 class="dgray capitalize">today's served patients</h5>
+                                                    <p class="card-text">
+                                                        <span class="bold-2">30</span> Patients
+                                                    </p>
+                                                    <a href="pendingApplications/" class="btn btn-transparent white bc-theme">View</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 col-lg-4 mb-3">
+                                            <div class="b-1-s-gray p-20p br-5p">
+                                                <div class="capitalize px-5p dgray">
+                                                    <span>
+                                                        <i class="fas fa-microscope fs-18p "></i>
+                                                    </span>
+                                                    <span class="fs-18p bold-2 dgray capitalize">
+                                                        tests
+                                                    </span>
+                                                </div>
+                                                <div class="mt-10p px-15p bsbb">
+                                                    <h5 class="dgray capitalize">today's pending tests</h5>
+                                                    <p class="card-text">
+                                                        <span class="bold-2">30</span> Tests
+                                                    </p>
+                                                    <a href="pendingApplications/" class="btn btn-transparent white bc-theme">View</a>
+                                                </div>
+                                            </div>
+                                        </div>
+									</div>
+								</div>
+							</div>
+							<!-- end of home section -->
+                            <!-- record tests section -->
+							<div class="br-5p w-100 h-100 p-a ovh hidden t-0 tr-0-3 pagecontentsection" id="record-tests">
+								<div class="w-100 h-a p-10p bsbb">
+									<span class="theme capitalize left flex bold fs-20p verdana h-100 pl-10p"><span class="dgray capitalize">Laboratory / </span>&nbsp;record tests</span>
+								</div>
+								<div class="pg-cntnt w-100 h-90 p-20p bp-0-resp bsbb ovys left scroll-2">
+									<div class="w-100 m-a bfull-resp bc-white p-10p bsbb br-5p">
+										<form id="record-test-form" name="record-test-form" class="mb-2" action="../" method="POST">
+                                            <div class="col-md-12 p-10p bsbb mb-5p">
+                                                <label for="session" class="form-label">session</label>
+                                                <input type="text" class="form-control bevalue" placeholder="Demo session" name="session" id="session" readonly>                        
+                                                <small class="hidden w-100 red pl-3p verdana"></small>
+                                            </div>
+                                            <div class="col-md-12 p-10p bsbb mb-5p">
+                                                <label for="patient" class="form-label">Patient</label>
+                                                <input type="text" class="form-control bevalue" placeholder="NID, Phone number, email" name="patient" id="patient" readonly>                        
+                                                <small class="hidden w-100 red pl-3p verdana"></small>
+                                            </div>
+                                            <div class="col-md-12 p-10p bsbb mb-5p">
+                                                <label for="Test" class="form-label">Test</label>
+                                                <input type="text" class="form-control bevalue" placeholder="Demo Test" name="test" id="test" readonly>                        
+                                                <small class="hidden w-100 red pl-3p verdana"></small>
+                                            </div>
+                                            <div class="mb-5p col-md-12 p-10p p-r">
+                                                <label for="sample" class="form-label">sample taken</label>
+                                                <input type="text" class="form-control" placeholder="sample" name="sample" id="sample">
+                                                <small class="hidden w-100 red pl-3p verdana"></small>
+                                            </div>
+                                            <div class="mb-5p col-md-12 p-10p p-r">
+                                                <label for="result" class="form-label">result</label>
+                                                <input type="text" class="form-control" placeholder="result" name="result" id="result">
+                                                <small class="hidden w-100 red pl-3p verdana"></small>
+                                            </div>
+                                            <div class="col-md-12 p-10p bsbb mb-5p">
+                                                <div class="input-group">
+                                                    <div class="p-5p bsbb">
+                                                        <button type="submit" class="btn btn-primary d-grid" name="submit">
+                                                            submit test
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </form>
+									</div>
+								</div>
+							</div>
+							<!-- end of record tests section -->
+							<!-- my account section -->
+							<div class="br-5p w-100 h-100 p-a ovh hidden t-0 tr-0-3 pagecontentsection" id="my-account">
+								<div class="w-100 h-a p-10p bsbb">
+									<span class="theme capitalize left flex bold fs-20p verdana h-100 pl-10p"><span class="dgray capitalize">Laboratory / </span>&nbsp;my account</span>
+								</div>
+								<div class="pg-cntnt w-100 h-90 p-20p bsbb ovys left">
+									<div class="bc-white br-5p">
+										<div class="w-100 h-a bsbb">
+											<div class="w-100 h-a center">
+												<div class="b-1-s-g p-10p">
+													<div class="header w-100 h-120p center">
+														<div class="w-100p h-100p">
+															<span class="w-100 h-100 bc-tr-theme br-50 theme fs-50p capitalize uihol courier bold-2 center n-img">a</span>
+														</div>
+													</div>
+													<div class="desc center">
+														<div class="names w-100 h-70p mt-30 center">
+															<span class="fs-15p bsbb dgray capitalize namehol verdana name">aaa aaa</span>
+															<div class="w-100 mt-10p h-a center">
+																<span class="icon-edit-icon center w-40p h-20p bc-gray br-2p p-10p bsbb verdana capitalize fs-10p dgray hover-2" data-target="names">
+																	edit
+																</span>
+															</div>
+														</div>
+														<div class="names w-100 h-70p mt-30 center">
+															<span class="fs-15p bsbb dgray capitalize namehol verdana">*********</span>
+															<div class="w-100 mt-10p h-a center">
+																<span class="icon-edit-icon center w-40p h-20p bc-gray br-2p p-10p bsbb verdana capitalize fs-10p dgray hover-2" data-target="password">
+																	edit
+																</span>
+															</div>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+							<!-- end of my account section -->
+						</div>
+
+					</div>
+				</div>
+                <!-- footer section -->
+                <div class="w-100 h-a p-f b-0">
+                    <footer class="content-footer footer bg-footer-theme">
+                        <div class="flex p-20p jc-sb">
+                            <div class="mb-2 mb-md-0 text-uppercase">
+                                ©
+                                <script>
+                                    document.write(new Date().getFullYear())
+                                </script>
+                                <strong>UDS</strong>
+                            </div>
+                            <div>
+                            Powered by <a href="https://prtlfo.vercel.app/" target="_blank" class="footer-link fw-bolder">#_himself</a>
+                            </div>
+                        </div>
+                    </footer>
+                </div>
+                <!-- end of footer section -->
+			</div>
+		</div>		
+	</div>
+</div>
+</body>
+</html>
