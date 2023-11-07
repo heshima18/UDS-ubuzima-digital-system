@@ -196,7 +196,6 @@ export function checkEmpty(input){
         return 0
       }
     }else if (input.type == 'number') {
-      console.log(input)
       if (input.value <= 0) {
         setErrorFor(input,`please enter the proper value`)
         return 0
@@ -503,14 +502,14 @@ function promptin(info,chipsHolder,type) {
   a = document.createElement('div');
   b.appendChild(a)
   info = info[0]
-  a.className = "w-400p h-a p-10p bsbb bc-white cntr zi-10000 br-5p" 
+  a.className = "w-400p h-a p-10p bsbb bc-white cntr zi-10000 br-5p b-mgc-resp" 
   a.innerHTML = `<div class="head w-100 h-50p py-10p px-15p bsbb">
                                   <span class="fs-17p dgray capitalize igrid h-100 verdana">enter the quantity of ${info.name}</span>
                               </div>
                               <div class="body w-100 h-a p-5p grid">
                                   <form method="post" id="rec-quantity-form" name="rec-quantity-form">
                                     <div class="col-md-12 p-10p">
-                                      <label for="quantity" class="form-label">quantity</label>
+                                      <label for="quantity" class="form-label text-muted capitalize"><i class="fas fa-balance-scale-left pr-5p"></i> quantity</label>
                                       <div class="input-group">
                                           <input type="number" class="form-control" placeholder="quantity" name="quantity" id="quantity">
                                           <span class="input-group-text hover-2 us-none">${info.unit}</span>
@@ -518,30 +517,39 @@ function promptin(info,chipsHolder,type) {
                                       </div>
                                         ${(getPath()[0] == 'hc_provider' && type == 'medicines') ? `
                                         <div class="w-100 h-a my-20p px-0 flex">
-                                          <div class="fv-plugins-icon-container fv-plugins-bootstrap5-row-valid">
-                                            <div class="form-check custom-option custom-option-icon mx-5p">
+                                          <div class="p-5p bsbb b-1-s-gray br-5p mr-5p">
+                                            <div class="mx-5p">
                                                 <label class="form-check-label custom-option-content" for="status1">
-                                                    <span class="custom-option-body">
-                                                        <i class="bx bx-rocket"></i>
-                                                        <span class="custom-option-title"> served </span>
-                                                        <small class="capitalize"> served drugs will not require further confirmation</small>
+                                                    <span class="custom-option-body center-2 py-4p bsbb text-muted">
+                                                      <i class="fas fa-hand-holding-medical pr-10p bsbb"></i>
+                                                      <span class="custom-option-title"> served </span>
                                                     </span>
-                                                    <input name="status" class="form-check-input" type="radio" value="served" id="status1">
+                                                    <small class="capitalize"> served drugs will not require further confirmation</small>
+                                                    <span class="w-100 h-a center">
+                                                      <input name="status" class="form-check-input" type="radio" value="served" id="status1">
+                                                    </span>
                                                 </label>
                                             </div>
                                           </div>
-                                          <div class="fv-plugins-icon-container fv-plugins-bootstrap5-row-valid">
-                                            <div class="form-check custom-option custom-option-icon checked mx-5p">
+                                          <div class="p-5p bsbb b-1-s-gray br-5p ml-5p">
+                                            <div class="mx-5p">
                                                 <label class="form-check-label custom-option-content" for="status">
-                                                    <span class="custom-option-body">
-                                                        <i class="bx bx-rocket"></i>
-                                                        <span class="custom-option-title"> not yet served </span>
-                                                        <small class="capitalize"> 'not yet served' drugs will require further confirmation</small>
+                                                    <span class="custom-option-body center-2 py-4p bsbb text-muted">
+                                                      <i class="fas fa-tablets pr-10p bsbb"></i>
+                                                      <span class="custom-option-title"> not yet served </span>
                                                     </span>
-                                                    <input name="status" class="form-check-input" type="radio" value="null" id="status" checked="">
+                                                      <small class="capitalize"> 'not yet served' drugs will require further confirmation</small>
+                                                      <span class="w-100 h-a center">
+                                                        <input name="status" class="form-check-input" type="radio" value="null" id="status" checked="">
+                                                      </span>
                                                 </label>
                                             </div>
                                           </div>
+                                        </div>
+                                        <div class="col-md-12 bsbb p-r">
+                                          <label for="test" class="form-label text-muted capitalize"><i class="fas fa-comment-medical"></i> comment</label>
+                                          <textarea class="form-control" id="comment" placeholder="medical dosage" name="comment"></textarea>
+                                          <small class="w-100 red pl-3p verdana"></small>
                                         </div>
                                         ` : '' }
                                     </div>
@@ -552,6 +560,7 @@ function promptin(info,chipsHolder,type) {
                               </div>`
   m = a.querySelector('form#rec-quantity-form')
   v = a.querySelector('input#quantity');
+  c  = a.querySelector('#comment');
   let stats = Array.from(a.querySelectorAll('input[type="radio"]'));
   if (stats.length) {
     for (const status of stats) {
@@ -570,7 +579,8 @@ function promptin(info,chipsHolder,type) {
       if (stats.length) {
 
         let cs = stats.find(function (status) {return status.checked == true})
-        addChip({name:info.name, id: info.id ,unit: info.unit , quantity: v.value, status: cs.value},chipsHolder,['id','name','quantity','status','unit'])
+
+        addChip({name:info.name, id: info.id ,unit: info.unit , quantity: v.value, status: cs.value, comment: c.value},chipsHolder,['id','name','quantity','status','unit','comment'])
       }else{
         addChip({name:info.name, id: info.id ,unit: info.unit ,price: info.price , quantity: v.value},chipsHolder,['id','name','quantity','price','unit'])
       }
@@ -751,7 +761,42 @@ function promptOperationPopup(info,chipsHolder) {
     }
   })
 }
-
+export function promptMessage(){
+  let notifyP = addshade();
+  a = document.createElement('div');
+  notifyP.appendChild(a)
+  a.className = "w-350p h-a p-10p bsbb bc-white cntr zi-10000 br-5p b-mgc-resp card" 
+  a.innerHTML  =`<div class="head w-100 h-50p py-10p px-15p bsbb">
+                      <span class="fs-18p bold-2 dgray capitalize igrid h-100 card-title">enter message template for this action</span>
+                  </div>
+                  <div class="body w-100 h-a p-5p grid">
+                      <form method="post" id="notify" name="notify">
+                          <div class="col-md-12 px-10p py-6p bsbb p-r">
+                              <label for="test" class="form-label uppercase dgray">message</label>
+                              <textarea class="form-control" id="message" placeholder="Text message" name="message"></textarea>
+                              <small class="w-100 red pl-3p verdana"></small>
+                          </div>
+                          <div class="wrap center-2 px-10p bsbb bblock-resp">
+                              <button type="submit" class="btn btn-primary bfull-resp bm-a-resp bmy-10p-resp">Proceed</button>
+                          </div>
+                      </form>
+                  </div>`
+  let form = a.querySelector("form");
+  let input = form.querySelector('.form-control')
+  return new Promise((resolve,reject)=>{
+    form.addEventListener('submit', async event=>{
+        
+        event.preventDefault();
+        l = 1
+        v = checkEmpty(input);
+        if (v) {
+            resolve(input.value.trim())
+            deletechild(notifyP,notifyP.parentNode)
+        }
+      })
+    
+  })
+  }
 export async function chSession(){
   let token = getdata('token')
   if (token) {

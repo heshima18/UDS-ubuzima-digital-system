@@ -45,9 +45,9 @@ export const  addPati2fa = async (req,res,next) =>{
 
                         if (code.type == 'code') {
                             let p = await selectPatient(code.user)
-                            if (!p) reject(0);
+                            if (!p) resolve(0);
                             if (p.FA != code.v) {
-                                reject(0);
+                                resolve(0);
                             }else{
                                 resolve(1);
                             }

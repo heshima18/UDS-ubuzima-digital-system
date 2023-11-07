@@ -26,7 +26,7 @@ import { authorizeAppointmentAccess } from '../middlewares/appointment.authorize
 import { authorizeSession } from '../middlewares/session.authorizer.middleware';
 import { addPatiBg, addUserAssurance, getPatient, getPatients } from '../controllers/patients.controller';
 import { addAssurance, addEquipmentToAssuranceRestrictedList, addMedicineToAssuranceRestrictedList, addOperationToAssuranceRestrictedList, addServiceToAssuranceRestrictedList, addTestToAssuranceRestrictedList, assurance, getAssurances, removeItemFromAssurancelist,assuranceHP } from '../controllers/assurance.controller';
-import { authorizeUserAssurance } from '../middlewares/assurance.authorizer.middleware';
+import { authorizeHospitalAssurance, authorizeUserAssurance } from '../middlewares/assurance.authorizer.middleware';
 import { at } from '../controllers/token.verifier.controller';
 import { io } from '../socket.io/connector.socket.io';
 import { resend2FA } from '../controllers/2FA.resender.controller';
@@ -90,7 +90,7 @@ router.post('/add-employee-to-hp',authorizeRole,authorizeAdmin,authorizeHospital
 router.post('/get-hp-employees',authorizeRole,authorizeHospital,getHpEmployees)
 router.post('/get-employees',authorizeRole,authorizeAdmin,getEmployees)
 router.post('/get-employees-by-role/:role',authorizeRole,authorizeAdmin,getEmployeesByRole)
-router.post('/addsession',authorizeRole,authorizeHc_provider,authorizePatient,authorizeUserAssurance,addSession)
+router.post('/addsession',authorizeRole,authorizeHc_provider,authorizePatient,authorizeUserAssurance,authorizeHospitalAssurance,addSession)
 router.get('/api/test',test);
 router.get('/get-map',getMap);
 router.get('/get-assurances',getAssurances);

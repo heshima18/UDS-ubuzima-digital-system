@@ -362,7 +362,7 @@ export const editItemFromInventory = async (req,res)=>{
       console.log(error)
   }
 }
-async function getInventoryEntry(inventory,entry) {
+export async function getInventoryEntry(inventory,entry) {
   try {
     let q = await query(`SELECT
     i.id,
@@ -376,8 +376,8 @@ async function getInventoryEntry(inventory,entry) {
     '[]') AS ${entry}
     FROM inventories AS i
     LEFT JOIN ${entry} AS m ON JSON_CONTAINS(i.${entry}, JSON_OBJECT('id', m.id), '$')
-    WHERE i.id = ?
-    GROUP BY i.id;`,[inventory]);
+    WHERE i.id = ? OR i.hospital = ?
+    GROUP BY i.id;`,[inventory,inventory]);
     q = q[0]
     q[entry] = JSON.parse(q[entry])
     q[`raw_${entry}`] = JSON.parse(q[`raw_${entry}`])  

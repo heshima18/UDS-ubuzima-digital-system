@@ -1,5 +1,5 @@
 
-import { alertMessage, getdata, getschema, postschema, request,deletechild, checkEmpty, showRecs, getchips,getPath,calcTime,addsCard,cpgcntn, geturl,sessiondata,addChip, showAvaiAssurances, adcm, addshade, addLoadingTab, removeLoadingTab, showAvaiEmps, fT, promptHpsToChoose, addAuthDiv, RemoveAuthDivs, showFingerprintDiv, removeRec } from "../../../utils/functions.controller.js";
+import { alertMessage, getdata, getschema, postschema, request,deletechild, checkEmpty, showRecs, getchips,getPath,calcTime,addsCard,cpgcntn, geturl,sessiondata,addChip, showAvaiAssurances, adcm, addshade, addLoadingTab, removeLoadingTab, showAvaiEmps, fT, promptHpsToChoose, addAuthDiv, RemoveAuthDivs, showFingerprintDiv, removeRec, promptMessage } from "../../../utils/functions.controller.js";
 import { addUprofile } from "../../../utils/user.profile.controller.js";
 import {pushNotifs, userinfo,expirateMssg, getNfPanelLinks,m as messages, DateTime} from "./nav.js";
 import { viewTransfer } from "./transfer.js";
@@ -346,7 +346,7 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,z,notificationlinks,socket
                             if (input.name == "tests") {
                                 Object.assign(b,{[input.name]: getchips(input.parentNode.querySelector('div.chipsholder'),['id','sample','result'])})
                             } if (input.name == "medicines") {
-                                Object.assign(b,{[input.name]: getchips(input.parentNode.querySelector('div.chipsholder'),['id','status','quantity','price','result'])})
+                                Object.assign(b,{[input.name]: getchips(input.parentNode.querySelector('div.chipsholder'),['id','status','quantity','price','comment'])})
                             }else if (input.classList.contains('extras')) {
                                 Object.assign(b,{[input.name]: getchips(input.parentNode.querySelector('div.chipsholder'),['id','quantity'])})     
                             }else if (input.name == "operations") {
@@ -405,8 +405,7 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,z,notificationlinks,socket
                         let url = new URL(window.location.href);
                         url.pathname = `/hc_provider/view-session/${session}`;
                         window.history.pushState({},'',url.toString())
-                        sessiondata = sessiondata.message
-                        showSession(sessiondata);
+                        showSession(sessiondata.message);
                     }
                     session_s_button.innerHTML = `<i class="bx bx-search h-20p w-a center"></i>`
                     session_s_button.removeAttribute('disabled')
@@ -418,8 +417,7 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,z,notificationlinks,socket
                 postschema.body = JSON.stringify({token: getdata('token')})
                 let sessiondata =  await request(`session/${session}`,postschema)
                 if (!sessiondata.success){
-                    sessionStorage.removeItem('minfo')
-                    alertMessage(sessiondata.message)
+                    return alertMessage(sessiondata.message)
                 }else{
                     session_input.value = session
                     sessiondata = sessiondata.message
@@ -879,8 +877,8 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,z,notificationlinks,socket
                             objectId = objectId.split('.')
                             if (objectId[1].indexOf('amount') != -1) {
                                 holder.innerText = adcm(sessiondata[objectId[0]][objectId[1]])
-                            }else if (objectId[0].indexOf('p_info') != -1 && objectId[1].indexOf('name') != -1) {
-                                holder.innerText = sessiondata[objectId[0]][objectId[1]]
+                            }else if (objectId[0] == 'p_info' && objectId[1].indexOf('name') != -1) {
+                                holder.innerHTML = sessiondata[objectId[0]][objectId[1]] + '<i class="fas fa-external-link-alt px-5p"></i>'
                                 holder.classList.add('hover-6','data-buttons')
                                 holder.setAttribute('data-role', 'show-profile')
                                 holder.setAttribute('data-id', sessiondata[objectId[0]].id)
@@ -1211,6 +1209,7 @@ class popups{
             if (!emps) {
                 return
             }
+            let content = await promptMessage()
             if (('object' == typeof emps)) {
                 j = JSON.parse(postschema.body)
                 Object.assign(j, 
@@ -1219,7 +1218,7 @@ class popups{
                         token: getdata('token'),
                         receiver: [emps],
                         type: 'req_test_message', 
-                        content: `there is an incoming test request called ${testinfo.name} for  ${session.p_info.name}`,
+                        content: content,
                         extra: {
                             test: testinfo.id,
                             t_name: testinfo.name,
@@ -1261,7 +1260,7 @@ class popups{
                         token: getdata('token'),
                         receiver: emps,
                         type: 'req_test_message', 
-                        content: `there is an incoming test request called ${testinfo.name} for  ${session.p_info.name}`,
+                        content: content,
                         extra: {
                             test: testinfo.id,
                             t_name: testinfo.name,
@@ -1372,7 +1371,7 @@ class popups{
             button.setAttribute('disabled',true)
                 let values = {}
                 for (const input of inputs) {
-                    Object.assign(values,{[input.name]: getchips(input.parentNode.querySelector('div.chipsholder'),['id','quantity','status']) })
+                    Object.assign(values,{[input.name]: getchips(input.parentNode.querySelector('div.chipsholder'),['id','quantity','status','comment']) })
                 } 
                 Object.assign(values,{session: session.session_id,token: getdata('token')})
                 postschema.body = JSON.stringify(values)

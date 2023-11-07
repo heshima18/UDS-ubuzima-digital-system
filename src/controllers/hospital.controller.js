@@ -2,17 +2,22 @@ import query from './query.controller'
 import errorMessage from './response.message.controller'
 import id from "./randomInt.generator.controller";
 import authenticateToken from './token.verifier.controller';
+import { DateTime } from 'luxon';
+
 export const addhospital = async (req,res)=>{
   try {
+    const leTime = DateTime.now();
+    let now = leTime.setZone('Africa/Kigali');
+    now = now.toFormat('yyyy-MM-dd HH:mm:ss')
     let { name,departments,province,type,district,sector,cell,dependency,phone } = req.body
     let uid = id()
-    let insert = await query(`insert into hospitals(id,name,departments,province,type,phone,district,sector,cell,dependency,employees)values(?,?,?,?,?,?,?,?,?,?,?)`,[uid,name,JSON.stringify(departments),province,type,phone,district,sector,cell,dependency,'[]'])
+    let insert = await query(`insert into hospitals(id,name,departments,province,type,phone,district,sector,cell,dependency,employees,assurances)values(?,?,?,?,?,?,?,?,?,?,?)`,[uid,name,JSON.stringify(departments),province,type,phone,district,sector,cell,dependency,'[]','[]'])
     if (!insert) {
         res.status(500).send({success:false, message: errorMessage.is_error})
         return
     }
     res.send({success: true, message: 'health service center created sucessfully'})
-    await query(`insert into inventories(id,hospital,medicines,tests,equipments,operations,services)values(?,?,?,?,?,?,?)`,[id(),uid,'[]','[]','[]','[]','[]'])
+    await query(`insert into inventories(id,hospital,medicines,tests,equipments,operations,services,date)values(?,?,?,?,?,?,?)`,[id(),uid,'[]','[]','[]','[]','[]',now])
   } catch (error) {
     res.status(500).send({success:false, message: errorMessage.is_error})
     console.log(error)
