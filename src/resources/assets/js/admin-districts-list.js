@@ -121,9 +121,7 @@ if(!u){
                         render: function (e, t, a, n) {
                             return (
                                 `<div class="d-inline-block text-nowrap">
-                                    <button class="btn btn-sm btn-icon" data-bs-toggle="modal" data-bs-target="#view-health-post" data-id="${a.id}"><i class="bx bx-show-alt"></i></button>
-                                    <button class="btn btn-sm btn-icon" data-bs-toggle="modal" data-bs-target="#update-health-post" data-id="${a.id}"><i class="bx bx-edit"></i></button>
-                                    <button class="btn btn-sm btn-icon delete-health-post" data-id="${a.id}"><i class="bx bx-trash"></i></button>
+                                    <button class="btn btn-sm btn-icon border border-3" data-bs-toggle="modal" data-bs-target="#view-district" data-id="${a.id}"><i class="bx bx-show-alt"></i></button>
                                 </div>`
                             );
                         },
@@ -189,11 +187,6 @@ if(!u){
                 }
             });
     
-        table.find("tbody").on("click", ".delete-health-post", function () {
-            if (confirm("Are you sure you want to delete this health post?")) {
-                e.row($(this).parents("tr")).remove().draw();
-            }
-        })
         $('#add-district').on('shown.bs.modal', function () {
             const $modal = $(this);
             z = []

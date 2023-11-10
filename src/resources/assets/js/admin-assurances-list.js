@@ -56,8 +56,14 @@ if(!u){
     j = await request('get-operations',postschema)
     u = await request('get-employees-by-role/insurance_manager',postschema)
     
-    if (!q.success || !f.success || !l.success || !k.success || !j.success || !u.success) {
+    if (!q.success) {
         return alertMessage(q.message)
+    }else if (!m.success) {
+        return alertMessage(m.message)
+        
+    }else if (!u.success) {
+        return alertMessage(u.message)
+        
     }
     let extra = {users: u.message, tests: f.message, medicines : q.message, equipments: l.message, services : k.message, operations : j.message}
     $(document).ready(function () {
@@ -114,8 +120,7 @@ if(!u){
                         render: function (e, t, a, n) {
                             return (
                                 `<div class="d-inline-block text-nowrap">
-                                    <button class="btn btn-sm btn-icon" data-role="button"  data-id="${a.id}" id="view"><i class="bx bx-show-alt"></i></button>
-                                    <button class="btn btn-sm btn-icon" data-role="button" data-id="${a.id}" id="delete"><i class="bx bx-trash"></i></button>
+                                    <button class="btn btn-sm btn-icon border border-3" data-role="button"  data-id="${a.id}" id="view"><i class="bx bx-show-alt"></i></button>
                                 </div>`
                             );
                         },

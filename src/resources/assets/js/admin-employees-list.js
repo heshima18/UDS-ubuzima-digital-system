@@ -63,9 +63,7 @@ $(document).ready(async function () {
                     render: function (e, t, a, n) {
                         return (
                             `<div class="d-inline-block text-nowrap">
-                            <button class="btn btn-sm btn-icon" data-bs-toggle="modal" data-bs-target="#view-employee"><i class="bx bx-show-alt"></i></button>
-                            <button class="btn btn-sm btn-icon" data-bs-toggle="modal" data-bs-target="#update-employee"><i class="bx bx-edit"></i></button>
-                            <button class="btn btn-sm btn-icon delete-employee"><i class="bx bx-trash"></i></button>
+                            <button class="btn btn-sm btn-icon border border-3" data-bs-toggle="modal" data-bs-target="#view-employee" data-role="view-button"><i class="bx bx-show-alt"></i></button>
                         </div>`
                         );
                     },
@@ -181,13 +179,6 @@ $(document).ready(async function () {
                 });
             }
         });
-    // Delete employee when delete icon clicked
-    table.find("tbody").on("click", ".delete-employee", function () {
-        if (confirm("Are you sure you want to delete this employee?")) {
-            e.row($(this).parents("tr")).remove().draw();
-        }
-    })
-    
     async function getMOHSLimitInfo() {
         let div = addshade();
         a = document.createElement('div');

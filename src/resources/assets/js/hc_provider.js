@@ -600,7 +600,7 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,z,notificationlinks,socket
                                     orderable: 1,
                                     render: function (e, t, a, n) {
                                         return (
-                                            `<span class="capitalize">${e}</span>`
+                                            `<span class="capitalize text-muted">${e}</span>`
                                         );
                                     },
                                 },
@@ -610,7 +610,7 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,z,notificationlinks,socket
                                     orderable: 1,
                                     render: function (e, t, a, n) {
                                         return (
-                                            `<span class="">${e}</span>`
+                                            `<span class="dgray">${e}</span>`
                                         );
                                     },
                                 },
@@ -625,12 +625,12 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,z,notificationlinks,socket
                                     },
                                 },
                                 {
-                                    targets: 3,
+                                    targets: 4,
                                     searchable: 1,
                                     orderable: !1,
                                     render: function (e, t, a, n) {
                                         return (
-                                            `<span class="">${e}</span>`
+                                            `<span class="text-muted">${e}</span>`
                                         );
                                     },
                                 },
@@ -641,7 +641,7 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,z,notificationlinks,socket
                                     render: function (e, t, a, n) {
                                         return (
                                             `<div class="d-inline-block text-nowrap">
-                                            <button class="btn btn-sm btn-icon view" data-id="${e}"><i class="bx bx-show"></i></button>
+                                            <button class="btn btn-sm btn-icon view border border-3 dgray" data-id="${e}"><i class="bx bx-show"></i></button>
                                         </div>`
                                         );
                                     },

@@ -7,7 +7,7 @@
         <meta name="viewport"
             content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
         <title>UDS | Admin - Home</title>
-        <link rel="icon" type="image/x-icon" href="/assets/svg/logo.svg" />
+        <link rel="icon" type="image/x-icon" href="/assets/img/icons/logo/logo-alt.png" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
         <link
@@ -24,6 +24,7 @@
         <!-- Vendors CSS -->
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/boxicons/2.1.4/css/boxicons.min.css" integrity="sha512-cn16Qw8mzTBKpu08X0fwhTSv02kK/FojjNLz0bwp2xJ4H+yalwzXKFw/5cLzuBZCxGWIA+95X4skzvo8STNtSg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/spinkit/2.0.0/spinkit.min.css" integrity="sha512-kRYkjiYH/VXxoiaDK2oGNMKIi8VQVfie1lkYGX3kmfzWNR2kfaF5ze0885W3/eE6lIiURBsZA91M/WNvCajHMw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     
         <link rel="stylesheet" type="text/css" href="/styles/styling.css">
 
@@ -31,6 +32,10 @@
         <!-- App Configurations -->
         <script src="/assets/vendor/js/helpers.js"></script>
         <script src="/assets/js/config.js" type="module"></script>
+        <script src="/assets/js/nav.js" type="module"></script>
+        <script src="/assets/js/admin.js" type="module"></script>
+
+
     </head>
 
 <body>
@@ -39,10 +44,10 @@
             <aside id="layout-menu" class="layout-menu menu-vertical menu bg-menu-theme">
                 <div class="app-brand demo">
                     <a href="/admin/home" class="app-brand-link">
-                        <span class="app-brand-logo demo">
-                            <img src="/assets/svg/logo.svg" alt="">
+                        <span>
+                            <img src="/assets/img/icons/logo/logo-alt.png" alt="logo" class="w-a contain h-50p">
                         </span>
-                        <span class="app-brand-text demo menu-text fw-bolder ms-2">Demo</span>
+                        <span class="app-brand-text demo menu-text fw-bolder ms-2">UDS</span>
                     </a>
                     <a href="javascript:void(0);" class="layout-menu-toggle menu-link text-large ms-auto">
                         <i class="bx bx-chevron-left bx-sm align-middle"></i>
@@ -173,262 +178,103 @@
                 </ul>
             </aside>
             <div class="layout-page pt-0">
-                <nav class="layout-navbar container-xxl navbar navbar-expand-xl navbar-detached align-items-center bg-navbar-theme" id="layout-navbar">
-                    <div class="layout-menu-toggle navbar-nav align-items-xl-center me-3 me-xl-0   d-xl-none ">
-                        <a class="nav-item nav-link px-0 me-xl-4" href="javascript:void(0)">
-                            <i class="bx bx-menu bx-sm"></i>
+                <nav class="layout-navbar container-xxl navbar navbar-expand-xl navbar-detached align-items-center bg-navbar-theme jc-sb" id="layout-navbar">
+                    <div class="h-54p center">
+                        <a class="nav-item nav-link px-0 me-xl-4 flex" href="javascript:void(0)">
+                            <span>
+                                <img src="/assets/img/icons/logo/logo-alt.png" alt="logo" class="w-a contain h-50p">
+                            </span>
                         </a>
                     </div>
-                    <div class="navbar-nav-right d-flex align-items-center" id="navbar-collapse">
-                        <ul class="navbar-nav flex-row align-items-center ms-auto">
-                            <li class="nav-item me-2 me-xl-0">
-                                <a class="nav-link style-switcher-toggle hide-arrow" href="javascript:void(0);">
-                                    <i class="bx bx-sm"></i>
-                                </a>
-                            </li>
-                            <li class="nav-item dropdown-notifications navbar-dropdown dropdown me-3 me-xl-1">
-                                <a class="nav-link dropdown-toggle hide-arrow show" href="javascript:void(0);" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="true">
-                                    <i class="bx bx-bell bx-sm"></i>
-                                    <span class="badge bg-danger rounded-pill badge-notifications">5</span>
-                                </a>
-                                <ul class="dropdown-menu dropdown-menu-end py-0" data-bs-popper="static">
-                                    <li class="dropdown-menu-header border-bottom">
-                                        <div class="dropdown-header d-flex align-items-center py-3">
-                                            <h5 class="text-body mb-0 me-auto">Notification</h5>
-                                            <a href="javascript:void(0)" class="dropdown-notifications-all text-body" data-bs-toggle="tooltip" data-bs-placement="top" aria-label="Mark all as read" data-bs-original-title="Mark all as read"><i class="bx fs-4 bx-envelope-open"></i></a>
+                    <div class="h-54p center" id="navbar-collapse">
+                        <ul class="flex h-54p p-0 m-0 ls-none">
+                            <li class="center-2 px-10p">
+                                <a class="td-none center-2 " id="dropdown-toggle" href="javascript:void(0);" data-bs-toggle="profile-dropdown">
+                                        <div class="sk-wave sk-primary w-25p shaddow">
+                                            <div class="bc-theme sk-wave-rect"></div>
+                                            <div class="bc-theme sk-wave-rect"></div>
+                                            <div class="bc-theme sk-wave-rect"></div>
+                                            <div class="bc-theme sk-wave-rect"></div>
+                                            <div class="bc-theme sk-wave-rect"></div>
                                         </div>
-                                    </li>
-                                    <li class="dropdown-notifications-list scrollable-container ps ps--y">
-                                        <ul class="list-group list-group-flush">
-                                            <li class="list-group-item list-group-item-action dropdown-notifications-item">
-                                                <div class="d-flex">
-                                                    <div class="flex-shrink-0 me-3">
-                                                        <div class="avatar">
-                                                            <img src="/assets/img/avatars/1.png" alt="" class="w-px-40 h-auto rounded-circle">
-                                                        </div>
-                                                    </div>
-                                                    <div class="flex-grow-1">
-                                                        <h6 class="mb-1">Congratulation Lettie 🎉</h6>
-                                                        <p class="mb-0">Won the monthly best seller gold badge</p>
-                                                        <small class="text-muted">1h ago</small>
-                                                    </div>
-                                                    <div class="flex-shrink-0 dropdown-notifications-actions">
-                                                        <a href="javascript:void(0)" class="dropdown-notifications-read"><span class="badge badge-dot"></span></a>
-                                                        <a href="javascript:void(0)" class="dropdown-notifications-archive"><span class="bx bx-x"></span></a>
-                                                    </div>
-                                                </div>
-                                            </li>
-                                            <li class="list-group-item list-group-item-action dropdown-notifications-item">
-                                                <div class="d-flex">
-                                                    <div class="flex-shrink-0 me-3">
-                                                        <div class="avatar">
-                                                            <span class="avatar-initial rounded-circle bg-label-danger">CF</span>
-                                                        </div>
-                                                    </div>
-                                                    <div class="flex-grow-1">
-                                                        <h6 class="mb-1">Charles Franklin</h6>
-                                                        <p class="mb-0">Accepted your connection</p>
-                                                        <small class="text-muted">12hr ago</small>
-                                                    </div>
-                                                    <div class="flex-shrink-0 dropdown-notifications-actions">
-                                                        <a href="javascript:void(0)" class="dropdown-notifications-read"><span class="badge badge-dot"></span></a>
-                                                        <a href="javascript:void(0)" class="dropdown-notifications-archive"><span class="bx bx-x"></span></a>
-                                                    </div>
-                                                </div>
-                                            </li>
-                                            <li class="list-group-item list-group-item-action dropdown-notifications-item marked-as-read">
-                                                <div class="d-flex">
-                                                    <div class="flex-shrink-0 me-3">
-                                                        <div class="avatar">
-                                                            <img src="/assets/img/avatars/2.png" alt="" class="w-px-40 h-auto rounded-circle">
-                                                        </div>
-                                                    </div>
-                                                    <div class="flex-grow-1">
-                                                        <h6 class="mb-1">New Message ✉️</h6>
-                                                        <p class="mb-0">You have new message from Natalie</p>
-                                                        <small class="text-muted">1h ago</small>
-                                                    </div>
-                                                    <div class="flex-shrink-0 dropdown-notifications-actions">
-                                                        <a href="javascript:void(0)" class="dropdown-notifications-read"><span class="badge badge-dot"></span></a>
-                                                        <a href="javascript:void(0)" class="dropdown-notifications-archive"><span class="bx bx-x"></span></a>
-                                                    </div>
-                                                </div>
-                                            </li>
-                                            <li class="list-group-item list-group-item-action dropdown-notifications-item">
-                                                <div class="d-flex">
-                                                    <div class="flex-shrink-0 me-3">
-                                                        <div class="avatar">
-                                                            <span class="avatar-initial rounded-circle bg-label-success"><i class="bx bx-cart"></i></span>
-                                                        </div>
-                                                    </div>
-                                                    <div class="flex-grow-1">
-                                                        <h6 class="mb-1">Whoo! You have new order 🛒 </h6>
-                                                        <p class="mb-0">ACME Inc. made new order $1,154</p>
-                                                        <small class="text-muted">1 day ago</small>
-                                                    </div>
-                                                    <div class="flex-shrink-0 dropdown-notifications-actions">
-                                                        <a href="javascript:void(0)" class="dropdown-notifications-read"><span class="badge badge-dot"></span></a>
-                                                        <a href="javascript:void(0)" class="dropdown-notifications-archive"><span class="bx bx-x"></span></a>
-                                                    </div>
-                                                </div>
-                                            </li>
-                                            <li class="list-group-item list-group-item-action dropdown-notifications-item marked-as-read">
-                                                <div class="d-flex">
-                                                    <div class="flex-shrink-0 me-3">
-                                                        <div class="avatar">
-                                                            <img src="/assets/img/avatars/9.png" alt="" class="w-px-40 h-auto rounded-circle">
-                                                        </div>
-                                                    </div>
-                                                    <div class="flex-grow-1">
-                                                        <h6 class="mb-1">Application has been approved 🚀 </h6>
-                                                        <p class="mb-0">Your ABC project application has been approved.
-                                                        </p>
-                                                        <small class="text-muted">2 days ago</small>
-                                                    </div>
-                                                    <div class="flex-shrink-0 dropdown-notifications-actions">
-                                                        <a href="javascript:void(0)" class="dropdown-notifications-read"><span class="badge badge-dot"></span></a>
-                                                        <a href="javascript:void(0)" class="dropdown-notifications-archive"><span class="bx bx-x"></span></a>
-                                                    </div>
-                                                </div>
-                                            </li>
-                                            <li class="list-group-item list-group-item-action dropdown-notifications-item marked-as-read">
-                                                <div class="d-flex">
-                                                    <div class="flex-shrink-0 me-3">
-                                                        <div class="avatar">
-                                                            <span class="avatar-initial rounded-circle bg-label-success"><i class="bx bx-pie-chart-alt"></i></span>
-                                                        </div>
-                                                    </div>
-                                                    <div class="flex-grow-1">
-                                                        <h6 class="mb-1">Monthly report is generated</h6>
-                                                        <p class="mb-0">July monthly financial report is generated </p>
-                                                        <small class="text-muted">3 days ago</small>
-                                                    </div>
-                                                    <div class="flex-shrink-0 dropdown-notifications-actions">
-                                                        <a href="javascript:void(0)" class="dropdown-notifications-read"><span class="badge badge-dot"></span></a>
-                                                        <a href="javascript:void(0)" class="dropdown-notifications-archive"><span class="bx bx-x"></span></a>
-                                                    </div>
-                                                </div>
-                                            </li>
-                                            <li class="list-group-item list-group-item-action dropdown-notifications-item marked-as-read">
-                                                <div class="d-flex">
-                                                    <div class="flex-shrink-0 me-3">
-                                                        <div class="avatar">
-                                                            <img src="/assets/img/avatars/5.png" alt="" class="w-px-40 h-auto rounded-circle">
-                                                        </div>
-                                                    </div>
-                                                    <div class="flex-grow-1">
-                                                        <h6 class="mb-1">Send connection request</h6>
-                                                        <p class="mb-0">Peter sent you connection request</p>
-                                                        <small class="text-muted">4 days ago</small>
-                                                    </div>
-                                                    <div class="flex-shrink-0 dropdown-notifications-actions">
-                                                        <a href="javascript:void(0)" class="dropdown-notifications-read"><span class="badge badge-dot"></span></a>
-                                                        <a href="javascript:void(0)" class="dropdown-notifications-archive"><span class="bx bx-x"></span></a>
-                                                    </div>
-                                                </div>
-                                            </li>
-                                            <li class="list-group-item list-group-item-action dropdown-notifications-item">
-                                                <div class="d-flex">
-                                                    <div class="flex-shrink-0 me-3">
-                                                        <div class="avatar">
-                                                            <img src="/assets/img/avatars/6.png" alt="" class="w-px-40 h-auto rounded-circle">
-                                                        </div>
-                                                    </div>
-                                                    <div class="flex-grow-1">
-                                                        <h6 class="mb-1">New message from Jane</h6>
-                                                        <p class="mb-0">Your have new message from Jane</p>
-                                                        <small class="text-muted">5 days ago</small>
-                                                    </div>
-                                                    <div class="flex-shrink-0 dropdown-notifications-actions">
-                                                        <a href="javascript:void(0)" class="dropdown-notifications-read"><span class="badge badge-dot"></span></a>
-                                                        <a href="javascript:void(0)" class="dropdown-notifications-archive"><span class="bx bx-x"></span></a>
-                                                    </div>
-                                                </div>
-                                            </li>
-                                            <li class="list-group-item list-group-item-action dropdown-notifications-item marked-as-read">
-                                                <div class="d-flex">
-                                                    <div class="flex-shrink-0 me-3">
-                                                        <div class="avatar">
-                                                            <span class="avatar-initial rounded-circle bg-label-warning"><i class="bx bx-error"></i></span>
-                                                        </div>
-                                                    </div>
-                                                    <div class="flex-grow-1">
-                                                        <h6 class="mb-1">CPU is running high</h6>
-                                                        <p class="mb-0">CPU Utilization Percent is currently at 88.63%,
-                                                        </p>
-                                                        <small class="text-muted">5 days ago</small>
-                                                    </div>
-                                                    <div class="flex-shrink-0 dropdown-notifications-actions">
-                                                        <a href="javascript:void(0)" class="dropdown-notifications-read"><span class="badge badge-dot"></span></a>
-                                                        <a href="javascript:void(0)" class="dropdown-notifications-archive"><span class="bx bx-x"></span></a>
-                                                    </div>
-                                                </div>
-                                            </li>
-                                        </ul>
-                                    <div class="ps__rail-x" style="left: 0px; bottom: 0px;"><div class="ps__thumb-x" tabindex="0" style="left: 0px; width: 0px;"></div></div><div class="ps__rail-y" style="top: 0px; right: 0px; height: 480px;"><div class="ps__thumb-y" tabindex="0" style="top: 0px; height: 228px;"></div></div></li>
-                                    <li class="dropdown-menu-footer border-top">
-                                        <a href="javascript:void(0);" class="dropdown-item d-flex justify-content-center p-3">
-                                            View all notifications
-                                        </a>
-                                    </li>
-                                </ul>
-                            </li>
-                            <li class="nav-item navbar-dropdown dropdown-user dropdown">
-                                <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown">
-                                    <div class="avatar avatar-online">
-                                        <img src="/assets/img/avatars/1.png" alt="" class="w-px-40 h-auto rounded-circle">
-                                    </div>
                                 </a>
-                                <ul class="dropdown-menu dropdown-menu-end">
-                                    <li>
-                                        <a class="dropdown-item" href="pages-account-settings-account.php">
-                                            <div class="d-flex">
-                                                <div class="flex-shrink-0 me-3">
-                                                    <div class="avatar avatar-online">
-                                                        <img src="/assets/img/avatars/1.png" alt="" class="w-px-40 h-auto rounded-circle">
-                                                    </div>
-                                                </div>
-                                                <div class="flex-grow-1">
-                                                    <span class="fw-semibold d-block">John Doe</span>
-                                                    <small class="text-muted">Admin</small>
+                                <ul class="profile-dropdown bc-white card-5 h-a w-250p bsbb t-80p p-f mr-20p r-0 ls-none br-10p p-0 hidden" name="profile-dropdown">
+                                    <li class="px-10p bsbb py-2p my-10p w-100 h-a">
+                                        <a class="dropdown-item" href="#">
+                                            <div class="flex px-5p py-10p bsbb">
+                                                <div class="left w-100">
+                                                    <span class="fw-semibold d-bloc data-role bsbb" data-role="profile-name"><span class="skel w-65p h-10p br-2p block my-5p"></span></span>
+                                                    <small class="text-muted block data-role" data-role="profile-title"><span class="skel w-50p h-10p br-2p block my-5p"></span></small>
                                                 </div>
                                             </div>
                                         </a>
                                     </li>
-                                    <li>
-                                        <div class="dropdown-divider"></div>
+                                    <li class="bsbb py-2p">
+                                        <div class="dropdown-divider bb-1-s-g"></div>
                                     </li>
-                                    <li>
-                                        <a class="dropdown-item" href="pages-profile-user.php">
-                                            <i class="bx bx-user me-2"></i>
-                                            <span class="align-middle">My Profile</span>
+                                    <li class="px-10p bsbb py-2p my-10p w-100 h-a">
+                                        <a class="left td-none dgray" href="../my-account">
+                                            <div class="center-2 w-a">
+                                                <i class="bx bxs-user-account px-10p bx-sm"></i>
+                                                <span class="dgray mt--5p">My Account</span>
+                                            </div>
                                         </a>
                                     </li>
-                                    <li>
-                                        <a class="dropdown-item" href="pages-account-settings-account.php">
-                                            <i class="bx bx-cog me-2"></i>
-                                            <span class="align-middle">Settings</span>
+                                    <li class="bsbb py-2p">
+                                        <div class="dropdown-divider bb-1-s-g"></div>
+                                    </li>
+                                    <li class="px-10p bsbb py-2p my-10p w-100 h-a">
+                                        <a class="left td-none dgray" href="logout" target="_blank">
+                                            <div class="center-2 w-a">
+                                                <i class="bx bx-log-out px-10p bx-sm"></i>
+                                                <span class="dgray mt--5p">Log Out</span>
+                                            </div>
                                         </a>
                                     </li>
-                                    <li>
-                                        <div class="dropdown-divider"></div>
+                                </ul>
+                            </li>
+                            <li class="center-2">
+                                <a class="p-r p-10p bsbb center td-none" id="dropdown-toggle" href="javascript:void(0);" data-bs-toggle="notification-dropdown" data-bs-auto-close="outside">
+                                    <i class="bx bx-bell bx-sm dgray"></i>
+                                    <span class="p-a bc-red br-50 w-15p h-15p fs-9p white hidden t-5p r-0  data-role" data-role="notification-count-badge">0</span>
+                                </a>
+                                <ul class="notification-dropdown bc-white card-5 br-10p h-500p w-390p p-0 t-80p p-f mr-20p r-0 ls-none bw-90-500-resp bm-x-10p-resp hidden" data-bs-popper="static" name="notification-dropdown" id="notification-dropdown">
+                                    <li class="dropdown-menu-header border-bottom px-15p py-15p bsbb">
+                                        <div class="dropdown-header d-flex align-items-center">
+                                            <i class='bx bx-notification px-10p bx-sm dgray'></i><h5 class=" mb-0 me-auto capitalize dgray">Notifications</h5>
+                                        </div>
                                     </li>
-                                    <li>
-                                        <a class="dropdown-item" href="auth-login.php" target="_blank">
-                                            <i class="bx bx-power-off me-2"></i>
-                                            <span class="align-middle">Log Out</span>
+                                    <li class="dropdown-notifications-list scrollable-container h-78 ovys scroll-3">
+                                        <ul class="list-group list-group-flush nf-panel h-100">
+                                           <li class="w-100 h-100 center">
+                                            <div class="center">
+                                                <div class="sk-grid sk-blue">
+                                                    <div class="sk-grid-cube"></div>
+                                                    <div class="sk-grid-cube"></div>
+                                                    <div class="sk-grid-cube"></div>
+                                                    <div class="sk-grid-cube"></div>
+                                                    <div class="sk-grid-cube"></div>
+                                                    <div class="sk-grid-cube"></div>
+                                                    <div class="sk-grid-cube"></div>
+                                                    <div class="sk-grid-cube"></div>
+                                                    <div class="sk-grid-cube"></div>
+                                                </div>
+                                            </div>
+                                            <div class="w-100 h-a dgray capitalize">loading...</div>
+                                           </li>
+                                        </ul>
+                                    </li>
+                                    <li class="dropdown-menu-footer border-top h-50p center-2">
+                                        <a href="javascript:void(0);" class="dropdown-item d-flex justify-content-center p-3">
+                                            Mark all as seen
                                         </a>
                                     </li>
                                 </ul>
                             </li>
                         </ul>
                     </div>
-                    <div class="navbar-search-wrapper search-input-wrapper d-none">
-                        <input type="text" name="search" class="form-control search-input container-xxl border-0" placeholder="Search..." aria-label="Search...">
-                        <i class="bx bx-x bx-sm search-toggler cursor-pointer"></i>
-                    </div>
                 </nav>
-                <div class="content-wrapper">
+                <div class="content-wrapper thebody">
                     <div class="container-xxl flex-grow-1 container-p-y">
                         <div class="row">
                             <div class="col-lg-8 mb-4 order-0">
@@ -439,7 +285,7 @@
                                                 <h5 class="card-title text-primary">Notification <i class="bx bx-bell bx-sm"></i></h5>
                                                 <p class="mb-4">a new healthpost was added successfully</p>
                     
-                                                <a href="health-posts/" class="btn btn-sm btn-label-primary">View
+                                                <a href="/admin/health-posts/" class="btn btn-sm btn-label-primary">View
                                                     Hospitals</a>
                                             </div>
                                         </div>
@@ -460,7 +306,7 @@
                                                 <span class="flex-column">
                                                     <h3 class=" d-md-inline-block">5</h3>
                                                     <small class="mb-5">Hospitals</small>
-                                                    <a href="health-posts/" class="btn btn-sm btn-label-primary block">View</a>
+                                                    <a href="/admin/health-posts/" class="btn btn-sm btn-label-primary block">View</a>
                                                 </span>
                                             </div>
                                             
@@ -473,7 +319,7 @@
                                                 <span class="flex-column">
                                                     <h3 class=" d-md-inline-block">5</h3>
                                                     <small class="mb-5">Employees</small>
-                                                    <a href="health-posts/" class="btn btn-sm btn-label-primary block">View</a>
+                                                    <a href="/admin/employees/" class="btn btn-sm btn-label-primary block">View</a>
                                                 </span>
                                             </div>
                                         </div>
@@ -492,7 +338,7 @@
                                         <p class="card-text">
                                             <span class="bold-2">4</span> Provinces
                                         </p>
-                                        <a href="myApplications/" class="btn btn-primary">View</a>
+                                        <a href="/admin/provinces/" class="btn btn-primary">View</a>
                                     </div>
                                 </div>
                             </div>
@@ -506,7 +352,7 @@
                                         <p class="card-text">
                                             <span class="bold-2">30</span> Districts
                                         </p>
-                                        <a href="pendingApplications/" class="btn btn-primary">View</a>
+                                        <a href="/admin/districts/" class="btn btn-primary">View</a>
                                     </div>
                                 </div>
                             </div>
@@ -520,7 +366,7 @@
                                         <p class="card-text">
                                             <span class="bold-2">30</span> Sectors
                                         </p>
-                                        <a href="pendingApplications/" class="btn btn-primary">View</a>
+                                        <a href="/admin/sectors/" class="btn btn-primary">View</a>
                                     </div>
                                 </div>
                             </div>
@@ -534,7 +380,7 @@
                                         <p class="card-text">
                                             <span class="bold-2">30</span> Cells
                                         </p>
-                                        <a href="pendingApplications/" class="btn btn-primary">View</a>
+                                        <a href="/admin/cells/" class="btn btn-primary">View</a>
                                     </div>
                                 </div>
                             </div>
@@ -548,7 +394,7 @@
                                         <p class="card-text">
                                             <span class="bold-2">30</span> Medicines
                                         </p>
-                                        <a href="pendingApplications/" class="btn btn-primary">View</a>
+                                        <a href="/admin/medicines/" class="btn btn-primary">View</a>
                                     </div>
                                 </div>
                             </div>
@@ -562,10 +408,53 @@
                                         <p class="card-text">
                                             <span class="bold-2">30</span> Tests
                                         </p>
-                                        <a href="pendingApplications/" class="btn btn-primary">View</a>
+                                        <a href="/admin/tests/" class="btn btn-primary">View</a>
                                     </div>
                                 </div>
                             </div>
+                            <div class="col-md-6 col-lg-4 mb-3">
+                                <div class="card">
+                                    <div class="card-header">
+                                        Procedures
+                                    </div>
+                                    <div class="card-body">
+                                        <h5 class="card-title">Total Operations</h5>
+                                        <p class="card-text">
+                                            <span class="bold-2">30</span> Operations
+                                        </p>
+                                        <a href="/admin/operations/" class="btn btn-primary">View</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 col-lg-4 mb-3">
+                                <div class="card">
+                                    <div class="card-header">
+                                        Consumables
+                                    </div>
+                                    <div class="card-body">
+                                        <h5 class="card-title">Total Equipments</h5>
+                                        <p class="card-text">
+                                            <span class="bold-2">30</span> Equipments
+                                        </p>
+                                        <a href="/admin/equipments/" class="btn btn-primary">View</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 col-lg-4 mb-3">
+                                <div class="card">
+                                    <div class="card-header">
+                                        Drugs
+                                    </div>
+                                    <div class="card-body">
+                                        <h5 class="card-title">Total Services</h5>
+                                        <p class="card-text">
+                                            <span class="bold-2">30</span> Services
+                                        </p>
+                                        <a href="/admin/services/" class="btn btn-primary">View</a>
+                                    </div>
+                                </div>
+                            </div>
+
                         </div>
                         <footer class="content-footer footer bg-footer-theme">
                             <div class="container-xxl d-flex flex-wrap justify-content-between py-3 flex-md-row flex-column">
@@ -593,19 +482,11 @@
 
     <!-- Core JS -->
     <!-- build:js assets/vendor/js/core.js -->
-    <script src="/assets/vendor/libs/jquery/jquery.js"></script>
-    <script src="/assets/vendor/js/bootstrap.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="/assets/vendor/js/menu.js"></script>
     <!-- endbuild -->
 
     <!-- Vendors JS -->
-
-    <script src="/assets/vendor/libs/formvalidation/dist/js/FormValidation.min.js"></script>
-    <script src="/assets/vendor/libs/formvalidation/dist/js/plugins/Bootstrap5.min.js"></script>
-    <script src="/assets/vendor/libs/formvalidation/dist/js/plugins/AutoFocus.min.js"></script>
-    <script src="/assets/vendor/libs/datatables-bs5/datatables-bootstrap5.js"></script>
-    <script src="/assets/vendor/libs/cleavejs/cleave.js"></script>
-    <script src="/assets/vendor/libs/cleavejs/cleave-phone.rw.js"></script>
     <!-- Main JS -->
     <script src="/assets/js/main.js" type="module"></script><!-- Page JS -->
     <script src="/assets/js/admin-home.js" type="module"></script>

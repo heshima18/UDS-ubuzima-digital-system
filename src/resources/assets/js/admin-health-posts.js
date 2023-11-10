@@ -225,8 +225,7 @@ $(document).ready(function () {
                     render: function (e, t, a, n) {
                         return (
                             `<div class="d-inline-block text-nowrap">
-                                <button class="btn btn-sm btn-icon" data-delete-button="true" data-id="${e}"><i class="bx bx-show-alt"></i></button>
-                                <button class="btn btn-sm btn-icon delete-health-post" data-id="${e}"><i class="bx bx-trash"></i></button>
+                                <button class="btn btn-sm btn-icon border-3 border" data-id="${e}" name="view"><i class="bx bx-show-alt"></i></button>
                             </div>`
                         );
                     },
@@ -351,7 +350,7 @@ $(document).ready(function () {
                 });
             }
         });
-        let viewButtons = Array.from(document.querySelectorAll('[data-delete-button="true"]'))
+        let viewButtons = Array.from(document.querySelectorAll('[name="view"]'))
         viewButtons.forEach(function (button) {
             button.addEventListener('click', event =>{
                 if (button.classList.contains('loading')) {
@@ -360,7 +359,7 @@ $(document).ready(function () {
                 event.preventDefault();
                 button.classList.add('loading')
                 let hospitalId = button.getAttribute('data-id');
-                showHospital(hospitalId)
+                showHospital(hospitalId,button)
             })
         })
     $('#add-health-post').on('shown.bs.modal', function () {
@@ -376,7 +375,7 @@ $(document).ready(function () {
         );
     });
 });
-async function showHospital(hospital) {
+async function showHospital(hospital,button) {
     let bgDiv = addshade();
         let cont = document.createElement('div')
         bgDiv.appendChild(cont)
@@ -445,6 +444,7 @@ async function showHospital(hospital) {
             token : getdata('token'),
         })
         hospital = await request(`hospital/${hospital}`,postschema)
+        button.classList.remove('loading')
         if (!hospital.success) {
             return alertMessage(hospital.message)
         }

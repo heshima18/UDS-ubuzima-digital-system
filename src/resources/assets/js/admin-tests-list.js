@@ -56,7 +56,10 @@ if(!u){
     } catch (error) {
       console.log(error)  
     }
-    $(document).ready(function () {
+    $(document).ready( async function () {
+        postschema.body = JSON.stringify({token : u})
+        m = await request('get-tests',postschema)
+        d = await request('get-departments',postschema)
         if (!m.success) {return alertMessage(m.message)}
         m = m.message
         var table = $('.datatables-health-posts'),
@@ -121,9 +124,7 @@ if(!u){
                         render: function (e, t, a, n) {
                             return (
                                 `<div class="d-inline-block text-nowrap">
-                                    <button class="btn btn-sm btn-icon" data-bs-toggle="modal" data-bs-target="#view-health-post" data-id="${a.id}"><i class="bx bx-show-alt"></i></button>
-                                    <button class="btn btn-sm btn-icon" data-bs-toggle="modal" data-bs-target="#update-health-post" data-id="${a.id}"><i class="bx bx-edit"></i></button>
-                                    <button class="btn btn-sm btn-icon delete-health-post" data-id="${a.id}"><i class="bx bx-trash"></i></button>
+                                    <button class="btn btn-sm btn-icon border border-3" data-bs-toggle="modal" data-bs-target="#view-test" data-id="${a.id}"><i class="bx bx-show-alt"></i></button>
                                 </div>`
                             );
                         },
@@ -199,7 +200,4 @@ if(!u){
     
         });
     });
-    postschema.body = JSON.stringify({token : u})
-    m = await request('get-tests',postschema)
-    d = await request('get-departments',postschema)
 })()
