@@ -417,6 +417,12 @@ export function page (req,res,page){
             case 'tests-inventory':
                 file = path.join(__dirname,'..','pages', 'dof-index.html')
                 break;
+             case 'supported-insurances/':
+                file = path.join(__dirname,'..','pages', 'dof-index.html')
+                break;
+            case 'supported-insurances':
+                file = path.join(__dirname,'..','pages', 'dof-index.html')
+                break;
             case 'my-account/':
                 file = path.join(__dirname,'..','pages', 'dof-index.html')
                 break;

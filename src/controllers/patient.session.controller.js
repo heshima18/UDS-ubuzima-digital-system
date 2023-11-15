@@ -254,7 +254,7 @@ export const getHc_pSessions = async (req,res)=>{
       LEFT JOIN assurances ON mh.assurance = assurances.id
     WHERE mh.hc_provider = ?
     GROUP BY
-    mh.id;
+    mh.id order by date desc;
     `,[hcp])
       if(!response) return res.status(500).send({success: false, message: errorMessage.is_error})
       response = response.map(function (res) {
@@ -1057,6 +1057,57 @@ export const approveAssuPayment = async (req,res)=>{
         return res.send({success:false, message: errorMessage._err_unknown})
       }
       res.send({success: true, message: errorMessage.pAp_message})
+    
+  } catch (error) {
+    console.log(error)
+    res.status(500).send({success:false, message: errorMessage.is_error})
+  }
+}
+export const getDailyHpSessions = async (req,res)=>{
+  try { 
+    const leTime = DateTime.now();
+    let now = leTime.setZone('Africa/Kigali');
+    now = now.toFormat('yyyy-MM-dd')
+      let {token} = req.body
+      let decoded = authenticateToken(token)
+      let hospital = decoded.token.hospital
+      let employee = decoded.token.id
+
+      let response = await query(`SELECT 
+      mh.id AS session_id,
+      mh.status as status,
+      GROUP_CONCAT(DISTINCT JSON_OBJECT('id', payments.id, 'status', payments.status,'type', payments.type,'amount', payments.amount, 'approver', payments.approver )) AS pm_info
+    FROM
+      medical_history mh
+      INNER JOIN payments ON payments.session = mh.id
+    WHERE mh.hospital = ? and DATE(mh.dateadded) = ?
+    GROUP BY
+    mh.id order by mh.dateadded desc;
+    `,[hospital,now])
+      if(!response) return res.status(500).send({success: false, message: errorMessage.is_error})
+      let object = {tot: 0, ttamihv: 0, opnss: 0, clsdss: 0, trss: 0,pss: 0, ppss: 0}
+    response.map(function (res) {
+      res.pm_info = JSON.parse(res.pm_info)
+        object.tot+=1
+        if (res.pm_info.type == "manually approved payment" && res.pm_info.approver == employee) {
+          object.ttamihv+= res.pm_info.amount
+        }
+        if (res.pm_info.status == 'paid') {
+          object.pss += 1
+        }else{
+          object.ppss+=1
+        }
+        if (res.status == 'open') {
+          object.opnss += 1
+        }else if (res.status == "closed") {
+          object.clsdss += 1
+        }else if (res.status == "transferred") {
+          object.trss += 1
+        }
+        return res
+      })
+
+      res.send({success: true, message: object})
     
   } catch (error) {
     console.log(error)

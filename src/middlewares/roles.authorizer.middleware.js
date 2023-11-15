@@ -11,7 +11,6 @@ export const authorizeRole = async (req, res, next) => {
       const decoded = authenticateToken(token);
       if (!decoded.success) return res.status(401).json({ message: 'Invalid token' });
       let role = decoded.token.role
-      console.log(role)
       role = roles.find(function (rl) {
         return rl == role
       })

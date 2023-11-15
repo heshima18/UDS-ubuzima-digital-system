@@ -1,7 +1,7 @@
-import { alertMessage, getdata, getschema, postschema, request,initializeCleave,sessiondata,addLoadingTab,removeLoadingTab, checkEmpty, showRecs, getchips,getPath,addsCard,cpgcntn, geturl, adcm, addshade, deletechild } from "../../../utils/functions.controller.js";
+import { alertMessage, getdata, getschema, postschema, request,initializeCleave,sessiondata,addLoadingTab,removeLoadingTab, checkEmpty, showRecs, getchips,getPath,addsCard,cpgcntn, geturl, adcm, addshade, deletechild, removeRec } from "../../../utils/functions.controller.js";
 import {expirateMssg, pushNotifs, userinfo} from "./nav.js";
 
-let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z
+let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z,socket
 (async function () {
     z = userinfo
     let token = getdata('token')
@@ -15,7 +15,7 @@ let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z
     if (z.success) {
         z = z.message
         try {
-            const socket = io(geturl(),{ query : { id: z.id} });
+            socket = io(geturl(),{ query : { id: z.id} });
             socket.on('connect', () => {
             console.log('Connected to the server');
             });
@@ -1087,6 +1087,210 @@ let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z
                         e.row($(this).parents("tr")).remove().draw();
                     }
                 })
+            }else if (x == 'supported-insurances') {
+                let table = $('.datatables-services');
+                let t = page.querySelector('table')
+                if (!t.classList.contains('loaded')) {
+                    e = table.DataTable({
+                        // Define the structure of the table
+                        dom: '<"row mx-2"<"col-md-2 p-10p"<"me-3"l>><"col-md-10 p-10p"<"dt-action-buttons text-xl-end text-lg-start text-md-end text-start d-flex align-items-center justify-content-end flex-md-row flex-column mb-3 mb-md-0"fB>>>t<"row mx-2"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>',
+                        language: { sLengthMenu: "_MENU_", search: "", searchPlaceholder: "Search..." },
+                        columns: [
+                            { data: "",title: "" }, // Responsive Control column
+                            { data: "name", title: "Name" },
+                            { data: "coverage", title: "coverage (%)" },
+                            { title: "Action", data: 'id'}
+                        ],
+                        columnDefs: [
+                            // Define column properties and rendering functions
+                            {
+                                className: "control",
+                                searchable: !1,
+                                orderable: !1,
+                                responsivePriority: 2,
+                                targets: 0,
+                                render: function () {
+                                    return "";
+                                },
+                            },
+                            {
+                                targets: 1,
+                                searchable: 1,
+                                orderable: 1,
+                                render: function (e, t, a, n) {
+                                    return (
+                                        `<span class="capitalize">${e}</span>`
+                                    );
+                                },
+                            },
+                            {
+                                targets: 2,
+                                searchable: !1,
+                                orderable: 1,
+                                render: function (e, t, a, n) {
+                                    return (
+                                        `<span class="">${(e)} %</span>`
+                                    );
+                                },
+                            },
+                            {
+                                targets: -1,
+                                searchable: !1,
+                                orderable: !1,
+                                render: function (e, t, a, n) {
+                                    return (
+                                        `<div class="d-inline-block text-nowrap">
+                                        <button class="btn btn-sm btn-icon data-buttns border border-3" data-type="services" data-role="delete" data-id="${e}"><i class="bx bx-trash"></i></button>
+                                    </div>`
+                                    );
+                                },
+                            },
+                        ],
+                        order: [[1, "asc"]], // Initial sorting
+            
+                        // Provide the data from the imported inventory
+                        data: assurances.message,
+            
+                        // Define buttons for exporting and adding new inventory
+                        buttons: [
+                            {
+                                extend: "collection",
+                                className: "btn btn-primary dropdown-toggle mx-3",
+                                text: '<i class="bx bx-export me-1"></i>Export',
+                                buttons: [
+                                    {
+                                        extend: "print",
+                                        text: '<i class="bx bx-printer me-2" ></i>Print',
+                                        className: "dropdown-item",
+                                    },
+                                    {
+                                        extend: "excel",
+                                        text: '<i class="bx bxs-file-export me-2"></i>Excel',
+                                        className: "dropdown-item",
+                                    },
+                                    {
+                                        extend: "pdf",
+                                        text: '<i class="bx bxs-file-pdf me-2"></i>Pdf',
+                                        className: "dropdown-item",
+                                    },
+                                ],
+                            },
+                            {
+                                text: '<i class="bx bx-plus me-0 me-sm-1"></i><span class="d-none d-sm-inline-block">Add New</span>',
+                                className: "add-new btn btn-primary",
+                                attr: { "id": "add-service", "data-bs-target": "#add-service-modal" },
+                            },
+                        ],
+            
+                        // Initialize filters for position, health post, and status
+                        initComplete: function () {
+                            // Filter by Position
+                            this.api().columns(3).every(function () {
+                                var t = this,
+                                    a = $('<select class="form-select text-capitalize"><option value=""> Select Measuring Unit </option></select>')
+                                        .appendTo(".employee-position")
+                                        .on("change", function () {
+                                            var e = $.fn.dataTable.util.escapeRegex($(this).val());
+                                            t.search(e ? "^" + e + "$" : "", !0, !1).draw();
+                                        });
+                                t.data().unique().sort().each(function (e, t) {
+                                    a.append('<option value="' + e + '">' + e + "</option>");
+                                });
+                            });
+                        }
+                    });
+                }
+                let buttons = Array.from(page.querySelectorAll('button.data-buttns'));
+                buttons.forEach(bttn=>{
+                        bttn.onclick = async function (event) {
+                            event.preventDefault()
+                            let role = this.getAttribute('data-role'),objId = this.getAttribute('data-id'),type = this.getAttribute('data-type')
+                            if (role == 'delete') {
+                                postschema.body = JSON.stringify({
+                                    token: getdata('token'),
+                                    type: type,
+                                    inventory: extra.id,
+                                    needle: objId
+                                })
+                                var row = e.row(event.target.closest('tr'))
+                                row.remove().draw();
+                                let result = await request('rIFromInv',postschema)
+                                if (result.success) {
+                                    alertMessage(result.message)
+                                }else{
+                                    alertMessage(result.message)
+                                }
+                            }
+                        }
+                    })
+                let addMedic = page.querySelector('#add-service');
+                addMedic.onclick =  function(){
+                    let target = this.getAttribute('data-bs-target')
+                    let cloneD = page.querySelector(`div${target}`)
+                    cloneD = cloneD.cloneNode(true);
+                    d = addshade();
+                    d.appendChild(cloneD);
+                    let aMform = cloneD.querySelector("form");
+                    let inputs = Array.from(aMform.querySelectorAll('input'))
+                    inputs[0].onkeyup = (event)=>{
+                        event.preventDefault()
+                            let val = inputs[0].value.trim();
+                            val = val.replace(/[^A-Za-z0-9\s]/g, '');
+                            let payload = {
+                                needle: val,
+                                type: 'search',
+                                entity: inputs[0].id,
+                                datatofetch: ['id','name'],
+                                coltosearch: 'name'
+
+                            }
+                            if (val) {
+                                removeRec(inputs[0])
+                                console.log(socket)
+                                socket.emit('searchForRecs',payload)
+                            }
+                        }
+                    socket.on('RecsRes', (data)=>{
+                        if (data.length) {
+                            showRecs(inputs[0],data,inputs[0].id,'noinptAction')
+                        }
+                    })
+                    
+                    aMform.onsubmit =  async event=>{
+
+                       event.preventDefault();
+                        l = 1
+                        for (const input of inputs) {
+                            v = checkEmpty(input);
+                            if (!v) {
+                                l = 0
+                            }
+                        }
+                        if (l) {
+                        let button = aMform.querySelector('button[type="submit"]')
+                        button.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`
+                        button.setAttribute('disabled',true)
+                            let values = {}
+                            for (const input of inputs) {
+                                Object.assign(values,{[input.name]:input.getAttribute('data-id') })
+                            } 
+                            Object.assign(values,{token: getdata('token')})
+                            postschema.body = JSON.stringify(values)
+                            let results = await request('add-hospi-assu',postschema)
+                            alertMessage(results.message)
+                            button.removeAttribute('disabled')
+                            button.innerHTML= 'proceed'
+
+                        }
+                    }
+                }
+                t.classList.add('loaded')
+                // Delete employee when delete icon clicked
+                table.find("tbody").on("click", ".delete-employee", function () {
+                    if (confirm("Are you sure you want to delete this employee?")) {
+                        e.row($(this).parents("tr")).remove().draw();
+                    }
+                })
             }else if (x == 'equipments-inventory') {
                 let table = $('.datatables-equipments');
                 let t = page.querySelector('table')
@@ -1327,6 +1531,7 @@ let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z
                 let hp_in = hp_form.querySelector('input')
                 hp_in.onfocus = function (event) {
                     event.preventDefault();
+                    
                     showRecs(this,assurances.message,this.id)
                 }
                 hp_form.onsubmit = async function (event) {

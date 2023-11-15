@@ -24,7 +24,7 @@ export const sendMessage = async (req,res)=>{
            [uid,user,ids,type,title,content,JSON.stringify(extra),sid,now])
            const recipientSocket = Array.from(io.sockets.sockets.values()).find((sock) => sock.handshake.query.id === ids)
            if (recipientSocket) {
-               recipientSocket.emit('message',{id: uid,session: sid,type,title,content,sender:{name:decoded.token.Full_name,id:user},extra,dateadded: new Date})
+               recipientSocket.emit('message',{id: uid,session: sid,type,title,content,sender:{name:decoded.token.Full_name,id:user},extra,dateadded: now})
            }else{
                console.log('recepient is not online')
            }
@@ -141,6 +141,32 @@ export const getMessages = async(req,res) =>{
 
       }
       q[q.indexOf(message)].dateadded = DateTime.fromISO(message.dateadded).toFormat('yyyy-MM-dd HH:mm:ss')
+    }
+    res.send({success:true, message: q})
+  } catch (error) {
+    console.log(error)
+    return res.status(500).send(errorMessage.is_error)
+  }
+}
+export const getSentMessages = async(req,res) =>{
+  try {
+    let { token } = req.body
+    token = authenticateToken(token);
+    if (!token.success) return res.status(500).send(errorMessage.is_error)
+    let user = token.token.id
+    let q = await query(`select
+    messages.id,	
+    messages.type,	
+    messages.title,	
+    messages.status,	
+    messages.dateadded
+    FROM
+    messages
+    where user = ? GROUP BY messages.sessionid order by messages.dateadded desc`,[user])
+    if (!q) return res.status(500).send(errorMessage.is_error)
+    if (!q.length) return res.send({success:true, message: q})
+    for (const message of q) {
+      q[q.indexOf(message)].dateadded = DateTime.fromISO(message.dateadded).toFormat('yyyy-MM-dd')
     }
     res.send({success:true, message: q})
   } catch (error) {

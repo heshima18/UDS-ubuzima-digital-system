@@ -10,9 +10,11 @@ if (userinfo.message.role != getPath()[0]) {
 postschema.body = JSON.stringify({token})
 export let m = await request('get-messages',postschema)
 let nfPanel = document.querySelector('ul.nf-panel');
+nfPanel.parentNode.classList.add('h-75');
 (async function () {
     if (!m.success) return alertMessage(m.message)
     m = m.message
+    
     sessionStorage.setItem('messages',JSON.stringify(m))
     try {
         if (!userinfo.success){ 
@@ -67,7 +69,8 @@ let nfPanel = document.querySelector('ul.nf-panel');
             j =  m.filter(function (elem) {  return elem.status == 'new'})
             if (j.length > 0) {
                 b.classList.replace('hidden','center')
-                b.innerText = j.length        
+                b.innerText =(j.length > 10)? `9+` : j.length        
+                
             }
         }
         nfPanel.innerHTML = null
@@ -108,11 +111,94 @@ let nfPanel = document.querySelector('ul.nf-panel');
             nfPanel.appendChild(li)
         }
         l = Array.from(nfPanel.querySelectorAll('div.list-link'))
-        clicks(l,b,m) 
+        let Dp = document.querySelector('div.dropdown-header')
+        let options = document.createElement('div')
+        options.innerHTML =`<span class="center p-7p bsbb tr-0-2 br-50 w-30p h-30p hover-2 p-r i"><i class="fas fa-ellipsis-v fs-16p"></i></span>`
+        options.className = "options"
+        Dp.appendChild(options)
+        options.onclick = function (event) {
+            event.preventDefault()
+            let message_type = m.map(function (message) {
+                return message.title
+            })
+            message_type = [...new Set(message_type)];
+            if (!options.querySelector('div.flpp')) {
+                let filterPopUp = document.createElement('div')
+                options.querySelector('span.i').classList.add('b-1-s-gray')
+                filterPopUp.className = `br-5p px-10p py-5p bsbb bc-white p-a ml--25p card-1 mt-5p hover-2 p-r flpp`
+                filterPopUp.innerHTML = `<span class="center-2 text-muted us-none"><i class="fas fa-filter"></i> Filter</span>`
+                options.appendChild(filterPopUp)
+                filterPopUp.onclick = function (event) {
+                    if (!this.querySelector('div.fpp')) {
+                        event.preventDefault();
+                        let div = document.createElement('div')
+                        div.className = `br-5p py-5p bsbb bc-white cntr card-1 mt-5p zi-20 ml--60p h-165p fpp`
+                        div.innerHTML = `<div class="w-100 h-100"><span class="text muted bold-2 bb-1-s-g px-10p bsbb py-5p w-100 block capitalize">filter by title</span><div class="body h-125p ovys scroll-3"></div></div>`
+                        let bo = div.querySelector('div.body')
+                        message_type.map(function (elem) {
+                            bo.innerHTML+= `<span class="capitalize filtype block px-10p py-10p bsbb hover-7" data-id="${elem}">${elem}</span>`
+                        })
+                         bo.innerHTML+= `<span class="capitalize filtype block px-10p py-10p bsbb hover-7" data-id="remove">remove filter</span>`
+                        filterPopUp.firstChild.appendChild(div)
+                        let filtyps = Array.from(bo.querySelectorAll('span.filtype'))
+                        filtyps.forEach(function (button) {
+                            button.addEventListener('click', function (event) {
+                                event.preventDefault();
+                                let tp = this.getAttribute('data-id')
+                                addFilter(tp)
+
+                            })
+                        })
+                    }
+                }
+            }else{
+                options.querySelector('span.i').classList.remove('b-1-s-gray')
+            }
+        }
+
+        clicks(l,b,m)
+
     } catch (error) {
         console.log(error)
     }
 })()
+export function openmenu() {
+    document.querySelector('ul#notification-dropdown').classList.toggle('hidden')
+}
+export function addFilter(title) {
+    l = Array.from(document.querySelectorAll('div.list-link'))
+    o = document.querySelector('div.options')
+    if (o) {
+        o.firstChild.classList.remove('b-1-s-gray')
+        // deletechild(o.lastChild,o)
+        setTimeout(()=>{
+            if (o.childNodes.length > 1) {
+                deletechild(o.lastChild,o)
+                o.firstChild.classList.remove('b-1-s-gray')
+            }
+    
+        },10)
+    }
+
+    l.forEach(v=>{
+        v.parentNode.parentElement.classList.remove('hidden') 
+    })
+    if (title != 'remove') {
+        l.forEach(v=>{
+            let text = v.querySelector('h6').innerText.toLowerCase()
+            title = title.toLowerCase()
+            if (text != title) { 
+                v.parentNode.parentElement.classList.add('hidden')   
+            }else{
+               
+            }
+        })
+    }else{
+        l.forEach(v=>{
+            v.parentNode.parentElement.classList.remove('hidden') 
+        })
+    }
+}
 export function pushNotifs(message) {
     let messages = sessiondata('messages')
     messages.push(message);
@@ -122,7 +208,8 @@ export function pushNotifs(message) {
     if (b) {
         b.classList.replace('hidden','center')
         l = parseInt(b.innerText)
-            b.innerText = l+1  
+            b.innerText =(j.length > 10)? `9+` : l+1  
+            
     }
     let nfPanel = document.querySelector('ul.nf-panel');
     let li = document.createElement('li');
@@ -187,7 +274,8 @@ function clicks(l,b,m) {
                             b.classList.remove('hidden')
                             l = parseInt(b.innerText)
                             if (l > 0) {
-                                b.innerText = l-1
+                                b.innerText =(j.length > 10)? `9+` : l-1
+                                
                                 if (l-1 == 0) {
                                     b.classList.replace('center','hidden')
                                 }
@@ -255,7 +343,8 @@ export function expirateMssg(mssg_id) {
                 b.classList.remove('hidden')
                 l = parseInt(b.innerText)
                 if (l > 0) {
-                    b.innerText = l-1
+                    b.innerText =(j.length > 10)? `9+` : l-1
+                    
                     if (l-1 == 0) {
                         b.classList.replace('center','hidden')
                     }

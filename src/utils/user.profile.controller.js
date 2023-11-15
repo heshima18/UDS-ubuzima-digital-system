@@ -1,5 +1,5 @@
 import { RemoveAuthDivs, addLoadingTab, addsCard, addshade, alertMessage, calcTime, deletechild, getPath, getdata, postschema, request, showAvaiAssurances, showAvaiEmps } from "./functions.controller.js";
-let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,z,x,c,v,b,n,m
+let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,z,x,c,v,b,n,m,users
 export function addUprofile(data){
   e = addshade();
   a = document.createElement('div')
@@ -42,9 +42,9 @@ export function addUprofile(data){
 
   a.className = "w-80 h-80 p-20p bsbb ovh bc-white cntr zi-10000 br-10p card-5 b-mgc-resp"
   a.innerHTML = `
-    <div class="p-5p bsbb ovys w-100 h-100">
+    <div class="p-5p bsbb ovys w-100 h-100 scroll-2">
       <div class="row h-100 w-100">
-        <div class="col-xl-4 col-lg-5 h-100 ovh col-md-5 ovh">
+        <div class="col-xl-5 col-lg-5 h-100 ovh col-md-5 ovh">
             <!-- About User -->
             <div class=" mb-4 ovh h-100">
                 <div class="card-body h-100 ovys scroll-2">
@@ -60,7 +60,10 @@ export function addUprofile(data){
                           <i class="dgray bx bx-calendar"></i><span class="fw-semibold dgray mx-2">DOB:</span> <span>${data.dob}</span>
                         </li>
                         <li class="d-flex align-items-center mb-3">
-                          <i class="dgray far fa-id-card"></i><span class="fw-semibold dgray mx-2">NID:</span> <span>${data.nid}</span>
+                          <i class="dgray far fa-id-card"></i><span class="fw-semibold dgray mx-2">NID:</span> <span>${data.nid}</span> <i class="far fa-copy pl-10p hover-6" data-id="${data.nid}"></i>
+                        </li>
+                        <li class="d-flex align-items-center mb-3">
+                        <i class="far fa-id-badge dgray"></i><span class="fw-semibold dgray mx-2">SID:</span> <span>${data.id}</span> <i class="far fa-copy pl-10p hover-6" data-id="${data.id}"></i>
                         </li>
                         <li class="align-items-center mb-3">
                           <i class="dgray fas fa-hand-holding-medical"></i><span class="fw-semibold dgray mx-2">Insurance(s):</span> <span class="block">
@@ -92,7 +95,7 @@ export function addUprofile(data){
                         </li>
                     </ul>
                     <small class="text-muted text-uppercase">Contacts</small>
-                    <ul class="list-unstyled mb-4 mt-3">
+                    <ul class="list-unstyled mb-4 mt-3 w-100 ovh">
                         <li class="d-flex align-items-center mb-3"><i class="dgray bx bx-phone"></i><span class="fw-semibold dgray mx-2">Phone number:</span> <span>${data.phone}</span>
                         </li>
                         <li class="d-flex align-items-center mb-3"><i class="dgray bx bx-envelope"></i><span class="fw-semibold dgray mx-2">Email:</span>
@@ -103,7 +106,7 @@ export function addUprofile(data){
             </div>
             <!--/ About User -->
         </div>
-        <div class="col-xl-8 col-lg-7 h-100 ovh col-md-7">
+        <div class="col-xl-7 col-lg-7 h-100 ovh col-md-7">
             <!-- Activity Timeline -->
             <div class="br-5p h-100 ovh">
                 <div class="py-20p h-70p">
@@ -117,6 +120,21 @@ export function addUprofile(data){
       </div>
     </div>`
     let beneficiaries = Array.from(a.querySelectorAll('li.benef'))
+    let copyButtons = Array.from(a.querySelectorAll('i.fa-copy'))
+    copyButtons.forEach(button=>{
+      button.onclick = function (event) {
+        event.preventDefault()
+        if (navigator.clipboard) {
+          navigator.clipboard.writeText(this.getAttribute('data-id'))
+              .then(function() {
+                  addsCard('text copied to clipboard',true)
+              })
+              .catch(function(err) {
+                 
+              });
+        }
+      }
+    })
     for (const benef of beneficiaries) {
         benef.addEventListener('click',async function(event){
             event.preventDefault();
@@ -130,7 +148,7 @@ export function addUprofile(data){
             url.pathname = `/${getPath()[0]}/search-patient/${beneficiary}`;
             window.history.pushState({},'',url.toString())
           if (getPath()[0] == 'receptionist') {
-            uprofileStf(r)
+            uprofileStf(r,u)
           }else{
             addUprofile(r.message)
           }
@@ -193,6 +211,7 @@ export function addUprofile(data){
 }
 export async function uprofileStf(r,users) {
   d = addUprofile(r.message);
+  u = users
   x = document.createElement('div')
   d.appendChild(x)
   x.className = `p-f b-0 p-20p bsbb zi-1000 center w-100 l-0`

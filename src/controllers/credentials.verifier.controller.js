@@ -26,7 +26,6 @@ export async function checkObjectAvai(table, column, key, needle,entity, entityI
     return q
 }
 export async function checkArrayAvai(table, column, needle,entity, entityId) {
-    console.log(table, column, needle,entity, entityId)
     let q = await query(`SELECT id FROM ${table} where JSON_CONTAINS(${column}, JSON_QUOTE(?), '$') AND ${entity} = ?`,[needle,entityId])
     return q
 }

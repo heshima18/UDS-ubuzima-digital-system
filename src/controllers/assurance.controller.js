@@ -259,3 +259,26 @@ export const assuranceHP = async (req,res) =>{
     }
     
   }
+  export const addassuranceToHp = async (req,res)=>{
+    try {
+      let {assurance,hospital,token} = req.body
+      if (!hospital) {
+        let decoded = authenticateToken(token)
+        decoded = decoded.token
+        hospital = decoded.hospital
+      }
+        let ArrayAvai = await checkArrayAvai('hospitals','assurances',assurance,'id',hospital);
+        if (!ArrayAvai) return res.status(500).send({success: false, message: errorMessage.is_error})
+        if (ArrayAvai.length) {
+          return res.send({success: false, message: errorMessage.err_entr_avai})
+        }
+        let update = await query(`UPDATE hospitals SET assurances = JSON_ARRAY_APPEND(assurances, '$', ?) where hospitals.id = ?`,[assurance,hospital]);
+        if (!update) return res.status(500).send({success:false, message: errorMessage.is_error})
+        if (!update.affectedRows) return res.status(404).send({success:false, message: errorMessage._err_hc_404})
+        res.send({success: true, message: errorMessage.asuutohp_message})
+      
+    } catch (error) {
+      console.log(error)
+      res.status(500).send({success:false, message: errorMessage.is_error})
+    }
+  }

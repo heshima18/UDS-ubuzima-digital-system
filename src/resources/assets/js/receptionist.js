@@ -1,5 +1,5 @@
 let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,z,x,c,v,b,n,m,notificationlinks
-import { alertMessage, getdata, getschema, postschema, request,initializeCleave, checkEmpty,cpgcntn, showRecs, getchips,getPath,showAvaiEmps, deletechild, geturl, addsCard,showAvaiAssurances, addLoadingTab, RemoveAuthDivs, showFingerprintDiv, sessiondata,addAuthDiv } from "../../../utils/functions.controller.js";
+import { alertMessage, getdata, getschema, postschema, request,initializeCleave, checkEmpty,cpgcntn, showRecs, getchips,getPath,showAvaiEmps, deletechild, geturl, addsCard,showAvaiAssurances, addLoadingTab, RemoveAuthDivs, showFingerprintDiv, sessiondata,addAuthDiv, calcTime, extractTime, getDate } from "../../../utils/functions.controller.js";
 import {pushNotifs, userinfo,expirateMssg, getNfPanelLinks,m as messages} from "./nav.js";
 import { addUprofile, uprofileStf } from "../../../utils/user.profile.controller.js";
 import { viewTransfer } from "./transfer.js";
@@ -72,11 +72,11 @@ import { viewTransfer } from "./transfer.js";
         }
     }
 postschema.body = JSON.stringify({token: localStorage.getItem('token')})
-let users = await request('get-hp-employees',postschema)
-if (!users) return alertMessage(users.message)
+ u = await request('get-hp-employees',postschema)
+if (!u.success) return alertMessage(users.message)
 notificationlinks = getNfPanelLinks()
 genClicks(notificationlinks)
-users = users.message
+const users = u.message
 a = getPath(1)
 c = Array.from(document.querySelectorAll('span.cpcards'))
 p = Array.from(document.querySelectorAll('div.pagecontentsection'))
@@ -144,7 +144,38 @@ c.forEach((cudstp)=>{
 })
   async function gsd(page) {
     x = page.id
-    if (x == 'search-patient') {
+    if (x == 'home') {
+        let num_hols = Array.from(page.querySelectorAll('[data-role="num_hol"]'))
+        
+      let sentmessages = await request('get-sent-messages',postschema)
+      if (!sentmessages.success) {
+        return alertMessage(sentmessages.message)
+      }
+      sentmessages = sentmessages.message
+      let nmbrs = {tot_pati: 0,p_pati : 0,pati_seen: 0, transfers: 0}
+        sentmessages.map(function (me) {
+            if (me.type == 'p_message') {
+                if (extractTime(me.dateadded,'date') == getDate('date')) {
+                   nmbrs.tot_pati +=1
+                   if (me.status == 'new') {
+                        nmbrs.p_pati +=1
+                   }else{
+                        nmbrs.pati_seen +=1
+                   }
+                }
+            
+            }
+      })
+      num_hols.forEach(holder=>{
+        let id = holder.id
+        let keys = Object.keys(nmbrs)
+        keys.map(number =>{
+            if (number == id) {
+                holder.innerHTML = nmbrs[number]
+            }
+        })
+    })
+    }else if (x == 'search-patient') {
         f = page.querySelector('form[name="sp-form"]');
         s = f.querySelector('input[type="text"]')
         setTimeout(e=>{s.focus()},200)

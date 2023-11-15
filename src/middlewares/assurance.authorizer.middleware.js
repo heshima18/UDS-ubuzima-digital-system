@@ -49,7 +49,7 @@ export const authorizeUserAssurance = async (req, res, next) => {
             return next();
         }
       }
-      if(assurance != null) {
+      if(assurance != null && q) {
         return res.status(401).send({ message: errorMessage.assu_hp_error_message, success: false });}
       return next();
     } catch (error) {

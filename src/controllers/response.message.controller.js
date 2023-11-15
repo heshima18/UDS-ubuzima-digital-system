@@ -21,6 +21,7 @@ const errorMessage = {
     transc_message:'transfer created successfully',
     me_message:'message edited successfully',
     dc_message:'department created successfully',
+    asuutohp_message:'insurance was addedd to supported list successfully',
     appoi_appr_message:'appointment approved successfully',
     appoi_decli_message:'appointment declined successfully',
     err_appoi_404_message:'appointment not found',

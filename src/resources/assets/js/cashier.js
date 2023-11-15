@@ -149,7 +149,23 @@ let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z,r,session_input,session_s_
     async function gsd(page,extra) {
         try {
             x = page.id
-            if (x == 'search-patient') {
+            if (x == 'home') {
+                let num_hols = Array.from(page.querySelectorAll('[data-role="num_hol"]'))
+                
+              let sessions = await request('get-hp-daily-sessions',postschema)
+              if (!sessions.success) {
+                return alertMessage(sessions.message)
+              }
+              sessions = sessions.message
+              num_hols.forEach(holder=>{
+                let id = holder.id
+                Object.keys(sessions).map(number =>{
+                    if (number == id) {
+                        holder.innerHTML = adcm(sessions[number])
+                    }
+                })
+            })
+            }else if (x == 'search-patient') {
                 
                 f = page.querySelector('form[name="sp-form"]');
                 s = f.querySelector('input[type="text"]');

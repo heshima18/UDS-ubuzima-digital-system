@@ -23,11 +23,9 @@
         
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="/assets/js/patient.js" type="module"></script>
+    <script src="/assets/js/footer.js" type="module"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.min.js" integrity="sha512-Xm9qbB6Pu06k3PUwPj785dyTl6oHxgsv9nHp7ej7nCpAqGZT3OZpsELuCYX05DdonFpTlBpXMOxjavIAIUwr0w==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cleave.js/1.6.0/cleave.min.js" integrity="sha512-KaIyHb30iXTXfGyI9cyKFUIRSSuekJt6/vqXtyQKhQP6ozZEGY8nOtRS6fExqE4+RbYHus2yGyYg1BrqxzV6YA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script src="/assets/vendor/libs/cleavejs/cleave.js"></script>
-    <script src="/assets/vendor/libs/cleavejs/cleave-phone.rw.js"></script>
-    <script src="/assets/vendor/libs/datatables-bs5/datatables-bootstrap5.js"></script>
     <script src="/assets/vendor/js/bootstrap.js"></script>
 	<link rel="shortcut icon" href="/icons/favicon.png" type="image/x-icon">
 </head>
@@ -98,7 +96,7 @@
                             </a>
                             <ul class="notification-dropdown bc-white card-5 br-10p h-500p w-390p p-0 t-80p p-f mr-20p r-0 ls-none bw-90-500-resp bm-x-10p-resp hidden" data-bs-popper="static" name="notification-dropdown" id="notification-dropdown">
                                 <li class="dropdown-menu-header border-bottom px-15p py-15p bsbb">
-                                    <div class="dropdown-header d-flex align-items-center py-10p">
+                                    <div class="dropdown-header d-flex align-items-center">
                                         <i class='bx bx-notification px-10p bx-sm dgray'></i><h5 class=" mb-0 me-auto capitalize dgray">Notifications</h5>
                                     </div>
                                 </li>
@@ -217,9 +215,9 @@
                                                 <div class="card-body">
                                                     <h5 class="card-title capitalize">total sessions</h5>
                                                     <p class="card-text">
-                                                        <span class="bold-2">30</span> sessions
+                                                        <span class="bold-2" data-role="num_hol" id="tot_sess">0</span> sessions
                                                     </p>
-                                                    <a href="pendingApplications/" class="btn btn-primary">View</a>
+                                                    <a href="medical-history" data-redirect="medical-history" class="btn btn-primary">View</a>
                                                 </div>
                                             </div>
                                         </div>
@@ -231,9 +229,9 @@
                                                 <div class="card-body">
                                                     <h5 class="card-title capitalize">pending sessions</h5>
                                                     <p class="card-text">
-                                                        <span class="bold-2">30</span> sessions
+                                                        <span class="bold-2" data-role="num_hol" id="pss">0</span> sessions
                                                     </p>
-                                                    <a href="pendingApplications/" class="btn btn-primary">View</a>
+                                                    <a href="medical-history" data-redirect="medical-history" class="btn btn-primary">View</a>
                                                 </div>
                                             </div>
                                         </div>
@@ -243,25 +241,11 @@
                                                     activity
                                                 </div>
                                                 <div class="card-body">
-                                                    <h5 class="card-title capitalize">appointments</h5>
+                                                    <h5 class="card-title capitalize">new appointments approval</h5>
                                                     <p class="card-text">
-                                                        <span class="bold-2">30</span> appointments
+                                                        <span class="bold-2" data-role="num_hol" id="appa">0</span> appointments
                                                     </p>
-                                                    <a href="pendingApplications/" class="btn btn-primary">View</a>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6 col-lg-4 mb-3">
-                                            <div class="card">
-                                                <div class="card-header capitalize">
-                                                    tests
-                                                </div>
-                                                <div class="card-body">
-                                                    <h5 class="card-title capitalize">today's total tests</h5>
-                                                    <p class="card-text">
-                                                        <span class="bold-2">30</span> tests
-                                                    </p>
-                                                    <a href="pendingApplications/" class="btn btn-primary">View</a>
+                                                    <a href="#appointment_reminder" data-redirect="#appointment_reminder" class="btn btn-primary">View</a>
                                                 </div>
                                             </div>
                                         </div>
@@ -273,9 +257,9 @@
                                                 <div class="card-body">
                                                     <h5 class="card-title capitalize">pending payments</h5>
                                                     <p class="card-text">
-                                                        <span class="bold-2">30</span> payments
+                                                        <span class="bold-2" data-role="num_hol" id="pp">0</span> payments
                                                     </p>
-                                                    <a href="pendingApplications/" class="btn btn-primary">View</a>
+                                                    <a href="payments-history" data-redirect="payments-history" class="btn btn-primary">View</a>
                                                 </div>
                                             </div>
                                         </div>

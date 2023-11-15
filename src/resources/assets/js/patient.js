@@ -1,9 +1,9 @@
-import { alertMessage, getdata, getschema, postschema, request,deletechild, checkEmpty, showRecs, getchips,getPath,addsCard,cpgcntn, geturl,sessiondata,addChip, showAvaiAssurances, adcm, addshade, addLoadingTab, removeLoadingTab, showAvaiEmps, fT, calcTime, aDePh } from "../../../utils/functions.controller.js";
-import {expirateMssg, pushNotifs, userinfo} from "./nav.js";
+import { alertMessage, getdata, getschema, postschema, request,deletechild, checkEmpty, showRecs, getchips,getPath,addsCard,cpgcntn, geturl,sessiondata,addChip, showAvaiAssurances, adcm, addshade, addLoadingTab, removeLoadingTab, showAvaiEmps, fT, calcTime, aDePh, extractTime, getDate, triggerRecs, removeRec } from "../../../utils/functions.controller.js";
+import {expirateMssg, getNfPanelLinks, pushNotifs, userinfo,m as messages, openmenu, addFilter} from "./nav.js";
 
-let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z
+let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z,socket,notificationlinks
+postschema.body = JSON.stringify({token: getdata('token')});
 (async function () {
-    const hps = await request('gethospitals',postschema);
     z = userinfo
     let token = getdata('token')
     if (!token) {
@@ -16,13 +16,17 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z
     if (z.success) {
         z = z.message
         try {
-            const socket = io(geturl(),{ query : { id: z.id} });
+            socket = io(geturl(),{ query : { id: z.id} });
             socket.on('connect', () => {
             console.log('Connected to the server');
             });
             
             socket.on('message', (message) => {
                 pushNotifs(message);
+                addsCard(message.title,true)
+                messages.push(message)
+                notificationlinks = getNfPanelLinks()
+                genClicks(notificationlinks)
                 addsCard(message.title,true)
 
             });
@@ -59,7 +63,7 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z
     postschema.body = JSON.stringify({token})
     let session = await request('get-user-medical-history',postschema)
     let appointment = await request('my-appointments',postschema)
-    if (!session.success || !hps.success || !appointment.success) {
+    if (!session.success) {
         return alertMessage(session.message)
     }
     const sessions = session.message
@@ -86,7 +90,11 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z
         cpgcntn(0,p)
 
     }
-    window.onpopstate = function () {
+    window.addEventListener('popstate',  function () {
+        const evnt = new Event('urlchange', { bubbles: true });
+        window.dispatchEvent(evnt);
+    })
+    window.addEventListener('urlchange', function() {
         a = getPath(1)
         if(a){
             p.forEach(target=>{
@@ -97,6 +105,11 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z
                     })
                     c[t].classList.add('active','bb-1-s-theme','bc-tr-theme','theme')
                     cpgcntn(t,p)
+                    if (getPath(2)) {
+                        gsd(target,getPath(2))
+                    }else{
+                        gsd(target)
+                    }
                     return 0
                 }
             })
@@ -104,8 +117,8 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z
             window.history.pushState('','','./home')
             cpgcntn(0,p)
     
-        }
-    }
+        }    
+    }); 
     c.forEach((cudstp)=>{
         cudstp.addEventListener('click',()=>{
             c.forEach((cp)=>{
@@ -113,7 +126,7 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z
             })
             cudstp.classList.add('active','bb-1-s-theme','bc-tr-theme','theme')
             let url = new URL(window.location.href);
-            url.pathname = `/patient/${cudstp.getAttribute('data-item-type')}`;
+            url.pathname = `/${getPath()[0]}/${cudstp.getAttribute('data-item-type')}`;
             window.history.pushState({},'',url.toString())
             cpgcntn(c.indexOf(cudstp),p)
             gsd(p.find(function (elem) {
@@ -121,11 +134,59 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z
             }))
         })
     })
+    notificationlinks = getNfPanelLinks()
+    genClicks(notificationlinks)
     async function gsd(page,addin) {
         try {
             x = page.id
             if (x == 'home') {
-            }else if (x == 'medical-history') {
+                let num_hols = Array.from(page.querySelectorAll('[data-role="num_hol"]'))
+              let nmbrs = {tot_sess: 0,pss : 0,appa: 0, pp: 0}
+                messages.map(function (me) {
+                if (me.status == 'new') {
+                    if (me.type == '__APPNTMNT_MSSG_') {
+                        nmbrs.appa +=1
+                    }
+                }
+              })
+               sessions.map(function (session) {
+                    nmbrs.tot_sess +=1
+                    if (session.status == 'open') {
+                        nmbrs.pss +=1
+                       }
+                    if (session.payment_info.status == "awaiting payment") {
+                       nmbrs.pp +=1
+                    }
+                })
+              
+              num_hols.forEach(holder=>{
+                let holderlink = holder.parentElement.parentElement.querySelector('a')
+                holderlink.onclick = function (event) {
+                    event.preventDefault()
+                    let link = this.getAttribute('data-redirect')
+                    if (link.indexOf('#') == -1) {
+                        console.log(link)
+                        let url = new URL(window.location.href);
+                        url.pathname = `/${getPath()[0]}/${link}`;
+                        window.history.pushState({},'',url.toString())
+                        const evnt = new Event('urlchange', { bubbles: true });
+                        window.dispatchEvent(evnt);
+                    }else{
+                        link = link.replace(/_/g,' ')
+                        link = link.replace(/#/g,'')
+                        openmenu();
+                        addFilter(link)
+                    }
+                }
+                let id = holder.id
+                let keys = Object.keys(nmbrs)
+                keys.map(number =>{
+                    if (number == id) {
+                        holder.innerHTML = nmbrs[number]
+                    }
+                })
+            })
+            }else  if (x == 'medical-history') {
                 let sessionSholder = document.querySelector('ul[data-role="sessions-holder"]')
                 sessionSholder.innerHTML = null
 
@@ -183,7 +244,7 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z
                         for (const session of month.sessions) {
                             let ss = document.createElement('div')
                             sessionHol.appendChild(ss)
-                            ss.className = `w-270p h-a bfull-resp p-5p bsbb iblock`
+                            ss.className = `w-275p h-a bfull-resp p-5p bsbb iblock`
                             ss.innerHTML = `<div class="card">
                                                     <div class="p-15p capitalize dgray flex jc-sb">
                                                         <div class="flex">
@@ -523,7 +584,7 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z
                         }
                         event.preventDefault();
                         if (button.id == 'appointment') {
-                                addAppointmentDiv()
+                                addAppointmentDiv(socket)
                                 
                             }else if (button.id == 'view-appointment') {
                                 let appointment = button.getAttribute('data-id');
@@ -550,8 +611,37 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z
             console.log(error)
           }
     }
+    function genClicks(notificationlinks) {
+        notificationlinks.map((link)=>{
+            link.addEventListener(`click`, ()=>{
+                if (!link.classList.contains('list-link')) {
+                    return 0
+                }
+                let message = messages.find(function (mess) {
+                    return mess.id == link.getAttribute('data-id')
+                })
+                if (message) {
+                let url = new URL(window.location.href);
+                if (link.getAttribute('data-message-type') == '__APPNTMNT_MSSG_') {
+                    appApprovalCont(message)
+                    url.pathname = `/${getPath()[0]}/${link.getAttribute('data-href-target')}`;
+                }else{
+                    url.pathname = `/${getPath()[0]}/${link.getAttribute('data-href-target')}`;
+                }
+                v = document.querySelector(`div#${link.getAttribute('data-href-target')}`)
+                if (v) {
+                    
+                    p = Array.from(v.parentElement.querySelectorAll('.pagecontentsection'))
+                    window.history.pushState({},'',url.toString())
+                    cpgcntn(p.indexOf(v),p)
+                    gsd(v,null)
+                }
+               }
+            })
+        })
+    }
 })();
-function addAppointmentDiv() {
+function addAppointmentDiv(socket) {
     let bgDiv = addshade();
     let cont = document.createElement('div')
     bgDiv.appendChild(cont)
@@ -566,7 +656,7 @@ function addAppointmentDiv() {
                     <div class="w-100 h-100 ovys w-100 h-100">
                         <div class="col-md-12 p-10p bsbb mb-5p p-r">
                             <label for="hospital" class="form-label">hospital</label>
-                            <input type="text" class="form-control bevalue" id="hospital" placeholder="Hospital name" name="hospital">
+                            <input type="text" class="form-control bevalue" id="hospitals" placeholder="Hospital name" name="hospital">
                             <small class="hidden w-100 red pl-3p verdana"></small>
                         </div>
                         <div class="col-md-12 p-10p bsbb mb-5p p-r">
@@ -595,22 +685,35 @@ function addAppointmentDiv() {
     let form = cont.querySelector('form');
     let inputs = Array.from(form.querySelectorAll('.form-control'))
     let hospitalinput = inputs.find(function (element) {
-        return element.id == 'hospital' 
+        return element.id == 'hospitals' 
     })
     let departmentinput = inputs.find(function (element) {
         return element.id == 'department' 
     })
-    hospitalinput.addEventListener('focus', function (event) {
+    hospitalinput.addEventListener('keyup', function (event) {
+        if (hospitalinput.value) {
+            triggerRecs(hospitalinput,['id','name'],socket)
+        }else{
+            removeRec(hospitalinput)
+            
+        }
         h = hospitalinput.getAttribute('data-id')
-        showRecs(this, hps.message,this.id)
-        hospitalinput.addEventListener('blur', ()=>{
-            setTimeout(function () {
-                if (h != hospitalinput.getAttribute('data-id')) {
-                    departmentinput.value = ``
-                    departmentinput.removeAttribute('data-id')
-                }
-            },200)
-        })
+    })
+    let hospitalinfo
+    hospitalinput.addEventListener('blur', async ()=>{
+        setTimeout(function () {
+            if (h != hospitalinput.getAttribute('data-id')) {
+                departmentinput.value = ``
+                departmentinput.removeAttribute('data-id')
+            }
+        },200)
+        h = hospitalinput.getAttribute('data-id')
+        if (h) {
+            hospitalinfo = await request(`hpDeps/${h}`,postschema)
+            if (hospitalinfo.success) {
+                hospitalinfo = hospitalinfo.message
+            }
+        }
     })
     let receivers
     departmentinput.addEventListener('focus', function (event) {
@@ -620,16 +723,13 @@ function addAppointmentDiv() {
             hospitalinput.focus();
             return 0
         }
-        let hospitalinfo = hps.message.find(function (hp) {
-            return hp.id == hospital
-        })
         if (!hospitalinfo) {
             return 0
         }
         departmentinput.addEventListener('blur', function (event) {
             setTimeout(function () {
                 receivers = hospitalinfo.employees.filter(function (employee) {
-                    return employee.department = departmentinput.getAttribute('data-id')
+                    return employee.department == departmentinput.getAttribute('data-id')
                 })
             },200)
         })
@@ -668,7 +768,7 @@ function addAppointmentDiv() {
             })
             s.title = `incoming appointment request`
             this.classList.add('loading')
-            form.querySelector(`button`).innerHTML = `<span class="spinner-border" role="status" aria-hidden="true"></span>`
+            form.querySelector(`button`).innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`
             postschema.body = JSON.stringify(s)
             let result = await request('send-message',postschema)
             form.querySelector(`button`).innerHTML = `proceed`

@@ -20,6 +20,7 @@
         <link rel="stylesheet" type="text/css" href="/styles/styling.css">
         <script src="/assets/js/nav.js" type="module"></script>
     <script src="/assets/js/laboratory.js" type="module"></script>
+    <script src="/assets/js/footer.js" type="module"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.min.js" integrity="sha512-Xm9qbB6Pu06k3PUwPj785dyTl6oHxgsv9nHp7ej7nCpAqGZT3OZpsELuCYX05DdonFpTlBpXMOxjavIAIUwr0w==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 </head>
 <body class="p-0 m-0 w-100 h-100 p-a ovh">
@@ -169,46 +170,46 @@
 								<div class="pg-cntnt w-100 h-90 bh-80-resp scroll-3 p-20p bsbb ovys left bp-0-resp">
 									<div class="home row p-5p bsbb">
                                         <div class="col-md-6 col-lg-4 mb-3">
-                                            <div class="b-1-s-gray p-20p br-5p">
-                                                <div class="capitalize px-5p">
+                                            <div class="card br-5p">
+                                                <div class="card-header capitalize">
                                                     <span>
-                                                        <i class="fas fa-hospital-user dgray fs-16p"></i>
+                                                        <i class="fas fa-microscope dgray fs-16p"></i>
                                                     </span>
                                                     <span class="fs-18p bold-2 dgray bold-2 dgray">
-                                                        Patients
+                                                        Tests
                                                     </span>
                                                 </div>
-                                                <div class="mt-10p px-15p bsbb">
-                                                    <h5 class="dgray capitalize">incoming patients</h5>
+                                                <div class="card-body bsbb">
+                                                    <h5 class="dgray capitalize">incoming tests requests</h5>
                                                     <p class="card-text">
-                                                        <span class="bold-2">30</span> Patients
+                                                        <span class="bold-2" data-role="num_hol" id="inc_tests">0</span> Tests
                                                     </p>
-                                                    <a href="pendingApplications/" class="btn btn-transparent white bc-theme">View</a>
+                                                    <a href="#" data-redirect="#incoming_test_request" class="btn btn-transparent white bc-theme">View</a>
                                                 </div>
                                             </div>
                                         </div>
                                         <div class="col-md-6 col-lg-4 mb-3">
-                                            <div class="b-1-s-gray p-20p br-5p">
-                                                <div class="capitalize px-5p">
+                                            <div class="card br-5p">
+                                                <div class="card-header capitalize">
                                                     <span>
-                                                        <i class="fas fa-hospital-user dgray fs-16p"></i>
+                                                        <i class="fas fa-microscope dgray fs-16p"></i>
                                                     </span>
                                                     <span class="fs-18p bold-2 dgray">
-                                                        Patients
+                                                        Tests
                                                     </span>
                                                 </div>
-                                                <div class="mt-10p px-15p bsbb">
-                                                    <h5 class="dgray capitalize">today's served patients</h5>
+                                                <div class="card-body bsbb">
+                                                    <h5 class="dgray capitalize">today's conducted tests</h5>
                                                     <p class="card-text">
-                                                        <span class="bold-2">30</span> Patients
+                                                        <span class="bold-2" data-role="num_hol" id="c_tests">0</span> tests
                                                     </p>
-                                                    <a href="pendingApplications/" class="btn btn-transparent white bc-theme">View</a>
+                                                    <a href="#" class="btn btn-transparent white bc-theme hide" >View</a>
                                                 </div>
                                             </div>
                                         </div>
                                         <div class="col-md-6 col-lg-4 mb-3">
-                                            <div class="b-1-s-gray p-20p br-5p">
-                                                <div class="capitalize px-5p dgray">
+                                            <div class="card br-5p">
+                                                <div class="card-header capitalize dgray">
                                                     <span>
                                                         <i class="fas fa-microscope fs-18p "></i>
                                                     </span>
@@ -216,12 +217,12 @@
                                                         tests
                                                     </span>
                                                 </div>
-                                                <div class="mt-10p px-15p bsbb">
-                                                    <h5 class="dgray capitalize">today's pending tests</h5>
+                                                <div class="card-body bsbb">
+                                                    <h5 class="dgray capitalize">today's expired tests requests</h5>
                                                     <p class="card-text">
-                                                        <span class="bold-2">30</span> Tests
+                                                        <span class="bold-2" data-role="num_hol" id="exp_t">0</span> Tests
                                                     </p>
-                                                    <a href="pendingApplications/" class="btn btn-transparent white bc-theme">View</a>
+                                                    <a href="#" data-redirect="#incoming_test_request" class="btn btn-transparent white bc-theme">View</a>
                                                 </div>
                                             </div>
                                         </div>

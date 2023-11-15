@@ -1,9 +1,9 @@
 
-import { alertMessage, getdata, getschema, postschema, request,deletechild, checkEmpty, showRecs, getchips,getPath,calcTime,addsCard,cpgcntn, geturl,sessiondata,addChip, showAvaiAssurances, adcm, addshade, addLoadingTab, removeLoadingTab, showAvaiEmps, fT, promptHpsToChoose, addAuthDiv, RemoveAuthDivs, showFingerprintDiv, removeRec, promptMessage } from "../../../utils/functions.controller.js";
+import { alertMessage, getdata, getschema, postschema, request,deletechild, checkEmpty, showRecs, getchips,getPath,calcTime,addsCard,cpgcntn, geturl,sessiondata,addChip, showAvaiAssurances, adcm, addshade, addLoadingTab, removeLoadingTab, showAvaiEmps, fT, promptHpsToChoose, addAuthDiv, RemoveAuthDivs, showFingerprintDiv, removeRec, promptMessage, triggerRecs, extractTime, getDate } from "../../../utils/functions.controller.js";
 import { addUprofile } from "../../../utils/user.profile.controller.js";
-import {pushNotifs, userinfo,expirateMssg, getNfPanelLinks,m as messages, DateTime} from "./nav.js";
+import {pushNotifs, userinfo,expirateMssg, getNfPanelLinks,m as messages, DateTime, openmenu, addFilter} from "./nav.js";
 import { viewTransfer } from "./transfer.js";
-let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,z,notificationlinks,socket
+let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,z,notificationlinks,socket,mh
 (async function () {
     z = userinfo
     let token = getdata('token')
@@ -67,15 +67,11 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,z,notificationlinks,socket
     }
     postschema.body = JSON.stringify({token})
     let users = await request('get-hp-employees',postschema)
-    q = await request('getmeds',postschema)
-    f = await request('get-tests',postschema)
-    l = await request('get-equipments',postschema)
-    k = await request('get-services',postschema)
-    j = await request('get-operations',postschema)
-    if (!q.success || !f.success || !l.success || !k.success || !j.success || !users.success) {
-        return 0
+
+    if (!users.success) {
+        return alertMessage(users.message)
     }
-    let extra = {users: users.message, tests: f.message, medicines : q.message, equipments: l.message, services : k.message, operations : j.message}
+    let extra = {users: users.message}
     a = getPath(1)
     c = Array.from(document.querySelectorAll('span.cpcards'))
     p = Array.from(document.querySelectorAll('div.pagecontentsection'))
@@ -151,7 +147,63 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,z,notificationlinks,socket
     async function gsd(page,addin) {
         try {
             x = page.id
-            if (x == 'search-patient') {
+            if (x == 'home') {
+                let num_hols = Array.from(page.querySelectorAll('[data-role="num_hol"]'))
+                
+              let messages = sessiondata('messages')
+              let nmbrs = {in_pati: 0,appntmnt_mssg : 0,t_p_sessions: 0, t_s_sessions: 0}
+                messages.map(function (me) {
+                if (me.status == 'new') {
+                    if (me.type == 'p_message') {
+                        if (extractTime(me.dateadded,'date') == getDate('date')) {
+                           nmbrs.in_pati +=1
+                        }
+                    }else if (me.type == '__APPNTMNT_MSSG_') {
+                        nmbrs.appntmnt_mssg +=1
+                    }
+                }
+              })
+              if (mh) {
+              }else{
+                mh  = await request('get-hcp-sessions',postschema)
+              }
+              if (mh.success) {
+                mh.message.map(function (session) {
+                    if (session.status == 'open') {
+                        nmbrs.t_p_sessions +=1
+                       }
+                    if (extractTime(session.date,'date') == getDate('date')) {
+                       nmbrs.t_s_sessions +=1
+                    }
+                })
+              }
+              num_hols.forEach(holder=>{
+                let holderlink = holder.parentElement.parentElement.querySelector('a')
+                holderlink.onclick = function (event) {
+                    event.preventDefault()
+                    let link = this.getAttribute('data-redirect')
+                    if (link.indexOf('#') == -1) {
+                        let url = new URL(window.location.href);
+                        url.pathname = `/hc_provider/${link}`;
+                        window.history.pushState({},'',url.toString())
+                        const evnt = new Event('urlchange', { bubbles: true });
+                        window.dispatchEvent(evnt);
+                    }else{
+                        link = link.replace(/_/g,' ')
+                        link = link.replace(/#/g,'')
+                        openmenu();
+                        addFilter(link)
+                    }
+                }
+                let id = holder.id
+                let keys = Object.keys(nmbrs)
+                keys.map(number =>{
+                    if (number == id) {
+                        holder.innerHTML = nmbrs[number]
+                    }
+                })
+            })
+            }else if (x == 'search-patient') {
             f = page.querySelector('form[name="sp-form"]');
             s = f.querySelector('input[type="text"]');
             setTimeout(e=>{s.focus()},200)
@@ -231,13 +283,26 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,z,notificationlinks,socket
                     let arb = f.querySelector('span#add-decisions');
                     let extras_input = Array.from(f.querySelectorAll('input.extras'));
                     let op_input = f.querySelector('input[name="operations"]');
-                    extras_input.map(function (input) {
-                      input.onfocus =  event=>{
-                        showRecs(input,extra[input.id],input.id)
-                      }
-                    })
-                    op_input.onfocus =  event=>{
-                      showRecs(op_input,extra[op_input.id],op_input.id)
+                    extras_input.forEach(input => {
+                        input.removeEventListener('keyup', input._keyupHandler);
+                        input._keyupHandler = function(event) {
+                            if (this.value) {
+                                triggerRecs(input,['id','name',(input.name == 'tests' || input.name == 'operations')?'department':'unit' ,'price'],socket)
+                            }else{
+                                removeRec(input)
+
+                            }
+                            return;
+                        };
+                        input.addEventListener('keyup', input._keyupHandler);
+                    });
+                    op_input.onkeyup =  function(event){
+                        if (this.value) {
+                            triggerRecs(op_input,['id','name',(op_input.name == 'tests' || op_input.name == 'operations')?'department':'unit' ,'price'],socket)
+                        }else{
+                            removeRec(op_input)
+
+                        }
                     
                     }
                     asb.onclick = e=>{
@@ -556,7 +621,9 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,z,notificationlinks,socket
                     postschema.body = JSON.stringify({
                         token: getdata('token')
                     })
-                    let mh  = await request('get-hcp-sessions',postschema)
+                    if (!mh) {
+                        mh  = await request('get-hcp-sessions',postschema)
+                    }
                     if (mh.success) {
                         initTable(mh.message)
                     }else{
@@ -617,7 +684,7 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,z,notificationlinks,socket
                                 {
                                     targets: 3,
                                     searchable: 1,
-                                    orderable: !1,
+                                    orderable: 1,
                                     render: function (e, t, a, n) {
                                         return (
                                             `<span class=" btn btn-sm ${(e == 'open')? 'bc-tr-green green' : 'bc-gray dgray'}">${e}</span>`
@@ -627,7 +694,7 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,z,notificationlinks,socket
                                 {
                                     targets: 4,
                                     searchable: 1,
-                                    orderable: !1,
+                                    orderable: 1,
                                     render: function (e, t, a, n) {
                                         return (
                                             `<span class="text-muted">${e}</span>`
@@ -699,6 +766,7 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,z,notificationlinks,socket
                         });
                     }
                     $.fn.dataTable.ext.search.push(function (settings, data, dataIndex) {
+                        setTimeout(checkButtons,10)
                         if (settings.nTable.classList.contains('datatables-prescriptions')) {
                             let min = minDate.value;
                             let max = maxDate.value;
@@ -715,6 +783,11 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,z,notificationlinks,socket
                         }
                         return true
                     })
+                    let table = page.querySelector('.dataTables_paginate');
+                    table.addEventListener('click', e=>{
+                        setTimeout(checkButtons,10)
+
+                    })
                     let viewbut = Array.from(page.querySelectorAll('button.view'))
                     viewbut.forEach(button => {
                         button.onclick = async function (event) {
@@ -726,6 +799,20 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,z,notificationlinks,socket
                             window.dispatchEvent(evnt);
                         }
                     });
+                    function checkButtons() {
+                        let viewbut = Array.from(page.querySelectorAll('button.view'))
+                       
+                        viewbut.forEach(button => {
+                            button.onclick = async function (event) {
+                                event.preventDefault();
+                                let url = new URL(window.location.href);
+                                url.pathname = `/hc_provider/view-session/${this.getAttribute('data-id')}`;
+                                window.history.pushState({},'',url.toString())
+                                const evnt = new Event('urlchange', { bubbles: true });
+                                window.dispatchEvent(evnt);
+                            }
+                        }); 
+                    }
                     let dateRangeForm = page.querySelector('form[name="date-range"]')
                     let inputs = Array.from(dateRangeForm.querySelectorAll('input'))
                     let minDate = inputs[0]
@@ -809,7 +896,7 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,z,notificationlinks,socket
                                 let response = await request('addPatiBg',postschema)
                                 if (response.success) {
                                     alertMessage(response.message)
-                                    deletechild(v,v.parent)
+                                    deletechild(v,v.parentNode)
                                     deletechild(abgbutton,abgparent)
                                 }else{
                                     alertMessage(response.message)
@@ -894,7 +981,7 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,z,notificationlinks,socket
                             holder.innerText = sessiondata[objectId]
                         }
                 }
-                let Modals = new popups(sessiondata,extra.users)
+                let Modals = new popups(sessiondata,extra.users,socket)
                 const dataButtons = Array.from(page.querySelectorAll('span.data-buttons'))
                 dataButtons.map(function (button) {
                     if (button.getAttribute(`data-role`) == 'close' || button.getAttribute(`data-role`) == 'transfer') {
@@ -1151,11 +1238,15 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,z,notificationlinks,socket
     }
 })();
 class popups{
-    constructor(sessionData,users){
+    constructor(sessionData,users,socket){
         this.session = sessionData
         this.users = users
+        this.socket = socket
+
+
     }
     test(data){
+        const socket = this.socket
         const session = this.session
         let testsP = addshade();
         a = document.createElement('div');
@@ -1168,7 +1259,7 @@ class popups{
                             <form method="post" id="req-test-info-form" name="req-test-info-form">
                                 <div class="col-md-12 px-10p py-6p bsbb p-r">
                                     <label for="test" class="form-label">test taken</label>
-                                    <input type="text" class="form-control bevalue" id="test" placeholder="Demo test" name="test">
+                                    <input type="text" class="form-control bevalue" id="tests" placeholder="Demo test" name="test">
                                     <small class="w-100 red pl-3p verdana"></small>
                                 </div>
                                 <div class="col-md-12 px-10p py-6p bsbb p-r">
@@ -1190,8 +1281,13 @@ class popups{
         let form = a.querySelector("form");
         let inputs = Array.from(form.querySelectorAll('input'))
         let extra_input = inputs.find(function (ins) {return ins.classList.contains('bevalue') })
-        extra_input.addEventListener('focus', (event)=>{
-            showRecs(extra_input,data,extra_input.id)
+        extra_input.addEventListener('keyup', async (event)=>{
+            if (extra_input.value) {
+                data = await triggerRecs(extra_input,['id','name','department','price'],socket)
+            }else{
+                removeRec(extra_input)
+
+            }
         })
         let notify_button = form.querySelector('button[type="button"]')
          notify_button.addEventListener('click',async event=>{
@@ -1330,6 +1426,7 @@ class popups{
     }
     medication(data){
         const session = this.session
+        const socket = this.socket
         let medicinesP = addshade();
         a = document.createElement('div');
         medicinesP.appendChild(a)
@@ -1352,8 +1449,13 @@ class popups{
         let form = a.querySelector("form");
         let inputs = Array.from(form.querySelectorAll('input'))
         let extra_input = inputs.find(function (ins) {return ins.classList.contains('extras') })
-        extra_input.addEventListener('focus', (event)=>{
-            showRecs(extra_input,data,extra_input.id)
+        extra_input.addEventListener('keyup', (event)=>{
+            if (extra_input.value) {
+                triggerRecs(extra_input,['id','name','unit','price'],socket)
+            }else{
+                removeRec(extra_input)
+
+            }
         })
         form.addEventListener('submit', async event=>{
             
@@ -1388,6 +1490,7 @@ class popups{
     }
     operation(data){
         const session = this.session
+        const socket = this.socket
         let operationsP = addshade();
         a = document.createElement('div');
         operationsP.appendChild(a)
@@ -1399,7 +1502,7 @@ class popups{
                             <form method="post" id="req-test-info-form" name="req-test-info-form">
                                 <div class="col-md-12 px-10p py-6p bsbb p-r">
                                     <label for="test" class="form-label">operation name</label>
-                                    <input type="text" class="form-control bevalue" id="operation" placeholder="Demo operation" name="operation">
+                                    <input type="text" class="form-control bevalue" id="operations" placeholder="Demo operation" name="operation">
                                     <small class="w-100 red pl-3p verdana"></small>
                                 </div>
                                 <div class="wrap center-2 px-10p bsbb bblock-resp">
@@ -1412,8 +1515,13 @@ class popups{
         let inputs = Array.from(form.querySelectorAll('input'))
 
         let extra_input = inputs.find(function (ins) {return ins.classList.contains('bevalue') })
-        extra_input.addEventListener('focus', (event)=>{
-            showRecs(extra_input,data,extra_input.id)
+        extra_input.addEventListener('keyup', (event)=>{
+            if (extra_input.value) {
+                triggerRecs(extra_input,['id','name','department','price'],socket)
+            }else{
+                removeRec(extra_input)
+
+            }
         })
         
         let notify_button = form.querySelector('button[type="button"]')
@@ -1476,6 +1584,7 @@ class popups{
     }
     service(data){
         const session = this.session
+        const socket  = this.socket
         let servicesP = addshade();
         a = document.createElement('div');
         servicesP.appendChild(a)
@@ -1487,25 +1596,30 @@ class popups{
                             <form method="post" id="add-service-info-form" name="add-service-info-form">
                                 <div class="col-md-12 px-10p py-6p bsbb p-r">
                                     <label for="service" class="form-label">service name</label>
-                                    <input type="text" class="form-control bevalue" id="service" placeholder="Demo service" name="service">
+                                    <input type="text" class="form-control bevalue" id="services" placeholder="Demo service" name="service">
                                     <small class="w-100 red pl-3p verdana"></small>
                                 </div>
                                 <div class="col-md-12 px-10p py-6p bsbb p-r">
                                     <label for="quantity" class="form-label">quantity</label>
                                     <input type="number" class="form-control" id="quantity" placeholder="Demo quantity" name="quantity">
-                                    <span class="p-a t-0 t-0 mx-20p r-0 mt-42p capitalize" name="unit-hol"></span>
+                                    <span class="p-a t-0 t-0 mx-20p r-0 mt-44p capitalize" name="unit-hol"></span>
                                     <small class="w-100 red pl-3p verdana"></small>
                                 </div>
-                                <div class="wrap center-2 px-10p bsbb bblock-resp">
-                                    <button type="submit" class="btn btn-primary bfull-resp bm-a-resp bmy-10p-resp">Proceed</button>
+                                <div class="wrap p-r px-10p bsbb bblock-resp">
+                                    <button type="submit" class="btn btn-primary bfull-resp bm-a-resp bmy-10p-resp cntr">Proceed</button>
                                 </div>
                             </form>
                         </div>`
         let form = a.querySelector("form");
         let inputs = Array.from(form.querySelectorAll('input'))
         let extra_input = inputs.find(function (ins) {return ins.classList.contains('bevalue') })
-        extra_input.addEventListener('focus', (event)=>{
-            showRecs(extra_input,data,extra_input.id)
+        extra_input.addEventListener('keyup', (event)=>{
+            if (extra_input.value) {
+                triggerRecs(extra_input,['id','name','unit','price'],socket)
+            }else{
+                removeRec(extra_input)
+
+            }
         })
        extra_input.addEventListener('blur',async ()=>{
         let unit = form.querySelector('span[name="unit-hol"]')
@@ -1554,6 +1668,7 @@ class popups{
     }
     equipment(data){
         const session = this.session
+        const socket = this.socket
         let equipmentsP = addshade();
         a = document.createElement('div');
         equipmentsP.appendChild(a)
@@ -1582,8 +1697,13 @@ class popups{
         let form = a.querySelector("form");
         let inputs = Array.from(form.querySelectorAll('input'))
         let extra_input = inputs.find(function (ins) {return ins.classList.contains('bevalue') })
-        extra_input.addEventListener('focus', (event)=>{
-            showRecs(extra_input,data,extra_input.id)
+        extra_input.addEventListener('keyup', (event)=>{
+            if (extra_input.value) {
+                triggerRecs(extra_input,['id','name','department','price'],socket)
+            }else{
+                removeRec(extra_input)
+
+            }
         })
        extra_input.addEventListener('blur',async ()=>{
         let unit = form.querySelector('span[name="unit-hol"]')

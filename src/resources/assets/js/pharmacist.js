@@ -1,8 +1,8 @@
-import { alertMessage, getdata, getschema, postschema, request,initializeCleave,sessiondata,addLoadingTab,removeLoadingTab, checkEmpty, showRecs, getchips,getPath,addsCard,cpgcntn, geturl, adcm, addshade, deletechild } from "../../../utils/functions.controller.js";
+import { alertMessage, getdata, getschema, postschema, request,initializeCleave,sessiondata,addLoadingTab,removeLoadingTab, checkEmpty, showRecs, getchips,getPath,addsCard,cpgcntn, geturl, adcm, addshade, deletechild, extractTime, getDate } from "../../../utils/functions.controller.js";
 import {pushNotifs, userinfo,expirateMssg, getNfPanelLinks,m as messages, DateTime} from "./nav.js";
 
 
-let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z,notificationlinks
+let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z,notificationlinks,addMedic
 (async function () {
     z = userinfo
     let token = getdata('token')
@@ -150,7 +150,57 @@ let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z,notificationlinks
     async function gsd(page,extra) {
         try {
             x = page.id
-            if (x == 'search-session') {
+            if (x == 'home') {
+                let num_hols = Array.from(page.querySelectorAll('[data-role="num_hol"]'))
+                
+              let messages = sessiondata('messages')
+              let nmbrs = {tot_med: 0,med_req : 0, ttfinmed: 0}
+                messages.map(function (me) {
+                if (me.status == 'new') {
+                    if (me.type == 'session_message') {
+                        if (extractTime(me.dateadded,'date') == getDate('date')) {
+                           nmbrs.med_req +=1
+                        }
+                    }
+                }
+              })
+              let inventory = f.message.medicines
+             
+                inventory.map(function (medicine) {
+                    nmbrs.tot_med+=1
+                    if (medicine.quantity <= 10) {
+                        nmbrs.ttfinmed +=1
+                       }
+                })
+
+              num_hols.forEach(holder=>{
+                let holderlink = holder.parentElement.parentElement.querySelector('a')
+                holderlink.onclick = function (event) {
+                    event.preventDefault()
+                    let link = this.getAttribute('data-redirect')
+                    if (link.indexOf('#') == -1) {
+                        console.log(link)
+                        let url = new URL(window.location.href);
+                        url.pathname = `/pharmacist/${link}`;
+                        window.history.pushState({},'',url.toString())
+                        const evnt = new Event('urlchange', { bubbles: true });
+                        window.dispatchEvent(evnt);
+                    }else{
+                        link = link.replace(/_/g,' ')
+                        link = link.replace(/#/g,'')
+                        openmenu();
+                        addFilter(link)
+                    }
+                }
+                let id = holder.id
+                let keys = Object.keys(nmbrs)
+                keys.map(number =>{
+                    if (number == id) {
+                        holder.innerHTML = nmbrs[number]
+                    }
+                })
+            })
+            }else if (x == 'search-session') {
             f = page.querySelector('form[name="sp-form"]');
             s = f.querySelector('input[type="text"]')
             setTimeout(e=>{s.focus()},200)
@@ -295,8 +345,16 @@ let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z,notificationlinks
                             });
                         }
                     });
+                    addMedic = document.createElement('button')
+                    addMedic.className = `btn btn-primary mx-10p`
+                    addMedic.innerHTML =`<i class="fas fa-plus"></i> add`
+                    addMedic.id = 'add-medic'
+                    addMedic.setAttribute('data-bs-target','#add-medicine')
                 }
-                let addMedic = document.querySelector('#add-medic'),buttons = Array.from(page.querySelectorAll('button.data-buttns'));
+                // dt-action-buttons
+               
+                let buttons = Array.from(page.querySelectorAll('button.data-buttns'));
+                document.querySelector('div.dt-action-buttons').appendChild(addMedic)
                 addMedic.onclick =  function(){
                     let target = this.getAttribute('data-bs-target')
                     let cloneD = document.querySelector(`div${target}`)

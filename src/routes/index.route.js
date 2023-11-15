@@ -10,8 +10,8 @@ import signup from '../controllers/signup.controller';
 import { authorizeRawRole, authorizeRole } from '../middlewares/roles.authorizer.middleware';
 import { authorizeAdmin, authorizeAssuranceManager, authorizeCashier, authorizeHc_provider, authorizeHcp_ptnt, authorizeLaboratory_scientist, authorizeMultipleRoles, authorizePatient, authorizePatientToken, authorizePharmacist } from '../middlewares/users.authoriser.middleware';
 import {addEmployeetoAssurance, addEmployeetoHp, addemployee, getEmployees, getEmployeesByRole, getHpEmployees, removeEmployeFromHospital} from '../controllers/employee.controller';
-import { getHP, getHPs, searchHP,addhospital, hospitalASSU } from '../controllers/hospital.controller';
-import {addSession, addSessionComment, addSessionDecision, addSessionEquipment, addSessionMedicine, addSessionOperation, addSessionService, addSessionTests, approveAssuPayment, approvePayment, assuranceMH, closeSession, getHc_pSessions, getHpsessions, getUsessions, markMedicineAsServed, session, testPay } from '../controllers/patient.session.controller';
+import { getHP, getHPs, searchHP,addhospital, hospitalASSU, getHPDeps } from '../controllers/hospital.controller';
+import {addSession, addSessionComment, addSessionDecision, addSessionEquipment, addSessionMedicine, addSessionOperation, addSessionService, addSessionTests, approveAssuPayment, approvePayment, assuranceMH, closeSession, getDailyHpSessions, getHc_pSessions, getHpsessions, getUsessions, markMedicineAsServed, session, testPay } from '../controllers/patient.session.controller';
 import {addmedicine, getMed, getMeds, searchMed} from '../controllers/medicine.controller';
 import {addDepartment, addDepartmentToHp, getDepartments, removeDepartmentFromHospital} from '../controllers/departments.controller';
 import {addtest,getTests} from '../controllers/tests.controller';
@@ -21,11 +21,11 @@ import { addCell, addDistrict, addProvince, addSector } from '../controllers/add
 import getMap from '../controllers/get.locations.controller';
 import { authorizeHospital } from '../middlewares/hospital.authorizer.middleware';
 import {getInventory,addInventory, addInventoryTests, addInventoryOperations, addInventoryEquipments, addInventoryServices, removeItemFromInventory, editItemFromInventory} from '../controllers/inventory.controller';
-import { getMessages, markAsSeen, sendMessage } from '../controllers/message.controller';
+import { getMessages, getSentMessages, markAsSeen, sendMessage } from '../controllers/message.controller';
 import { authorizeAppointmentAccess } from '../middlewares/appointment.authorizer.middleware';
 import { authorizeSession } from '../middlewares/session.authorizer.middleware';
 import { addPatiBg, addUserAssurance, getPatient, getPatients } from '../controllers/patients.controller';
-import { addAssurance, addEquipmentToAssuranceRestrictedList, addMedicineToAssuranceRestrictedList, addOperationToAssuranceRestrictedList, addServiceToAssuranceRestrictedList, addTestToAssuranceRestrictedList, assurance, getAssurances, removeItemFromAssurancelist,assuranceHP } from '../controllers/assurance.controller';
+import { addAssurance, addEquipmentToAssuranceRestrictedList, addMedicineToAssuranceRestrictedList, addOperationToAssuranceRestrictedList, addServiceToAssuranceRestrictedList, addTestToAssuranceRestrictedList, assurance, getAssurances, removeItemFromAssurancelist,assuranceHP, addassuranceToHp } from '../controllers/assurance.controller';
 import { authorizeHospitalAssurance, authorizeUserAssurance } from '../middlewares/assurance.authorizer.middleware';
 import { at } from '../controllers/token.verifier.controller';
 import { io } from '../socket.io/connector.socket.io';
@@ -40,10 +40,6 @@ import { addPati2fa } from '../middlewares/user.2fa.access.middleware';
 import { createTransfer, viewTransfer } from '../controllers/transfer.controller';
 const router = express.Router({ strict: false });
 router.post('/verify',verification)
-router.post('/get-user-medical-history/:userid?',authorizeRole,addPati2fa,getUsessions)
-router.post('/get-hospital-medical-history',authorizeRole,getHpsessions)
-router.post('/get-hcp-sessions',authorizeRole,authorizeHc_provider,getHc_pSessions)
-router.post('/session/:session',authorizeRole,authorizeRole,(req,res,next) => authorizeSession(req,res,next,'isuserorhcp'),session)
 router.post('/addhealthpost',authorizeRole,authorizeAdmin,addhospital)
 router.post('/add-appointment',authorizeRole,authorizeHc_provider,authorizePatient,CheckAppointmentTimer,addAppointment)
 router.post("/addmedicine",authorizeRole,authorizeAdmin,addmedicine)
@@ -71,8 +67,15 @@ router.post("/rAenrs/",authorizeRole,authorizeAssuranceManager,removeItemFromAss
 router.post("/gAsSuMH/",authorizeRole,authorizeAssuranceManager,assuranceMH)
 router.post("/gAsSuHP/",authorizeRole,authorizeAssuranceManager,assuranceHP)
 router.post("/gHosPiAsSu/",authorizeRole,(req,res,next) => authorizeMultipleRoles(req,res,next,['dof']),hospitalASSU)
+router.post("/add-hospi-assu/",authorizeRole,(req,res,next) => authorizeMultipleRoles(req,res,next,['dof']),addassuranceToHp)
 router.get("/tp",testPay)
 router.post("/add-assurance-to-user",authorizeRole,authorizePatientToken,addUserAssurance)
+// session routes
+router.post('/get-user-medical-history/:userid?',authorizeRole,addPati2fa,getUsessions)
+router.post('/get-hospital-medical-history',authorizeRole,getHpsessions)
+router.post('/get-hcp-sessions',authorizeRole,authorizeHc_provider,getHc_pSessions)
+router.post('/get-hp-daily-sessions',authorizeRole,authorizeHospital,getDailyHpSessions)
+router.post('/session/:session',authorizeRole,authorizeRole,(req,res,next) => authorizeSession(req,res,next,'isuserorhcp'),session)
 router.post("/add-session-test",authorizeRole,(req,res,next) => authorizeSession(req,res,next,'isnotclosed'),checkTest,addSessionTests)
 router.post("/add-session-medicine",authorizeRole,(req,res,next) => authorizeSession(req,res,next,'isnotclosed'),authorizeHc_provider,addSessionMedicine)
 router.post("/mark-as-served",authorizeRole,(req,res,next) => authorizeSession(req,res,next,'isnotclosed'),authorizePharmacist,markMedicineAsServed)
@@ -83,7 +86,10 @@ router.post("/add-session-comment",authorizeRole,(req,res,next) => authorizeSess
 router.post("/add-session-decisions",authorizeRole,(req,res,next) => authorizeSession(req,res,next,'isnotclosed'),authorizeHc_provider,addSessionDecision)
 router.post("/crTrns",authorizeRole,(req,res,next) => authorizeSession(req,res,next,'isnotclosed'),authorizeHc_provider,createTransfer)
 router.post("/getTrNsfr",authorizeRole,(req,res,next) => authorizeMultipleRoles(req,res,next,['receptionist','hc_provider']),viewTransfer)
-
+router.post('/close-session',authorizeRole,authorizeHc_provider,(req,res,next) => authorizeSession(req,res,next,'isowner'),(req,res,next) => authorizeSession(req,res,next,'ismyfacilty'),closeSession);
+router.post('/approve-assurance-payment',authorizeRole,(req,res,next) => authorizeMultipleRoles(req,res,next,['dof']),approveAssuPayment);
+router.post('/approve-payment',authorizeRole,(req,res,next) => authorizeSession(req,res,next,'isnotopen'),authorizeCashier,approvePayment);
+// end of session routes
 router.post("/add-cell",authorizeRole,authorizeAdmin,addCell)
 router.post('/addemployee',authorizeRole,authorizeAdmin,(req,res,next) => authorizeHospital(req,res,next,'isoptional'),addemployee)
 router.post('/add-employee-to-hp',authorizeRole,authorizeAdmin,authorizeHospital,addEmployeetoHp)
@@ -117,10 +123,13 @@ router.post('/getAppointmentETA',authorizeRole,authorizeHc_provider,getAppointme
 router.post('/decline-appointment',authorizeRole,authorizeHc_provider,declineAppointment);
 router.post('/send-message',authorizeRole,sendMessage);
 router.post('/get-messages',authorizeRole,getMessages);
+router.post('/get-sent-messages',authorizeRole,getSentMessages);
 router.post('/mark-as-seen',authorizeRole,markAsSeen);
 router.post('/insights',authorizeRole,(req,res,next) => authorizeMultipleRoles(req,res,next,['mohs']),insightsStats);
 router.post('/gethospitals',authorizeRole,getHPs)
 router.post('/hospital/:hospital?',authorizeRole,getHP)
+router.post('/hpDeps/:hospital?',authorizeRole,getHPDeps)
+
 router.post('/search-hospital/:hospital',authorizeRole,searchHP)
 router.post('/add-department',authorizeRole,authorizeAdmin,addDepartment)
 router.post('/add-department-to-hp',authorizeRole,authorizeAdmin,addDepartmentToHp)
@@ -136,11 +145,8 @@ router.get('/getSocketIo/:filename',getSocketIo);
 router.get('/getLuxon/:filename',getLuxon);
 
 router.get('/addadmin',addSuperAdmin);
-router.post('/approve-payment',authorizeRole,(req,res,next) => authorizeSession(req,res,next,'isnotopen'),authorizeCashier,approvePayment);
-router.post('/approve-assurance-payment',authorizeRole,(req,res,next) => authorizeMultipleRoles(req,res,next,['dof']),approveAssuPayment);
 router.post('/get-patients',authorizeRole,authorizeAdmin,getPatients);
 router.post('/patient/:patient?',authorizeRole,getPatient);
-router.post('/close-session',authorizeRole,authorizeHc_provider,(req,res,next) => authorizeSession(req,res,next,'isowner'),(req,res,next) => authorizeSession(req,res,next,'ismyfacilty'),closeSession);
 router.get('/',homeController);
 router.post('/user-login',login);
 router.get('/assets/*',assets);

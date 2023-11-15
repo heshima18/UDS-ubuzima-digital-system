@@ -69,6 +69,9 @@ form.addEventListener('submit', async e=>{
             }else if (z.role == 'patient') {
                 window.location.href = '../patient/home/'
                 
+            }else if (z.role == 'householder') {
+                window.location.href = '../householder/home/'
+                
             }else if (z.role == 'hc_provider') {
                 window.location.href = '../hc_provider/home/'
                 

@@ -24,6 +24,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.min.js" integrity="sha512-Xm9qbB6Pu06k3PUwPj785dyTl6oHxgsv9nHp7ej7nCpAqGZT3OZpsELuCYX05DdonFpTlBpXMOxjavIAIUwr0w==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cleave.js/1.6.0/cleave.min.js" integrity="sha512-KaIyHb30iXTXfGyI9cyKFUIRSSuekJt6/vqXtyQKhQP6ozZEGY8nOtRS6fExqE4+RbYHus2yGyYg1BrqxzV6YA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="/assets/vendor/libs/cleavejs/cleave-phone.rw.js"></script>
+    <script src="/assets/js/footer.js" type="module"></script>
+
 </head>
 <body class="p-0 m-0 w-100 h-100 p-a ovh">
 <div class="cont w-100 h-100 ovxh" id="cont">
@@ -181,8 +183,8 @@
 								<div class="bc-white br-5p pg-cntnt w-100 h-90 bh-80-resp scroll-3 p-20p bsbb ovys left bp-0-resp">
 									<div class="home row p-5p bsbb">
                                         <div class="col-md-6 col-lg-4 mb-3">
-                                            <div class="b-1-s-gray p-20p br-5p">
-                                                <div class="capitalize px-5p">
+                                            <div class="card br-5p">
+                                                <div class="card-header">
                                                     <span>
                                                         <i class="fas fa-hospital-user dgray fs-16p"></i>
                                                     </span>
@@ -190,18 +192,19 @@
                                                         Patients
                                                     </span>
                                                 </div>
-                                                <div class="mt-10p px-15p bsbb">
+                                                <div class="card-body
+                                                 bsbb">
                                                     <h5 class="dgray capitalize">today's sessions</h5>
                                                     <p class="card-text">
-                                                        <span class="bold-2">30</span> sessions
+                                                        <span class="bold-2" data-role="num_hol" id="tot">0</span> sessions
                                                     </p>
-                                                    <a href="pendingApplications/" class="btn btn-transparent white bc-theme">View</a>
+                                                    <a href="pendingApplications/" class="btn btn-transparent white bc-theme hide ">View</a>
                                                 </div>
                                             </div>
                                         </div>
                                         <div class="col-md-6 col-lg-4 mb-3">
-                                            <div class="b-1-s-gray p-20p br-5p">
-                                                <div class="capitalize px-5p">
+                                            <div class="card br-5p">
+                                                <div class="card-header">
                                                     <span>
                                                         <i class="fas fa-hospital-user dgray fs-16p"></i>
                                                     </span>
@@ -209,18 +212,19 @@
                                                         Patients
                                                     </span>
                                                 </div>
-                                                <div class="mt-10p px-15p bsbb">
+                                                <div class="card-body
+                                                 bsbb">
                                                     <h5 class="dgray capitalize">awaiting payment sessions</h5>
                                                     <p class="card-text">
-                                                        <span class="bold-2">30</span> Patients
+                                                        <span class="bold-2" data-role="num_hol" id="ppss">0</span> Patients
                                                     </p>
-                                                    <a href="pendingApplications/" class="btn btn-transparent white bc-theme">View</a>
+                                                    <a href="pendingApplications/" class="btn btn-transparent white bc-theme hide">View</a>
                                                 </div>
                                             </div>
                                         </div>
                                         <div class="col-md-6 col-lg-4 mb-3">
-                                            <div class="b-1-s-gray p-20p br-5p">
-                                                <div class="capitalize px-5p">
+                                            <div class="card br-5p">
+                                                <div class="card-header">
                                                     <span>
                                                         <i class="fas fa-hospital-user dgray fs-16p"></i>
                                                     </span>
@@ -228,12 +232,33 @@
                                                         Patients
                                                     </span>
                                                 </div>
-                                                <div class="mt-10p px-15p bsbb">
+                                                <div class="card-body
+                                                 bsbb">
                                                     <h5 class="dgray capitalize">paid sessions</h5>
                                                     <p class="card-text">
-                                                        <span class="bold-2">30</span> Patients
+                                                        <span class="bold-2" data-role="num_hol" id="pss">0</span> Patients
                                                     </p>
-                                                    <a href="pendingApplications/" class="btn btn-transparent white bc-theme">View</a>
+                                                    <a href="pendingApplications/" class="btn btn-transparent white bc-theme hide">View</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 col-lg-4 mb-3">
+                                            <div class="card br-5p">
+                                                <div class="card-header">
+                                                    <span>
+                                                        <i class="fas fa-hospital-user dgray fs-16p"></i>
+                                                    </span>
+                                                    <span class="fs-18p bold-2 dgray bold-2 dgray">
+                                                        Payments
+                                                    </span>
+                                                </div>
+                                                <div class="card-body
+                                                 bsbb">
+                                                    <h5 class="dgray capitalize">approved payments amount</h5>
+                                                    <p class="card-text">
+                                                        <span class="bold-2" data-role="num_hol" id="ttamihv">0</span> RWF
+                                                    </p>
+                                                    <a href="pendingApplications/" class="btn btn-transparent white bc-theme hide">View</a>
                                                 </div>
                                             </div>
                                         </div>
@@ -476,6 +501,25 @@
                                                                 <span class="pname dgray fs-14p pr-5p center">total </span>
                                                                 <span class="center-2">
                                                                     <span class="plocation black fs-14p" name="looping-info-hol" data-hold="total_amount" data-secondary-holder="true">[total-amount]</span>
+                                                                    <span class="pname dgray fs-14p px-3p">RWF</span>
+                                                                </span>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                                <div class="testinfo my-5p">
+                                                    <div class="flex jc-sb my-20p bsbb">
+                                                        <span class="title bold-2 fs-16p capitalize dgray">Applied operations</span>
+                                                    </div>
+                                                    <div class="my-2p px-1p">
+                                                        <ul class="card-1  ls-none my-10p iblock p-20p mx-5p my-5p bfull-resp bm-y-10p-resp bm-x-0-resp bblock-resp w-200p bfull-resp br-5p" name="looping-info" data-hold="operations">
+                                                            <li class="p-2p bsbb flex">
+                                                                <span class="bold-2 dgray card-title" name="looping-info-hol" data-hold="name" data-secondary-holder="true">[operation's-name]</span>
+                                                            </li>
+                                                            <li class="p-2p bsbb flex jc-sb">
+                                                                <span class="pname dgray fs-14p pr-5p">price : </span>
+                                                                <span>
+                                                                    <span class="pdob black fs-14p" name="looping-info-hol" data-hold="price" data-secondary-holder="true">[operation's-price]</span>
                                                                     <span class="pname dgray fs-14p px-3p">RWF</span>
                                                                 </span>
                                                             </li>

@@ -1,10 +1,13 @@
 import query from './query.controller'
 import errorMessage from './response.message.controller'
 import id from "./randomInt.generator.controller";
+import { io } from '../socket.io/connector.socket.io';
 import authenticateToken from './token.verifier.controller';
+import { ioSendMessage } from './message.controller';
 export const addAppointment = async (req,res)=>{
     try {
         let { patient,subject,message,time,token,dateadded,status,extra } = req.body
+        let uid = id()
         if (!time) {
             return res.status(500).send({success:false, message: errorMessage.is_error})
         }
@@ -30,12 +33,30 @@ export const addAppointment = async (req,res)=>{
          )
          values
          (?,?,?,?,?,?,?,?,?)`,
-         [id(), patient,hc_provider,subject,message,time,dateadded,status, extra])
+         [uid, patient,hc_provider,subject,message,time,dateadded,status, extra])
         if (!insert) {
             res.status(500).send({success: false, message: errorMessage.is_error})
             return
         }
         res.send({success: true, message: (status == 'declined')? errorMessage.appoi_decli_message : errorMessage.ab_message})
+        let mess = {
+            type : '__APPNTMNT_MSSG_',
+            content: 'there is a new appointment status change! ',
+            title: 'appointment reminder',
+            receiver: patient,
+            sender: {name: 'system',id: '196371492058'},
+            extra : {
+                appointment: uid
+            }
+        }
+        let mssg_id = await ioSendMessage(mess)
+        Object.assign(mess,{id: mssg_id})
+        const recipientSocket = Array.from(io.sockets.sockets.values()).find((sock) => sock.handshake.query.id === patient)
+        if (recipientSocket) {
+            recipientSocket.emit('message',mess)
+        }else{
+            console.log('recepient is not online')
+        }
     } catch (error) {
         res.status(500).send({success:false, message: errorMessage.is_error})
         console.log(error)

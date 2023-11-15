@@ -15,6 +15,8 @@
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" integrity="sha512-b2QcS5SsA8tZodcDtGRELiGv5SaKSk1vDHDaQRda0htPYWZ6046lr3kJ5bAAQdpV2mmA/4v0wQF9MyU6/pDIAg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/spinkit/2.0.0/spinkit.min.css" integrity="sha512-kRYkjiYH/VXxoiaDK2oGNMKIi8VQVfie1lkYGX3kmfzWNR2kfaF5ze0885W3/eE6lIiURBsZA91M/WNvCajHMw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+        <link rel="stylesheet" href="/assets/vendor/libs/datatables-bs5/datatables.bootstrap5.css" />
+        <link rel="stylesheet" href="/assets/vendor/libs/datatables-responsive-bs5/responsive.bootstrap5.css" />
         <!-- Core CSS -->
 
     <!-- Vendors CSS -->
@@ -187,6 +189,14 @@
                                             </span>
 										</li>
                                         <li class="p-5p bsbb">
+											<span class="w-100 h-100 p-10p hover-7 cpcards bsbb flex verdana nowrap capitalize fs-13p br-5p dgray" data-item-type="supported-insurances">
+                                                <span class="w-a h-19p mr-10p"><i class="fas fa-hand-holding-medical fs-16p"></i></span>
+                                                <span class="center bsbb">
+                                                    insurances
+                                                </span>
+                                            </span>
+										</li>
+                                        <li class="p-5p bsbb">
 											<span class="w-100 h-100 p-10p hover-7 cpcards bsbb flex verdana nowrap capitalize fs-13p br-5p dgray" data-item-type="medical-prescriptions">
                                                 <span class="w-a h-19p mr-10p"><i class="fas fa-prescription fs-16p"></i></span>
                                                 <span class="center pt-2p bsbb">
@@ -210,7 +220,7 @@
 							<!-- home section -->
 							<div class="br-5p w-100 h-100 p-r ovh block tr-0-3 pagecontentsection zi-10" id="home">
 								<div class="w-100 h-a p-10p bsbb">
-									<span class="theme capitalize left flex bold fs-20p verdana h-100 pl-10p"><span class="dgray capitalize">insurance manager / </span>&nbsp;Home</span>
+									<span class="theme capitalize left flex bold fs-20p verdana h-100 pl-10p"><span class="dgray capitalize">DOF / </span>&nbsp;Home</span>
 								</div>
 								<div class="pg-cntnt w-100 h-90 bh-80-resp scroll-3 p-20p bsbb ovys left bp-0-resp">
 									<div class="home row p-5p bsbb">
@@ -225,7 +235,7 @@
                                                     </span>
                                                 </div>
                                                 <div class="card-body">
-                                                    <h5 class="card-title capitalize">total restricted medicines</h5>
+                                                    <h5 class="card-title capitalize">total medicines inventory</h5>
                                                     <p class="card-text">
                                                         <span class="bold-2">30</span> medicines
                                                     </p>
@@ -244,7 +254,7 @@
                                                     </span>
                                                 </div>
                                                 <div class="card-body">
-                                                    <h5 class="card-title capitalize">restricted equipments</h5>
+                                                    <h5 class="card-title capitalize">equipments inventory</h5>
                                                     <p class="card-text">
                                                         <span class="bold-2">30</span> equipments
                                                     </p>
@@ -263,7 +273,7 @@
                                                     </span>
                                                 </div>
                                                 <div class="card-body">
-                                                    <h5 class="card-title capitalize">restricted services</h5>
+                                                    <h5 class="card-title capitalize">services inventory</h5>
                                                     <p class="card-text">
                                                         <span class="bold-2">30</span> services
                                                     </p>
@@ -282,7 +292,7 @@
                                                     </span>
                                                 </div>
                                                 <div class="card-body">
-                                                    <h5 class="card-title capitalize">total restricted tests</h5>
+                                                    <h5 class="card-title capitalize">total tests inventory</h5>
                                                     <p class="card-text">
                                                         <span class="bold-2">30</span> tests
                                                     </p>
@@ -301,7 +311,7 @@
                                                     </span>
                                                 </div>
                                                 <div class="card-body">
-                                                    <h5 class="card-title capitalize">total restricted medical operations</h5>
+                                                    <h5 class="card-title capitalize">total medical operations inventory</h5>
                                                     <p class="card-text">
                                                         <span class="bold-2">30</span> operations
                                                     </p>
@@ -683,6 +693,51 @@
                                 </div>
 							</div>
 							<!-- end of manage services inventory section -->
+                             <!-- manage supported insurances section -->
+							<div class="br-5p w-100 h-100 p-a ovh hidden t-0 tr-0-3 pagecontentsection" id="supported-insurances">
+								<div class="w-100 h-a p-10p bsbb">
+									<span class="theme capitalize left flex bold fs-20p verdana h-100 pl-10p"><span class="dgray capitalize">Director of finance / </span>&nbsp;supported insurances</span>
+								</div>
+								<div class="pg-cntnt w-100 h-90 p-20p bp-0-resp bsbb ovys left scroll-2">
+                                    <div class="card">
+                                        <div class="card-header border-bottom text-center">
+                                            <div class="d-flex justify-content-between align-items-center row pt-3 gap-3 gap-md-0">
+                                                <div class="col-md-4 service-name"></div>
+                                            </div>
+                                        </div>
+                                        <div class="card-datatable mb-3 table-responsive">
+                                            <table class="datatables datatables-services my-3 table border-top"></table>
+                                        </div>
+                                    </div>
+								</div>
+                                <div class="modal fade ovh">
+                                    <div class="cntr bc-white p-15p w-400p h-220p h-a bsbb br-5p card-6"  id="add-service-modal">
+                                        <div class="">
+                                            <div class="modal-header text-uppercase">
+                                                <span class="card-header capitalize fs-18p">Add insurances To supported list</span>
+                                            </div>
+                                            <div class="modal-body">
+                                                <div class="body w-100 h-a p-5p grid">
+                                                    <form method="post" id="add-service-form" name="add-service-form">
+                                                        <div class="col-md-12 p-10p bsbb mb-5p p-r">
+                                                            <label for="insurances" class="form-label">insurances</label>
+                                                            <input type="text" class="form-control bevalue" id="assurances" placeholder="Insurance name" name="assurance">
+                                                            <small class="hidden w-100 red pl-3p verdana"></small>
+                                                        </div>
+                                                        <div class="col-12 text-center d-flex gap-3 justify-content-end my-10p">
+                                                            <button type="reset" class="btn btn-label-secondary"
+                                                                data-bs-dismiss="modal" aria-label="Close">Cancel</button>
+                                                            <button type="submit" class="btn btn-primary">proceed</button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+							</div>
+							<!-- end of manage supported insurances section -->
                             <!-- manage prescriptions section -->
 							<div class="br-5p w-100 h-100 p-a ovh hidden t-0 tr-0-3 pagecontentsection" id="medical-prescriptions">
 								<div class="w-100 h-a p-10p bsbb">

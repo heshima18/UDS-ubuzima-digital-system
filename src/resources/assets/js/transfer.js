@@ -140,12 +140,7 @@ export async function viewTransfer(trId) {
                     </span>
                 </div>
                     <div class="w-100 h-a py-10p mt-20p flex">
-                        <span class="px-10p bsbb">
-                            <button type="button" class="btn btn-primary capitalize" data-role="button" id="approve">approve</button>
-                        </span>
-                        <span class="px-10p bsbb">
-                            <button type="button" class="btn btn-danger capitalize" data-role="button" id="decline">decline</button>
-                        </span>
+                        
                     </div>
             </div>
         </div>`

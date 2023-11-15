@@ -23,9 +23,10 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/jquery.dataTables.min.js" integrity="sha512-BkpSL20WETFylMrcirBahHfSnY++H2O1W+UnEEO4yNIl+jI2+zowyoGJpbtk6bx97fBXf++WJHSSK2MV4ghPcg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="/assets/js/nav.js" type="module"></script>
-    <script src="/assets/js/hc_provider.js" type="module"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.min.js" integrity="sha512-Xm9qbB6Pu06k3PUwPj785dyTl6oHxgsv9nHp7ej7nCpAqGZT3OZpsELuCYX05DdonFpTlBpXMOxjavIAIUwr0w==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cleave.js/1.6.0/cleave.min.js" integrity="sha512-KaIyHb30iXTXfGyI9cyKFUIRSSuekJt6/vqXtyQKhQP6ozZEGY8nOtRS6fExqE4+RbYHus2yGyYg1BrqxzV6YA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="/assets/js/hc_provider.js" type="module"></script>
+    <script src="/assets/js/footer.js" type="module"></script>
 
 </head>
 <body class="p-0 m-0 w-100 h-100 p-a ovh">
@@ -220,9 +221,9 @@
                                                 <div class="px-15p bsbb card-body">
                                                     <h5 class="dgray capitalize">incoming patients</h5>
                                                     <p class="card-text">
-                                                        <span class="bold-2">30</span> Patients
+                                                        <span class="bold-2" data-role="num_hol" id="in_pati">0</span> Patients
                                                     </p>
-                                                    <a href="pendingApplications/" class="btn btn-transparent white bc-theme">View</a>
+                                                    <a data-redirect="#Incoming_Patient" href="#Incoming_Patient" class="btn btn-transparent white bc-theme">View</a>
                                                 </div>
                                             </div>
                                         </div>
@@ -239,9 +240,9 @@
                                                 <div class="px-15p bsbb card-body">
                                                     <h5 class="dgray capitalize">today's served patients</h5>
                                                     <p class="card-text">
-                                                        <span class="bold-2">30</span> Patients
+                                                        <span class="bold-2" data-role="num_hol" id="t_s_sessions">0</span> Patients
                                                     </p>
-                                                    <a href="pendingApplications/" class="btn btn-transparent white bc-theme">View</a>
+                                                    <a data-redirect="my-sessions" href="/hc_provider/my-sessions/" class="btn btn-transparent white bc-theme">View</a>
                                                 </div>
                                             </div>
                                         </div>
@@ -256,11 +257,11 @@
                                                     </span>
                                                 </div>
                                                 <div class="px-15p bsbb card-body">
-                                                    <h5 class="dgray capitalize">today's pending sessions</h5>
+                                                    <h5 class="dgray capitalize">total pending sessions</h5>
                                                     <p class="card-text">
-                                                        <span class="bold-2">30</span> sessions
+                                                        <span class="bold-2" data-role="num_hol" id="t_p_sessions">0</span> sessions
                                                     </p>
-                                                    <a href="pendingApplications/" class="btn btn-transparent white bc-theme">View</a>
+                                                    <a data-redirect="my-sessions" href="/hc_provider/my-sessions/" class="btn btn-transparent white bc-theme">View</a>
                                                 </div>
                                             </div>
                                         </div>
@@ -268,18 +269,18 @@
                                             <div class="card">
                                                 <div class="capitalize px-5p card-header">
                                                     <span>
-                                                        <i class="fas fa-file-medical dgray fs-16p"></i>
+                                                        <i class="fas fa-calendar dgray fs-16p"></i>
                                                     </span>
                                                     <span class="fs-18p bold-2 dgray">
-                                                        sessions
+                                                        appointments
                                                     </span>
                                                 </div>
                                                 <div class="px-15p bsbb card-body">
-                                                    <h5 class="dgray capitalize">today's pending sessions</h5>
+                                                    <h5 class="dgray capitalize">total appointment requests</h5>
                                                     <p class="card-text">
-                                                        <span class="bold-2">30</span> sessions
+                                                        <span class="bold-2" data-role="num_hol" id="appntmnt_mssg">0</span> appointments
                                                     </p>
-                                                    <a href="pendingApplications/" class="btn btn-transparent white bc-theme">View</a>
+                                                    <a data-redirect="#appointments" href="#open-menu" class="btn btn-transparent white bc-theme">View</a>
                                                 </div>
                                             </div>
                                         </div>
@@ -553,7 +554,7 @@
                                                         </div>
                                                     </div>
                                                     <div class="my-10p px-1p">
-                                                        <ul class="card-1 br-5p  ls-none my-10p iblock p-20p mx-5p my-5p bfull-resp bm-y-10p-resp bm-x-0-resp bblock-resp" name="looping-info" data-hold="medicines">
+                                                        <ul class="card-1 br-5p  ls-none my-10p iblock p-20p w-250p mx-5p my-5p bfull-resp bm-y-10p-resp bm-x-0-resp bblock-resp" name="looping-info" data-hold="medicines">
                                                             <li class="p-2p bsbb flex">
                                                                 <span class="bold-2 dgray card-title fs-20p" name="looping-info-hol" data-hold="name" data-secondary-holder="true">[medication's-name]</span>
                                                             </li>
@@ -840,16 +841,33 @@
                 <!-- footer section -->
                 <div class="w-100 h-a p-f b-0">
                     <footer class="content-footer footer bg-footer-theme">
-                        <div class="flex p-20p jc-sb">
-                            <div class="mb-2 mb-md-0 text-uppercase">
-                                ©
-                                <script>
-                                    document.write(new Date().getFullYear())
-                                </script>
-                                <strong>UDS</strong>
-                            </div>
-                            <div>
-                            Powered by <a href="https://prtlfo.vercel.app/" target="_blank" class="footer-link fw-bolder">#_himself</a>
+                        <div class="body w-100 h-100 bt-1-s-dgray p-10p bsbb">
+                            <div class=" bsbb w-100 igrid">
+                                <div class="w-100 h-a">
+                                    <p class="ls-none center p-0 w-100 m-0">
+                                        <span class="left capitalize verdana fs-10p dgray p-10p bsbb center">
+                                            <span class="nowrap hover-6 dgray fs-11p">
+                                                <span class="center-2">
+                                                &copy;
+                                                <script>
+                                                    document.write(new Date().getFullYear())
+                                                    </script>
+                                                        UDS <span class="fs-18p p-5p bsbb center mt--10p">
+                                                            .
+                                                            </span>
+                                                             <a href="https://ingogatechnologies.com/" class="td-none ls-n"><span class="nowrap hover-6 dgray">ingoga technologies</span></a>
+                                                    </span>
+                                                </span>
+                                            <span class="center-2">
+                                                <a href="https://ingogatechnologies.com/#about" class="td-none ls-n"><span class="nowrap hover-6 dgray">About us</span></a>
+                                                <span class="fs-18p p-5p bsbb center mt--10p">
+                                                .
+                                                </span>
+                                                <a href="https://ubuzima.digital/terms" class="td-none ls-n"><span class="nowrap hover-6 dgray">Terms and conditions</span></a>
+                                            </span>
+                                        </span>
+                                    </p>
+                                </div>
                             </div>
                         </div>
                     </footer>

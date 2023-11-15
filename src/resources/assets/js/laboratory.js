@@ -1,5 +1,5 @@
-import { alertMessage, getdata, getschema, postschema, request,initializeCleave,sessiondata, checkEmpty, showRecs, getchips,getPath,addsCard,cpgcntn, geturl } from "../../../utils/functions.controller.js";
-import {expirateMssg, getNfPanelLinks, pushNotifs, userinfo,m as messages} from "./nav.js";
+import { alertMessage, getdata, getschema, postschema, request,initializeCleave,sessiondata, checkEmpty, showRecs, getchips,getPath,addsCard,cpgcntn, geturl, extractTime, getDate } from "../../../utils/functions.controller.js";
+import {expirateMssg, getNfPanelLinks, pushNotifs, userinfo,m as messages, openmenu, addFilter} from "./nav.js";
 
 let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z,notificationlinks
 (async function () {
@@ -163,23 +163,68 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z,notificationlinks
 async function gsd(page,extra) {
     try {
         x = page.id
-        if (x == 'search-patient') {
-        f = page.querySelector('form[name="sp-form"]');
-        s = f.querySelector('input[type="text"]')
-        setTimeout(e=>{s.focus()},200)
-        b = f.querySelector('button[type="submit"]')
-        f.addEventListener('submit',async e=>{
-            e.preventDefault();
-            if (!s.value) return 0
-            b.innerHTML = `<span class="spinner-border" role="status" aria-hidden="true"></span>`
-            b.setAttribute('disabled',true)
-            r = await request(`patient/${s.value}`,postschema)
-            b.innerHTML = `<i class="bx bx-search h-20p w-a center"></i>`
-            b.removeAttribute('disabled')
-            if (!r.success) return alertMessage(r.message)
-            addUprofile(r.message);
-      
+        if (x == 'home') {
+            let num_hols = Array.from(page.querySelectorAll('[data-role="num_hol"]'))
+            
+          let messages = sessiondata('messages')
+          let nmbrs = {inc_tests: 0,c_tests : 0,exp_t: 0}
+            messages.map(function (me) {
+            if (extractTime(me.dateadded,'date') == getDate('date')) {
+                if (me.type == 'req_test_message') {
+                    if (me.status == 'new') {
+                        nmbrs.inc_tests +=1
+                    }else if (me.status == 'seen') {
+                        nmbrs.c_tests +=1
+                    }else{
+                        nmbrs.exp_t +=1
+                    }
+                }
+            }
+          })
+          num_hols.forEach(holder=>{
+            let holderlink = holder.parentElement.parentElement.querySelector('a')
+            holderlink.onclick = function (event) {
+                event.preventDefault()
+                let link = this.getAttribute('data-redirect')
+                if (link.indexOf('#') == -1) {
+                    console.log(link)
+                    let url = new URL(window.location.href);
+                    url.pathname = `/hc_provider/${link}`;
+                    window.history.pushState({},'',url.toString())
+                    const evnt = new Event('urlchange', { bubbles: true });
+                    window.dispatchEvent(evnt);
+                }else{
+                    link = link.replace(/_/g,' ')
+                    link = link.replace(/#/g,'')
+                    openmenu();
+                    addFilter(link)
+                }
+            }
+            let id = holder.id
+            let keys = Object.keys(nmbrs)
+            keys.map(number =>{
+                if (number == id) {
+                    holder.innerHTML = nmbrs[number]
+                }
+            })
         })
+        }else if (x == 'search-patient') {
+            f = page.querySelector('form[name="sp-form"]');
+            s = f.querySelector('input[type="text"]')
+            setTimeout(e=>{s.focus()},200)
+            b = f.querySelector('button[type="submit"]')
+            f.addEventListener('submit',async e=>{
+                e.preventDefault();
+                if (!s.value) return 0
+                b.innerHTML = `<span class="spinner-border" role="status" aria-hidden="true"></span>`
+                b.setAttribute('disabled',true)
+                r = await request(`patient/${s.value}`,postschema)
+                b.innerHTML = `<i class="bx bx-search h-20p w-a center"></i>`
+                b.removeAttribute('disabled')
+                if (!r.success) return alertMessage(r.message)
+                addUprofile(r.message);
+        
+            })
         }else if (x == 'my-account') {
             n = page.querySelector('span.name')
             z = getdata('userinfo')

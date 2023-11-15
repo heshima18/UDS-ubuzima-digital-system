@@ -75,6 +75,31 @@ export function addLoadingTab(parent) {
     console.log(error)
   }
 }
+export function addInpLoadingTab(input) {
+  try {
+    var shaddow = document.createElement('div');
+    input.parentElement.insertBefore(shaddow,parent.firstChild);
+    shaddow.className = "w-100 h-100 ovh p-a bsbb bc-white t-0 blur shaddow zi-20";
+    shaddow.setAttribute('data-role','shade')	
+    var loading = document.createElement('div');
+    loading.className = "p-a cntr w-70p h-70p ovh";
+    loading.innerHTML = `<div class="sk-grid sk-primary">
+                          <div class="sk-grid-cube bc-theme"></div>
+                          <div class="sk-grid-cube bc-theme"></div>
+                          <div class="sk-grid-cube bc-theme"></div>
+                          <div class="sk-grid-cube bc-theme"></div>
+                          <div class="sk-grid-cube bc-theme"></div>
+                          <div class="sk-grid-cube bc-theme"></div>
+                          <div class="sk-grid-cube bc-theme"></div>
+                          <div class="sk-grid-cube bc-theme"></div>
+                          <div class="sk-grid-cube bc-theme"></div>
+                        </div>`;
+    shaddow.appendChild(loading)
+    
+  } catch (error) {
+    console.log(error)
+  }
+}
 export function removeLoadingTab(parent) {
   try {
     var shaddow = parent.querySelector('.shaddow')
@@ -255,11 +280,45 @@ export function initializeSpecialCleave(element,blocks,length,delimitator) {
 export function removeRec(input) {
   try {
     let parent = input.parentNode
-    parent.removeChild(parent.querySelector('div.rec'))
+    let recDivs = Array.from(parent.querySelectorAll('div.rec'))
+    recDivs.forEach(div=>{
+      deletechild(div,parent)
+    })
   } catch (error) {
   }
   
 }
+export async function triggerRecs(input,datatofetch,socket) {
+  let val = input.value.trim();
+  val = val.replace(/[^A-Za-z0-9\s]/g, '');
+  let payload = {
+      needle: val,
+      type: 'search',
+      entity: input.id,
+      datatofetch,
+      coltosearch: 'name'
+
+  }
+  removeRec(input)
+  if (val) {
+    socket.emit('searchForRecs',payload)
+  }
+  let data = await new Promise((resolve, reject) => {
+    socket.on('RecsRes', (data)=>{
+      resolve(data)
+    })
+    
+  })
+  if (data.length) {
+    showRecs(input,data,input.id,'noinptAction')
+    
+  }else{
+    removeRec(input)
+
+  }
+  return data
+}
+
 export function showRecs(input, data,type,noInpAction) {
   try {
     let div =  document.createElement('div');
@@ -772,12 +831,12 @@ export function promptMessage(){
                   <div class="body w-100 h-a p-5p grid">
                       <form method="post" id="notify" name="notify">
                           <div class="col-md-12 px-10p py-6p bsbb p-r">
-                              <label for="test" class="form-label uppercase dgray">message</label>
+                              <label for="test" class="form-label uppercase dgray"><i class="far fa-comment"></i> message</label>
                               <textarea class="form-control" id="message" placeholder="Text message" name="message"></textarea>
                               <small class="w-100 red pl-3p verdana"></small>
                           </div>
-                          <div class="wrap center-2 px-10p bsbb bblock-resp">
-                              <button type="submit" class="btn btn-primary bfull-resp bm-a-resp bmy-10p-resp">Proceed</button>
+                          <div class="wrap p-r px-10p bsbb bblock-resp">
+                              <button type="submit" class="btn btn-primary btn-block cntr">Proceed</button>
                           </div>
                       </form>
                   </div>`
@@ -934,7 +993,7 @@ export async function showAvaiAssurances(assurances){
   a = document.createElement('div')
   u.appendChild(a)
   a.className = "w-40 h-55 p-10p bsbb ovh bc-white cntr zi-10000 br-10p card-5 b-mgc-resp"
-  a.innerHTML = `<div class="card-header d-flex align-items-center justify-content-between p-10p mb-10p bsbb">
+  a.innerHTML = `<div class="d-flex align-items-center justify-content-between p-10p mb-10p bsbb">
                     <h5 class="card-title m-0 me-2 capitalize">select the applying assurance</h5>
                 </div>
                 <div class="ovys w-100 h-85 scroll-2">
@@ -1067,6 +1126,33 @@ export function adcm(n) {
   } catch (error) {
     return n
   }
+}
+export function getDate(type) {
+  const leTime = DateTime.now();
+  let now = leTime.setZone('Africa/Kigali');
+  if (type == 'full') {
+    now = now.toFormat('yyyy-MM-dd HH:mm:ss')
+  }else if (type == 'time') {
+    now = now.toFormat('HH:mm:ss')
+  }else if (type == 'date') {
+    now = now.toFormat('yyyy-MM-dd')
+  }else{
+    now = now.toFormat('yyyy-MM-dd HH:mm:ss')
+  }
+  return now
+}
+export function extractTime(date,type) {
+  date = DateTime.fromISO(date.replace(' ', 'T'))
+  if (type == 'full') {
+    return date.toFormat('yyyy-MM-dd HH:mm:ss')
+  }else if (type == 'time') {
+    date = date.toFormat('HH:mm:ss')
+  }else if (type == 'date') {
+    date = date.toFormat('yyyy-MM-dd')
+  }else{
+    date = date.toFormat('yyyy-MM-dd HH:mm:ss')
+  }
+  return date
 }
 export function calcTime(targetTime) {
   targetTime = new Date(targetTime)

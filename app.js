@@ -5,6 +5,7 @@ import  mysql from "mysql";
 import router from "./src/routes/index.route"
 import {app} from "./handler"
 import { DateTime } from 'luxon';
+import { weeklyProcess } from './src/process/process.controller';
 
 export let connection =  mysql.createPool({
     host : process.env.DB_HOST,

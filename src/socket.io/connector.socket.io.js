@@ -43,7 +43,7 @@ export const io = require('socket.io')(server, {
             break;
         
           default:
-            entity = undefined
+            entity = entity
             break;
         }
         findRecs(socket,entity,needle,type,datatofetch,coltosearch)

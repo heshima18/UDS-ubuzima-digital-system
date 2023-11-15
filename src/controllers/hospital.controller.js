@@ -111,6 +111,44 @@ export const getHP = async (req,res)=>{
     res.status(500).send({success:false, message: errorMessage.is_error})
   }
 }
+export const getHPDeps = async (req,res)=>{
+  try {
+      let {hospital} = req.params
+      if (!hospital) {
+        let { token } = req.body
+        token = authenticateToken(token)
+        token = token.token
+        hospital = token.hospital
+    }
+    if (!hospital) {
+        return res.status(404).send({success: false, message: errorMessage._err_hc_404})
+    }
+      let response = await query(`SELECT
+      COALESCE(CONCAT('[', GROUP_CONCAT(DISTINCT JSON_OBJECT('id', users.id, 'department', users.department)), ']'), '[]') AS employees,
+      CONCAT('[', GROUP_CONCAT(DISTINCT JSON_OBJECT('id', departments.id, 'name', departments.name)), ']') AS departments
+    FROM
+      hospitals
+      LEFT JOIN users ON JSON_CONTAINS(hospitals.employees, JSON_QUOTE(users.id), '$')
+      INNER JOIN departments ON JSON_CONTAINS(hospitals.departments, JSON_QUOTE(departments.id), '$')
+      where hospitals.id = ?
+    GROUP BY
+      hospitals.id,
+      hospitals.name;
+          
+    `,[hospital])
+      if(!response) return res.status(500).send({success: false, message: errorMessage.is_error})
+      for (const hospital of response) {
+        response[response.indexOf(hospital)].employees = JSON.parse(hospital.employees);
+        response[response.indexOf(hospital)].departments = JSON.parse(hospital.departments)  
+      }
+      if (response.length == 0) return res.status(404).send({success: false, message: errorMessage._err_hc_404})
+      res.send({success: true, message: response[0]})
+    
+  } catch (error) {
+    console.log(error)
+    res.status(500).send({success:false, message: errorMessage.is_error})
+  }
+}
 export const searchHP = async (req,res)=>{
   try {
       let {hospital} = req.params
@@ -193,18 +231,17 @@ export const hospitalASSU = async (req,res) =>{
     token = token.token
     let hospital = token.hospital
     let response = await query(`SELECT
-                                  distinct assu.id,
-                                  assu.name
+                                  CONCAT('[', GROUP_CONCAT(DISTINCT JSON_OBJECT('id', assu.id, 'name', assu.name,'coverage',assu.percentage_coverage)), ']') AS assurances
                                 FROM
-                                  medical_history as mh
+                                  hospitals
                                   INNER JOIN 
-                                    assurances as assu on mh.assurance = assu.id
+                                    assurances as assu on JSON_CONTAINS(hospitals.assurances, JSON_QUOTE(assu.id), '$')
                                 WHERE
-                                  mh.hospital = ?
-                                GROUP BY 
-                                  assu.id
+                                  hospitals.id = ?
     `,[hospital])
     if (!response) return res.status(500).send({success: true, message: errorMessage.is_error})
+    response = response[0]
+    response = JSON.parse(response.assurances)
     res.send({success: true, message: response})
   } catch (error) {
     console.log(error)
