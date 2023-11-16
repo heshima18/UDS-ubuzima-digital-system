@@ -25,6 +25,7 @@
     <link rel="stylesheet" href="/styles/styling.css">
     <script src="/assets/js/nav.js" type="module"></script>
     <script src="/assets/js/dof.js" type="module"></script>
+    <script src="/assets/js/footer.js" type="module"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.min.js" integrity="sha512-Xm9qbB6Pu06k3PUwPj785dyTl6oHxgsv9nHp7ej7nCpAqGZT3OZpsELuCYX05DdonFpTlBpXMOxjavIAIUwr0w==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 	<script src="/assets/vendor/libs/datatables-bs5/datatables-bootstrap5.js"></script>
@@ -237,9 +238,9 @@
                                                 <div class="card-body">
                                                     <h5 class="card-title capitalize">total medicines inventory</h5>
                                                     <p class="card-text">
-                                                        <span class="bold-2">30</span> medicines
+                                                        <span class="bold-2" data-role="num_hol" id="med_inv">0</span> medicines
                                                     </p>
-                                                    <a href="pendingApplications/" class="btn btn-primary">View</a>
+                                                    <a href="medications-inventory" data-redirect="medications-inventory" class="btn btn-primary">View</a>
                                                 </div>
                                             </div>
                                         </div>
@@ -256,9 +257,9 @@
                                                 <div class="card-body">
                                                     <h5 class="card-title capitalize">equipments inventory</h5>
                                                     <p class="card-text">
-                                                        <span class="bold-2">30</span> equipments
+                                                        <span class="bold-2" data-role="num_hol" id="equi_inv">0</span> equipments
                                                     </p>
-                                                    <a href="pendingApplications/" class="btn btn-primary">View</a>
+                                                    <a href="equipments-inventory" data-redirect="equipments-inventory" class="btn btn-primary">View</a>
                                                 </div>
                                             </div>
                                         </div>
@@ -275,9 +276,9 @@
                                                 <div class="card-body">
                                                     <h5 class="card-title capitalize">services inventory</h5>
                                                     <p class="card-text">
-                                                        <span class="bold-2">30</span> services
+                                                        <span class="bold-2" data-role="num_hol" id="serv_inv">0</span> services
                                                     </p>
-                                                    <a href="pendingApplications/" class="btn btn-primary">View</a>
+                                                    <a href="services-inventory" data-redirect="services-inventory" class="btn btn-primary">View</a>
                                                 </div>
                                             </div>
                                         </div>
@@ -294,9 +295,9 @@
                                                 <div class="card-body">
                                                     <h5 class="card-title capitalize">total tests inventory</h5>
                                                     <p class="card-text">
-                                                        <span class="bold-2">30</span> tests
+                                                        <span class="bold-2" data-role="num_hol" id="tes_inv">0</span> tests
                                                     </p>
-                                                    <a href="pendingApplications/" class="btn btn-primary">View</a>
+                                                    <a href="tests-inventory" data-redirect="tests-inventory" class="btn btn-primary">View</a>
                                                 </div>
                                             </div>
                                         </div>
@@ -313,9 +314,9 @@
                                                 <div class="card-body">
                                                     <h5 class="card-title capitalize">total medical operations inventory</h5>
                                                     <p class="card-text">
-                                                        <span class="bold-2">30</span> operations
+                                                        <span class="bold-2" data-role="num_hol" id="op_inv">0</span> operations
                                                     </p>
-                                                    <a href="pendingApplications/" class="btn btn-primary">View</a>
+                                                    <a href="operations-inventory" data-redirect="operations-inventory" class="btn btn-primary">View</a>
                                                 </div>
                                             </div>
                                         </div>

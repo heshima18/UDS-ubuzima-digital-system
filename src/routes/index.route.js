@@ -38,8 +38,10 @@ import { checkTest } from '../middlewares/tests.middleware';
 import { insightsStats } from '../controllers/insights.controller';
 import { addPati2fa } from '../middlewares/user.2fa.access.middleware';
 import { createTransfer, viewTransfer } from '../controllers/transfer.controller';
+import getAdminNmbrs from '../controllers/admin-numbers.controller';
 const router = express.Router({ strict: false });
 router.post('/verify',verification)
+router.post('/getnmbrs',authorizeRole,authorizeAdmin,getAdminNmbrs)
 router.post('/addhealthpost',authorizeRole,authorizeAdmin,addhospital)
 router.post('/add-appointment',authorizeRole,authorizeHc_provider,authorizePatient,CheckAppointmentTimer,addAppointment)
 router.post("/addmedicine",authorizeRole,authorizeAdmin,addmedicine)

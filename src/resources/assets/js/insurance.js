@@ -1,7 +1,7 @@
 import { alertMessage, getdata, getschema, postschema, request,initializeCleave,sessiondata,addLoadingTab,removeLoadingTab, checkEmpty, showRecs, getchips,getPath,addsCard,cpgcntn, geturl, adcm, addshade, deletechild } from "../../../utils/functions.controller.js";
 import {expirateMssg, pushNotifs, userinfo} from "./nav.js";
 
-let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z
+let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z,assurance
 (async function () {
     z = userinfo
     let token = getdata('token')
@@ -56,7 +56,7 @@ let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z
         }
     }
     postschema.body = JSON.stringify({token})
-    const assurance = await request('assurance', postschema)
+    assurance = await request('assurance', postschema)
     const medications = await request('getmeds', postschema)
     const services = await request('get-services', postschema)
     const tests = await request('get-tests', postschema)
@@ -88,7 +88,11 @@ let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z
         cpgcntn(0,p,extra)
 
     }
-    window.onpopstate = function () {
+    window.addEventListener('popstate',  function () {
+        const evnt = new Event('urlchange', { bubbles: true });
+        window.dispatchEvent(evnt);
+    })
+    window.addEventListener('urlchange', function() {
         a = getPath(1)
         if(a){
             p.forEach(target=>{
@@ -99,17 +103,20 @@ let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z
                     })
                     c[t].classList.add('active','bb-1-s-theme','bc-tr-theme','theme')
                     cpgcntn(t,p)
-                    gsd(target,extra)
+                    if (getPath(2)) {
+                        gsd(target,getPath(2))
+                    }else{
+                        gsd(target,extra)
+                    }
                     return 0
                 }
             })
         }else{
             window.history.pushState('','','./home')
             cpgcntn(0,p)
-            gsd(p[0])
     
-        }
-    }
+        }    
+    }); 
     c.forEach((cudstp)=>{
         cudstp.addEventListener('click',()=>{
             c.forEach((cp)=>{
@@ -131,7 +138,59 @@ let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z
     async function gsd(page,extra) {
         try {
             x = page.id
-            if (x == 'my-account') {
+            if (x == 'home') {
+                let num_hols = Array.from(page.querySelectorAll('[data-role="num_hol"]'))
+                
+              let messages = sessiondata('messages')
+              let nmbrs = {med_inv: 0,equi_inv : 0,serv_inv: 0, tes_inv: 0, op_inv: 0}
+              if (assurance) {
+              }else{
+                assurance = await request('assurance', postschema)
+              }
+              if (assurance.success) {
+                assurance.message.rstrct_m.map(function (inv) {
+                    nmbrs.med_inv +=1
+                })
+                assurance.message.rstrct_t.map(function (inv) {
+                    nmbrs.tes_inv +=1
+                })
+                assurance.message.rstrct_e.map(function (inv) {
+                    nmbrs.equi_inv +=1
+                })
+                assurance.message.rstrct_s.map(function (inv) {
+                    nmbrs.serv_inv +=1
+                })
+                assurance.message.rstrct_o.map(function (inv) {
+                    nmbrs.op_inv +=1
+                })
+              }
+              num_hols.forEach(holder=>{
+                let holderlink = holder.parentElement.parentElement.querySelector('a')
+                holderlink.onclick = function (event) {
+                    event.preventDefault()
+                    let link = this.getAttribute('data-redirect')
+                    if (link.indexOf('#') == -1) {
+                        let url = new URL(window.location.href);
+                        url.pathname = `/insurance_manager/${link}`;
+                        window.history.pushState({},'',url.toString())
+                        const evnt = new Event('urlchange', { bubbles: true });
+                        window.dispatchEvent(evnt);
+                    }else{
+                        link = link.replace(/_/g,' ')
+                        link = link.replace(/#/g,'')
+                        openmenu();
+                        addFilter(link)
+                    }
+                }
+                let id = holder.id
+                let keys = Object.keys(nmbrs)
+                keys.map(number =>{
+                    if (number == id) {
+                        holder.innerHTML = nmbrs[number]
+                    }
+                })
+            })
+            }else if (x == 'my-account') {
                 n = page.querySelector('span.name')
                 z = getdata('userinfo')
                 n.textContent = z.Full_name
