@@ -1,4 +1,4 @@
-import { RemoveAuthDivs, addLoadingTab, addsCard, addshade, alertMessage, calcTime, deletechild, getPath, getdata, postschema, request, showAvaiAssurances, showAvaiEmps } from "./functions.controller.js";
+import { RemoveAuthDivs, addLoadingTab, addSpinner, addsCard, addshade, alertMessage, calcTime, deletechild, getPath, getdata, postschema, removeSpinner, request, showAvaiAssurances, showAvaiEmps, showFingerprintDiv } from "./functions.controller.js";
 let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,z,x,c,v,b,n,m,users
 export function addUprofile(data){
   e = addshade();
@@ -102,6 +102,10 @@ export function addUprofile(data){
                             <span>${data.email}</span>
                         </li>
                     </ul>
+                    <small class="text-muted text-uppercase">Actions</small>
+                    <ul class="list-unstyled mb-4 mt-3 w-100 ovh">
+                        <button class="btn center-2 btn-primary" id="add-fp-button"><img class="w-30p h-30p contain" src="/assets/svg/fingerprint.svg"><span class="capitalize px-5p">add fingerprint</span></button>
+                    </ul>
                 </div>
             </div>
             <!--/ About User -->
@@ -120,7 +124,27 @@ export function addUprofile(data){
       </div>
     </div>`
     let beneficiaries = Array.from(a.querySelectorAll('li.benef'))
-    let copyButtons = Array.from(a.querySelectorAll('i.fa-copy'))
+    let copyButtons = Array.from(a.querySelectorAll('i.fa-copy')),addFPB = a.querySelector('button#add-fp-button')
+    addFPB.onclick = async function (event) {
+      event.preventDefault();
+      console.log('dsd')
+      fp_data = await showFingerprintDiv('register');
+      addSpinner(addFPB)
+      if (fp_data) {
+          RemoveAuthDivs()
+          postschema.body = JSON.stringify({
+            token: getdata('token'),
+            patient: data.id,
+            fp_data
+          })
+          let res = await request('add-user-fp',postschema)
+          removeSpinner(addFPB)
+          if (!res.success) {
+            alertMessage(res.message)
+          }
+          console.log(fp_data)
+      }
+    }
     copyButtons.forEach(button=>{
       button.onclick = function (event) {
         event.preventDefault()
@@ -293,5 +317,5 @@ export async function uprofileStf(r,users) {
       deletechild(d.parentNode,d.parentNode.parentNode)
       addsCard('consultant notified !',true)
      }
-  }) 
+  })
 }

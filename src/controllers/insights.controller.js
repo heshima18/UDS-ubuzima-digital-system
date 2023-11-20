@@ -8,10 +8,7 @@ export const insightsStats = async (req,res)=>{
     try {
         const leTime = DateTime.now();
         let now = leTime.setZone('Africa/Kigali');
-        let {entity,needle,range,token,compType,location} = req.body,avaiGroupings
-        if (location) {
-            console.log(Object.keys(location)[0],location[Object.keys(location)[0]])
-        }
+        let {entity,needle,range,token,compType} = req.body,avaiGroupings
         if (!entity || !needle) {
             token = authenticateToken(token)
             token = token.token
@@ -30,7 +27,7 @@ export const insightsStats = async (req,res)=>{
         avaiGroupings.push('tests','medications')
         if (!range.start || !range.stop) {
             let start_date = `${now.year}-${now.month - 1}-${now.day} 00:00:00`
-           range.start = start_date,range.stop = now.toFormat('yyyy-MM-dd HH:mm:ss')
+            range.start = start_date,range.stop = now.toFormat('yyyy-MM-dd HH:mm:ss')
         }
         let dateGroupType = getDateIntervalDescription(new Date(range.start), new Date(range.stop));
         let results = await query(`
@@ -59,9 +56,9 @@ export const insightsStats = async (req,res)=>{
              ) as hp_loc_ids,
              GROUP_CONCAT(DISTINCT JSON_OBJECT('id', p.id,'name', p.Full_name)) as p_info
             FROM medical_history as mh
-             INNER JOIN hospitals ON mh.hospital = hospitals.id  AND hospitals.${entity} = ?
-             inner join patients as p ON mh.patient = p.id
-            WHERE  mh.dateclosed >= ? AND mh.dateclosed <= ? AND mh.status = ?
+             LEFT JOIN hospitals ON mh.hospital = hospitals.id  AND hospitals.${entity} = ?
+             left join patients as p ON mh.patient = p.id
+            WHERE  mh.dateclosed >= ? AND mh.dateclosed <= ? AND mh.status != ?
             GROUP BY mh.id order by mh.dateclosed asc
         `,[needle,range.start,range.stop,'open'])
         if (!results) return res.status(500).send({success: false, message: errorMessage.is_error})

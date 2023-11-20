@@ -70,6 +70,8 @@ router.post("/gAsSuMH/",authorizeRole,authorizeAssuranceManager,assuranceMH)
 router.post("/gAsSuHP/",authorizeRole,authorizeAssuranceManager,assuranceHP)
 router.post("/gHosPiAsSu/",authorizeRole,(req,res,next) => authorizeMultipleRoles(req,res,next,['dof']),hospitalASSU)
 router.post("/add-hospi-assu/",authorizeRole,(req,res,next) => authorizeMultipleRoles(req,res,next,['dof']),addassuranceToHp)
+router.post("/add-user-fp",authorizeRole,(req,res,next) => authorizeMultipleRoles(req,res,next,['hc_provider','receptionist']),addassuranceToHp)
+
 router.get("/tp",testPay)
 router.post("/add-assurance-to-user",authorizeRole,authorizePatientToken,addUserAssurance)
 // session routes

@@ -203,6 +203,23 @@ export async function selectPatientFP(patient) {
         return null
     }
 }
+export const addPatientFP = async (req,res)=>{
+    try {
+      let {fp_data,patient} = req.body
+      if(patient){
+            let p = await query(`insert into fingerprints (id,user,data) values(?,?,?)`,[id(),patient,fp_data])
+            if (!p) {
+                return res.status(500).send({success:false, message: errorMessage.is_error})
+            }
+        }
+        res.send({success: true, message: errorMessage.FP_added_to_user_message})
+      
+    } catch (error) {
+      console.log(error)
+      res.status(500).send({success:false, message: errorMessage.is_error})
+    }
+}
+
 export const addPatiBg = async (req,res) => {
     try {
         let {b_group,patient} = req.body

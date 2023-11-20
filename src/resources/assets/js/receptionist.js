@@ -339,7 +339,6 @@ c.forEach((cudstp)=>{
                     fp_data = await showFingerprintDiv('register');
                     if (fp_data) {
                         RemoveAuthDivs()
-                        console.log(fp_data)
                        fp_ind.classList.replace('bc-gray','bc-tr-green')
                        fp_ind.classList.replace('dgray','green')
                        fp_ind.classList.remove('mt--2p')

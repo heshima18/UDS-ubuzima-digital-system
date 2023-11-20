@@ -120,7 +120,7 @@ export function closetab(element,parent){
   }
 }
 export function addSpinner(element) {
-  element.setAttribute(`data-innertext`,element.innerText)
+  element.setAttribute(`data-innertext`,element.innerHTML)
   element.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`
   element.setAttribute('disabled',true)
 }

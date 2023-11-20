@@ -51,9 +51,6 @@ const signup = async (req,res)=>{
     let m  = sendmail(email,{subject: 'UDS your 2FA one time verification code', body: `${FAcode}`},Full_name,'2FA code')
     if (fp_data) {
       let insertfp = await query(`insert into fingerprints (id,user,data) values(?,?,?)`,[id(),uid,fp_data])
-      if (insertfp) {
-        console.log('fp recorded')
-      }
     }
     res.send({success: true, message: errorMessage.uc_message})
     
