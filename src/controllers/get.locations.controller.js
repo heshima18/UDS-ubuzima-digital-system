@@ -2,84 +2,49 @@ import query from './query.controller'
 import errorMessage from './response.message.controller'
 const getMap = async (req,res)=>{
   try {
-      let response = await query(`SELECT
-      CONCAT(
-          '[',
-          GROUP_CONCAT(
-              JSON_OBJECT("id", province_id, "name", province_name, "districts",
-                  COALESCE(districts, '[]'))
-              ORDER BY province_id
-              SEPARATOR ','
-          ),
-          ']'
-      ) AS provinces
-  FROM (
-      SELECT
-          p.id AS province_id,
-          p.name AS province_name,
-          CONCAT(
-              '[',
-              GROUP_CONCAT(
-                  JSON_OBJECT("id", district_id, "name", district_name, "sectors",
-                      COALESCE(sectors, '[]'))
-                  ORDER BY district_id
-                  SEPARATOR ','
-              ),
-              ']'
-          ) AS districts
-      FROM
-          provinces p
-          LEFT JOIN districts d ON p.id = d.province
-          LEFT JOIN (
-              SELECT
-                  d.id AS district_id,
-                  d.name AS district_name,
-                  CONCAT(
-                      '[',
-                      GROUP_CONCAT(
-                          JSON_OBJECT("id", sector_id, "name", sector_name, "cells",
-                              COALESCE(cells, '[]'))
-                          ORDER BY sector_id
-                          SEPARATOR ','
-                      ),
-                      ']'
-                  ) AS sectors
-              FROM
-                  districts d
-                  LEFT JOIN sectors s ON d.id = s.district
-                  LEFT JOIN (
-                      SELECT
-                          s.id AS sector_id,
-                          s.name AS sector_name,
-                          CONCAT(
-                              '[',
-                              GROUP_CONCAT(
-                                 JSON_OBJECT("id", c.id, "name", c.name)
-                                  ORDER BY c.id
-                                  SEPARATOR ','
-                              ),
-                              ']'
-                          ) AS cells
-                      FROM
-                          sectors s
-                          LEFT JOIN cells c ON s.id = c.sector
-                      GROUP BY
-                          s.id, s.name
-                  ) AS sector_data ON s.id = sector_data.sector_id
-              GROUP BY
-                  d.id, d.name
-          ) AS district_data ON d.id = district_data.district_id
-      GROUP BY
-          p.id, p.name
-  ) AS province_data
-  GROUP BY
-      province_id, province_name;
-  `,[])
-      if(!response) return res.status(500).send({success: false, message: errorMessage.is_error})
-      for (const address of response) {
-        response[response.indexOf(address)].provinces = JSON.parse(address.provinces)
+    let provinces = await query('SELECT name,id from provinces')
+    let districts = await query('SELECT name,id,province from districts')
+    let sectors = await query('SELECT name,id,district from sectors')
+    let cells = await query('SELECT name,id,sector from cells')
+    if(!provinces || !districts || !sectors || !cells) return res.status(500).send({success: false, message: errorMessage.is_error})
+    let Obj = []
+    provinces.map(function (province) {
+        Obj.push({provinces: [{id: province.id,name: province.name, districts: []}]})
+        
+    })
+    for (const province of Obj) {
+        for (const district of  districts) {
+            if (province.provinces[0].id == district.province) {
+                Obj[Obj.indexOf(province)].provinces[0].districts.push({id: district.id, name: district.name, sectors: []})
+              }
+        }
     }
-      res.send({success: true, message: response})
+    for (const province of Obj) {
+        for (const district of  province.provinces[0].districts) {
+            for (const sector of sectors) {
+                if (sector.district == district.id) {
+                    Obj[Obj.indexOf(province)].provinces[0].districts[Obj[Obj.indexOf(province)].provinces[0].districts.indexOf(district)].sectors.push({id: sector.id, name: sector.name, cells: []})
+                }
+                
+            }
+        }
+    }
+    for (const province of Obj) {
+        for (const district of  province.provinces[0].districts) {
+            let distinex = province.provinces[0].districts.indexOf(district)
+            for (const sector of district.sectors) {
+                let sectIndex = province.provinces[0].districts[distinex].sectors.indexOf(sector)
+                for (const cell of cells) {
+                    if (cell.sector == sector.id) {
+                        Obj[Obj.indexOf(province)].provinces[0].districts[distinex].sectors[sectIndex].cells.push({id: cell.id, name: cell.name})
+                    }
+                    
+                }
+                
+            }
+        }
+    } 
+      res.send({success: true, message: Obj})
     
   } catch (error) {
     console.log(error)
