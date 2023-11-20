@@ -240,6 +240,7 @@ export const getHc_pSessions = async (req,res)=>{
       let {token} = req.body
       let decoded = authenticateToken(token)
       let hcp = decoded.token.id
+      let hp = decoded.token.hospital
       if (!hcp) {hcp = req.body.hcp}
       let response = await query(`SELECT 
       mh.id AS session_id,
@@ -252,10 +253,10 @@ export const getHc_pSessions = async (req,res)=>{
       medical_history mh
       INNER JOIN patients ON mh.patient = patients.id
       LEFT JOIN assurances ON mh.assurance = assurances.id
-    WHERE mh.hc_provider = ?
+    WHERE mh.hc_provider = ? and mh.hospital = ?
     GROUP BY
     mh.id order by date desc;
-    `,[hcp])
+    `,[hcp,hp])
       if(!response) return res.status(500).send({success: false, message: errorMessage.is_error})
       response = response.map(function (res) {
         res.date = DateTime.fromISO(res.date).toFormat('yyyy-MM-dd')

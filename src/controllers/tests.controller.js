@@ -34,3 +34,22 @@ export const getTest = async (req,res)=>{
   if (select.length == 0) return res.status(404).send({success: false, message: errorMessage._err_med_404})
   res.send({success: true, message: select})
 }
+export const getTestInfo = async function (test) {
+  try {
+      const select = await query(`
+          SELECT tests.id, tests.name, price, departments.name AS department_name, departments.id AS department
+          FROM tests
+          INNER JOIN departments ON tests.department = departments.id
+          WHERE tests.id = ?`,
+          [test]
+      );
+
+      if (!select || select.length === 0) {
+          return undefined;
+      }
+
+      return select[0];
+  } catch (error) {
+      throw error;
+  }
+};

@@ -1,12 +1,17 @@
+import { getMedInfo } from "./medicine.controller";
 import query from "./query.controller"
 import errorMessage from "./response.message.controller"
+import { getTestInfo } from "./tests.controller";
 import authenticateToken from "./token.verifier.controller"
 import { DateTime } from "luxon";
 export const insightsStats = async (req,res)=>{
     try {
         const leTime = DateTime.now();
         let now = leTime.setZone('Africa/Kigali');
-        let {entity,needle,range,token,compType} = req.body,avaiGroupings
+        let {entity,needle,range,token,compType,location} = req.body,avaiGroupings
+        if (location) {
+            console.log(Object.keys(location)[0],location[Object.keys(location)[0]])
+        }
         if (!entity || !needle) {
             token = authenticateToken(token)
             token = token.token
@@ -22,6 +27,7 @@ export const insightsStats = async (req,res)=>{
         }else if (entity == 'cell'){
             avaiGroupings = ['health facilities']
         }
+        avaiGroupings.push('tests','medications')
         if (!range.start || !range.stop) {
             let start_date = `${now.year}-${now.month - 1}-${now.day} 00:00:00`
            range.start = start_date,range.stop = now.toFormat('yyyy-MM-dd HH:mm:ss')
@@ -53,26 +59,34 @@ export const insightsStats = async (req,res)=>{
              ) as hp_loc_ids,
              GROUP_CONCAT(DISTINCT JSON_OBJECT('id', p.id,'name', p.Full_name)) as p_info
             FROM medical_history as mh
-             LEFT JOIN hospitals ON mh.hospital = hospitals.id  AND hospitals.${entity} = ?
+             INNER JOIN hospitals ON mh.hospital = hospitals.id  AND hospitals.${entity} = ?
              inner join patients as p ON mh.patient = p.id
-            WHERE  mh.dateclosed >= ? AND mh.dateclosed <= ? AND mh.status != ?
+            WHERE  mh.dateclosed >= ? AND mh.dateclosed <= ? AND mh.status = ?
             GROUP BY mh.id order by mh.dateclosed asc
         `,[needle,range.start,range.stop,'open'])
         if (!results) return res.status(500).send({success: false, message: errorMessage.is_error})
         if (!results.length) return res.status(404).send({success: false, message: errorMessage._err_recs_404})
-        results = results.map(function (field) {
-            field.medicines = JSON.parse(field.medicines)
-            field.tests = JSON.parse(field.tests)
-            field.symptoms = JSON.parse(field.symptoms)
-            field.decision = JSON.parse(field.decision)
-            field.p_info = JSON.parse(field.p_info)
-            field.hp_loc = JSON.parse(field.hp_loc)
-            field.hp_loc_ids = JSON.parse(field.hp_loc_ids)
+        results = await Promise.all(results.map(async function (field) {
+            field.medicines = JSON.parse(field.medicines);
+            field.tests = JSON.parse(field.tests);
+            field.tests = await Promise.all(field.tests.map(async function (test) {
+                let testsInfo = await getTestInfo(test.id);
 
-            return field
-        })
-        let groupByHps = {},groupByProvinces = {},groupBySectors = {},groupByDistricts = {},groupByCells = {},groupByResults = {},groupByDates = {}
-        results.forEach(session=>{
+                return {id: test.id,name: testsInfo.name, result: test.result};
+            }));
+            field.medicines = await Promise.all(field.medicines.map(async function (medicine) {
+                let medicinesInfo = await getMedInfo(medicine.id);
+                return {id: medicine.id,name: medicinesInfo.name};
+            }));
+            field.symptoms = JSON.parse(field.symptoms);
+            field.decision = JSON.parse(field.decision);
+            field.p_info = JSON.parse(field.p_info);
+            field.hp_loc = JSON.parse(field.hp_loc);
+            field.hp_loc_ids = JSON.parse(field.hp_loc_ids);
+            return field;
+        }));
+        let groupByHps = {},groupByProvinces = {},groupBySectors = {},groupByDistricts = {},groupByCells = {},groupByResults = {},groupByDates = {},groupByMeds = {},groupByTests = {},groupByEmptyDiags = {}, groupByMedSuccessRate = {},groupByMedsSideEffect = {}
+        results.forEach(async (session)=>{
             if (!(session.hpname in groupByHps)) {
                 
                 if (compType) {
@@ -274,6 +288,8 @@ export const insightsStats = async (req,res)=>{
                 }
             }
             const decisions = session.decision;
+            const tests = session.tests;
+            const Meds = session.medicines;
             const hospitalName = session.hpname;
             const hospitalId = session.hpid;
             decisions.forEach((decision) => {
@@ -306,13 +322,53 @@ export const insightsStats = async (req,res)=>{
                   }
               }
             });
+            tests.map(async (test) => {
+                try {
+                    if (!groupByTests[test.name]) {
+                        groupByTests[test.name] = {
+                            id: test.id,
+                            total: 0,
+                            resultsCounts: [],
+                        };
+                    }
+                    
+                    groupByTests[test.name].total++;
+                    if (groupByTests[test.name].id == test.id) {
+                        let avai = groupByTests[test.name].resultsCounts.find(function (rslt) {
+                            return rslt.name == test.result
+                        })
+                        if (avai) {
+                            groupByTests[test.name].resultsCounts[groupByTests[test.name].resultsCounts.indexOf(avai)].total++;
+                        } else {
+                            groupByTests[test.name].resultsCounts.push({name: test.result, total: 1 });
+                        }
+                    }
+                } catch (error) {
+                    console.log(error);
+                }
+            });
+            Meds.map(async (Med) => {
+                try {
+                    if (!groupByMeds[Med.name]) {
+                        groupByMeds[Med.name] = {
+                            id: Med.id,
+                            total: 0,
+                            resultsCounts: [],
+                        };
+                    }
+                    groupByMeds[Med.name].total++;
+                } catch (error) {
+                    console.log(error);
+                }
+            });
+            
+            
         })
-        
         const dataArray = Object.entries(groupByResults);
         dataArray.sort(([, a], [, b]) => b.total - a.total);
         const sortedData = Object.fromEntries(dataArray);
         groupByResults = sortedData
-        res.send({success: true, message: {groupByHps,groupByResults,avaiGroupings,groupBySectors,groupByProvinces,groupByDistricts,groupByCells,groupByDates}})    
+        res.send({success: true, message: {groupByHps,groupByResults,avaiGroupings,groupBySectors,groupByProvinces,groupByDistricts,groupByCells,groupByDates,groupByMeds,groupByTests,groupByEmptyDiags,groupByMedSuccessRate,groupByMedsSideEffect}})    
     } catch (error) {
         console.log(error)
         return res.status(500).send({success: false, message: errorMessage.is_error})

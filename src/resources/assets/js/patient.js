@@ -348,6 +348,7 @@ postschema.body = JSON.stringify({token: getdata('token')});
                            }
                            element.parentNode.appendChild(clonedNode)
                         }
+                        
                         element.parentNode.removeChild(element)
     
                     }
@@ -434,7 +435,7 @@ postschema.body = JSON.stringify({token: getdata('token')});
                                         </div>`
                         const sessionHol = li.querySelector(`div.session-holder`)
                         for (const session of month.sessions) {
-                            if (session.status != 'open') {
+                            if (session.status) {
                                 let ss = document.createElement('div')
                                 sessionHol.appendChild(ss)
                                 ss.className = `w-250p h-a bfull-resp p-5p bsbb iblock`
@@ -463,7 +464,7 @@ postschema.body = JSON.stringify({token: getdata('token')});
                             let div = document.createElement('div')
                             div.className = `ovh center-2`
                             sessionHol.appendChild(div)
-                            div.innerHTML = `<span class="capitalize dgray flex fs-16p bold-2">no entries available</span>`
+                            aDePh(div)
                         }
                     }
                 }

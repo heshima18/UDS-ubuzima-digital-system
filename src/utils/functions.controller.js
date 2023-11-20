@@ -51,6 +51,7 @@ export function addshade(){
 }
 export function addLoadingTab(parent) {
   try {
+    parent.classList.remove('ovys')
     parent.classList.add('ovh')
     var shaddow = document.createElement('div');
     parent.insertBefore(shaddow,parent.firstChild);
@@ -104,6 +105,8 @@ export function removeLoadingTab(parent) {
   try {
     var shaddow = parent.querySelector('.shaddow')
     parent.classList.remove('ovh')
+    parent.classList.add('ovys')
+
     deletechild(shaddow,parent)
   } catch (error) {
   }
@@ -115,6 +118,16 @@ export function closetab(element,parent){
   } catch (error) {
     
   }
+}
+export function addSpinner(element) {
+  element.setAttribute(`data-innertext`,element.innerText)
+  element.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`
+  element.setAttribute('disabled',true)
+}
+export function removeSpinner(element) {
+  element.innerHTML = element.getAttribute(`data-innertext`)
+  element.removeAttribute('disabled')
+
 }
 export function alertMessage(message){
   let q =  addshade();
@@ -436,6 +449,7 @@ export function showRecs(input, data,type,noInpAction) {
     if (!noInpAction) {
       input.onkeyup = function () {
        let value = this.value.trim(),pattern = new RegExp(`.*${value.split('').join('.*')}.*`, "i"),match = 0
+       if (!value) input.removeAttribute('data-id')
        items.forEach(item =>{
         if (!pattern.test(item.textContent)) {
           item.classList.add('hidden')
@@ -1199,9 +1213,9 @@ export function aDePh(parent) {
   let defaultLi = document.createElement('li')
   defaultLi.className = `ovh center-2`
   parent.appendChild(defaultLi)
-  defaultLi.innerHTML = `<span class="capitalize dgray flex fs-16p bold-2">no entries available</span>`
+  defaultLi.innerHTML = `<span class="capitalize dgray center fs-16p text muted"><span class="w-100 h-a center"><img class="w-60p h-60p contain" src="/assets/svg/box.svg"></span><span class="capitalize">no entries to available</span></span>`
 }
-export function getLocs(map,required) {
+export function getLocs(map,required,extra) {
   let cache = []
   if (required == "province") {
       for (const provinces of map) {
@@ -1209,13 +1223,25 @@ export function getLocs(map,required) {
       }
       return cache
   }else if (required == "district") {
+    if (!extra) {
       for (const provinces of map) {
           for (const district of  provinces.provinces[0].districts) {
               cache.push({id: district.id, name: district.name})
           }
       }
+    }else{
+      for (const provinces of map) {
+        if (provinces.provinces[0].id == extra) {
+          for (const district of  provinces.provinces[0].districts) {
+              cache.push({id: district.id, name: district.name})
+          }
+          
+        }
+    }
+    }
       return cache
   }else if (required == "sector") {
+    if (!extra) {
       for (const provinces of map) {
           for (const district of  provinces.provinces[0].districts) {
               for (const sector of district.sectors) {
@@ -1223,8 +1249,20 @@ export function getLocs(map,required) {
               }
           }
       }
+    }else{
+      for (const provinces of map) {
+        for (const district of  provinces.provinces[0].districts) {
+          if (district.id == extra) {
+            for (const sector of district.sectors) {
+                cache.push({id: sector.id, name: sector.name})
+            }
+          }
+        }
+      }
+    }
       return cache
   }else if (required == "cell") {
+    if (!extra) {
       for (const provinces of map) {
           for (const district of  provinces.provinces[0].districts) {
               for (const sector of district.sectors) {
@@ -1234,6 +1272,19 @@ export function getLocs(map,required) {
               }
           }
       }
+    }else{
+      for (const provinces of map) {
+        for (const district of  provinces.provinces[0].districts) {
+            for (const sector of district.sectors) {
+              if (sector.id == extra) {
+                for (const cell of sector.cells) {
+                    cache.push({id: cell.id, name: cell.name})
+                }
+              }
+            }
+        }
+      }
+    }
       return cache
   }
 }

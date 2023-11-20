@@ -1,5 +1,5 @@
 
-import { alertMessage, getdata, getschema, postschema, request,deletechild, checkEmpty, showRecs, getchips,getPath,calcTime,addsCard,cpgcntn, geturl,sessiondata,addChip, showAvaiAssurances, adcm, addshade, addLoadingTab, removeLoadingTab, showAvaiEmps, fT, promptHpsToChoose, addAuthDiv, RemoveAuthDivs, showFingerprintDiv, removeRec, promptMessage, triggerRecs, extractTime, getDate } from "../../../utils/functions.controller.js";
+import { alertMessage, getdata, getschema, postschema, request,deletechild, checkEmpty, showRecs, getchips,getPath,calcTime,addsCard,cpgcntn, geturl,sessiondata,addChip, showAvaiAssurances, adcm, addshade, addLoadingTab, removeLoadingTab, showAvaiEmps, fT, promptHpsToChoose, addAuthDiv, RemoveAuthDivs, showFingerprintDiv, removeRec, promptMessage, triggerRecs, extractTime, getDate, aDePh, addSpinner } from "../../../utils/functions.controller.js";
 import { addUprofile } from "../../../utils/user.profile.controller.js";
 import {pushNotifs, userinfo,expirateMssg, getNfPanelLinks,m as messages, DateTime, openmenu, addFilter} from "./nav.js";
 import { viewTransfer } from "./transfer.js";
@@ -955,6 +955,9 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,z,notificationlinks,socket,m
                        }
                        element.parentNode.appendChild(clonedNode)
                     }
+                    if(dataToShow.length == 0){
+                        aDePh(element.parentElement)
+                    }
                     element.parentNode.removeChild(element)
 
                 }
@@ -1121,7 +1124,7 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,z,notificationlinks,socket,m
                         dateadded : message.dateadded
                     })
                     button.classList.add('loading')
-                    button.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`
+                    addSpinner(button)
                     let addApp = await request('add-appointment',postschema)
                     button.innerHTML = `approve`
                     button.classList.remove('loading')

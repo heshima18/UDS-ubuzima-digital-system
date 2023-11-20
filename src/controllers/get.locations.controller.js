@@ -87,6 +87,7 @@ const getMap = async (req,res)=>{
       province_id, province_name;
   `,[])
       if(!response) return res.status(500).send({success: false, message: errorMessage.is_error})
+     console.log(response) 
     for (const address of response) {
         response[response.indexOf(address)].provinces = JSON.parse(address.provinces)
     }

@@ -79,5 +79,23 @@ GROUP BY i.hospital;
   }
   res.send({success: true, message: select})
 }
+export const getMedInfo = async function (medicine) {
+  try {
+      const select = await query(`
+          SELECT medicines.id, medicines.name, price
+          FROM medicines
+          WHERE medicines.id = ?`,
+          [medicine]
+      );
+
+      if (!select || select.length === 0) {
+          return undefined;
+      }
+
+      return select[0];
+  } catch (error) {
+      throw error;
+  }
+};
 
  

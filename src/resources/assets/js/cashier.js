@@ -1,4 +1,5 @@
-import { alertMessage, getdata, getschema, postschema, request,initializeCleave,sessiondata,addLoadingTab,removeLoadingTab, checkEmpty, showRecs, getchips,getPath,addsCard,cpgcntn, geturl, adcm, addshade, deletechild, RemoveAuthDivs, showFingerprintDiv, addAuthDiv } from "../../../utils/functions.controller.js";
+import { alertMessage, getdata, getschema, postschema, request,initializeCleave,sessiondata,addLoadingTab,removeLoadingTab, checkEmpty, showRecs, getchips,getPath,addsCard,cpgcntn, geturl, adcm, addshade, deletechild, RemoveAuthDivs, showFingerprintDiv, addAuthDiv, aDePh } from "../../../utils/functions.controller.js";
+import { showPaymentPopup } from "../../../utils/payments.popup.controller.js";
 import { addUprofile } from "../../../utils/user.profile.controller.js";
 import {pushNotifs, userinfo,expirateMssg, getNfPanelLinks,m as messages, DateTime} from "./nav.js";
 
@@ -322,6 +323,9 @@ let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z,r,session_input,session_s_
                        }
                        element.parentNode.appendChild(clonedNode)
                     }
+                    if(dataToShow.length == 0){
+                        aDePh(element.parentElement)
+                    }
                     element.parentNode.removeChild(element)
     
                 }
@@ -395,7 +399,7 @@ let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z,r,session_input,session_s_
                     }else if (sessiondata.payment_info.status != 'awaiting payment' && button.getAttribute('data-role') == 'request-payment') {
                       deletechild(button, button.parentElement)
                     }
-                   button.addEventListener('click', async function (event) {
+                   button.onclick =  async function (event) {
                         let role = this.getAttribute('data-role')
                         if (role == 'approve-payment' && !button.classList.contains('loading')) {
                             if (sessiondata.payment_info.status == 'paid') {
@@ -477,9 +481,14 @@ let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z,r,session_input,session_s_
                             })
                         }
                         comment(sessiondata.comment)
+                        }else if (role == `request-payment`) {
+                            if (button.classList.contains('loading')) {
+                                return
+                            }
+                            showPaymentPopup()
                         }
                     
-                    })
+                    }
                })            
             }
             

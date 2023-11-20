@@ -1,8 +1,13 @@
-import { postschema, request,alertMessage, getdata,getschema, animskel, deletechild,getPath,cpgcntn, sessiondata, calcTime,DateTime,geturl, adcm, removeLoadingTab, initializeSpecialCleave} from "../../../utils/functions.controller.js"
-let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,z,x,c,v,b,n,m,extra,comparison
+import { postschema, request,alertMessage, getdata,getschema, animskel, deletechild,getPath,cpgcntn, sessiondata, calcTime,DateTime,geturl, adcm, removeLoadingTab, initializeSpecialCleave, aDePh, checkEmpty, addSpinner, removeSpinner, showRecs, getLocs} from "../../../utils/functions.controller.js"
+let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,z,x,c,v,b,n,m,extra,comparison,Resthingtoclone
 import userinfo from "./nav.js"
 import {config} from "./config.js"
+const map = await request('get-map',getschema);
+
 (async function () {
+    if (!map.success) {
+        return alertMessage(map.message)
+    }
     z = userinfo
     let token = getdata('token')
     if (!token) {
@@ -45,9 +50,11 @@ import {config} from "./config.js"
         groupBy: 'hospitals'
     })
     const insights = await request('insights',postschema)
+
     if (!insights.success) {
         return alertMessage(insights.message)
     }
+   
     extra = insights.message
     a = getPath(1)
     c = Array.from(document.querySelectorAll('span.cpcards'))
@@ -128,7 +135,7 @@ import {config} from "./config.js"
                 }
           
             }else if (x == 'home') {
-                let customBttns = Array.from(page.querySelectorAll(`[data-role="custom-buttns"]`)),BttnsHol = Array.from(page.querySelectorAll('div.BttnsHol')),shades = Array.from(page.querySelectorAll('div[data-role="shade"]')),parents= [],compSearchButton = page.querySelector('button#compareSearch')
+                let customBttns = Array.from(page.querySelectorAll(`[data-role="custom-buttns"]`)),BttnsHol = Array.from(page.querySelectorAll('div.BttnsHol')),shades = Array.from(page.querySelectorAll('div[data-role="shade"]')),parents= [],compSearchButton = page.querySelector('button#compareSearch'),locRange = page.querySelector(`form.loc-range`)
                 let {avaiGroupings} = extra
                 compSearchButton.onclick = function (event) {
                     event.preventDefault();
@@ -144,13 +151,15 @@ import {config} from "./config.js"
                             but.setAttribute('data-role','custom-buttns');
                             but.className = `capitalize theme bc-tr-theme btn btn-sm my-4p mx-2p`
                             but.innerText = group
-                            but.id = (group == 'provinces')? 'groupByProvinces': (group == 'districts')? 'groupByDistricts': (group == 'sectors')? 'groupBySectors': (group == 'cells')? 'groupByCells': (group == 'health facilities')? 'groupByHps': '';
+                            but.id = (group == 'provinces')? 'groupByProvinces': (group == 'districts')? 'groupByDistricts': (group == 'sectors')? 'groupBySectors': (group == 'cells')? 'groupByCells': (group == 'health facilities')? 'groupByHps':  (group == 'tests')? 'groupByTests': (group == 'medications')? 'groupByMeds':'';
                             container.appendChild(but);
                             (group == 'health facilities')? but.classList.add('b-1-s-theme'): '';
                             
                         }
                         customBttns = Array.from(page.querySelectorAll(`[data-role="custom-buttns"]`))  
                         addCustomBttnsFunc(customBttns)
+                    }else if (container.id == 'viewByBttnsHol') {
+                        aDePh(container)
                     }
                 })
                 shades.forEach(shade=>{
@@ -165,10 +174,18 @@ import {config} from "./config.js"
                             if (target == 'comparisonType') {
                                 cont = page.querySelector('.typesHolCont')
                                 revolveStffs(button,cont)
-                                
                             }else if (target == 'groupBy') {
                                 let id = button.id
-                                drawMainChart(extra[id],comparison)
+                                let viewByCont = BttnsHol.find(function (container) {
+                                    return container.id == 'viewByBttnsHol'
+                                })
+                                if (id == 'groupByTests') {
+                                    drawMainChart(extra.groupByTests,comparison)
+                                    generateViewBy('groupByTests',extra.groupByTests,viewByCont)
+                                }else{
+                                    drawMainChart(extra[id],comparison)
+                                    generateViewBy(null,null,viewByCont)
+                                }
                             }
                             changeBtnBrdrClr(this)
                         }
@@ -176,17 +193,9 @@ import {config} from "./config.js"
                 }
                 drawPatientsChart(extra.groupByDates)
                 drawMainChart(extra.groupByHps)
-                
-                let results = extra.groupByResults,thingtoclone = document.querySelector('div.resCard')
-            
-                for (const result of Object.keys(results)) {
-                    let resCard = thingtoclone.cloneNode(true)
-                    // drawChartForRes(chartArea)
-                    resCard.querySelector('.name').innerText = result
-                    resCard.querySelector('.total').innerText = adcm(results[result].total)
-                    thingtoclone.parentNode.appendChild(resCard)
-                }
-                deletechild(thingtoclone,thingtoclone.parentElement)
+                Resthingtoclone = document.querySelector('div.resCard')
+                makeDiagsInsights(extra.groupByResults,Resthingtoclone)
+                addLocFunc(locRange)
                 let rankingsDivs = Array.from(document.querySelectorAll('div.ranks'))
                 rankingsDivs.forEach(div=>{
                     prepT(div,div.id,extra[div.getAttribute('data-to-hold')])
@@ -230,13 +239,100 @@ import {config} from "./config.js"
 //     new ApexCharts(container, options).render();
 
 // }
-function prepT(container,id,Obj) {
+async function addLocFunc(form) {
+    let button = form.querySelector('button'),inputs = Array.from(form.querySelectorAll('input.address-field')),dates = Array.from(form.querySelectorAll('input[type="date"]')) 
+
+    button.onclick = async function (event) {
+        event.preventDefault();
+        let a
+        addSpinner(button)
+        for(const input  of inputs) {
+            v = input.getAttribute('data-id')
+            if (!v) {
+                a = inputs.indexOf(input) - 1
+                break
+            }
+        }
+        if (!a && a != 0) {
+            a = 3
+        }else if (a == -1) {
+            removeSpinner(button)
+            return
+        }
+        let target = inputs[a],obj = {[target.name]: target.getAttribute('data-id')}
+        postschema.body = JSON.stringify({
+            token: getdata('token'),
+            range: {
+                start: null,
+                stop: null,
+            },
+            entity: Object.keys(obj)[0],
+            needle: obj[Object.keys(obj)[0]],
+            
+        })
+        const insights = await request('insights',postschema);
+        removeSpinner(button)
+        if (insights.success) {
+            extra = insights.message
+            drawMainChart(extra.groupByHps)
+            drawPatientsChart(extra.groupByDates)
+            makeDiagsInsights(extra.groupByResults,Resthingtoclone)
+            let rankingsDivs = Array.from(document.querySelectorAll('div.ranks'))
+                rankingsDivs.forEach(div=>{
+                    prepT(div,div.id,extra[div.getAttribute('data-to-hold')])
+                })
+        }else{
+            alertMessage(insights.message)
+        }
+        
+    }
+    inputs.map(input =>{
+        input.onfocus = function (event) {
+            event.preventDefault();
+            if (input.name == 'province') {
+                let provinces = getLocs(map.message,'province')
+                showRecs(input,provinces,'provinces')
+            }else if (input.name == 'district') {
+                let province = inputs.find(function (inp) {
+                    return inp.name == 'province'
+                })
+                province = province.getAttribute('data-id')
+                if (province) {
+                    let districts = getLocs(map.message,'district',province)
+                    showRecs(input,districts,'districts')
+                }
+            }else if (input.name == 'sector') {
+                let district = inputs.find(function (inp) {
+                    return inp.name == 'district'
+                })
+                district = district.getAttribute('data-id')
+                if (district) {
+                    let sectors = getLocs(map.message,'sector',district)
+                    showRecs(input,sectors,'sectors')
+                }
+            }else if (input.name == 'cell') {
+                let sector = inputs.find(function (inp) {
+                    return inp.name == 'sector'
+                })
+                sector = sector.getAttribute('data-id')
+                if (sector) {
+                    let cells = getLocs(map.message,'cell',sector)
+                    showRecs(input,cells,'cells')
+                }
+            }
+            
+        }
+    })
+
+}
+function prepT(container,id,Obj,title) {
     if (id == 'rankByHps') {
       let total = Object.keys(Obj).map(function (key) {
           return Obj[key].total
       })
       let ranksHol = container.querySelector('#ranks-cont'),
       thingtoclone = ranksHol.querySelector('li'),thecont,data,mainTotal = container.querySelector('#mainTotal')
+      ranksHol.innerHTML = null
       mainTotal.innerHTML = `${adcm(total.reduce((a,c)=> a+c))}`
       for (const record of Object.keys(Obj)) {
         data = Obj[record]
@@ -250,9 +346,36 @@ function prepT(container,id,Obj) {
         ranksHol.appendChild(thecont)
         
       }
+      if(Object.keys(Obj).length == 0){
+        aDePh(thingtoclone.parentElement)
+        }
       deletechild(thingtoclone,thingtoclone.parentElement)
 
     }else if(id == 'rankByDiags'){
+        let total = Object.keys(Obj).length
+        let ranksHol = container.querySelector('#ranks-cont'),
+        thingtoclone = ranksHol.querySelector('li'),thecont,data,mainTotal = container.querySelector('#mainTotal')
+        ranksHol.innerHTML = null
+        mainTotal.innerHTML = `${adcm(total)}`
+        for (const record of Object.keys(Obj)) {
+          data = Obj[record]
+          thecont = thingtoclone.cloneNode(true)
+          let diagname = thecont.querySelector('#name'),
+          hp = thecont.querySelector('#hosp'),
+          hpcount = thecont.querySelector('#hospcount'),
+          total = thecont.querySelector('#total')
+          diagname.innerText = record
+          hp.innerText = data.mostAppearance.hospital
+          hpcount.innerText = data.mostAppearance.count
+          total.innerText = adcm(Obj[record].total)
+          ranksHol.appendChild(thecont)
+          
+        }
+        if(Object.keys(Obj).length == 0){
+            aDePh(thingtoclone.parentElement)
+        }
+        deletechild(thingtoclone,thingtoclone.parentElement)
+    }else if(id == 'groupByEmptyDiags'){
         let total = Object.keys(Obj).length
         let ranksHol = container.querySelector('#ranks-cont'),
         thingtoclone = ranksHol.querySelector('li'),thecont,data,mainTotal = container.querySelector('#mainTotal')
@@ -270,6 +393,55 @@ function prepT(container,id,Obj) {
           total.innerText = adcm(Obj[record].total)
           ranksHol.appendChild(thecont)
           
+        }
+        if(Object.keys(Obj).length == 0){
+            aDePh(thingtoclone.parentElement)
+        }
+        deletechild(thingtoclone,thingtoclone.parentElement)
+    }else if(id == 'groupByMedSuccessRate'){
+        let total = Object.keys(Obj).length
+        let ranksHol = container.querySelector('#ranks-cont'),
+        thingtoclone = ranksHol.querySelector('li'),thecont,data,mainTotal = container.querySelector('#mainTotal')
+        mainTotal.innerHTML = `${adcm(total)}`
+        for (const record of Object.keys(Obj)) {
+          data = Obj[record]
+          thecont = thingtoclone.cloneNode(true)
+          let diagname = thecont.querySelector('#name'),
+          hp = thecont.querySelector('#hosp'),
+          hpcount = thecont.querySelector('#hospcount'),
+          total = thecont.querySelector('#total')
+          diagname.innerText = record
+          hp.innerText = data.mostAppearance.hospital
+          hpcount.innerText = data.mostAppearance.count
+          total.innerText = adcm(Obj[record].total)
+          ranksHol.appendChild(thecont)
+          
+        }
+        if(Object.keys(Obj).length == 0){
+            aDePh(thingtoclone.parentElement)
+        }
+        deletechild(thingtoclone,thingtoclone.parentElement)
+    }else if(id == 'groupByMedsSideEffect'){
+        let total = Object.keys(Obj).length
+        let ranksHol = container.querySelector('#ranks-cont'),
+        thingtoclone = ranksHol.querySelector('li'),thecont,data,mainTotal = container.querySelector('#mainTotal')
+        mainTotal.innerHTML = `${adcm(total)}`
+        for (const record of Object.keys(Obj)) {
+          data = Obj[record]
+          thecont = thingtoclone.cloneNode(true)
+          let diagname = thecont.querySelector('#name'),
+          hp = thecont.querySelector('#hosp'),
+          hpcount = thecont.querySelector('#hospcount'),
+          total = thecont.querySelector('#total')
+          diagname.innerText = record
+          hp.innerText = data.mostAppearance.hospital
+          hpcount.innerText = data.mostAppearance.count
+          total.innerText = adcm(Obj[record].total)
+          ranksHol.appendChild(thecont)
+          
+        }
+        if(Object.keys(Obj).length == 0){
+            aDePh(thingtoclone.parentElement)
         }
         deletechild(thingtoclone,thingtoclone.parentElement)
     }
@@ -310,6 +482,8 @@ function revolveStffs(button,cont) {
 }
 function drawMainChart(grp, compType) {
     let total1,total2,mainChartOptions,series1,series2,total
+    var mainChart = document.querySelector("#mainChart")
+    mainChart.innerHTML = null
     if (compType) {
         series1 = Object.keys(grp[Object.keys(grp)[0]].total)[0]
         series2 = Object.keys(grp[Object.keys(grp)[0]].total)[1]
@@ -324,7 +498,7 @@ function drawMainChart(grp, compType) {
                 { name: series1, data:  total1},
                 { name: series2, data:  total2},
             ],
-            chart: { height: 300, stacked: !0, type: "bar", toolbar: { show: !1 } },
+            chart: { height: 500, stacked: !0, type: "bar", toolbar: { show: !1 } },
             plotOptions: { bar: { horizontal: !1, columnWidth: "33px", borderRadius: 5} },
             colors: [config.colors.primary,config.colors.success],
             dataLabels: { enabled: !1 },
@@ -340,7 +514,7 @@ function drawMainChart(grp, compType) {
             series: [
                 { name: "Patients", data:  total},
             ],
-            chart: { height: 300, stacked: !0, type: "bar", toolbar: { show: !1 } },
+            chart: { height: 500, stacked: !0, type: "bar", toolbar: { show: !1 } },
             plotOptions: { bar: { horizontal: !1, columnWidth: "33px", borderRadius: 5} },
             colors: [config.colors.primary],
             dataLabels: { enabled: !1 },
@@ -350,8 +524,6 @@ function drawMainChart(grp, compType) {
         }
 
     }
-    var mainChart = document.querySelector("#mainChart")
-    mainChart.innerHTML = null
     mainChart = new ApexCharts(mainChart, mainChartOptions);
     mainChart.render(); 
 }
@@ -361,7 +533,7 @@ function drawPatientsChart(grp) {
         return grp[key].total
     })
     let first = grp[Object.keys(grp)[0]].total,last = grp[Object.keys(grp)[Object.keys(grp).length - 1]].total; 
-    percentage = ((last - first) / first) * 100
+    percentage = Math.round((((last - first) / first) * 100),2)
     if (first > last) {
         percentageHolder.classList.add('text-danger')
         percentageHolder.innerHTML = `<span class="center">
@@ -383,7 +555,7 @@ function drawPatientsChart(grp) {
     patientNholder.classList.add('flex')
     patientNholder.innerHTML = `<h3 class="mb-0 pn-holder">${adcm(Ttl.reduce((a,c)=> a+c))}</h3><span class="dgray px-5p">Patients</span>`
     let patientsChartOptions =  {
-        chart: { height: 80, type: "area", toolbar: { show: !1 }, sparkline: { enabled: !0 } },
+        chart: { height: 200, type: "area", toolbar: { show: !1 }, sparkline: { enabled: !0 } },
         dataLabels: { enabled: !1 },
         stroke: { width: 2},
         legend: { show: !1 },
@@ -460,4 +632,51 @@ async function computeComp(page){
     comparison = target.getAttribute('data-id')
     drawPatientsChart(extra.groupByDates)
     drawMainChart(extra.groupByHps,comparison)
+}
+function generateViewBy(type,data,container) {
+
+    if (type == 'groupByTests') {
+        let Tests = Object.keys(data)
+        container.innerHTML = null
+        Tests.forEach((test)=>{
+            let button = document.createElement('button');
+            button.className = 'capitalize theme bc-tr-theme btn btn-sm my-4p mx-2p'
+            button.innerText = `${test}'s results`
+            button.setAttribute('data-role',"custom-buttns")
+            button.id = `${test}`
+            container.appendChild(button)
+            
+        })
+        let buttons = Array.from(container.querySelectorAll('button'))
+        buttons.map(function (b) {
+            b.onclick = function (event) {
+                event.preventDefault()
+                let test = this.id
+                let testData = data[test].resultsCounts,grp = {}
+                testData.map(function (data) {
+                    Object.assign(grp,{[data.name]: {total: data.total}})
+                })
+                drawMainChart(grp,null)
+                changeBtnBrdrClr(this)
+            }
+        })
+    }else{
+        container.innerHTML = null
+        aDePh(container)
+    }
+}
+function makeDiagsInsights(results,thingtoclone) {
+    let parent = document.querySelector('div#resInsights')
+    parent.innerHTML = null
+    for (const result of Object.keys(results)) {
+        let resCard = thingtoclone.cloneNode(true)
+        // drawChartForRes(chartArea)
+        resCard.querySelector('.name').innerText = result
+        resCard.querySelector('.total').innerText = adcm(results[result].total)
+        parent.appendChild(resCard)
+    }
+    if(Object.keys(results).length == 0){
+        aDePh(thingtoclone.parentElement)
+    }
+    deletechild(thingtoclone,thingtoclone.parentElement)
 }
