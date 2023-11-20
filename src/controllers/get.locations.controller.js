@@ -6,11 +6,8 @@ const getMap = async (req,res)=>{
       CONCAT(
           '[',
           GROUP_CONCAT(
-              CONCAT(
-                  '{"id": ', province_id, ', "name": "', province_name, '", "districts": ',
-                  COALESCE(districts, '[]'),
-                  '}'
-              )
+              JSON_OBJECT("id", province_id, "name", province_name, "districts",
+                  COALESCE(districts, '[]'))
               ORDER BY province_id
               SEPARATOR ','
           ),
@@ -23,11 +20,8 @@ const getMap = async (req,res)=>{
           CONCAT(
               '[',
               GROUP_CONCAT(
-                  CONCAT(
-                      '{"id": ', district_id, ', "name": "', district_name, '", "sectors": ',
-                      COALESCE(sectors, '[]'),
-                      '}'
-                  )
+                  JSON_OBJECT("id", district_id, "name", district_name, "sectors",
+                      COALESCE(sectors, '[]'))
                   ORDER BY district_id
                   SEPARATOR ','
               ),
@@ -43,11 +37,8 @@ const getMap = async (req,res)=>{
                   CONCAT(
                       '[',
                       GROUP_CONCAT(
-                          CONCAT(
-                              '{"id": ', sector_id, ', "name": "', sector_name, '", "cells": ',
-                              COALESCE(cells, '[]'),
-                              '}'
-                          )
+                          JSON_OBJECT("id", sector_id, "name", sector_name, "cells",
+                              COALESCE(cells, '[]'))
                           ORDER BY sector_id
                           SEPARATOR ','
                       ),
@@ -63,9 +54,7 @@ const getMap = async (req,res)=>{
                           CONCAT(
                               '[',
                               GROUP_CONCAT(
-                                  CONCAT(
-                                      '{"id": ', c.id, ', "name": "', c.name, '"}'
-                                  )
+                                 JSON_OBJECT("id", c.id, "name", c.name)
                                   ORDER BY c.id
                                   SEPARATOR ','
                               ),
@@ -87,8 +76,7 @@ const getMap = async (req,res)=>{
       province_id, province_name;
   `,[])
       if(!response) return res.status(500).send({success: false, message: errorMessage.is_error})
-     console.log(response) 
-    for (const address of response) {
+      for (const address of response) {
         response[response.indexOf(address)].provinces = JSON.parse(address.provinces)
     }
       res.send({success: true, message: response})
