@@ -234,7 +234,7 @@ export const getInventory = async (req,res)=>{
       if (!select) {
         return res.status(500).send({success:false, message: errorMessage.is_error})
       }
-      if(select.length == 0)return res.send({success: true, message: select})
+      if(select.length == 0)return res.send({success: true, message: {medicines: [],tests: [],operations: [],services: [],equipments: []}})
       select = select[0]
       select.medicines = JSON.parse(select.medicines)
       select.tests = JSON.parse(select.tests)

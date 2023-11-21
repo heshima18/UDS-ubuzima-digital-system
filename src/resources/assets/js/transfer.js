@@ -1,10 +1,6 @@
-import { addLoadingTab, addshade, calcTime, deletechild, getPath, getdata, postschema, removeLoadingTab, request } from "../../../utils/functions.controller.js";
+import { addLoadingTab, addshade, alertMessage, calcTime, deletechild, getPath, getdata, postschema, removeLoadingTab, request } from "../../../utils/functions.controller.js";
 
 export async function viewTransfer(trId) {
-    let u = addshade();
-    window.addEventListener('urlchange', function() {
-        deletechild(u,u.parentElement)
-    })
     let div = document.createElement('div')
     addLoadingTab(div)
     postschema.body = JSON.stringify({
@@ -15,6 +11,13 @@ export async function viewTransfer(trId) {
     if (transfer.success) {
         removeLoadingTab(div)
     }
+    if (!transfer.success) {
+        return alertMessage(transfer.message)
+    }
+    let u = addshade();
+    window.addEventListener('urlchange', function() {
+        deletechild(u,u.parentElement)
+    })
     transfer = transfer.message
     div.className = `br-10p cntr card-1 bc-white p-10p bsbb w-60 h-80 b-mgc-resp` 
     u.appendChild(div)

@@ -16,6 +16,24 @@ export const io = require('socket.io')(server, {
       socket.on('disconnect',()=>{
           query(`update users set online = ?, last_seen = current_timestamp() where id = ?`,[false,clientTid])
       })
+      socket.on('messageToId',async (data)=>{
+        const recipientSocket = Array.from(io.sockets.sockets.values()).find((sock) => sock.handshake.query.id === data.recipientId)
+         if (recipientSocket) {
+          if (data.type == 'reqCinfo') {
+            recipientSocket.emit('showCPinfo',{requester: clientTid,facility: data.facility})
+            let Cinfo = await new Promise((resolve,reject)=>{
+              recipientSocket.on('Cinfo', data=>{
+                if (data.requester == clientTid) {
+                  resolve(data.info)
+                }
+              })
+            })
+            socket.emit('CinfoRes',Cinfo)
+          }
+         }else{
+             console.log('recepient is not online')
+         }
+      })
       socket.on('getpsforselection',async (hps)=>{
         socket.emit('selecthp', await getCustomHps(hps))
       })

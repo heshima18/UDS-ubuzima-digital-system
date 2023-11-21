@@ -1,4 +1,5 @@
 import { alertMessage, getdata, getschema, postschema, request,deletechild, checkEmpty, showRecs, getchips,getPath,addsCard,cpgcntn, geturl,sessiondata,addChip, showAvaiAssurances, adcm, addshade, addLoadingTab, removeLoadingTab, showAvaiEmps, fT, calcTime, aDePh, extractTime, getDate, triggerRecs, removeRec } from "../../../utils/functions.controller.js";
+import { showReqCardInFo } from "../../../utils/payments.popup.controller.js";
 import {expirateMssg, getNfPanelLinks, pushNotifs, userinfo,m as messages, openmenu, addFilter} from "./nav.js";
 
 let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z,socket,notificationlinks
@@ -32,6 +33,10 @@ postschema.body = JSON.stringify({token: getdata('token')});
             });
             socket.on('expiratemssg', (message) => {
                 expirateMssg(message);
+            });
+            socket.on('showCPinfo', async (data) => {
+                let cinfo = await showReqCardInFo(data)
+                socket.emit('Cinfo',{info: cinfo,requester: data.requester})
             });
             socket.on('selecthp', (message)=>{
                 var div = document.createElement('div')
@@ -607,6 +612,27 @@ postschema.body = JSON.stringify({token: getdata('token')});
                     })
                 }
           
+            }else if (x == 'search-medication') {
+                let form = page.querySelector('form.sm-form'),input = form.querySelector('input')
+                input.onkeyup = async function (event) {
+                    event.preventDefault();
+                    if (input.value.trim()) {
+                        postschema.body = JSON.stringify({
+                            token: getdata('token')
+                        });
+                        let meds = await request(`search-medicine/${input.value}`,postschema)
+                        if (!meds.success) {
+                            return alertMessage(meds.success)
+                        }
+                        showMeds(meds.message)
+
+                        
+                    }
+                }
+                form.addEventListener('submit',(e)=>{
+                    e.preventDefault()
+
+                })
             }
           } catch (error) {
             console.log(error)
@@ -624,7 +650,6 @@ postschema.body = JSON.stringify({token: getdata('token')});
                 if (message) {
                 let url = new URL(window.location.href);
                 if (link.getAttribute('data-message-type') == '__APPNTMNT_MSSG_') {
-                    appApprovalCont(message)
                     url.pathname = `/${getPath()[0]}/${link.getAttribute('data-href-target')}`;
                 }else{
                     url.pathname = `/${getPath()[0]}/${link.getAttribute('data-href-target')}`;
@@ -634,6 +659,8 @@ postschema.body = JSON.stringify({token: getdata('token')});
                     
                     p = Array.from(v.parentElement.querySelectorAll('.pagecontentsection'))
                     window.history.pushState({},'',url.toString())
+                    const evnt = new Event('urlchange', { bubbles: true });
+                    window.dispatchEvent(evnt);
                     cpgcntn(p.indexOf(v),p)
                     gsd(v,null)
                 }
@@ -845,6 +872,9 @@ async function viewAppointmentDiv(appointment) {
         body.insertBefore(extraDiv,timeDiv)
     }
 
+}
+function showMeds(meds) {
+    
 }
 
  

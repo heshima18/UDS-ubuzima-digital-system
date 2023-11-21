@@ -24,7 +24,7 @@ import {getInventory,addInventory, addInventoryTests, addInventoryOperations, ad
 import { getMessages, getSentMessages, markAsSeen, sendMessage } from '../controllers/message.controller';
 import { authorizeAppointmentAccess } from '../middlewares/appointment.authorizer.middleware';
 import { authorizeSession } from '../middlewares/session.authorizer.middleware';
-import { addPatiBg, addUserAssurance, getPatient, getPatients } from '../controllers/patients.controller';
+import { addPatiBg, addPatientFP, addUserAssurance, getPatient, getPatients } from '../controllers/patients.controller';
 import { addAssurance, addEquipmentToAssuranceRestrictedList, addMedicineToAssuranceRestrictedList, addOperationToAssuranceRestrictedList, addServiceToAssuranceRestrictedList, addTestToAssuranceRestrictedList, assurance, getAssurances, removeItemFromAssurancelist,assuranceHP, addassuranceToHp } from '../controllers/assurance.controller';
 import { authorizeHospitalAssurance, authorizeUserAssurance } from '../middlewares/assurance.authorizer.middleware';
 import { at } from '../controllers/token.verifier.controller';
@@ -39,6 +39,7 @@ import { insightsStats } from '../controllers/insights.controller';
 import { addPati2fa } from '../middlewares/user.2fa.access.middleware';
 import { createTransfer, viewTransfer } from '../controllers/transfer.controller';
 import getAdminNmbrs from '../controllers/admin-numbers.controller';
+import { checkFPAvai } from '../middlewares/fp.avai.middleware';
 const router = express.Router({ strict: false });
 router.post('/verify',verification)
 router.post('/getnmbrs',authorizeRole,authorizeAdmin,getAdminNmbrs)
@@ -70,7 +71,7 @@ router.post("/gAsSuMH/",authorizeRole,authorizeAssuranceManager,assuranceMH)
 router.post("/gAsSuHP/",authorizeRole,authorizeAssuranceManager,assuranceHP)
 router.post("/gHosPiAsSu/",authorizeRole,(req,res,next) => authorizeMultipleRoles(req,res,next,['dof']),hospitalASSU)
 router.post("/add-hospi-assu/",authorizeRole,(req,res,next) => authorizeMultipleRoles(req,res,next,['dof']),addassuranceToHp)
-router.post("/add-user-fp",authorizeRole,(req,res,next) => authorizeMultipleRoles(req,res,next,['hc_provider','receptionist']),addassuranceToHp)
+router.post("/add-user-fp",authorizeRole,(req,res,next) => authorizeMultipleRoles(req,res,next,['hc_provider','receptionist']),checkFPAvai,addPatientFP)
 
 router.get("/tp",testPay)
 router.post("/add-assurance-to-user",authorizeRole,authorizePatientToken,addUserAssurance)
@@ -89,7 +90,7 @@ router.post("/add-session-operation",authorizeRole,(req,res,next) => authorizeSe
 router.post("/add-session-comment",authorizeRole,(req,res,next) => authorizeSession(req,res,next,'isnotclosed'),(req,res,next) =>authorizeMultipleRoles(req,res,next,['hc_provider','pharmacist']),addSessionComment)
 router.post("/add-session-decisions",authorizeRole,(req,res,next) => authorizeSession(req,res,next,'isnotclosed'),authorizeHc_provider,addSessionDecision)
 router.post("/crTrns",authorizeRole,(req,res,next) => authorizeSession(req,res,next,'isnotclosed'),authorizeHc_provider,createTransfer)
-router.post("/getTrNsfr",authorizeRole,(req,res,next) => authorizeMultipleRoles(req,res,next,['receptionist','hc_provider']),viewTransfer)
+router.post("/getTrNsfr",authorizeRole,viewTransfer)
 router.post('/close-session',authorizeRole,authorizeHc_provider,(req,res,next) => authorizeSession(req,res,next,'isowner'),(req,res,next) => authorizeSession(req,res,next,'ismyfacilty'),closeSession);
 router.post('/approve-assurance-payment',authorizeRole,(req,res,next) => authorizeMultipleRoles(req,res,next,['dof']),approveAssuPayment);
 router.post('/approve-payment',authorizeRole,(req,res,next) => authorizeSession(req,res,next,'isnotopen'),authorizeCashier,approvePayment);

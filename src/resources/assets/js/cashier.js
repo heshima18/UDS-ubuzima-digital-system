@@ -4,7 +4,7 @@ import { addUprofile } from "../../../utils/user.profile.controller.js";
 import {pushNotifs, userinfo,expirateMssg, getNfPanelLinks,m as messages, DateTime} from "./nav.js";
 
 
-let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z,r,session_input,session_s_button,eventadded,notificationlinks
+let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z,r,session_input,session_s_button,eventadded,notificationlinks,socket
 (async function () {
     z = userinfo
     let token = getdata('token')
@@ -18,7 +18,7 @@ let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z,r,session_input,session_s_
     if (z.success) {
         z = z.message
         try {
-            const socket = io(geturl(),{ query : { id: z.id} });
+            socket = io(geturl(),{ query : { id: z.id} });
             socket.on('connect', () => {
             console.log('Connected to the server');
             });
@@ -485,7 +485,8 @@ let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z,r,session_input,session_s_
                             if (button.classList.contains('loading')) {
                                 return
                             }
-                            showPaymentPopup()
+                            let data = {session: sessiondata.session_id,patient: sessiondata.p_info.id,paymentType: 'user-payment',socket,facility:sessiondata.hp_info}
+                            showPaymentPopup(data)
                         }
                     
                     }

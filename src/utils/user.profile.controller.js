@@ -127,8 +127,7 @@ export function addUprofile(data){
     let copyButtons = Array.from(a.querySelectorAll('i.fa-copy')),addFPB = a.querySelector('button#add-fp-button')
     addFPB.onclick = async function (event) {
       event.preventDefault();
-      console.log('dsd')
-      fp_data = await showFingerprintDiv('register');
+      let fp_data = await showFingerprintDiv('register');
       addSpinner(addFPB)
       if (fp_data) {
           RemoveAuthDivs()
@@ -139,10 +138,11 @@ export function addUprofile(data){
           })
           let res = await request('add-user-fp',postschema)
           removeSpinner(addFPB)
-          if (!res.success) {
+          if (res.success) {
+            alertMessage(res.message)
+          }else{
             alertMessage(res.message)
           }
-          console.log(fp_data)
       }
     }
     copyButtons.forEach(button=>{

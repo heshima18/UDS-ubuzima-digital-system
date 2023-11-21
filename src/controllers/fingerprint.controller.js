@@ -7,7 +7,7 @@ export async  function connectFP(host,callback) {
     return new Promise((resolve,reject)=>{
         ws = new WebSocket(host);
         ws.onopen = function () {
-            resolve({success: true, message: "connected to SDK!", type: 'connection', socket: ws})
+            resolve({success: true, message: "connected to SDK!", type: 'connection'})
         };
         ws.onerror = function (error) {
             console.log('there was an error while connecting to fp SDK')
@@ -58,11 +58,6 @@ export async  function connectFP(host,callback) {
                     if (obj.image == "null") {
                     } else {
                         callback({success: true, message: "Registered fingerprint template successfully", type: 'fp-image', data: "data:image/png;base64," + obj.image})
-                        // var img = document.getElementById("fpimage");
-                        // img.src = "data:image/png;base64," + obj.image;
-    
-                        // var en3 = document.getElementById("fingerimage");
-                        // en3.value = obj.image;
                     }
                     break;
                 case 8:
@@ -75,7 +70,6 @@ export async  function connectFP(host,callback) {
                     }else{
                         callback({success: true, message: "Comparison score:",type: 'comparison', data: obj.retmsg})
                     }
-                    console.log(obj.retmsg)
                     ws.close();
                     break;
                 case 10:
@@ -96,8 +90,6 @@ export async  function connectFP(host,callback) {
                     if (obj.image == "null") {
                     } else {
                         callback({success: true, message: "Registered fingerprint template successfully", type: 'fp-image', data: "data:image/png;base64," + obj.image})
-                        // var img = document.getElementById("fpimage");
-                        // img.src = "data:image/jpeg;base64," + obj.image;
                     }
                     break;
                 case 19:
@@ -119,6 +111,7 @@ export function MatchTemplate(data1,data2) {
         var cmd = "{\"cmd\":\"match\",\"data1\":\"" + data1 + "\",\"data2\":\"" + data2 + "\"}";
         try {
             ws.send(cmd);
+            return 1
         } catch (err) {
             console.log(err)
             return 0

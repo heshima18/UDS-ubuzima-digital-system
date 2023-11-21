@@ -1,5 +1,6 @@
 import { alertMessage, getdata, getschema, postschema, request,initializeCleave,sessiondata,addLoadingTab,removeLoadingTab, checkEmpty, showRecs, getchips,getPath,addsCard,cpgcntn, geturl, adcm, addshade, deletechild, extractTime, getDate } from "../../../utils/functions.controller.js";
 import {pushNotifs, userinfo,expirateMssg, getNfPanelLinks,m as messages, DateTime} from "./nav.js";
+import { viewTransfer } from "./transfer.js";
 
 
 let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z,notificationlinks,addMedic
@@ -165,7 +166,6 @@ let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z,notificationlinks,addMedic
                 }
               })
               let inventory = f.message.medicines
-             
                 inventory.map(function (medicine) {
                     nmbrs.tot_med+=1
                     if (medicine.quantity <= 10) {
@@ -533,7 +533,7 @@ let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z,notificationlinks,addMedic
                         }else if (dataHolder.getAttribute('data-hold').indexOf('status') != -1) {
                             if (data[dataHolder.getAttribute('data-hold')] != 'served') {
                                 dataHolder.innerText = `mark as served`
-                                dataHolder.classList.replace('btn-label-secondary','btn-label-primary')
+                                dataHolder.classList.replace('bc-dgray','bc-tr-theme')
                                 dataHolder.setAttribute('data-active', true)
                             }else{
                                 dataHolder.innerText = data[dataHolder.getAttribute('data-hold')]
@@ -560,7 +560,7 @@ let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z,notificationlinks,addMedic
                         }else{
                             if (holder.getAttribute('data-hold').indexOf('status') != -1) {
                                 if (sessiondata[holder.getAttribute('data-hold')] == "open") {
-                                    holder.classList.replace('btn-label-secondary','btn-label-success')
+                                    holder.classList.replace('bc-dgray','bc-tr-green')
                                 }
                             }
                             holder.innerText = sessiondata[objectId]
@@ -599,7 +599,7 @@ let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z,notificationlinks,addMedic
                     button.removeAttribute('disabled')
                     if (results.success) {
                         button.innerHTML = `served`
-                        button.classList.replace('btn-label-primary','btn-label-secondary')
+                        button.classList.replace('bc-tr-theme','bc-dgray')
                         let parent = button.parentNode.parentNode.parentNode
                         parent.classList.replace('bc-gray','bc-tr-green')
                         button.removeAttribute(`data-active`)
@@ -647,7 +647,7 @@ let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z,notificationlinks,addMedic
                                 container.classList.replace('bc-gray','bc-tr-green')
                                 container.querySelector('span.mark-button').removeAttribute(`data-active`)
                                 container.querySelector('span.mark-button').setAttribute('disabled',true)
-                                container.querySelector('span.mark-button').classList.replace('btn-label-primary','btn-label-secondary')
+                                container.querySelector('span.mark-button').classList.replace('bc-tr-theme','bc-dgray')
                                 container.querySelector('span.mark-button').textContent = 'served'
                                 container.querySelector('span.card-title').classList.replace('dgray','green')
                                 mark_buttons = Array.from(page.querySelectorAll('span.mark-button'))
@@ -736,14 +736,10 @@ let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z,notificationlinks,addMedic
                 if (!link.classList.contains('list-link')) {
                     return 0
                 }
-                v = document.querySelector(`div#${link.getAttribute('data-href-target')}`)
                 let message = messages.find(function (mess) {
                     return mess.id == link.getAttribute('data-id')
                 })
-                if (v && message) {
-                p = Array.from(v.parentElement.querySelectorAll('.pagecontentsection'))
-                
-                s = p.indexOf(v)
+                if (message) {
                 let url = new URL(window.location.href);
                 if (link.getAttribute('data-message-type') == 'session_message') {
                     let session 
@@ -758,12 +754,25 @@ let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z,notificationlinks,addMedic
                 }else if (link.getAttribute('data-message-type') == '__APPNTMNT_MSSG_') {
                     appApprovalCont(message)
                     url.pathname = `/${getPath()[0]}/${link.getAttribute('data-href-target')}`;
+                }else if (link.getAttribute('data-message-type') == 'transfer_message') {
+                    let transfer
+                    if (message.addins) {
+                        transfer = message.addins.transfer
+                    }else if (message.extra) {
+                        transfer = message.extra.transfer
+                    }
+                    viewTransfer(transfer)
                 }else{
                     url.pathname = `/${getPath()[0]}/${link.getAttribute('data-href-target')}`;
                 }
-                window.history.pushState({},'',url.toString())
-                cpgcntn(p.indexOf(v),p)
-                gsd(v,null)
+                v = document.querySelector(`div#${link.getAttribute('data-href-target')}`)
+                if (v) {
+                    p = Array.from(v.parentElement.querySelectorAll('.pagecontentsection'))
+                    s = p.indexOf(v)
+                    window.history.pushState({},'',url.toString())
+                    cpgcntn(p.indexOf(v),p)
+                    gsd(v,null)
+                }
                }
             })
         })

@@ -2018,7 +2018,12 @@ class popups{
                                                                 </div>
                                                                 <div class="col-md-12 px-10p bsbb p-r h-94p">
                                                                     <label for="test" class="form-label uppercase dgray">facility</label>
-                                                                    <input type="text" class="form-control bevalue" id="facility" placeholder="Receiving facility" name="facility">
+                                                                    <input type="text" class="form-control bevalue" id="hospitals" placeholder="Receiving facility" name="facility">
+                                                                    <small class="w-100 red pl-3p verdana"></small>
+                                                                </div>
+                                                                <div class="col-md-12 px-10p bsbb p-r h-94p">
+                                                                    <label for="test" class="form-label uppercase dgray">department</label>
+                                                                    <input type="text" class="form-control bevalue" id="department" placeholder="Receiving department" name="department">
                                                                     <small class="w-100 red pl-3p verdana"></small>
                                                                 </div>
                                                                 <div class="col-md-12 px-10p bsbb p-r h-130p">
@@ -2031,27 +2036,52 @@ class popups{
                                                                 </div>
                                                             </form>
                                                         </div>`
-                            let hc_inp = transFormDiv.querySelector('input[name="facility"]'),form = transFormDiv.querySelector('form'),inputs = Array.from(transFormDiv.querySelectorAll('.form-control'))
+                            let hc_inp = transFormDiv.querySelector('input[name="facility"]'),dep_ip = transFormDiv.querySelector('input[name="facility"]'),form = transFormDiv.querySelector('form'),inputs = Array.from(transFormDiv.querySelectorAll('.form-control')),departmentinput = transFormDiv.querySelector('input#department')
                             hc_inp.onkeyup = function (event){
-                                let val = this.value.trim();
-                                val = val.replace(/[^A-Za-z0-9\s]/g, '');
-                                let payload = {
-                                    needle: val,
-                                    type: 'search',
-                                    entity: 'facility',
-                                    datatofetch: ['id','name'],
-                                    coltosearch: 'name'
-
-                                }
-                                if (val) {
+                                if (hc_inp.value) {
+                                    triggerRecs(hc_inp,['id','name'],socket)
+                                }else{
                                     removeRec(hc_inp)
-                                    socket.emit('searchForRecs',payload)
+                                    
                                 }
+                                h = hc_inp.getAttribute('data-id')
                             }
-                            socket.on('RecsRes', (data)=>{
-                                if (data.length) {
-                                    showRecs(hc_inp,data,'hospitals','noinptAction')
+                            let hospitalinfo
+                            hc_inp.addEventListener('blur', async ()=>{
+                                setTimeout(function () {
+                                    if (h != hc_inp.getAttribute('data-id')) {
+                                        departmentinput.value = ``
+                                        departmentinput.removeAttribute('data-id')
+                                    }
+                                },200)
+                                h = hc_inp.getAttribute('data-id')
+                                if (h) {
+                                    hospitalinfo = await request(`hpDeps/${h}`,postschema)
+                                    if (hospitalinfo.success) {
+                                        hospitalinfo = hospitalinfo.message
+                                    }
                                 }
+                            })
+                            let receivers
+                            departmentinput.addEventListener('focus', function (event) {
+                                let hospital = hc_inp.getAttribute('data-id')
+                                if (!hospital) {
+                                    checkEmpty(hc_inp)
+                                    hc_inp.focus();
+                                    return 0
+                                }
+                                if (!hospitalinfo) {
+                                    return 0
+                                }
+                                departmentinput.addEventListener('blur', function (event) {
+                                    setTimeout(function () {
+                                        receivers = hospitalinfo.employees.filter(function (employee) {
+                                            return employee.department == departmentinput.getAttribute('data-id')
+                                        })
+                                    },200)
+                                })
+                                let departments = hospitalinfo.departments
+                                showRecs(this, departments,this.id)
                             })
                             form.addEventListener('submit', async event=>{
                                 event.preventDefault();
@@ -2067,7 +2097,8 @@ class popups{
                                 }
                                 if (t) {
                                     
-                                    Object.assign(values,{ token: getdata('token')})
+                                    Object.assign(values,{ token: getdata('token'),receivers})
+                                    // return console.log(values)
                                     postschema.body = JSON.stringify(values)
                                     button.setAttribute('disabled',true)
                                     button.textContent = 'recording transfer info...'

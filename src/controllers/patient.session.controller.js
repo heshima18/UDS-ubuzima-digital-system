@@ -713,7 +713,7 @@ export const addSessionMedicine = async (req,res)=>{
           for (const medic of meds) {
             if (medic.id == medicine.id) {
               if (Number(medic.quantity) < Number(medicine.quantity)) {
-                Object.assign(medicine, {servedOut : true})
+                Object.assign(medicine, {servedOut : true, status: null})
                 Object.assign(medicines[medicines.indexOf(medicine)],{servedOut: true, price: m.price * parseInt(medicine.quantity), status: null})
               }else{
                 Object.assign(medicine, {servedOut : false})

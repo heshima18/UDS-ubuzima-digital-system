@@ -123,7 +123,6 @@ export function Relink() {
 
 export function EnrollTemplate() {
     try {
-        console.log('enrolling')
         var v1 = "0";       //Fingerprint color   0 red,1 red,2 green,3 blue
         var v2 = "0";       //background color    1 transparent,0 White
         var cmd = "{\"cmd\":\"enrol\",\"data1\":\"" + v1 + "\",\"data2\":\"" + v2 + "\"}";

@@ -2,6 +2,7 @@ import { MatchTemplate, connectFP } from './fingerprint.controller';
 import query from './query.controller'
 import errorMessage from './response.message.controller'
 import authenticateToken from './token.verifier.controller';
+import id from "./randomInt.generator.controller";
 import EventEmitter from 'events';
 class MyEventEmitter extends EventEmitter {}
 const event = new MyEventEmitter();
@@ -164,7 +165,7 @@ export const addUserAssurance = async (req,res)=>{
 }
 export async function selectPatient(patient) {
     try {
-        let p = await query('select id, Full_name, email, phone, FA from patients where id = ?',[patient])
+        let p = await query('select id, Full_name, email, phone,resident_province as province,resident_district as district,resident_sector as sector,resident_cell as cell,FA from patients where id = ?',[patient])
         if (!p) {
             return null
         }else{
@@ -181,7 +182,7 @@ export async function selectPatientFP(patient) {
     try {
         let p
         if(patient){
-            p = await query('select data, user from fingerprints where user = ?',[patient])
+            p = await query('select data, user from fingerprints where user = ? order by dateadded desc',[patient])
             if (!p) {
                 return null
             }else{

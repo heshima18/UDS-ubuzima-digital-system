@@ -14,7 +14,7 @@ export const createTransfer = async (req,res)=>{
         const leTime = DateTime.now();
         let now = leTime.setZone('Africa/Kigali');
         now = now.toFormat('yyyy-MM-dd HH:mm:ss')
-        let {session,reason,facility,token,patient} = req.body,sessiondata
+        let {session,reason,facility,token,patient,department,receivers} = req.body,sessiondata
         sessiondata = await getSession(session)
         if (!sessiondata) {
             return res.status(500).send({success:false, message: errorMessage.is_error}) 
@@ -31,9 +31,9 @@ export const createTransfer = async (req,res)=>{
         let user = decoded.id
         let insert = await query(`insert
          into transfers
-         (id,session,from_facility,to_facility,patient,hc_provider,reason,date)
-         values(?,?,?,?,?,?,?,?)`,
-         [uid,session,sessiondata.hospital,facility,patient,user,reason,now])
+         (id,session,from_facility,to_facility,patient,hc_provider,reason,date,department)
+         values(?,?,?,?,?,?,?,?,?)`,
+         [uid,session,sessiondata.hospital,facility,patient,user,reason,now,department])
         if (!insert) {
             return res.status(500).send({success:false, message: errorMessage.is_error})
         }
@@ -57,7 +57,7 @@ export const createTransfer = async (req,res)=>{
                   recipientSocket.emit('message',messageInfo)
               }
             }
-            let receivers =await getHpEmployeesByDepartment(facility,1261546939)
+            let receivers =await getHpEmployeesByDepartment(facility,department)
             receivers = receivers.map(function (recs) {
                 return recs.id
             })
