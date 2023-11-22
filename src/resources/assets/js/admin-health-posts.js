@@ -102,16 +102,6 @@ f.addEventListener('submit', async e =>{
          }
     }
 })
-function cdcts(entries,field,type) {
-    field.innerHTML = `<option value="">Select ${type}</option>`
-    for (const entry of entries) {
-        o = document.createElement('option')
-        o.innerText = entry.name
-        o.value = entry.id
-        o.setAttribute('data-id',entry.id)
-        field.appendChild(o)    
-    }
-}
 
 $(document).ready(function () {
     if (!h.success) {
