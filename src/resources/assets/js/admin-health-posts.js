@@ -1,4 +1,4 @@
-import { alertMessage, getdata, getschema, postschema, request,initializeCleave, checkEmpty, showRecs, getchips, addshade, addLoadingTab, removeLoadingTab, aDePh, deletechild } from "../../../utils/functions.controller.js";
+import { alertMessage, getdata, getschema, postschema, request,initializeCleave, checkEmpty, showRecs, getchips, addshade, addLoadingTab, removeLoadingTab, aDePh, deletechild, getLocs } from "../../../utils/functions.controller.js";
 
 let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,z,x,c,v,b,n,m
 (async function (){u = getdata('token')
@@ -6,6 +6,7 @@ if(!u){
     window.location.href = '../../login'
 }
 m = await request('get-map',getschema)
+const map = m.message
 postschema.body = JSON.stringify({token : getdata('token')})
 h = await request('gethospitals',postschema)
 d = await request('get-departments',postschema)
@@ -15,64 +16,50 @@ try {
     if (!m.success || !d.success) {return alertMessage(m.message)}
     [m] = m.message
     f = document.querySelector('form#add-health-post-form')
-    s = Array.from(f.querySelectorAll('select.address-field'));
     i = Array.from(f.querySelectorAll('.form-control'))
+    let inputs = Array.from(f.querySelectorAll('input.address-field'))
+    inputs.map(input =>{
+                    input.onfocus = function (event) {
+                        event.preventDefault();
+                        if (input.name == 'province') {
+                            let provinces = getLocs(map,'province')
+                            showRecs(input,provinces,'provinces')
+                        }else if (input.name == 'district') {
+                            let province = inputs.find(function (inp) {
+                                return inp.name == 'province'
+                            })
+                            province = province.getAttribute('data-id')
+                            if (province) {
+                                let districts = getLocs(map,'district',province)
+                                showRecs(input,districts,'districts')
+                            }
+                        }else if (input.name == 'sector') {
+                            let district = inputs.find(function (inp) {
+                                return inp.name == 'district'
+                            })
+                            district = district.getAttribute('data-id')
+                            if (district) {
+                                let sectors = getLocs(map,'sector',district)
+                                showRecs(input,sectors,'sectors')
+                            }
+                        }else if (input.name == 'cell') {
+                            let sector = inputs.find(function (inp) {
+                                return inp.name == 'sector'
+                            })
+                            sector = sector.getAttribute('data-id')
+                            if (sector) {
+                                let cells = getLocs(map,'cell',sector)
+                                showRecs(input,cells,'cells')
+                            }
+                        }
+                        
+                    }
+                })
     z = Array.from(f.querySelectorAll('.form-select'))
     for (const sele of z) {
        i.push(sele)
     }
     b = f.querySelector('button[type="submit"]')
-    for (const province of m.provinces) {
-        o = document.createElement('option');
-        s[0].appendChild(o)
-        o.innerText = province.name
-        o.value = province.id
-        o.setAttribute('data-id',province.id)
-    }
-    for (const select of s) {
-        select.addEventListener('change',e=>{
-            e.preventDefault();
-            if (select.name == 'province') {
-                for (const province of m.provinces) {
-                    if (province.id == select.value) {
-                        s[2].innerHTML =  '<option value="">Select Sector</option>'
-                        s[3].innerHTML =  '<option value="">Select Cell</option>'
-                        cdcts(province.districts,s[1],'District')
-                    }else if(select.value == ''){
-                        s[1].innerHTML =  '<option value="">Select District</option>'
-                        s[2].innerHTML =  '<option value="">Select Sector</option>'
-                        s[3].innerHTML =  '<option value="">Select Cell</option>'
-                    }
-                }
-            }
-            if (select.name == 'district') {
-                for (const province of m.provinces) {
-                    for (const district of province.districts) {
-                        if (district.id == select.value) {
-                            s[3].innerHTML =  '<option value="">Select Cell</option>'
-                            cdcts(district.sectors,s[2],'Sector')
-                        }else if(select.value == ''){
-                            s[2].innerHTML =  '<option value="">Select Sector</option>'
-                            s[3].innerHTML =  '<option value="">Select Cell</option>'
-                        }
-                    }
-                }
-            }
-            if (select.name == 'sector') {
-                for (const province of m.provinces) {
-                    for (const district of province.districts) {
-                        for (const sector of district.sectors) {
-                            if (sector.id == select.value) {
-                                cdcts(sector.cells,s[3],'Cell')
-                            }else if(select.value == ''){
-                                s[3].innerHTML =  '<option value="">Choose...</option>'
-                            }
-                        }
-                    }
-                }
-            }
-        })
-    }
 } catch (error) {
   console.log(error)  
 }
