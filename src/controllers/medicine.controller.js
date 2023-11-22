@@ -101,7 +101,7 @@ export const searchMed = async (req,res)=>{
       FROM 
       inventories 
       INNER JOIN medicines as m
-      INNER JOIN hospitals as h on h.id = inventories.hospital and h.type = 'pharmacy'
+      INNER JOIN hospitals as h on h.id = inventories.hospital
       WHERE
        m.name LIKE ? 
       AND

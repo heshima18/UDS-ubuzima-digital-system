@@ -72,6 +72,7 @@ f.addEventListener('submit', async e =>{
            v = 0 
         }
     }
+    console.log(v)
     if(v){
         x = {}
         for (const input of i) {
