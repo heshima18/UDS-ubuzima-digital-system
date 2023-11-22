@@ -874,7 +874,33 @@ async function viewAppointmentDiv(appointment) {
 
 }
 function showMeds(meds) {
-    
+    let cont = document.querySelector('div#results-cont')
+    cont.innerHTML = null
+    for (const hp of meds) {
+        for (const medication of hp.medicines) {
+            let div = document.createElement('div')
+            div.className = `card w-a h-a igrid mx-5p bsbb bm-x-0-resp my-10p`
+            cont.appendChild(div)
+            let title = document.createElement('span')
+            title.className = `capitalize px-5p card-header`
+            title.innerText = medication.name
+            let body = document.createElement('div')
+            body.className = `card-body`
+            div.appendChild(title)
+            div.appendChild(body)
+            body.innerHTML = `<div class=w-100 h-100">
+                    <span class="w-100 h-a p-r block dgray"><span class="flex"><h2 class="black">${medication.price}</h2><span class="fs-18p">RWF</span></span></span>
+                    <span class="w-100 h-a p-r block dgray"><h3>${hp.name}</h3></span>
+                    <span class="w-100 h-a p-r block dgray">${hp.location}</span>
+                </div>`
+            
+        }
+        
+    }
+    if (!meds.length) {
+        console.log('sd')
+        aDePh(cont)
+    }
 }
 
  
