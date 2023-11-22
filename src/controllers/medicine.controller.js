@@ -47,6 +47,7 @@ export const searchMed = async (req,res)=>{
       entity = 'sector'
       needle = p.sector
     }
+    console.log(needle,entity)
   //   let select = await query(`SELECT
   //   hospitals.name AS hospital,
   //   CONCAT(
@@ -104,7 +105,7 @@ export const searchMed = async (req,res)=>{
       WHERE
        m.name LIKE ? 
       AND
-       JSON_CONTAINS(inventories.medicines, JSON_OBJECT('id',m.id), '$') GROUP BY inventories.id AND (select ${entity} from hospitals where id = h.id) = ?
+       JSON_CONTAINS(inventories.medicines, JSON_OBJECT('id',m.id), '$') AND (select ${entity} from hospitals where id = h.id) = ? GROUP BY inventories.id
       `,[`%${medicine}%`,needle])
   
     if (!select) {

@@ -1,4 +1,4 @@
-import { alertMessage, getdata, getschema, postschema, request,deletechild, checkEmpty, showRecs, getchips,getPath,addsCard,cpgcntn, geturl,sessiondata,addChip, showAvaiAssurances, adcm, addshade, addLoadingTab, removeLoadingTab, showAvaiEmps, fT, calcTime, aDePh, extractTime, getDate, triggerRecs, removeRec } from "../../../utils/functions.controller.js";
+import { alertMessage, getdata, getschema, postschema, request,deletechild, checkEmpty, showRecs, getchips,getPath,addsCard,cpgcntn, geturl,sessiondata,addChip, showAvaiAssurances, adcm, addshade, addLoadingTab, removeLoadingTab, showAvaiEmps, fT, calcTime, aDePh, extractTime, getDate, triggerRecs, removeRec, addSpinner, removeSpinner, getLocs } from "../../../utils/functions.controller.js";
 import { showReqCardInFo } from "../../../utils/payments.popup.controller.js";
 import {expirateMssg, getNfPanelLinks, pushNotifs, userinfo,m as messages, openmenu, addFilter} from "./nav.js";
 
@@ -68,11 +68,16 @@ postschema.body = JSON.stringify({token: getdata('token')});
     postschema.body = JSON.stringify({token})
     let session = await request('get-user-medical-history',postschema)
     let appointment = await request('my-appointments',postschema)
+    let mp = await request('get-map',getschema)
     if (!session.success) {
         return alertMessage(session.message)
     }
+    if (!mp.success) {
+        return alertMessage(mp.message)
+    }
     const sessions = session.message
     const appointments = appointment.message
+    const map = mp.message
     
     a = getPath(1)
     c = Array.from(document.querySelectorAll('span.cpcards'))
@@ -613,14 +618,54 @@ postschema.body = JSON.stringify({token: getdata('token')});
                 }
           
             }else if (x == 'search-medication') {
-                let form = page.querySelector('form.sm-form'),input = form.querySelector('input')
+                let form = page.querySelector('form.sm-form'),input = form.querySelector('input'),button = form.querySelector('button'),inputs = Array.from(page.querySelectorAll('input.address-field')),proceedB = page.querySelector('button[name="proceed-loc"]')
+                inputs.map(input =>{
+                    input.onfocus = function (event) {
+                        event.preventDefault();
+                        if (input.name == 'province') {
+                            let provinces = getLocs(map,'province')
+                            showRecs(input,provinces,'provinces')
+                        }else if (input.name == 'district') {
+                            let province = inputs.find(function (inp) {
+                                return inp.name == 'province'
+                            })
+                            province = province.getAttribute('data-id')
+                            if (province) {
+                                let districts = getLocs(map,'district',province)
+                                showRecs(input,districts,'districts')
+                            }
+                        }else if (input.name == 'sector') {
+                            let district = inputs.find(function (inp) {
+                                return inp.name == 'district'
+                            })
+                            district = district.getAttribute('data-id')
+                            if (district) {
+                                let sectors = getLocs(map,'sector',district)
+                                showRecs(input,sectors,'sectors')
+                            }
+                        }else if (input.name == 'cell') {
+                            let sector = inputs.find(function (inp) {
+                                return inp.name == 'sector'
+                            })
+                            sector = sector.getAttribute('data-id')
+                            if (sector) {
+                                let cells = getLocs(map,'cell',sector)
+                                showRecs(input,cells,'cells')
+                            }
+                        }
+                        
+                    }
+                })
                 input.onkeyup = async function (event) {
                     event.preventDefault();
                     if (input.value.trim()) {
                         postschema.body = JSON.stringify({
                             token: getdata('token')
                         });
+                        addSpinner(button)
                         let meds = await request(`search-medicine/${input.value}`,postschema)
+                        removeSpinner(button)
+
                         if (!meds.success) {
                             return alertMessage(meds.success)
                         }
@@ -629,10 +674,42 @@ postschema.body = JSON.stringify({token: getdata('token')});
                         
                     }
                 }
-                form.addEventListener('submit',(e)=>{
+                form.onsubmit= function (){
                     e.preventDefault()
 
-                })
+                }
+                proceedB.onclick = async function (event) {
+                    event.preventDefault();
+                    event.preventDefault();
+                    let a
+                    addSpinner(button)
+                    for(const input  of inputs) {
+                        v = input.getAttribute('data-id')
+                        if (!v) {
+                            a = inputs.indexOf(input) - 1
+                            break
+                        }
+                    }
+                    if (!a && a != 0) {
+                        a = 3
+                    }else if (a == -1) {
+                        removeSpinner(button)
+                        return
+                    }
+                    let target = inputs[a],entity = target.name, needle = target.getAttribute('data-id')
+                    postschema.body = JSON.stringify({
+                        token: getdata('token'),
+                        entity,
+                        needle
+                    })
+                    let meds = await request(`search-medicine/${input.value}`,postschema)
+                        removeSpinner(button)
+
+                        if (!meds.success) {
+                            return alertMessage(meds.success)
+                        }
+                        showMeds(meds.message)
+                }
             }
           } catch (error) {
             console.log(error)
@@ -898,7 +975,6 @@ function showMeds(meds) {
         
     }
     if (!meds.length) {
-        console.log('sd')
         aDePh(cont)
     }
 }
