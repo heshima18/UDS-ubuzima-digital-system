@@ -415,18 +415,18 @@ GROUP BY mh.id;
         if (response.raw_medicines[response.medicines.indexOf(medicine)].servedOut) {
           response.medicines.splice(response.medicines.indexOf(medicine), 1)
         }
-      }else if (user != 'cashier' && user != 'insurance_manager' && user != 'patient' && user != 'householder') {
+      }else if (user != 'cashier' && user != 'insurance_manager' && user != 'dof' && user != 'patient' && user != 'householder') {
         delete response.medicines[response.medicines.indexOf(medicine)].price
       }
     }
     for (const services of response.services) {
-      if (user != 'cashier' && user != 'insurance_manager' && user != 'patient' && user != 'householder') {
+      if (user != 'cashier' && user != 'insurance_manager' && user != 'dof' && user != 'patient' && user != 'householder') {
         delete response.services[response.services.indexOf(services)].price
       }
       Object.assign(response.services[response.services.indexOf(services)],{quantity: response.raw_services[response.services.indexOf(services)].quantity})     
     }
     for (const equipment of response.equipments) {
-      if (user != 'cashier' && user != 'insurance_manager' && user != 'patient' && user != 'householder') {
+      if (user != 'cashier' && user != 'insurance_manager' && user != 'dof' && user != 'patient' && user != 'householder') {
         delete response.equipments[response.equipments.indexOf(equipment)].price
       }
         Object.assign(response.equipments[response.equipments.indexOf(equipment)],{quantity: response.raw_equipments[response.equipments.indexOf(equipment)].quantity})
@@ -441,14 +441,14 @@ GROUP BY mh.id;
     delete response.raw_services
     delete response.raw_equipments
     delete response.raw_medicines
-    if (user != 'hc_provider' && user != 'cashier' && user != 'insurance_manager' && user != 'patient' && user != 'householder') {
+    if (user != 'hc_provider' && user != 'cashier' && user != 'insurance_manager' && user != 'dof' && user != 'patient' && user != 'householder') {
       delete response.services
       delete response.tests
       delete response.operations
       delete response.equipments
       delete response.services
       delete response.decisions
-    }else if (user != 'cashier' && user != 'insurance_manager' && user != 'patient' && user != 'householder') {
+    }else if (user != 'cashier' && user != 'insurance_manager' && user != 'dof' && user != 'patient' && user != 'householder') {
       delete response.assurance_info
     }else if (user == 'cashier') {
       

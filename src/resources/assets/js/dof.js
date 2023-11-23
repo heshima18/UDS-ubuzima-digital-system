@@ -1,4 +1,4 @@
-import { alertMessage, getdata, getschema, postschema, request,initializeCleave,sessiondata,addLoadingTab,removeLoadingTab, checkEmpty, showRecs, getchips,getPath,addsCard,cpgcntn, geturl, adcm, addshade, deletechild, removeRec } from "../../../utils/functions.controller.js";
+import { alertMessage, getdata, getschema, postschema, request,initializeCleave,sessiondata,addLoadingTab,removeLoadingTab, checkEmpty, showRecs, getchips,getPath,addsCard,cpgcntn, geturl, adcm, addshade, deletechild, removeRec, aDePh } from "../../../utils/functions.controller.js";
 import {expirateMssg, pushNotifs, userinfo} from "./nav.js";
 
 let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z,socket,assurances,inventory
@@ -1145,9 +1145,15 @@ let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z,socket,assurances,inventor
                     }
                 })
             }else if (x == 'supported-insurances') {
-                let table = $('.datatables-services');
+                let table = $('.datatables-assurances');
                 let t = page.querySelector('table')
                 if (!t.classList.contains('loaded')) {
+                    if (!assurances) {
+                        assurances = await request('gHosPiAsSu', postschema)
+                    }
+                    if (!assurances.success) {
+                        return alertMessage(assurances.message) 
+                    }
                     e = table.DataTable({
                         // Define the structure of the table
                         dom: '<"row mx-2"<"col-md-2 p-10p"<"me-3"l>><"col-md-10 p-10p"<"dt-action-buttons text-xl-end text-lg-start text-md-end text-start d-flex align-items-center justify-content-end flex-md-row flex-column mb-3 mb-md-0"fB>>>t<"row mx-2"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>',
@@ -1206,7 +1212,7 @@ let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z,socket,assurances,inventor
                         order: [[1, "asc"]], // Initial sorting
             
                         // Provide the data from the imported inventory
-                        data: assurances.message,
+                        data: assurances.message || assurance,
             
                         // Define buttons for exporting and adding new inventory
                         buttons: [
@@ -1641,7 +1647,7 @@ let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z,socket,assurances,inventor
                                 { data: "payment_info.a_amount", title: "amount (RWF)" },
                                 { data: "payment_info.status", title: "status" },
                                 { data: "dateclosed", title: "date" },
-                                { title: "Action", data: 'id'}
+                                { title: "Action", data: 'session_id'}
                             ],
                             columnDefs: [
                                 // Define column properties and rendering functions
@@ -1722,7 +1728,7 @@ let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z,socket,assurances,inventor
                                     render: function (e, t, a, n) {
                                         return (
                                             `<div class="d-inline-block text-nowrap">
-                                            <button class="btn btn-sm btn-icon delete-equipment" data-id="${e}"><i class="bx bx-show"></i></button>
+                                            <button class="btn btn-sm btn-icon view-button border border-3" data-id="${e}"><i class="bx bx-show"></i></button>
                                         </div>`
                                         );
                                     },
@@ -1777,9 +1783,24 @@ let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z,socket,assurances,inventor
                                 });
                             }
                         });
-                    }
+                        checkButtons()
+                        let tabl = page.querySelector('.dataTables_paginate');
+                        tabl.addEventListener('click', e=>{
+                            setTimeout(checkButtons,10)
 
+                        })
+                    }
+                    function checkButtons() {
+                        let viewbuts = Array.from(page.querySelectorAll('button.view-button'))
+                        viewbuts.forEach(button => {
+                            button.onclick = async function (event) {
+                                event.preventDefault();
+                                showSession(this.getAttribute('data-id'))
+                            }
+                        });
+                    }
                     $.fn.dataTable.ext.search.push(function (settings, data, dataIndex) {
+                        setTimeout(checkButtons,10)
                         if (settings.nTable.classList.contains('datatables-prescriptions')) {
                             let min = minDate.value;
                             let max = maxDate.value;
@@ -1876,6 +1897,102 @@ let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z,socket,assurances,inventor
 
                         }
                     })
+                    async function showSession(session) {
+                        q = addshade();
+                        d = document.createElement('div')
+                        d.className = `br-10p cntr card p-20p bsbb w-80 h-85 b-mgc-resp ovh`
+                        q.appendChild(d)
+                        b = document.getElementById('view-session')
+                        b = b.cloneNode(true)
+                        b.classList.remove('hidden')
+                        d.appendChild(b)
+                        addLoadingTab(d)
+                        postschema.body = JSON.stringify({token: getdata('token')})
+                        let sessiondata =  await request(`session/${session}`,postschema)
+                        if (!sessiondata.success) {
+                            return alertMessage(sessiondata.message)
+                        }
+                        removeLoadingTab(d)
+                        sessiondata = sessiondata.message
+                        Object.assign(sessiondata.payment_info,{total_amount: Number(sessiondata.payment_info.a_amount) + Number(sessiondata.payment_info.p_amount)})
+                        const dataHolders = Array.from(d.querySelectorAll('span[name="info-hol"]'))
+                        const loopingDataHolders = Array.from(d.querySelectorAll('ul[name="looping-info"]'))
+                        for (const element of loopingDataHolders) {
+                            let dataToHold = element.getAttribute('data-hold');
+                            let dataToShow = sessiondata[dataToHold]
+                            if (!dataToShow.length) {
+                              aDePh(element.parentElement)
+                              element.parentNode.removeChild(element)
+                              continue  
+                            }
+                            for (const data of dataToShow) {
+                                Object.assign(data,{total_amount: (Number(data.price) * Number(data.quantity)).toFixed(2)})
+                                let clonedNode = element.cloneNode(true);
+                                let dataHolders = Array.from(clonedNode.querySelectorAll('[name="looping-info-hol"]'))
+                                if (dataToHold == 'medicines') {
+                                    if (data.status == 'served') {
+                                        clonedNode.classList.add('bc-tr-green')
+                                        dataHolders.find(function(element) {return element.getAttribute('data-hold') == 'name'}).classList.replace('dgray','green')
+                                    }else{
+                                        clonedNode.classList.add('bc-gray')
+                                    }
+                                    if (data.servedOut) {
+                                        let span = document.createElement('span')
+                                        span.innerText = '( served out )'
+                                        span.className = `fs-10p p-a t-0 mt-50p l-0 ml-25p`
+                                        clonedNode.appendChild(span)
+                                    }
+                                }
+                               for (const dataHolder of dataHolders) {
+                                if (dataHolder.getAttribute('data-hold').indexOf('quantity') != -1 || dataHolder.getAttribute('data-hold').indexOf('amount') != -1) {
+                                    dataHolder.innerText = adcm(data[dataHolder.getAttribute('data-hold')])
+                                }else if (dataHolder.getAttribute('data-hold').indexOf('result') != -1) {
+                                    if (data[dataHolder.getAttribute('data-hold')] == "positive" || data[dataHolder.getAttribute('data-hold')] == "positif") {
+                                        dataHolder.classList.add('green')
+                                    }else{
+                                        dataHolder.classList.add('red')
+                                    }
+                                    dataHolder.innerText = data[dataHolder.getAttribute('data-hold')]
+                                }else if (dataToHold == 'decisions' && !dataHolder.getAttribute('data-hold')) {
+                                    dataHolder.innerText = data
+                                }else{
+                                    dataHolder.innerText = data[dataHolder.getAttribute('data-hold')]
+                                }
+                               }
+                               element.parentNode.appendChild(clonedNode)
+                            }
+                            
+                            element.parentNode.removeChild(element)
+        
+                        }
+                        for (const holder of dataHolders) {
+                                let objectId = holder.getAttribute('data-hold')
+                                if (objectId.indexOf('.') != -1) {
+                                    objectId = objectId.split('.')
+                                    if (objectId[1].indexOf('amount') != -1) {
+                                        holder.innerText = adcm(sessiondata[objectId[0]][objectId[1]])
+                                    }else if (objectId[0].indexOf('p_info') != -1 && objectId[1].indexOf('name') != -1) {
+                                        holder.innerText = sessiondata[objectId[0]][objectId[1]]
+                                        holder.classList.add('hover-6','data-buttons')
+                                        holder.setAttribute('data-role', 'show-profile')
+                                        holder.setAttribute('data-id', sessiondata[objectId[0]].id)
+                                    } else{
+                                        holder.innerText = sessiondata[objectId[0]][objectId[1]]
+                                    }
+                                }else{
+                                    if (holder.getAttribute('data-hold').indexOf('status') != -1) {
+                                        if (sessiondata[holder.getAttribute('data-hold')] == "open") {
+                                            holder.classList.replace('bc-gray','bc-tr-theme')
+                                        }
+                                    }
+                                    if (!objectId in sessiondata || !sessiondata[objectId]) {
+                                        holder.innerText = `no entries available`
+                                        continue  
+                                    }
+                                    holder.innerText = sessiondata[objectId]
+                                }
+                        }
+                    }
                     
             }
             
