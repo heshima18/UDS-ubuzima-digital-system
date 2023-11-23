@@ -11,7 +11,7 @@ export const addhospital = async (req,res)=>{
     now = now.toFormat('yyyy-MM-dd HH:mm:ss')
     let { name,departments,province,type,district,sector,cell,dependency,phone } = req.body
     let uid = id()
-    let insert = await query(`insert into hospitals(id,name,departments,province,type,phone,district,sector,cell,dependency,employees,assurances)values(?,?,?,?,?,?,?,?,?,?,?)`,[uid,name,JSON.stringify(departments),province,type,phone,district,sector,cell,dependency,'[]','[]'])
+    let insert = await query(`insert into hospitals(id,name,departments,province,type,phone,district,sector,cell,dependency,employees,assurances)values(?,?,?,?,?,?,?,?,?,?,?,?)`,[uid,name,JSON.stringify(departments),province,type,phone,district,sector,cell,dependency,'[]','[]'])
     if (!insert) {
         res.status(500).send({success:false, message: errorMessage.is_error})
         return
@@ -30,7 +30,7 @@ export const getHPs = async (req,res)=>{
       hospitals.id AS id,
       hospitals.type,
       GROUP_CONCAT(DISTINCT JSON_OBJECT('province', provinces.name, 'district', districts.name, 'sector', sectors.name,'cell', cells.name)) as location,
-      COALESCE(CONCAT('[', GROUP_CONCAT(DISTINCT JSON_OBJECT('id', users.id, 'name', users.Full_name)), ']'), '[]') AS employees,
+      COALESCE(CONCAT('[', GROUP_CONCAT(DISTINCT CASE WHEN users.id IS NOT NULL THEN JSON_OBJECT('id', users.id, 'name', users.Full_name)ELSE NULL END SEPARATOR ','), ']'), '[]') AS employees,
       CONCAT('[', GROUP_CONCAT(DISTINCT JSON_OBJECT('id', departments.id, 'name', departments.name)), ']') AS departments,
       COUNT(DISTINCT medical_history.id) AS total_patients
     FROM

@@ -680,7 +680,6 @@ postschema.body = JSON.stringify({token: getdata('token')});
                 }
                 proceedB.onclick = async function (event) {
                     event.preventDefault();
-                    event.preventDefault();
                     let a
                     addSpinner(button)
                     for(const input  of inputs) {

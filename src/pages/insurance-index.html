@@ -651,7 +651,261 @@
 							</div>
 							<!-- end of my account section -->
 						</div>
+                        <div class="modal hidden">
+                            <div class="br-5p w-100 h-100 ovh hidden" id="view-session">
+									<div class="w-100 h-100 capitalize theb p-r ovys scroll-2">
+										<div class="header w-100 px-10p h-a bp-0-resp">
+                                            <div class="w-100 h-a">
+                                                <ul class="ls-none px-3p flex bblock-resp">
+                                                    <li class="py-8p bsbb flex bblock-resp bfull-resp bsbb">
+                                                        <span class="pname dgray fs-14p pr-5p center hidden-resp">status : </span>
+                                                        <span class="btn btn-sm bc-gray dgray mx-5p bfull-resp status-holder" name="info-hol" data-hold="payment_info.status">[Session's-payment-Status]</span>
+                                                    </li>
+                                                    <li  class="p-2p bsbb flex bblock-resp bfull-resp">
+                                                        <ul class="ls-none px-3p py-5p flex">
+                                                            <li class="p-2p bsbb flex">
+                                                                <span class="px-5p dgray center">Action : </span>
+                                                            </li>
+                                                            <li class="p-2p bsbb flex">
+                                                                <span class="btn btn-sm bc-tr-red red mx-5p data-buttons" data-identifier="true" data-role="decline-payment">decline payment</span>
+                                                            </li>
+                                                        </ul>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                            <div class="left mb-10p w-100">
+                                                <div class="dinfo my-5p">
+                                                    <span class="title bold-2 fs-16p capitalize dgray">facility's information</span>
+                                                    <ul class="ls-none px-3p">
+                                                        <li class="p-2p bsbb flex ">
+                                                            <span class="pname dgray fs-14p pr-5p">hospital : </span>
+                                                            <span class="hpname dgray fs-14p" name="info-hol" data-hold="hp_info.name">[hospital]</span>
+                                                        </li>
+                                                        <li class="p-2p bsbb flex ">
+                                                            <span class="pname dgray fs-14p pr-5p">facility's location : </span>
+                                                            <span class="hplocation dgray fs-14p" name="info-hol" data-hold="hp_info.location">[hospital-location]</span>
+                                                        </li>
+                                                        <li class="p-2p bsbb flex ">
+                                                            <span class="pname dgray fs-14p pr-5p">facility's phone : </span>
+                                                            <span class="hplocation dgray fs-14p" name="info-hol" data-hold="hp_info.phone">[hospital-phone-number]</span>
+                                                        </li>
+                                                        <li class="p-2p bsbb flex ">
+                                                            <span class="pname dgray fs-14p pr-5p">Date : </span>
+                                                            <span class="hplocation dgray fs-14p" name="info-hol" data-hold="dateadded">[session's-date-added]</span>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                                <div class="pinfo my-15p">
+                                                    <span class="title bold-2 fs-16p capitalize dgray">patient's information</span>
+                                                    <ul class="ls-none my-10p px-3p">
+                                                        <li class="p-2p bsbb flex ">
+                                                            <span class="pname dgray fs-14p pr-5p">NID : </span>
+                                                            <span class="pnid dgray fs-14p" name="info-hol" data-hold="p_info.nid">[patient's-national-id]</span>
+                                                        </li>
+                                                        <li class="p-2p bsbb flex ">
+                                                            <span class="pname dgray fs-14p pr-5p">names : </span>
+                                                            <span class="pname black fs-14p" name="info-hol" data-hold="p_info.name">[patients's-name]</span>
+                                                        </li>
+                                                        <li class="p-2p bsbb flex ">
+                                                            <span class="pname dgray fs-14p pr-5p">location : </span>
+                                                            <span class="plocation dgray fs-14p" name="info-hol" data-hold="p_info.location">[patient's-location]</span>
+                                                        </li>
+                                                        <li class="p-2p bsbb flex ">
+                                                            <span class="pname dgray fs-14p pr-5p">phone : </span>
+                                                            <span class="pphone dgray fs-14p" name="info-hol" data-hold="p_info.phone">[patient's-phone-number]</span>
+                                                        </li>
+                                                        <li class="p-2p bsbb flex ">
+                                                            <span class="pname dgray fs-14p pr-5p">session id : </span>
+                                                            <span class="sessionid dgray fs-14p" name="info-hol" data-hold="session_id">[session's-id]</span>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                                <div class="pinfo my-15p">
+                                                    <div class="flex jc-sb my-20p bsbb">
+                                                        <span class="title bold-2 fs-16p capitalize dgray block">Applied medications</span>
+                                                    </div>
+                                                    <div class="my-10p px-1p">
+                                                        <ul class="card-1  ls-none my-10p iblock p-20p mx-5p my-5p bfull-resp bm-y-10p-resp bm-x-0-resp bblock-resp w-240p bfull-resp br-5p" name="looping-info" data-hold="medicines">
+                                                            <li class="p-2p bsbb flex">
+                                                                <span class="bold-2 dgray card-title" name="looping-info-hol" data-hold="name" data-secondary-holder="true">[medication's-name]</span>
+                                                            </li>
+                                                            <li class="p-2p bsbb flex">
+                                                                <span class="pname dgray fs-16p bold-2" name="looping-info-hol" data-hold="price" data-secondary-holder="true">[medicine's-price]</span>
+                                                                <span class="pname dgray fs-14p  px-3p center">RWF</span>
+                                                            </li>
+                                                            <li class="p-2p bsbb flex jc-sb ">
+                                                                <span class="center-2">
+                                                                    <span class="px-5p bsbb fs-12p">x</span>
+                                                                    <span class="pname black fs-18p bold" name="looping-info-hol" data-hold="quantity" data-secondary-holder="true">[medication's-quantity]</span>
+                                                                    <span class="pname dgray fs-14p px-3p" name="looping-info-hol" data-hold="unit"></span>
+                                                                </span>
+                                                            </li>
+                                                            <li class="p-2p bsbb flex jc-sb">
+                                                                <span class="pname dgray fs-14p pr-5p center">total </span>
+                                                                <span class="center-2">
+                                                                    <span class="plocation black fs-14p" name="looping-info-hol" data-hold="total_amount" data-secondary-holder="true">[total-amount]</span>
+                                                                    <span class="pname dgray fs-14p px-3p">RWF</span>
+                                                                </span>
+                                                            </li>
+                                                            <li class="p-2p bsbb flex jc-sb my-5p">
+                                                                <span>
+                                                                    <span class="btn btn-label-secondary hover-2 btn-sm mark-button" data-id-holder="true" name="looping-info-hol" data-hold="status" data-secondary-holder="true">[medication's-Status]</span>
+                                                                </span>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                                <div class="testinfo my-5p">
+                                                    <div class="flex jc-sb my-20p bsbb">
+                                                        <span class="title bold-2 fs-16p capitalize dgray">Applied tests</span>
+                                                    </div>
+                                                    <div class="my-2p px-1p">
+                                                        <ul class="card-1  ls-none my-10p iblock p-20p mx-5p my-5p bfull-resp bm-y-10p-resp bm-x-0-resp bblock-resp w-200p bfull-resp br-5p" name="looping-info" data-hold="tests">
+                                                            <li class="p-2p bsbb flex">
+                                                                <span class="bold-2 dgray card-title" name="looping-info-hol" data-hold="name" data-secondary-holder="true">[test's-name]</span>
+                                                            </li>
+                                                            <li class="p-2p bsbb flex jc-sb">
+                                                                <span class="pname dgray fs-14p pr-5p">price : </span>
+                                                                <span>
+                                                                    <span class="pdob black fs-14p" name="looping-info-hol" data-hold="price" data-secondary-holder="true">[test's-price]</span>
+                                                                    <span class="pname dgray fs-14p px-3p">RWF</span>
+                                                                </span>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                                <div class="pinfo my-15p">
+                                                    <span class="title bold-2 fs-16p capitalize dgray">Applied equipments</span>
+                                                    <div class="my-2p px-1p">
+                                                        <ul class="card-1  ls-none my-10p iblock p-20p mx-5p my-5p bfull-resp bm-y-10p-resp bm-x-0-resp bblock-resp w-200p bfull-resp br-5p" name="looping-info" data-hold="equipments">
+                                                            <li class="p-2p bsbb flex">
+                                                                <span class="bold-2 dgray card-title" name="looping-info-hol" data-hold="name" data-secondary-holder="true">[consumable's-name]</span>
+                                                            </li>
+                                                            <li class="p-2p bsbb flex">
+                                                                <span class="pname dgray fs-16p bold-2" name="looping-info-hol" data-hold="price" data-secondary-holder="true">[medicine's-price]</span>
+                                                                <span class="pname dgray fs-14p  px-3p center">RWF</span>
+                                                            </li>
+                                                            <li class="p-2p bsbb flex jc-sb ">
+                                                                <span class="center-2">
+                                                                    <span class="px-5p bsbb fs-12p">x</span>
+                                                                    <span class="pname black fs-18p bold" name="looping-info-hol" data-hold="quantity" data-secondary-holder="true">[medication's-quantity]</span>
+                                                                    <span class="pname dgray fs-14p px-3p" name="looping-info-hol" data-hold="unit"></span>
+                                                                </span>
+                                                            </li>
+                                                            <li class="p-2p bsbb flex jc-sb">
+                                                                <span class="pname dgray fs-14p pr-5p center">total </span>
+                                                                <span class="center-2">
+                                                                    <span class="plocation black fs-14p" name="looping-info-hol" data-hold="total_amount" data-secondary-holder="true">[total-amount]</span>
+                                                                    <span class="pname dgray fs-14p px-3p">RWF</span>
+                                                                </span>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                                <div class="pinfo my-15p">
+                                                    <span class="title bold-2 fs-16p capitalize dgray">services applied</span>
+                                                    <div class="my-2p px-1p">
+                                                        <ul class="card-1  ls-none my-10p iblock p-20p mx-5p my-5p bfull-resp bm-y-10p-resp bm-x-0-resp bblock-resp w-200p bfull-resp br-5p" name="looping-info" data-hold="services">
+                                                            <li class="p-2p bsbb flex">
+                                                                <span class="bold-2 dgray card-title" name="looping-info-hol" data-hold="name" data-secondary-holder="true">[service's-name]</span>
+                                                            </li>
+                                                            <li class="p-2p bsbb flex">
+                                                                <span class="pname dgray fs-16p bold-2" name="looping-info-hol" data-hold="price" data-secondary-holder="true">[medicine's-price]</span>
+                                                                <span class="pname dgray fs-14p  px-3p center">RWF</span>
+                                                            </li>
+                                                            <li class="p-2p bsbb flex jc-sb ">
+                                                                <span class="center-2">
+                                                                    <span class="px-5p bsbb fs-12p">x</span>
+                                                                    <span class="pname black fs-18p bold" name="looping-info-hol" data-hold="quantity" data-secondary-holder="true">[medication's-quantity]</span>
+                                                                    <span class="pname dgray fs-14p px-3p" name="looping-info-hol" data-hold="unit"></span>
+                                                                </span>
+                                                            </li>
+                                                            <li class="p-2p bsbb flex jc-sb">
+                                                                <span class="pname dgray fs-14p pr-5p center">total </span>
+                                                                <span class="center-2">
+                                                                    <span class="plocation black fs-14p" name="looping-info-hol" data-hold="total_amount" data-secondary-holder="true">[total-amount]</span>
+                                                                    <span class="pname dgray fs-14p px-3p">RWF</span>
+                                                                </span>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                                <div class="testinfo my-5p">
+                                                    <div class="flex jc-sb my-20p bsbb">
+                                                        <span class="title bold-2 fs-16p capitalize dgray">Applied operations</span>
+                                                    </div>
+                                                    <div class="my-2p px-1p">
+                                                        <ul class="card-1  ls-none my-10p iblock p-20p mx-5p my-5p bfull-resp bm-y-10p-resp bm-x-0-resp bblock-resp w-200p bfull-resp br-5p" name="looping-info" data-hold="operations">
+                                                            <li class="p-2p bsbb flex">
+                                                                <span class="bold-2 dgray card-title" name="looping-info-hol" data-hold="name" data-secondary-holder="true">[operation's-name]</span>
+                                                            </li>
+                                                            <li class="p-2p bsbb flex jc-sb">
+                                                                <span class="pname dgray fs-14p pr-5p">price : </span>
+                                                                <span>
+                                                                    <span class="pdob black fs-14p" name="looping-info-hol" data-hold="price" data-secondary-holder="true">[operation's-price]</span>
+                                                                    <span class="pname dgray fs-14p px-3p">RWF</span>
+                                                                </span>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                                <div class="pinfo my-15p">
+                                                    <div class="flex jc-sb my-20p bsbb">
+                                                        <span class="title bold-2 fs-16p capitalize dgray">healthcare provider's information</span>
+                                                    </div>
+                                                    <ul class="ls-none my-10p px-3p">
+                                                        <li class="p-2p bsbb flex ">
+                                                            <span class="dname black fs-16p" name="info-hol" data-hold="hcp_info.name">[HCP's-name]</span>
+                                                        </li>
+                                                        <li class="p-2p bsbb flex ">
+                                                            <span class="pname dgray fs-14p pr-5p">title : </span>
+                                                            <span class="dtitle dgray fs-12p center" name="info-hol" data-hold="hcp_info.title">[HCP's-title]</span>
+                                                        </li>
+                                                        <li class="p-2p bsbb flex ">
+                                                            <span class="pname dgray fs-14p pr-5p">phone : </span>
+                                                            <span class="dtitle dgray fs-12p center" name="info-hol" data-hold="hcp_info.phone">[HCP's-title]</span>
+                                                        </li>
+                                                        <li class="p-2p bsbb flex ">
+                                                            <span class="pname dgray fs-14p pr-5p">license : </span>
+                                                            <span class="dtitle dgray fs-16p center bold consolas" name="info-hol" data-hold="hcp_info.license">[HCP's-license]</span>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                                <div class="pinfo my-15p">
+                                                    <span class="title bold-2 fs-16p capitalize dgray">payment information</span>
+                                                    <ul class="ls-none my-10p px-3p">
+                                                        <li class="p-2p bsbb flex">
+                                                            <span class="pname dgray fs-14p pr-5p capitalize">applied insurance : </span>
+                                                            <span class="pname black fs-14p capitalize" name="info-hol" data-hold="assurance_info.name">[applied insurance's-name]</span>
+                                                        </li>
+                                                        <li class="p-2p bsbb flex">
+                                                            <span class="pname dgray fs-14p pr-5p">insurance's percentage : </span>
+                                                            <span class="pname black fs-14p" name="info-hol" data-hold="assurance_info.percentage">[insurances's-percentage]</span>
+                                                            <span class="pname dgray fs-14p">%</span>
 
+                                                        </li>
+                                                        <li class="p-2p bsbb flex">
+                                                            <span class="pname dgray fs-14p pr-5p">insurance's fees : </span>
+                                                            <span class="pdob black fs-14p" name="info-hol" data-hold="payment_info.a_amount">[insurance's-fees]</span>
+                                                            <span class="pname dgray fs-14p px-3p">RWF</span>
+                                                        </li>
+                                                        <li class="p-2p bsbb flex">
+                                                            <span class="pname dgray fs-14p pr-5p">patient's fees : </span>
+                                                            <span class="pdob black fs-14p" name="info-hol" data-hold="payment_info.p_amount">[patients's-fees]</span>
+                                                            <span class="pname dgray fs-14p  px-3p">RWF</span>
+                                                        </li>
+                                                        <li class="p-2p bsbb flex">
+                                                            <span class="pname dgray fs-14p pr-5p">Total Amount : </span>
+                                                            <span class="pname black fs-14p" name="info-hol" data-hold="payment_info.total_amount">[total-amount to-be-paid]</span>
+                                                            <span class="pname dgray fs-14p  px-3p">RWF</span>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>
+									</div>
+							</div>
+                        </div>
 					</div>
 				</div>
                 <!-- footer section -->

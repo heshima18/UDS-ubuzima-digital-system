@@ -72,13 +72,14 @@ f.addEventListener('submit', async e =>{
            v = 0 
         }
     }
-    console.log(v)
     if(v){
         x = {}
         for (const input of i) {
             if (!input.classList.contains('chips-check')) {
                 if (input.name == 'phone') {
                     Object.assign(x,{[input.name]:  input.value.replace(/ /g, "")})   
+                }else if (input.classList.contains('bevalue')) {
+                    Object.assign(x,{[input.name]: input.getAttribute('data-id')})
                 }else{
                     Object.assign(x,{[input.name]: input.value})
 

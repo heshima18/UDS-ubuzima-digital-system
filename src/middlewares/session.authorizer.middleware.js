@@ -19,7 +19,7 @@ export async function authorizeSession (req, res, next, extra){
         }
       }
       if (extra == 'isuserorhcp') {
-        if (user.role!= 'hc_provider' && user.role!= 'pharmacist' && user.hospital != q.hospital && user.id != q.patient) {
+        if (user.role!= 'hc_provider' && user.role!= 'insurance_manager' && user.role!= 'pharmacist' && user.hospital != q.hospital && user.id != q.patient) {
           return res.status(403).send({success: false, message: errorMessage._err_forbidden})
         }
         
