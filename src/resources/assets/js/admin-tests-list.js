@@ -1,4 +1,4 @@
-import { alertMessage, getdata, getschema, postschema, request,initializeCleave, checkEmpty, showRecs, getchips, adcm } from "../../../utils/functions.controller.js";
+import { alertMessage, getdata, getschema, postschema, request,initializeCleave, checkEmpty, showRecs, getchips, adcm, promptCFQPopup, addshade } from "../../../utils/functions.controller.js";
 
 let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,z,x,c,v,b,n,m
 u = getdata('token')
@@ -6,56 +6,6 @@ if(!u){
     window.location.href = '../../login'
 }
 (async function () {
-    try {
-        
-        f = document.querySelector('form#add-test-form')
-        i = Array.from(f.querySelectorAll('.form-control'))
-        j = f.querySelector('input#department')
-        k = f.querySelector('input#type')
-        b = f.querySelector('button[type="submit"]')
-        j.addEventListener('focus', function () {
-            showRecs(j,d.message,'department')
-        })
-        k.addEventListener('focus', function () {
-            showRecs(j,{id: 'quick test', name: 'quick test', id: 'core test', name: 'core test'},'department')
-        })
-        f.addEventListener('submit', async e =>{
-            e.preventDefault();
-            v = 1
-            for (const input of i) {
-               n =  checkEmpty(input);
-                if (!n) {
-                   v = 0 
-                }
-            }
-            if(v){
-                x = {}
-                for (const input of i) {
-                    if (!input.classList.contains('bevalue')) {
-                        Object.assign(x,{[input.name]: input.value})
-                    }else{
-                        Object.assign(x,{[input.name]: input.getAttribute('data-id')})
-                    }
-                 }
-                 Object.assign(x,{token: getdata('token')})
-                 postschema.body = JSON.stringify(x)
-                 b.setAttribute('disabled', true)
-                 b.textContent = `Recording test info...`
-        
-                 a = await request('addtest',postschema);
-                 b.removeAttribute('disabled')
-                 b.textContent = `Submit`
-                 if (!a.success) {
-                    alertMessage(a.message)
-                 }else{
-                    alertMessage(a.message)
-                    f.reset();
-                 }
-            }
-        })
-    } catch (error) {
-      console.log(error)  
-    }
     $(document).ready( async function () {
         postschema.body = JSON.stringify({token : u})
         m = await request('get-tests',postschema)
@@ -162,7 +112,7 @@ if(!u){
                     {
                         text: '<i class="bx bx-plus me-0 me-sm-1"></i><span class="d-none d-sm-inline-block">Add New</span>',
                         className: "add-new btn btn-primary",
-                        attr: { "data-bs-toggle": "modal", "data-bs-target": "#add-test" },
+                        attr: { "id": "add-test-button" },
                     },
                 ],
     
@@ -191,13 +141,70 @@ if(!u){
                 }
             });
     
-        table.find("tbody").on("click", ".delete-health-post", function () {
-            if (confirm("Are you sure you want to delete this health post?")) {
-                e.row($(this).parents("tr")).remove().draw();
-            }
-        })
-        $('#add-test').on('shown.bs.modal', function () {
+       let aTB = document.querySelector('#add-test-button')
+       aTB.addEventListener('click', e=>{
+        e.preventDefault()
+        let testDiv = document.querySelector('div#add-test'),shade = addshade()
+        testDiv = testDiv.cloneNode(true)
+        shade.appendChild(testDiv)
+        try {
+        
+            f = shade.querySelector('form#add-test-form')
+            i = Array.from(f.querySelectorAll('.main-input'))
+            j = f.querySelector('input#department')
+            c = f.querySelector('input#questions')
     
-        });
+            k = f.querySelector('input#type')
+            b = f.querySelector('button[type="submit"]')
+            j.addEventListener('focus', function () {
+                showRecs(j,d.message,'department')
+            })
+            c.addEventListener('click', function () {
+                promptCFQPopup(c)
+            })
+            k.addEventListener('focus', function () {
+                showRecs(k,[{id: 'quick test', name: 'quick test'},{ id: 'core test', name: 'core test'}],'department')
+            })
+            f.addEventListener('submit', async e =>{
+                e.preventDefault();
+                v = 1
+                for (const input of i) {
+                   n =  checkEmpty(input);
+                    if (!n) {
+                       v = 0 
+                    }
+                }
+                if(v){
+                    x = {}
+                    for (const input of i) {
+                        if (input.classList.contains('chips-check')) {
+                            Object.assign(x,{[input.name]: getchips(input.parentNode.querySelector('div.chipsholder'),['question','answer','required'])})
+                            
+                        }else if (!input.classList.contains('bevalue')) {
+                            Object.assign(x,{[input.name]: input.value})
+                        }else{
+                            Object.assign(x,{[input.name]: input.getAttribute('data-id')})
+                        }
+                     }
+                     Object.assign(x,{token: getdata('token')})
+                     postschema.body = JSON.stringify(x)
+                     b.setAttribute('disabled', true)
+                     b.textContent = `Recording test info...`
+            
+                     a = await request('addtest',postschema);
+                     b.removeAttribute('disabled')
+                     b.textContent = `Submit`
+                     if (!a.success) {
+                        alertMessage(a.message)
+                     }else{
+                        alertMessage(a.message)
+                        f.reset();
+                     }
+                }
+            })
+        } catch (error) {
+          console.log(error)  
+        }
+       })
     });
 })()

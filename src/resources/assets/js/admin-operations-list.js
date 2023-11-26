@@ -1,4 +1,4 @@
-import { alertMessage, getdata, getschema, postschema, request,initializeCleave, checkEmpty, showRecs, getchips, adcm } from "../../../utils/functions.controller.js";
+import { alertMessage, getdata, getschema, postschema, request,initializeCleave, checkEmpty, showRecs, getchips, adcm, promptCFQPopup, addshade } from "../../../utils/functions.controller.js";
 
 let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,z,x,c,v,b,n,m
 u = getdata('token')
@@ -159,7 +159,7 @@ if(!u){
                     {
                         text: '<i class="bx bx-plus me-0 me-sm-1"></i><span class="d-none d-sm-inline-block">Add New</span>',
                         className: "add-new btn btn-primary",
-                        attr: { "data-bs-toggle": "modal", "data-bs-target": "#add-operation" },
+                        attr: {"id": "add-operation-button" },
                     },
                 ],
     
@@ -188,13 +188,65 @@ if(!u){
                 }
             });
     
-        table.find("tbody").on("click", ".delete-health-post", function () {
-            if (confirm("Are you sure you want to delete this operation?")) {
-                e.row($(this).parents("tr")).remove().draw();
-            }
-        })
-        $('#add-test').on('shown.bs.modal', function () {
-    
-        });
+            let aOB = document.querySelector('#add-operation-button')
+            aOB.addEventListener('click', e=>{
+                e.preventDefault();
+                let opDiv = document.querySelector('div#add-operation'),shade = addshade()
+                opDiv = opDiv.cloneNode(true)
+                shade.appendChild(opDiv)
+                try {
+        
+                    f = shade.querySelector('form#add-operation-form')
+                    i = Array.from(f.querySelectorAll('.main-input'))
+                    b = f.querySelector('button[type="submit"]')
+                    c = f.querySelector('input#questions')
+                    j = f.querySelector('input#department')
+                    j.addEventListener('focus', function () {
+                        showRecs(j,d.message,'department')
+                    })
+                    c.addEventListener('click', function () {
+                        promptCFQPopup(c)
+                    })
+                    f.addEventListener('submit', async e =>{
+                        e.preventDefault();
+                        v = 1
+                        for (const input of i) {
+                           n =  checkEmpty(input);
+                            if (!n) {
+                               v = 0 
+                            }
+                        }
+                        if(v){
+                            x = {}
+                            for (const input of i) {
+                                if (input.classList.contains('chips-check')) {
+                                    Object.assign(x,{[input.name]: getchips(input.parentNode.querySelector('div.chipsholder'),['question','answer','required'])})
+                                    
+                                }else if (!input.classList.contains('bevalue')) {
+                                    Object.assign(x,{[input.name]: input.value})
+                                }else{
+                                    Object.assign(x,{[input.name]: input.getAttribute('data-id')})
+                                }
+                             }
+                             Object.assign(x,{token: getdata('token')})
+                             postschema.body = JSON.stringify(x)
+                             b.setAttribute('disabled', true)
+                             b.textContent = `Recording operation info...`
+                    
+                             a = await request('add-operation',postschema);
+                             b.removeAttribute('disabled')
+                             b.textContent = `Submit`
+                             if (!a.success) {
+                                alertMessage(a.message)
+                             }else{
+                                alertMessage(a.message)
+                                f.reset();
+                             }
+                        }
+                    })
+                } catch (error) {
+                  console.log(error)  
+                }
+            })
     });
 })()

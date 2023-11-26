@@ -430,6 +430,7 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,z,notificationlinks,socket,m
                             Object.assign(b,{ token: getdata('token')})
                             postschema.body = JSON.stringify(b)
                             button.setAttribute('disabled',true)
+                            return console.log(b)
                             button.textContent = 'recording session info...'
                             r = await request('addsession',postschema);
                             button.removeAttribute('disabled',true)

@@ -14,7 +14,7 @@ import { getHP, getHPs, searchHP,addhospital, hospitalASSU, getHPDeps } from '..
 import {addSession, addSessionComment, addSessionDecision, addSessionEquipment, addSessionMedicine, addSessionOperation, addSessionService, addSessionTests, approveAssuPayment, approvePayment, assuranceMH, closeSession, getDailyHpSessions, getHc_pSessions, getHpsessions, getUsessions, markMedicineAsServed, session, testPay } from '../controllers/patient.session.controller';
 import {addmedicine, getMed, getMeds, searchMed} from '../controllers/medicine.controller';
 import {addDepartment, addDepartmentToHp, getDepartments, removeDepartmentFromHospital} from '../controllers/departments.controller';
-import {addtest,getTests} from '../controllers/tests.controller';
+import {addtest,getTest,getTests} from '../controllers/tests.controller';
 import {addAppointment, appointment, approveAppointment, declineAppointment, hcpAppointments, myAppointments} from '../controllers/appointment.controller';
 import { CheckAppointmentTimer, getAppointmentETA } from '../middlewares/time.authorizer.middleware';
 import { addCell, addDistrict, addProvince, addSector } from '../controllers/add.location.controller';
@@ -31,7 +31,7 @@ import { at } from '../controllers/token.verifier.controller';
 import { io } from '../socket.io/connector.socket.io';
 import { resend2FA } from '../controllers/2FA.resender.controller';
 import { addService, getServices } from '../controllers/services.controller';
-import { addOperation, getOperations } from '../controllers/operations.controller';
+import { addOperation, getOperation, getOperations } from '../controllers/operations.controller';
 import { addEquipment, getEquipments } from '../controllers/equipments.controller';
 import { organiseTitles, titles } from '../utils/titles.controller';
 import { checkTest } from '../middlewares/tests.middleware';
@@ -51,10 +51,11 @@ router.post("/add-service",authorizeRole,authorizeAdmin,addService)
 router.post("/add-operation",authorizeRole,authorizeAdmin,addOperation)
 router.post("/add-equipment",authorizeRole,authorizeAdmin,addEquipment)
 router.post("/get-tests",authorizeRole,getTests)
-router.post("/get-test/:test",authorizeRole,getTests)
+router.post("/get-test",authorizeRole,getTest)
 router.post("/get-services",authorizeRole,getServices)
 router.post("/get-equipments",authorizeRole,getEquipments)
 router.post("/get-operations",authorizeRole,getOperations)
+router.post("/operation",authorizeRole,getOperation)
 router.post("/add-province",authorizeRole,authorizeAdmin,addProvince)
 router.post("/add-district",authorizeRole,authorizeAdmin,addDistrict)
 router.post("/add-sector",authorizeRole,authorizeAdmin,addSector)

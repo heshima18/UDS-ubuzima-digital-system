@@ -294,33 +294,38 @@
                                 <table class="datatables datatables-health-posts my-3 table border-top"></table>
                             </div>
                         </div>
-                        <div class="modal fade" id="add-test" data-bs-backdrop="static">
+                        <div class="modal hidden" data-bs-backdrop="static">
                             <div class="modal-dialog modal-lg modal-dialog-centered">
-                                <div class="modal-content p-3 p-md-5">
+                                <div class="w-60 h-a cntr bc-white card-1 p-20p br-10p b-mgc-resp" id="add-test">
                                     <div class="modal-header text-uppercase">
                                         <h3>Add new test</h3>
                                     </div>
-                                    <div class="modal-body">
+                                    <div class="p-10p bsbb">
                                         <form id="add-test-form" class="row g-3">
                                             <div class="col-md-12">
                                                 <label for="ahp-name" class="form-label">Test name</label>
-                                                <input type="text" name="name" id="name" class="form-control" placeholder="Demo Test">
-                                                <small class="fs-14p"></small>
+                                                <input type="text" name="name" id="name" class="form-control main-input" placeholder="Demo Test">
+                                                <small class="fs-14p red"></small>
                                             </div>
                                             <div class="col-md-12 p-r">
                                                 <label for="ahp-name" class="form-label">Test Department</label>
-                                                <input type="text" name="department" id="department" class="form-control bevalue" placeholder="Demo Department">
-                                                <small class="fs-14p"></small>
+                                                <input type="text" name="department" id="department" class="form-control main-input bevalue" placeholder="Department for test">
+                                                <small class="fs-14p red"></small>
                                             </div>
                                             <div class="col-md-12 p-r">
                                                 <label for="type" class="form-label">Test Type</label>
-                                                <input type="text" name="type" id="type" class="form-control bevalue" placeholder="Demo Type">
-                                                <small class="fs-14p"></small>
+                                                <input type="text" name="type" id="type" class="form-control main-input bevalue" placeholder="Demo Type">
+                                                <small class="fs-14p red"></small>
+                                            </div>
+                                            <div class="col-md-12 p-r">
+                                                <label for="questions" class="form-label">consent questions</label>
+                                                <input type="button" name="questions" id="questions" class="btn btn-primary btn-sm chips-check block w-100 main-input" value="add CF Questions">
+                                                <small class="fs-14p red"></small>
                                             </div>
                                             <div class="mb-2 col-md-12">
                                                 <label class="form-label" for="password">test price</label>
                                                 <div class="input-group input-group-merge">
-                                                    <input type="number" id="price" class="form-control" name="price" placeholder="price">
+                                                    <input type="number" id="price" class="form-control main-input" name="price" placeholder="price">
                                                     <span class="input-group-text">RWF</span>
                                                     <small class="hidden w-100 red pl-3p verdana"></small>
                                                 </div>

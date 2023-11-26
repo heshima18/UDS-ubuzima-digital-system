@@ -230,11 +230,16 @@ export function checkEmpty(input){
         setSuccessFor(input)
         return 1
       }else{
-        setErrorFor(input,`please ${(input.tagName == "SELECT")? 'select' : 'enter'} the ${input.name}`)
-        return 0
+        if (input.getAttribute('data-custom-inp')) {
+          setErrorFor(input,`please answer this question`)
+          return 0
+        }else{
+          setErrorFor(input,`please ${(input.tagName == "SELECT")? 'select' : 'enter'} the ${input.name}`)
+          return 0
+        }
       }
     }else if (input.type == 'number') {
-      if (input.value <= 0) {
+      if (input.value < 0 || input.value == "") {
         setErrorFor(input,`please enter the proper value`)
         return 0
       }else{
@@ -243,11 +248,15 @@ export function checkEmpty(input){
       }
     }else{
       if (input.value == '' || input.value == '+250') {
-        if (input.getAttribute('data-optional')) {
+        if (input.getAttribute('data-optional') || input.classList.contains('optional')) {
           return 1
+        }else if (input.getAttribute('data-custom-inp')) {
+          setErrorFor(input,`please answer this question`)
+          return 0
+        }else{
+          setErrorFor(input,`please ${(input.tagName == "SELECT")? 'select' : 'enter'} the ${input.name}`)
+          return 0
         }
-        setErrorFor(input,`please ${(input.tagName == "SELECT")? 'select' : 'enter'} the ${input.name}`)
-        return 0
       }else{
           setSuccessFor(input)
         return 1
@@ -331,7 +340,6 @@ export async function triggerRecs(input,datatofetch,socket) {
   }
   return data
 }
-
 export function showRecs(input, data,type,noInpAction) {
   try {
     let div =  document.createElement('div');
@@ -521,14 +529,29 @@ export function getchips(parent,datatoget) {
   let d
   d = []
   for (const chip of c) {
-    if (!datatoget) {
+    let attris = Array.from(chip.querySelector('span').attributes)
+    attris = attris.filter(function(attribute){
+      if (attribute.name.indexOf('data-') != -1) {
+        return attribute.name
+      }
+    }) 
+    attris = attris.map(function(attribute){
+      if (attribute.name.indexOf('data-') != -1) {
+        let data = attribute.name.split('-')[1]
+        return data
+      }
+    }) 
+    datatoget = attris
+    if (!datatoget || datatoget.length == 0) {
       d.push(chip.querySelector('span').getAttribute(`data-id`))
     }else if (datatoget.length == 1) {
       d.push(chip.querySelector('span').getAttribute(`data-${datatoget[0]}`))
     }else if (datatoget.length > 1) {
       v = {}
       for (const data of datatoget) {
+
         Object.assign(v,{[data]: chip.querySelector('span').getAttribute(`data-${data}`)})
+        console.log(v)
       }
       d.push(v)
     }
@@ -735,34 +758,178 @@ function promptan(info,chipsHolder) {
     }
   })
 }
-function promptTestsPopup(info,chipsHolder) {
+async function promptTestsPopup(info,chipsHolder) {
   b = addshade();
   a = document.createElement('div');
   b.appendChild(a)
   info = info[0]
-  a.className = "w-350p h-350p p-10p bsbb bc-white cntr zi-10000 br-5p" 
+  a.className = "w-50 h-a mh-70 p-10p bsbb bc-white cntr zi-10000 br-5p" 
   a.innerHTML = `<div class="head w-100 h-50p py-10p px-15p bsbb">
                                   <span class="fs-17p dgray capitalize igrid h-100 verdana">${info.name}'s required information</span>
                               </div>
-                              <div class="body w-100 h-a p-5p grid">
+                              <div class="body w-100 h-a p-5p">
                                   <form method="post" id="req-test-info-form" name="req-test-info-form">
-                                  <div class="col-md-12 px-10p py-6p bsbb p-r">
-                                    <label for="sample" class="form-label">sample taken</label>
-                                    <input type="text" class="form-control" id="sample" placeholder="Demo sample" name="sample">
-                                    <small class="w-100 red pl-3p verdana"></small>
-                                  </div>
-                                  <div class="col-md-12 px-10p py-6p bsbb mb-5p p-r">
-                                    <label for="result" class="form-label">results found</label>
-                                    <input type="text" class="form-control" id="result" placeholder="Demo results" name="result">
-                                    <small class="w-100 red pl-3p verdana"></small>
+                                  <div class="cf-inps p-r h-60p">
+                         
                                   </div>
                                   <div class="center-2 my-15p px-10p bsbb">
-                                      <button type="submit" class="btn btn-primary mx-10p">Proceed</button>
-                                      <button type="button" class="btn btn-label-primary mx-10p capitalize">Send for tesing</button>
+                                      <button type="submit" class="btn btn-primary w-100 block">Proceed</button>
                                     </div>
                                   </form>
                               </div>`
   m = a.querySelector('form#req-test-info-form')
+  let cInp = a.querySelector('div.cf-inps')
+  addLoadingTab(cInp)
+  postschema.body = JSON.stringify({
+    token: getdata('token'),
+    test: info.id
+  })
+  let testInfo = await request('get-test',postschema)
+  if (!testInfo.success) {
+    return alertMessage(testInfo.message)
+  }
+  const questions = testInfo.message.questions
+  removeLoadingTab(cInp)
+  addCFInps(questions,cInp)
+  v = Array.from(a.querySelectorAll('.main-input'))
+  m.addEventListener('submit', (event)=>{
+    event.preventDefault();
+    l = 1
+    i = []
+    s = {}
+    for (const input of v) {
+      k = checkEmpty(input);
+      if (!k) {
+        l = 0
+      }
+      if (k) {
+        Object.assign(s,{[input.name]: (input.getAttribute('data-id'))?  input.getAttribute('data-id') :  input.value})
+        i.push(input.name)
+      }
+    }
+    if (l) {
+      Object.assign(s,{id: info.id,name:info.name})
+      i.push('id')
+      addChip(s,chipsHolder,i)
+      deletechild(b,b.parentNode)
+    }
+  })
+}
+export function promptCFQPopup(inp) {
+  b = addshade();
+  a = document.createElement('div');
+  b.appendChild(a)
+  a.className = "w-350p h-a p-10p bsbb bc-white cntr zi-10000 br-5p" 
+  a.innerHTML = `<div class="head w-100 h-50p py-10p px-15p bsbb">
+                                  <span class="fs-17p dgray capitalize igrid h-100 verdana">enter consent form information</span>
+                              </div>
+                              <div class="body w-100 h-a p-5p grid">
+                                  <form method="post" id="req-CFQ-info-form" name="req-CFQ-info-form">
+                                  <div class="col-md-12 px-10p py-6p bsbb p-r">
+                                    <label for="question" class="form-label">question</label>
+                                    <input type="text" class="form-control" id="question" placeholder="CF question" name="question">
+                                    <small class="w-100 red pl-3p verdana hidden"></small>
+                                  </div>
+                                  <div class="col-md-12 px-10p py-6p bsbb mb-5p p-r">
+                                    <label for="answer" class="form-label">answer type</label>
+                                    <input type="text" class="form-control bevalue" id="answer" placeholder="Type of answer" name="answer">
+                                    <small class="w-100 red pl-3p verdana hidden"></small>
+                                  </div>
+                                  <div class="col-md-12 px-10p py-6p bsbb mb-5p p-r">
+                                    <label for="required" class="form-label">required</label>
+                                    <input type="text" class="form-control bevalue" id="required" placeholder="is mandatory ?" name="required">
+                                    <small class="w-100 red pl-3p verdana hidden"></small>
+                                  </div>
+                                  <div class="center-2 my-15p px-10p bsbb">
+                                      <button type="submit" class="btn btn-primary mx-10p">Proceed</button>
+                                    </div>
+                                  </form>
+                              </div>`
+  m = a.querySelector('form#req-CFQ-info-form')
+  v = Array.from(a.querySelectorAll('input'))
+  let answer = v.find(function (input) {
+      return input.name == 'answer'
+  }),required = v.find(function (input) {
+    return input.name == 'required'
+  })
+  answer.addEventListener('focus', function () {
+    showRecs(answer,[{id: 'open question', name: 'open question'},{ id: 'closed question', name: 'closed question'},{ id: 'date', name: 'date'}],'answers')
+  })
+  required.addEventListener('focus', function () {
+    showRecs(required,[{id:'true', name: true},{ id: 'false', name: false}],'required')
+  })
+  let chipsHolder = inp.parentElement.childNodes[7]
+    if (!chipsHolder) {
+      chipsHolder = document.createElement('div');
+      chipsHolder.className = 'chipsholder p-5p bsbb w-100'
+      chipsHolder.title = 'CF Questions'
+      if (inp.classList.contains('chips-check')) {
+        inp.parentElement.insertAdjacentElement('beforeEnd',chipsHolder)
+      }
+    }
+  m.addEventListener('submit', (event)=>{
+    event.preventDefault();
+    l = 1
+    i = []
+    s = {}
+    for (const input of v) {
+      k = checkEmpty(input);
+      if (!k) {
+        l = 0
+      }
+      if (k) {
+        Object.assign(s,{[input.name]: input.value})
+        i.push(input.name)
+      }
+    }
+    if (l) {
+      Object.assign(s,{[v[0].value]: v[0].getAttribute('data-name')})
+      Object.assign(s,{name: v[0].value})
+      i.push('name')
+      
+      addChip(s,chipsHolder,i)
+      deletechild(b,b.parentNode)
+    }
+  })
+}
+async function promptOperationPopup(info,chipsHolder) {
+  b = addshade();
+  a = document.createElement('div');
+  b.appendChild(a)
+  info = info[0]
+  a.className = "w-350p h-a p-10p bsbb bc-white cntr zi-10000 br-5p b-mgc-resp" 
+  a.innerHTML = `<div class="head w-100 h-50p py-10p px-15p bsbb">
+                  <span class="fs-17p dgray capitalize igrid h-100 verdana">${info.name}'s required information</span>
+                  </div>
+                  <div class="body w-100 h-a p-5p grid">
+                      <form method="post" id="req-operation-info-form" name="req-operation-info-form">
+                        <div class="col-md-12 px-10p py-6p bsbb mb-5p p-r">
+                          <label for="operator" class="form-label">operator</label>
+                          <input type="text" class="form-control bc-gray" id="operator" placeholder="operator" value="${getdata('userinfo').Full_name}" name="operator" readonly>
+                          <small class="w-100 red pl-3p verdana hidden"></small>
+                        </div>
+                        <div class="cf-inps p-r ovh h-60p mh-300p">
+                         
+                        </div>
+                        <div class="center-2 my-15p px-10p bsbb">
+                          <button type="submit" class="btn btn-primary mx-10p">Proceed</button>
+                        </div>
+                      </form>
+                  </div>`
+  m = a.querySelector('form#req-operation-info-form')
+  let cInp = a.querySelector('div.cf-inps')
+  addLoadingTab(cInp)
+  postschema.body = JSON.stringify({
+    token: getdata('token'),
+    operation: info.id
+  })
+  let opInfo = await request('operation',postschema)
+  if (!opInfo.success) {
+    return alertMessage(opInfo.message)
+  }
+  const questions = opInfo.message.questions
+  removeLoadingTab(cInp)
+  addCFInps(questions,cInp)
   v = Array.from(a.querySelectorAll('input'))
   m.addEventListener('submit', (event)=>{
     event.preventDefault();
@@ -787,50 +954,42 @@ function promptTestsPopup(info,chipsHolder) {
     }
   })
 }
-function promptOperationPopup(info,chipsHolder) {
-  b = addshade();
-  a = document.createElement('div');
-  b.appendChild(a)
-  info = info[0]
-  a.className = "w-350p h-290p p-10p bsbb bc-white cntr zi-10000 br-5p" 
-  a.innerHTML = `<div class="head w-100 h-50p py-10p px-15p bsbb">
-                                  <span class="fs-17p dgray capitalize igrid h-100 verdana">${info.name}'s required information</span>
-                              </div>
-                              <div class="body w-100 h-a p-5p grid">
-                                  <form method="post" id="req-operation-info-form" name="req-operation-info-form">
-                                    <div class="col-md-12 px-10p py-6p bsbb mb-5p p-r">
-                                      <label for="operator" class="form-label">operator</label>
-                                      <input type="text" class="form-control bc-gray" id="operator" placeholder="Demo operator" value="${getdata('userinfo').Full_name}" name="operator" readonly>
-                                      <small class="w-100 red pl-3p verdana"></small>
-                                    </div>
-                                    <div class="center-2 my-15p px-10p bsbb">
-                                      <button type="submit" class="btn btn-primary mx-10p">Proceed</button>
-                                      <button type="button" class="btn btn-label-primary mx-10p capitalize">request for operation</button>
-                                    </div>
-                                  </form>
-                              </div>`
-  m = a.querySelector('form#req-operation-info-form')
-  v = Array.from(a.querySelectorAll('input'))
-  m.addEventListener('submit', (event)=>{
-    event.preventDefault();
-    l = 1
-    i = []
-    s = {}
-    for (const input of v) {
-      k = checkEmpty(input);
-      if (!k) {
-        l = 0
+export function addCFInps(data,parent) {
+  parent.classList.remove('h-60p','ovys')
+  for (const question of data) {
+    let inpt,div = document.createElement('div')
+    div.className = `col-md-12 px-10p py-6p bsbb mb-5p p-r`
+    parent.appendChild(div)
+    div.innerHTML = `<label for="${question.question}" class="form-label">${question.question}</label>`
+    if (question.answer == 'closed question' || question.answer == 'open question' ) {
+      if (question.answer == 'closed question') {
+        inpt = document.createElement('input')
+        inpt.classList.add('bevalue')
+        inpt.type = 'text'
+        inpt.setAttribute('data-closed-q',true);
+      }else if (question.answer == 'open question') {
+        inpt = document.createElement('textarea')
       }
-      if (k) {
-        Object.assign(s,{[input.name]: input.value})
-        i.push(input.name)
-      }
+    }else{
+      inpt = document.createElement('input')
+      inpt.type = 'date'
     }
-    if (l) {
-      Object.assign(s,{id: info.id,name:info.name})
-      i.push('id')
-      addChip(s,chipsHolder,i)
-      deletechild(b,b.parentNode)
+    if (question.required == 'false' ) {
+      inpt.classList.add('optional')
+    }
+    inpt.classList.add(`form-control`,`main-input`)
+    div.appendChild(inpt)
+    inpt.name = question.question
+    inpt.setAttribute('data-custom-inp',true)
+    let small = document.createElement('small')
+    small.className = `hidden red`
+    div.appendChild(small)
+  }
+  let closedQ = Array.from(parent.querySelectorAll('input[data-closed-q="true"]'))
+  closedQ.forEach(input=>{
+    input.onfocus = function (event) {
+      event.preventDefault();
+      showRecs(input,[{id: true, name: 'yes'},{id: false, name: 'no'}],'boolean')
     }
   })
 }
@@ -838,7 +997,7 @@ export function promptMessage(){
   let notifyP = addshade();
   a = document.createElement('div');
   notifyP.appendChild(a)
-  a.className = "w-350p h-a p-10p bsbb bc-white cntr zi-10000 br-5p b-mgc-resp card" 
+  a.className = "w-350p h-a p-10p bsbb bc-white cntr zi-10000 br-5p b-mgc-resp card-1" 
   a.innerHTML  =`<div class="head w-100 h-50p py-10p px-15p bsbb">
                       <span class="fs-18p bold-2 dgray capitalize igrid h-100 card-title">enter message template for this action</span>
                   </div>
@@ -1321,7 +1480,6 @@ export function promptHpsToChoose(hps) {
   })
   return lis
 }
-
 export function addAuthDiv(socket,user){
   let q =  addshade();
   a = document.createElement('div')

@@ -21,12 +21,11 @@ export const addSession = async (req,res)=>{
       equipments = equipments || []
       services = services || []
       operations = operations || []
-      departments = departments || []
       decision = decision || []
       let decoded = authenticateToken(token)
       medicines = medicines || []
       let hc_provider = decoded.token.id
-      departments.push(decoded.token.department)
+      departments = decoded.token.department
       let hp = decoded.token.hospital
       let itt,imt,iet,iot,ist
       itt = 0
@@ -122,7 +121,7 @@ export const addSession = async (req,res)=>{
       }
       let insertpayment = await query(`insert into payments(id,user,session,amount,assurance_amount,status,date,assurance)values(?,?,?,?,?,?,?,?)`,[id(),patient,uid,pts.patient_amount,pts.assurance_amount,'awaiting payment',now,assurance])
       let insert = await query(`insert into
-       medical_history(id,patient,hospital,departments,hc_provider,symptoms,tests,medicines,decision,comment,status,assurance,services,operations,equipments,p_weight,dateadded)values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,[uid,patient,hp,JSON.stringify(departments),hc_provider,JSON.stringify(symptoms),JSON.stringify(tests),JSON.stringify(medicines),JSON.stringify(decision),comment,(close)? "closed" :"open",assurance,JSON.stringify(services),JSON.stringify(operations),JSON.stringify(equipments),weight,now])
+       medical_history(id,patient,hospital,departments,hc_provider,symptoms,tests,medicines,decision,comment,status,assurance,services,operations,equipments,p_weight,dateadded)values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,[uid,patient,hp,departments,hc_provider,JSON.stringify(symptoms),JSON.stringify(tests),JSON.stringify(medicines),JSON.stringify(decision),comment,(close)? "closed" :"open",assurance,JSON.stringify(services),JSON.stringify(operations),JSON.stringify(equipments),weight,now])
       query(`update patients set last_diagnosed = CURRENT_TIMESTAMP() where id = ?`,[uid,patient])
       if (!insert || !insertpayment) {
         return res.status(500).send({success:false, message: errorMessage.is_error})
@@ -351,7 +350,7 @@ export const session = async (req,res)=>{
         ),
       ']'),
     '[]') AS operations,
-    COALESCE( CONCAT('[', GROUP_CONCAT(DISTINCT  CASE WHEN d.id IS NOT NULL THEN  JSON_OBJECT('id', d.id, 'name', d.name)  ELSE NULL END SEPARATOR ',' ), ']'), '[]') AS departments
+    COALESCE(GROUP_CONCAT(DISTINCT CASE WHEN d.id IS NOT NULL THEN  JSON_OBJECT('id', d.id, 'name', d.name)  ELSE NULL END), '{}') AS department
 
 FROM
     medical_history mh
@@ -366,7 +365,7 @@ FROM
     LEFT JOIN services as s ON JSON_CONTAINS(mh.services, JSON_OBJECT('id', s.id), '$')
     LEFT JOIN operations as o ON JSON_CONTAINS(mh.operations, JSON_OBJECT('id', o.id), '$')
     LEFT JOIN tests AS t ON JSON_CONTAINS(mh.tests, JSON_OBJECT('id', t.id), '$')
-    LEFT JOIN departments as d ON JSON_CONTAINS(mh.departments, JSON_QUOTE(d.id), '$')
+    LEFT JOIN departments as d ON mh.departments =  d.id
     left join assurances as a on mh.assurance = a.id
 WHERE mh.id = ?
 GROUP BY mh.id;
@@ -379,7 +378,7 @@ GROUP BY mh.id;
     response.hp_info = JSON.parse(response.hp_info);
     response.hcp_info = JSON.parse(response.hcp_info);
     response.assurance_info = JSON.parse(response.assurance_info);
-    response.departments = JSON.parse(response.departments);
+    response.department = JSON.parse(response.department);
     response.decisions = JSON.parse(response.decisions);
     response.symptoms = JSON.parse(response.symptoms);
     response.tests = JSON.parse(response.tests)
@@ -508,7 +507,6 @@ export const addSessionTests = async (req,res)=>{
       payment_info.amount +=pts.patient_amount
       // return console.log(payment_info)
       let updatepayment = await query(`update payments set amount = ?,assurance_amount = ? where session = ?`,[payment_info.amount,payment_info.assurance_amount,session])
-      query(`update medical_history set departments =  JSON_ARRAY_APPEND(departments, '$', ?) where id = ?`,[tester.department,session])
       if (!updatepayment) {
         return res.status(500).send({success:false, message: errorMessage.is_error})
       }
@@ -562,7 +560,6 @@ export const addSessionOperation = async (req,res)=>{
       payment_info.amount +=pts.patient_amount
       console.log(payment_info)
       let updatepayment = await query(`update payments set amount = ?,assurance_amount = ? where session = ?`,[payment_info.amount,payment_info.assurance_amount,session])
-      let update_mh =  await query(`update medical_history set departments =  JSON_ARRAY_APPEND(departments, '$', ?) where id = ?`,[operator.department,session])
       if (!updatepayment || !update_mh) {
         return res.status(500).send({success:false, message: errorMessage.is_error})
       }
@@ -615,7 +612,6 @@ export const addSessionService = async (req,res)=>{
       payment_info.assurance_amount +=pts.assurance_amount
       payment_info.amount +=pts.patient_amount
       let updatepayment = await query(`update payments set amount = ?,assurance_amount = ? where session = ?`,[payment_info.amount,payment_info.assurance_amount,session])
-      let update_mh =  await query(`update medical_history set departments =  JSON_ARRAY_APPEND(departments, '$', ?) where id = ?`,[operator.department,session])
       if (!updatepayment || !update_mh) {
         return res.status(500).send({success:false, message: errorMessage.is_error})
       }
@@ -665,7 +661,6 @@ export const addSessionEquipment = async (req,res)=>{
       payment_info.amount +=pts.patient_amount
       // return console.log(payment_info)
       let updatepayment = await query(`update payments set amount = ?,assurance_amount = ? where session = ?`,[payment_info.amount,payment_info.assurance_amount,session])
-      let update_mh =  await query(`update medical_history set departments =  JSON_ARRAY_APPEND(departments, '$', ?) where id = ?`,[operator.department,session])
       if (!updatepayment || !update_mh) {
         return res.status(500).send({success:false, message: errorMessage.is_error})
       }
