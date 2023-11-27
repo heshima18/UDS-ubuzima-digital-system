@@ -1,15 +1,15 @@
-import { alertMessage, getdata, getschema, postschema, request,initializeCleave, checkEmpty, showRecs, getchips, adcm, promptCFQPopup, addshade } from "../../../utils/functions.controller.js";
+import { alertMessage, getdata, getschema, postschema, request,initializeCleave, checkEmpty, showRecs, getchips, adcm, promptCFQPopup, addshade, addChip } from "../../../utils/functions.controller.js";
 
 let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,z,x,c,v,b,n,m
 u = getdata('token')
 if(!u){
     window.location.href = '../../login'
 }
+postschema.body = JSON.stringify({token : u})
+d = await request('get-departments',postschema),
 (async function () {
     $(document).ready( async function () {
-        postschema.body = JSON.stringify({token : u})
         m = await request('get-tests',postschema)
-        d = await request('get-departments',postschema)
         if (!m.success) {return alertMessage(m.message)}
         m = m.message
         var table = $('.datatables-health-posts'),
@@ -23,7 +23,7 @@ if(!u){
                     { data: "name", title: "name" },
                     { data: "price", title: "price" },
                     { data: "department_name", title: "department" },
-                    { data: "", title: "Action", }
+                    { data: "id", title: "Action", }
                 ],
                 columnDefs: [
                     // Define column properties and rendering functions
@@ -74,7 +74,7 @@ if(!u){
                         render: function (e, t, a, n) {
                             return (
                                 `<div class="d-inline-block text-nowrap">
-                                    <button class="btn btn-sm btn-icon border border-3" data-bs-toggle="modal" data-bs-target="#view-test" data-id="${a.id}"><i class="bx bx-show-alt"></i></button>
+                                    <button class="btn btn-sm btn-icon border border-3 edit-test" data-id="${e}"><i class="bx bx-show-alt"></i></button>
                                 </div>`
                             );
                         },
@@ -142,6 +142,33 @@ if(!u){
             });
     
        let aTB = document.querySelector('#add-test-button')
+       $.fn.dataTable.ext.search.push(function (settings, data, dataIndex) {
+        setTimeout(checkButtons,10)
+        return true
+        })
+        let viewbut = Array.from(document.querySelectorAll('button.edit-test'))
+        viewbut.forEach(button => {
+            button.onclick = async function (event) {
+                event.preventDefault();
+                let med = m.find(function (medic) {
+                    return medic.id == button.getAttribute('data-id') 
+                })
+                showEditTest(med)
+            }
+        });
+        function checkButtons() {
+            let viewbut = Array.from(document.querySelectorAll('button.edit-test'))
+           
+            viewbut.forEach(button => {
+                button.onclick = async function (event) {
+                    event.preventDefault();
+                    let med = m.find(function (medic) {
+                        return medic.id == button.getAttribute('data-id') 
+                    })
+                    showEditTest(med)
+                }
+            }); 
+        }
        aTB.addEventListener('click', e=>{
         e.preventDefault()
         let testDiv = document.querySelector('div#add-test'),shade = addshade()
@@ -208,3 +235,93 @@ if(!u){
        })
     });
 })()
+function showEditTest(info) {
+    q = addshade();
+    let div = document.createElement('div')
+    div.className = `br-10p cntr card p-20p bsbb w-a h-a b-mgc-resp`
+    q.appendChild(div)
+    b = document.getElementById('edit-test')
+    b = b.cloneNode(true)
+    b.classList.remove('hidden')
+    let departments = d.message
+    div.appendChild(b)
+    let inputs = Array.from(b.querySelectorAll('input')),form = b.querySelector('form'),button = b.querySelector('button[type="submit"]')
+    k = form.querySelector('input#type')
+    k.addEventListener('focus', function () {
+        showRecs(k,[{id: 'quick test', name: 'quick test'},{ id: 'core test', name: 'core test'}],'department')
+    })
+    c = form.querySelector('input#questions')
+    c.addEventListener('click', function () {
+        promptCFQPopup(c)
+    })
+    let department = form.querySelector('input#department')
+    department.addEventListener('focus', function (e) {
+        showRecs(this,departments,'unit')
+    })
+    form.addEventListener('submit', async e =>{
+        e.preventDefault();
+        v = 1
+        for (const input of inputs) {
+           n =  checkEmpty(input);
+            if (!n) {
+               v = 0 
+            }
+        }
+        if(v){
+            x = {}
+            for (const input of inputs) {
+                if (input.classList.contains('chips-check')) {
+                    Object.assign(x,{[input.name]: getchips(input.parentNode.querySelector('div.chipsholder'),['question','answer','required'])})
+                    
+                }else if (!input.classList.contains('bevalue')) {
+                    Object.assign(x,{[input.name]: input.value})
+                }else{
+                    Object.assign(x,{[input.name]: input.getAttribute('data-id')})
+                }
+             }
+             Object.assign(x,{token: getdata('token'), id: info.id})
+             postschema.body = JSON.stringify(x)
+             button.setAttribute('disabled', true)
+             button.textContent = `Updating test info...`
+             a = await request('edittest',postschema);
+             button.removeAttribute('disabled')
+             button.textContent = `Submit`
+             if (!a.success) {
+                alertMessage(a.message)
+             }else{
+                alertMessage(a.message)
+                form.reset();
+             }
+        }
+    })
+    for (const input of inputs) {
+      if (input.name == 'questions') {
+        let questions = info.questions
+        let chipsHolder = input.parentElement.childNodes[7]
+        if (!chipsHolder) {
+          chipsHolder = document.createElement('div');
+          chipsHolder.className = 'chipsholder p-5p bsbb w-100'
+          chipsHolder.title = 'CF Questions'
+          if (input.classList.contains('chips-check')) {
+            input.parentElement.insertAdjacentElement('beforeEnd',chipsHolder)
+          }
+        }
+        for (const question of questions) {
+            Object.assign(question,{name: question.question})
+            addChip(question,chipsHolder,['question','answer','required','name'])  
+        }
+        continue
+      }
+       if (input.classList.contains('bevalue')) {
+        if (input.name == 'department') {
+            input.value = info['department_name']
+        }else if (input.name == 'type') {
+            input.value = info[input.name]
+        }
+        input.setAttribute('data-id', info[input.name])
+       }else{
+        input.value = info[input.name]
+       }
+     }
+    
+}

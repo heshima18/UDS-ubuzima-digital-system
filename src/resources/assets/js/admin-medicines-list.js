@@ -1,4 +1,5 @@
 import { alertMessage, getdata, getschema, postschema, request,initializeCleave, checkEmpty, showRecs, getchips } from "../../../utils/functions.controller.js";
+import { adcm, addshade } from "../../../utils/functions.controller.min.js";
 
 let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,z,x,c,v,b,n,m
 u = getdata('token')
@@ -64,7 +65,7 @@ if(!u){
                     { data: "name", title: "name" },
                     { data: "price", title: "price" },
                     { data: "unit", title: "unit" },
-                    { data: "", title: "Action", }
+                    { data: "id", title: "Action", }
                 ],
                 columnDefs: [
                     // Define column properties and rendering functions
@@ -94,7 +95,7 @@ if(!u){
                         orderable: 1,
                         render: function (e, t, a, n) {
                             return (
-                                `<span class='d-block fw-semibold capitalize'>${e}</span>`
+                                `<span class='d-block fw-semibold capitalize'>${adcm(e)}</span>`
                             );
                         },
                     },
@@ -116,7 +117,7 @@ if(!u){
                         render: function (e, t, a, n) {
                             return (
                                 `<div class="d-inline-block text-nowrap">
-                                    <button class="btn btn-sm btn-icon border border-3" data-bs-toggle="modal" data-bs-target="#view-medicine" data-id="${a.id}"><i class="bx bx-show-alt"></i></button>
+                                    <button class="btn btn-sm btn-icon border border-3 edit-med" data-id="${e}"><i class="bx bx-show-alt"></i></button>
                                 </div>`
                             );
                         },
@@ -159,22 +160,6 @@ if(!u){
                 ],
     
                 // Make the table responsive with additional details
-                responsive: {
-                    details: {
-                        display: $.fn.dataTable.Responsive.display.modal({
-                            header: function (e) {
-                                return "Details of " + e.data().name;
-                            },
-                        }),
-                        type: "column",
-                        renderer: function (e, t, a) {
-                            a = $.map(a, function (e, t) {
-                                return "" !== e.title ? '<tr data-dt-row="' + e.rowIndex + '" data-dt-column="' + e.columnIndex + '"><td>' + e.title + ":</td> <td>" + e.data + "</td></tr>" : "";
-                            }).join("");
-                            return !!a && $('<table class="table"/><tbody />').append(a);
-                        },
-                    },
-                },
     
                 // Initialize filters for position, health post, and status
                 initComplete: function () {
@@ -193,12 +178,34 @@ if(!u){
                     });
                 }
             });
-    
-        table.find("tbody").on("click", ".delete-health-post", function () {
-            if (confirm("Are you sure you want to delete this health post?")) {
-                e.row($(this).parents("tr")).remove().draw();
+            $.fn.dataTable.ext.search.push(function (settings, data, dataIndex) {
+                setTimeout(checkButtons,10)
+               return true
+            })
+            let viewbut = Array.from(document.querySelectorAll('button.edit-med'))
+            viewbut.forEach(button => {
+                button.onclick = async function (event) {
+                    event.preventDefault();
+                    let med = m.find(function (medic) {
+                        return medic.id == button.getAttribute('data-id') 
+                    })
+                    showEditMed(med)
+                }
+            });
+            function checkButtons() {
+                let viewbut = Array.from(document.querySelectorAll('button.edit-med'))
+               
+                viewbut.forEach(button => {
+                    button.onclick = async function (event) {
+                        event.preventDefault();
+                        let med = m.find(function (medic) {
+                            return medic.id == button.getAttribute('data-id') 
+                        })
+                        showEditMed(med)
+                    }
+                }); 
             }
-        })
+
         $('#add-medicine').on('shown.bs.modal', function () {
             const $modal = $(this);
             let unit = f.querySelector('input#unit')
@@ -208,3 +215,59 @@ if(!u){
         });
     });
 })()
+function showEditMed(info) {
+    q = addshade();
+    d = document.createElement('div')
+    d.className = `br-10p cntr card p-20p bsbb w-a h-a b-mgc-resp`
+    q.appendChild(d)
+    b = document.getElementById('edit-medicine')
+    b = b.cloneNode(true)
+    b.classList.remove('hidden')
+
+    d.appendChild(b)
+    let inputs = Array.from(b.querySelectorAll('input')),form = b.querySelector('form'),button = b.querySelector('button[type="submit"]')
+    let unit = form.querySelector('input#unit')
+            unit.addEventListener('focus', function (e) {
+                showRecs(this,[{id: 'grams', name: 'grams'},{id: 'liters', name: 'liters'},{id: 'piece', name: 'piece'},{id: 'tablet', name: 'tablets'},{id: 'spoons', name: 'spoon'},{id: 'centiliters', name: 'centiliters'},{id: 'milligrams', name: 'milligrams'}],'unit')
+            })
+    form.addEventListener('submit', async e =>{
+        e.preventDefault();
+        v = 1
+        for (const input of inputs) {
+           n =  checkEmpty(input);
+            if (!n) {
+               v = 0 
+            }
+        }
+        if(v){
+            x = {}
+            for (const input of inputs) {
+                if (!input.classList.contains('bevalue')) {
+                    Object.assign(x,{[input.name]: input.value})
+                }else{
+                    Object.assign(x,{[input.name]: input.getAttribute('data-id')})
+                }
+             }
+             Object.assign(x,{token: getdata('token'), id: info.id})
+             postschema.body = JSON.stringify(x)
+             button.setAttribute('disabled', true)
+             button.textContent = `Updating medicine info...`
+             a = await request('editmedicine',postschema);
+             button.removeAttribute('disabled')
+             button.textContent = `Submit`
+             if (!a.success) {
+                alertMessage(a.message)
+             }else{
+                alertMessage(a.message)
+                form.reset();
+             }
+        }
+    })
+    for (const input of inputs) {
+       input.value = info[input.name]
+       if (input.classList.contains('bevalue')) {
+        input.setAttribute('data-id', info[input.name])
+       }
+     }
+    
+}

@@ -432,7 +432,7 @@ GROUP BY mh.id;
     }
     for (const tests of response.tests) {
       if (user == 'hc_provider' || user == 'patient' || user == 'householder') {
-        Object.assign(response.tests[response.tests.indexOf(tests)],{result: response.raw_tests[response.tests.indexOf(tests)].result,sample: response.raw_tests[response.tests.indexOf(tests)].sample})
+        Object.assign(response.tests[response.tests.indexOf(tests)],{result: response.raw_tests[response.tests.indexOf(tests)].results,sample: response.raw_tests[response.tests.indexOf(tests)].sample})
       }
     }
     delete response.raw_tests
@@ -489,7 +489,19 @@ export const addSessionTests = async (req,res)=>{
           if (objectAvai.length) {
             return res.send({success: false, message: errorMessage.err_entr_avai})
           }
-         query(`update medical_history set tests =  JSON_ARRAY_APPEND(tests, '$', JSON_OBJECT("id", ?,"sample", ?, "result", ?, "tester", ?)) where id = ?`,[test.id,test.sample,test.result,tester.id,session])
+          let keys = Object.keys(test)
+          let str = `JSON_OBJECT(`
+          for (const key of keys) {
+            if(keys.indexOf(key) == (keys.length -1)){
+              str+= `"${key}", "${test[key]}"`
+            }else{
+
+              str+= `"${key}", "${test[key]}",`
+            }
+          }
+          str+=`)`;
+          
+         query(`update medical_history set tests =  JSON_ARRAY_APPEND(tests, '$', ${str}) where id = ?`,[session])
         
       
       if (itt == 0) return res.status(403).send({success: false, message: errorMessage._err_test_404})
@@ -519,7 +531,7 @@ export const addSessionTests = async (req,res)=>{
 }
 export const addSessionOperation = async (req,res)=>{
   try {
-    let {session,operation,token} = req.body
+    let {session,operation,token} = req.body,update_mh
       let decoded = authenticateToken(token)
       let assurance = await query(`select assurance from medical_history where id = ?`,[session])
       if(!assurance) return res.status(404).send({success: false, message: errorMessage.is_error})
@@ -546,7 +558,18 @@ export const addSessionOperation = async (req,res)=>{
           if (objectAvai.length) {
             return res.send({success: false, message: errorMessage.err_entr_avai})
           }
-         query(`update medical_history set operations =  JSON_ARRAY_APPEND(operations, '$', JSON_OBJECT("id", ?, "operator", ?)) where id = ?`,[operation.id,operator.id,session])
+          let keys = Object.keys(operation)
+          let str = `JSON_OBJECT(`
+          for (const key of keys) {
+            if(keys.indexOf(key) == (keys.length -1)){
+              str+= `"${key}", "${operation[key]}"`
+            }else{
+
+              str+= `"${key}", "${operation[key]}",`
+            }
+          }
+          str+=`)`;
+         update_mh = query(`update medical_history set operations =  JSON_ARRAY_APPEND(operations, '$', ${str}) where id = ?`,[session])
         
       
       if (itt == 0) return res.status(403).send({success: false, message: errorMessage._err_operation_404})
@@ -558,7 +581,6 @@ export const addSessionOperation = async (req,res)=>{
       payment_info = payment_info[0] 
       payment_info.assurance_amount +=pts.assurance_amount
       payment_info.amount +=pts.patient_amount
-      console.log(payment_info)
       let updatepayment = await query(`update payments set amount = ?,assurance_amount = ? where session = ?`,[payment_info.amount,payment_info.assurance_amount,session])
       if (!updatepayment || !update_mh) {
         return res.status(500).send({success:false, message: errorMessage.is_error})
@@ -612,7 +634,7 @@ export const addSessionService = async (req,res)=>{
       payment_info.assurance_amount +=pts.assurance_amount
       payment_info.amount +=pts.patient_amount
       let updatepayment = await query(`update payments set amount = ?,assurance_amount = ? where session = ?`,[payment_info.amount,payment_info.assurance_amount,session])
-      if (!updatepayment || !update_mh) {
+      if (!updatepayment) {
         return res.status(500).send({success:false, message: errorMessage.is_error})
       }
       res.send({success: true, message: errorMessage.service_addedtosession_message})
@@ -630,7 +652,6 @@ export const addSessionEquipment = async (req,res)=>{
       if(!assurance) return res.status(500).send({success: false, message: errorMessage.is_error})
       assurance = assurance[0]
       assurance = assurance.assurance
-      let operator = decoded.token
       let itt = 0
       var t = await query(`select price from equipments where id = ?`, [equipment.id]);
       if (!t) return res.status(500).send({success:false, message: errorMessage.is_error})
@@ -661,7 +682,7 @@ export const addSessionEquipment = async (req,res)=>{
       payment_info.amount +=pts.patient_amount
       // return console.log(payment_info)
       let updatepayment = await query(`update payments set amount = ?,assurance_amount = ? where session = ?`,[payment_info.amount,payment_info.assurance_amount,session])
-      if (!updatepayment || !update_mh) {
+      if (!updatepayment) {
         return res.status(500).send({success:false, message: errorMessage.is_error})
       }
       res.send({success: true, message: errorMessage.equipment_addedtosession_message})
@@ -778,20 +799,42 @@ export const addSessionMedicine = async (req,res)=>{
 }
 export const addSessionDecision = async (req,res)=>{
   try {
-    let {session,decisions,token} = req.body
+    let {session,decisions,token} = req.body,addDecisions
     let decoded = authenticateToken(token)
       let hc_provider = decoded.token.id
       for (const decision of decisions) {
-        let addDecisions = await query(`update medical_history
+        addDecisions = await query(`update medical_history
          set decision =  JSON_ARRAY_APPEND(decision,'$',?) 
          where id = ? AND Status != ? AND hc_provider = ?`,[decision,session,'closed',hc_provider]) 
-         if (!addDecisions) {
-           return res.status(500).send({success:false, message: errorMessage.is_error})
-         }else if (addDecisions.affectedRows == 0) {
-           return res.status(401).send({success:false, message: errorMessage._err_forbidden})
-         }
+      }
+      if (!addDecisions) {
+        return res.status(500).send({success:false, message: errorMessage.is_error})
+      }else if (addDecisions.affectedRows == 0) {
+        return res.status(401).send({success:false, message: errorMessage._err_forbidden})
       }
       res.send({success: true, message: errorMessage.dec_added_message})
+    
+  } catch (error) {
+    console.log(error)
+    res.status(500).send({success:false, message: errorMessage.is_error})
+  }
+}
+export const addSessionSymptoms = async (req,res)=>{
+  try {
+    let {session,symptoms,token} = req.body,addsymptoms
+    let decoded = authenticateToken(token)
+      let hc_provider = decoded.token.id
+      for (const symptom of symptoms) {
+        addsymptoms = await query(`update medical_history
+         set symptoms =  JSON_ARRAY_APPEND(symptoms,'$',?) 
+         where id = ? AND Status != ? AND hc_provider = ?`,[symptom,session,'closed',hc_provider]) 
+      }
+      if (!addsymptoms) {
+        return res.status(500).send({success:false, message: errorMessage.is_error})
+      }else if (addsymptoms.affectedRows == 0) {
+        return res.status(401).send({success:false, message: errorMessage._err_forbidden})
+      }
+      res.send({success: true, message: errorMessage.symp_added_message})
     
   } catch (error) {
     console.log(error)

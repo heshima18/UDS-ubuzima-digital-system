@@ -1309,7 +1309,6 @@ let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z,socket,assurances,inventor
                             }
                             if (val) {
                                 removeRec(inputs[0])
-                                console.log(socket)
                                 socket.emit('searchForRecs',payload)
                             }
                         }
@@ -1343,6 +1342,7 @@ let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z,socket,assurances,inventor
                             alertMessage(results.message)
                             button.removeAttribute('disabled')
                             button.innerHTML= 'proceed'
+                            deletechild(d,d.parentElement)
 
                         }
                     }

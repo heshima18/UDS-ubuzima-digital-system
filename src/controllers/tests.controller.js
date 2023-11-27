@@ -3,9 +3,9 @@ import errorMessage from './response.message.controller'
 import id from "./randomInt.generator.controller";
 export const addtest = async (req,res)=>{
   try {
-    let {name,price,department,questions} = req.body
+    let {name,price,department,questions,type} = req.body
       let uid = id()
-      let insert = await query(`insert into tests(id,name,department,price,consent_fq)values(?,?,?,?,?)`,[uid,name,department,price,JSON.stringify(questions)])
+      let insert = await query(`insert into tests(id,name,department,price,consent_fq,type)values(?,?,?,?,?,?)`,[uid,name,department,price,JSON.stringify(questions),type])
       if (!insert) {
         return res.status(500).send({success:false, message: errorMessage.is_error})
       }
@@ -16,13 +16,34 @@ export const addtest = async (req,res)=>{
     res.status(500).send({success:false, message: errorMessage.is_error})
   }
 }
+export const edittest = async (req,res)=>{
+  try {
+    let {name,price,department,questions,type,id} = req.body
+      let insert = await query(`update tests set name = ?,department = ? ,price = ?,consent_fq = ?,type = ? where id = ?`,[name,department,price,JSON.stringify(questions),type,id])
+      if (!insert) {
+        return res.status(500).send({success:false, message: errorMessage.is_error})
+      }
+      res.send({success: true, message: errorMessage.tupd_message})
+  } catch (error) {
+    console.log(error)
+    res.status(500).send({success:false, message: errorMessage.is_error})
+  }
+}
 export const getTests = async (req,res)=>{
   try {
-    let select = await query(`select tests.id,tests.name,price,departments.name as department_name, departments.id as department from tests inner join departments on tests.department = departments.id`,[])
+    let select = await query(`select tests.id,tests.type,tests.name,price,tests.consent_fq as questions,departments.name as department_name, departments.id as department from tests inner join departments on tests.department = departments.id`,[])
     if (!select) {
         res.status(500).send({success:false, message: errorMessage.is_error})
         return
     }
+    select = select.map(function (record) {
+      if (JSON.parse(record.questions)) {
+        record.questions = JSON.parse(record.questions)
+      }else{
+        record.questions = JSON.parse(record.questions)
+      }
+      return record
+    })
     res.send({success: true, message: select})
   } catch (error) {
     console.log(error)

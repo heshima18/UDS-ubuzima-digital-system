@@ -354,6 +354,11 @@ export function showRecs(input, data,type,noInpAction) {
       item.setAttribute('data-id',info.id)
       if (type == 'medicines' || type == 'equipments' || type == 'services'|| type == 'tests' || type == 'operations') {
         item.setAttribute('data-price',info.price)
+        if (type == 'services' || type == 'equipments') {
+        item.setAttribute('data-unit',info.unit)
+        }
+        item.setAttribute('data-price',info.price)
+
       }
       div.querySelector('ul').appendChild(item)
     }
@@ -381,7 +386,7 @@ export function showRecs(input, data,type,noInpAction) {
                promptPrice(ion,chipsHolder,type)
               }
             }else{
-              addChip({name:item.textContent, id: item.getAttribute('data-id'), price: item.getAttribute('data-price')},chipsHolder,['id','name','price'])
+              addChip({name:item.textContent, id: item.getAttribute('data-id'), price: item.getAttribute('data-price'),unit: (item.getAttribute('data-price'))? item.getAttribute('data-unit'): undefined},chipsHolder,['id','name','price'])
             }
           }else{
             let ion =  data.filter(function (ite) {
@@ -444,6 +449,19 @@ export function showRecs(input, data,type,noInpAction) {
       }else if (input.classList.contains('bevalue')) {
         input.value = item.textContent
         input.setAttribute('data-id',item.getAttribute('data-id'))
+        let attris = Array.from(item.attributes)
+        attris = attris.filter(function(attribute){
+          if (attribute.name.indexOf('data-') != -1) {
+            return attribute.name
+          }
+        }) 
+        attris = attris.map(function(attribute){
+          if (attribute.name.indexOf('data-') != -1) {
+            let data = attribute.name.split('-')[1]
+            input.setAttribute(`data-${data}`,item.getAttribute(`data-${data}`))
+            return data
+          }
+        }) 
       }
      })
     })
@@ -551,7 +569,6 @@ export function getchips(parent,datatoget) {
       for (const data of datatoget) {
 
         Object.assign(v,{[data]: chip.querySelector('span').getAttribute(`data-${data}`)})
-        console.log(v)
       }
       d.push(v)
     }
@@ -808,8 +825,9 @@ async function promptTestsPopup(info,chipsHolder) {
       }
     }
     if (l) {
-      Object.assign(s,{id: info.id,name:info.name})
+      Object.assign(s,{id: info.id,name:info.name,tester: getdata('userinfo').id})
       i.push('id')
+      i.push('tester')
       addChip(s,chipsHolder,i)
       deletechild(b,b.parentNode)
     }
@@ -897,17 +915,12 @@ async function promptOperationPopup(info,chipsHolder) {
   a = document.createElement('div');
   b.appendChild(a)
   info = info[0]
-  a.className = "w-350p h-a p-10p bsbb bc-white cntr zi-10000 br-5p b-mgc-resp" 
+  a.className = "w-350p h-a mh-70 p-10p bsbb bc-white cntr zi-10000 br-5p b-mgc-resp" 
   a.innerHTML = `<div class="head w-100 h-50p py-10p px-15p bsbb">
                   <span class="fs-17p dgray capitalize igrid h-100 verdana">${info.name}'s required information</span>
                   </div>
                   <div class="body w-100 h-a p-5p grid">
                       <form method="post" id="req-operation-info-form" name="req-operation-info-form">
-                        <div class="col-md-12 px-10p py-6p bsbb mb-5p p-r">
-                          <label for="operator" class="form-label">operator</label>
-                          <input type="text" class="form-control bc-gray" id="operator" placeholder="operator" value="${getdata('userinfo').Full_name}" name="operator" readonly>
-                          <small class="w-100 red pl-3p verdana hidden"></small>
-                        </div>
                         <div class="cf-inps p-r ovh h-60p mh-300p">
                          
                         </div>
@@ -930,7 +943,15 @@ async function promptOperationPopup(info,chipsHolder) {
   const questions = opInfo.message.questions
   removeLoadingTab(cInp)
   addCFInps(questions,cInp)
-  v = Array.from(a.querySelectorAll('input'))
+  v = Array.from(a.querySelectorAll('.main-input'))
+  let opin = v.find(function (inp) {
+    return inp.name == 'operator'
+  })
+  opin.value=getdata('userinfo').Full_name
+  opin.setAttribute('data-id',getdata('userinfo').id)
+  opin.classList.add('bevalue')
+  opin.setAttribute('readonly',true)
+  opin.setAttribute('disabled',true)
   m.addEventListener('submit', (event)=>{
     event.preventDefault();
     l = 1
@@ -956,6 +977,7 @@ async function promptOperationPopup(info,chipsHolder) {
 }
 export function addCFInps(data,parent) {
   parent.classList.remove('h-60p','ovys')
+  parent.innerHTML = null
   for (const question of data) {
     let inpt,div = document.createElement('div')
     div.className = `col-md-12 px-10p py-6p bsbb mb-5p p-r`

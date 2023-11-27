@@ -1,4 +1,4 @@
-import { alertMessage, getdata, getschema, postschema, request,initializeCleave, checkEmpty, showRecs, getchips, adcm } from "../../../utils/functions.controller.js";
+import { alertMessage, getdata, getschema, postschema, request,initializeCleave, checkEmpty, showRecs, getchips, adcm, addshade } from "../../../utils/functions.controller.js";
 
 let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,z,x,c,v,b,n,m
 u = getdata('token')
@@ -64,7 +64,7 @@ if(!u){
                     { data: "name", title: "name" },
                     { data: "price", title: "price" },
                     { data: "unit", title: "unit" },
-                    { data: "", title: "Action", }
+                    { data: "id", title: "Action", }
                 ],
                 columnDefs: [
                     // Define column properties and rendering functions
@@ -116,7 +116,7 @@ if(!u){
                         render: function (e, t, a, n) {
                             return (
                                 `<div class="d-inline-block text-nowrap">
-                                    <button class="btn btn-sm btn-icon border border-3" data-bs-toggle="modal" data-bs-target="#view-service" data-id="${a.id}"><i class="bx bx-show-alt"></i></button>
+                                    <button class="btn btn-sm btn-icon border border-3 edit-service" data-id="${e}"><i class="bx bx-show-alt"></i></button>
                                 </div>`
                             );
                         },
@@ -193,12 +193,33 @@ if(!u){
                     });
                 }
             });
-    
-        table.find("tbody").on("click", ".delete-health-post", function () {
-            if (confirm("Are you sure you want to delete this health post?")) {
-                e.row($(this).parents("tr")).remove().draw();
+            $.fn.dataTable.ext.search.push(function (settings, data, dataIndex) {
+                setTimeout(checkButtons,10)
+               return true
+            })
+            let viewbut = Array.from(document.querySelectorAll('button.edit-service'))
+            viewbut.forEach(button => {
+                button.onclick = async function (event) {
+                    event.preventDefault();
+                    let med = m.find(function (medic) {
+                        return medic.id == button.getAttribute('data-id') 
+                    })
+                    showEditMed(med)
+                }
+            });
+            function checkButtons() {
+                let viewbut = Array.from(document.querySelectorAll('button.edit-service'))
+               
+                viewbut.forEach(button => {
+                    button.onclick = async function (event) {
+                        event.preventDefault();
+                        let med = m.find(function (medic) {
+                            return medic.id == button.getAttribute('data-id') 
+                        })
+                        showEditMed(med)
+                    }
+                }); 
             }
-        })
         $('#add-service').on('shown.bs.modal', function () {
             const $modal = $(this);
             let unit = f.querySelector('input#unit')
@@ -208,3 +229,59 @@ if(!u){
         });
     });
 })()
+function showEditMed(info) {
+    q = addshade();
+    d = document.createElement('div')
+    d.className = `br-10p cntr card p-20p bsbb w-a h-a b-mgc-resp`
+    q.appendChild(d)
+    b = document.getElementById('edit-service')
+    b = b.cloneNode(true)
+    b.classList.remove('hidden')
+
+    d.appendChild(b)
+    let inputs = Array.from(b.querySelectorAll('input')),form = b.querySelector('form'),button = b.querySelector('button[type="submit"]')
+    let unit = form.querySelector('input#unit')
+            unit.addEventListener('focus', function (e) {
+                showRecs(this,[{id: 'days', name: 'days'},{id: 'hours', name: 'hours'},{id: 'kilometers', name: 'kilometers'},{id: 'meters', name: 'meters'},{id: 'night', name: 'night'}],'unit')
+            })
+    form.addEventListener('submit', async e =>{
+        e.preventDefault();
+        v = 1
+        for (const input of inputs) {
+           n =  checkEmpty(input);
+            if (!n) {
+               v = 0 
+            }
+        }
+        if(v){
+            x = {}
+            for (const input of inputs) {
+                if (!input.classList.contains('bevalue')) {
+                    Object.assign(x,{[input.name]: input.value})
+                }else{
+                    Object.assign(x,{[input.name]: input.getAttribute('data-id')})
+                }
+             }
+             Object.assign(x,{token: getdata('token'), id: info.id})
+             postschema.body = JSON.stringify(x)
+             button.setAttribute('disabled', true)
+             button.textContent = `Updating service info...`
+             a = await request('editservice',postschema);
+             button.removeAttribute('disabled')
+             button.textContent = `Submit`
+             if (!a.success) {
+                alertMessage(a.message)
+             }else{
+                alertMessage(a.message)
+                form.reset();
+             }
+        }
+    })
+    for (const input of inputs) {
+       input.value = info[input.name]
+       if (input.classList.contains('bevalue')) {
+        input.setAttribute('data-id', info[input.name])
+       }
+     }
+    
+}

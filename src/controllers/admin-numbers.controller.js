@@ -4,6 +4,8 @@ import id from "./randomInt.generator.controller";
 const getAdminNmbrs = async (req,res)=>{
   let nmbrs = await query(`select
    (SELECT COUNT(patients.id) FROM patients) as patients,
+   (SELECT COUNT(hospitals.id) FROM hospitals) as hospitals,
+   (SELECT COUNT(users.id) FROM users where users.role != 'admin' AND users.role != 'system') as employees,
    (SELECT COUNT(users.id) FROM users) as users,
    (SELECT COUNT(medicines.id) FROM medicines) as medicines,
    (SELECT COUNT(tests.id) FROM tests) as tests,

@@ -8,19 +8,20 @@ if(!u){
 (async function () {
     postschema.body = JSON.stringify({token : getdata('token')})
     m = await request('getnmbrs',postschema)
-    if (m.success) {
-        m = m.message
-        let nmhols  = Array.from(document.querySelectorAll('span[data-role="num_hol"]'))
-        Object.keys(m).forEach( (number)=>{
-            nmhols.map(function (hol) {
-                if (hol.id == number) {
-                   hol.innerText = m[number]
-                }
-            })
-        })
-    }
     try {
-        console.log(m)
+        if (m.success) {
+            m = m.message
+            let nmhols  = Array.from(document.querySelectorAll('[data-role="num_hol"]'))
+            Object.keys(m).forEach( (number)=>{
+                nmhols.map(function (hol) {
+                    if (hol.id == number) {
+                       hol.innerText = m[number]
+                    }
+                })
+            })
+        }else{
+            alertMessage(m.message)
+        }
     } catch (error) {
       console.log(error)  
     }

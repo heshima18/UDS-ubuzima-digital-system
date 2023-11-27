@@ -68,8 +68,7 @@ export async function calculatePayments(assurance,item,type) {
                 sum.assurance_amount+= ((Number(drug.price) * Number(percentages.assurance))/100)
                 sum.patient_amount+= ((Number(drug.price) * Number(percentages.patient))/100)
                 sum.assurance_amount = Number(sum.assurance_amount.toFixed(2))
-                sum.patient_amount = Number(sum.patient_amount.toFixed(2)) 
-                console.log(sum)
+                sum.patient_amount = Number(sum.patient_amount.toFixed(2))
           }
         }
       }
@@ -77,7 +76,6 @@ export async function calculatePayments(assurance,item,type) {
     } 
     } catch (error) {
       console.log(error)
-      return undefined
     }
   }
   

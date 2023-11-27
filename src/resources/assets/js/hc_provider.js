@@ -1,5 +1,5 @@
 
-import { alertMessage, getdata, getschema, postschema, request,deletechild, checkEmpty, showRecs, getchips,getPath,calcTime,addsCard,cpgcntn, geturl,sessiondata,addChip, showAvaiAssurances, adcm, addshade, addLoadingTab, removeLoadingTab, showAvaiEmps, fT, promptHpsToChoose, addAuthDiv, RemoveAuthDivs, showFingerprintDiv, removeRec, promptMessage, triggerRecs, extractTime, getDate, aDePh, addSpinner } from "../../../utils/functions.controller.js";
+import { alertMessage, getdata, getschema, postschema, request,deletechild, checkEmpty, showRecs, getchips,getPath,calcTime,addsCard,cpgcntn, geturl,sessiondata,addChip, showAvaiAssurances, adcm, addshade, addLoadingTab, removeLoadingTab, showAvaiEmps, fT, promptHpsToChoose, addAuthDiv, RemoveAuthDivs, showFingerprintDiv, removeRec, promptMessage, triggerRecs, extractTime, getDate, aDePh, addSpinner, addCFInps } from "../../../utils/functions.controller.js";
 import { addUprofile } from "../../../utils/user.profile.controller.js";
 import {pushNotifs, userinfo,expirateMssg, getNfPanelLinks,m as messages, DateTime, openmenu, addFilter} from "./nav.js";
 import { viewTransfer } from "./transfer.js";
@@ -430,7 +430,6 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,z,notificationlinks,socket,m
                             Object.assign(b,{ token: getdata('token')})
                             postschema.body = JSON.stringify(b)
                             button.setAttribute('disabled',true)
-                            return console.log(b)
                             button.textContent = 'recording session info...'
                             r = await request('addsession',postschema);
                             button.removeAttribute('disabled',true)
@@ -1017,6 +1016,8 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,z,notificationlinks,socket,m
                             Modals.notify()
                         }else if (role == 'decision') {
                             Modals.decision()
+                        }else if (role == 'symptoms') {
+                            Modals.symptoms()
                         }else if (role == 'transfer') {
                             Modals.transfer(extra.users,socket);
                         }else if (role == 'close') {
@@ -1249,7 +1250,7 @@ class popups{
 
 
     }
-    test(data){
+    async test(data){
         const socket = this.socket
         const session = this.session
         let testsP = addshade();
@@ -1263,28 +1264,23 @@ class popups{
                             <form method="post" id="req-test-info-form" name="req-test-info-form">
                                 <div class="col-md-12 px-10p py-6p bsbb p-r">
                                     <label for="test" class="form-label">test taken</label>
-                                    <input type="text" class="form-control bevalue" id="tests" placeholder="Demo test" name="test">
+                                    <input type="text" class="form-control bevalue main-input" id="tests" placeholder="applying test" name="test">
                                     <small class="w-100 red pl-3p verdana"></small>
                                 </div>
-                                <div class="col-md-12 px-10p py-6p bsbb p-r">
-                                    <label for="sample" class="form-label">sample taken</label>
-                                    <input type="text" class="form-control" id="sample" placeholder="Demo sample" name="sample">
-                                    <small class="w-100 red pl-3p verdana"></small>
-                                </div>
-                                <div class="col-md-12 px-10p py-6p bsbb mb-5p p-r">
-                                    <label for="result" class="form-label">results found</label>
-                                    <input type="text" class="form-control" id="result" placeholder="Demo results" name="result">
-                                    <small class="w-100 red pl-3p verdana"></small>
-                                </div>
-                                <div class="wrap center-2 px-10p bsbb bblock-resp">
+                                <div class="cf-inps p-r h-60p">
+                         
+                                  </div>
+                                <div class="wrap center-2 px-10p bsbb bblock-resp my-10p">
                                     <button type="submit" class="btn btn-primary bfull-resp mr-10p bm-a-resp bmy-10p-resp">Proceed</button>
                                     <button type="button" class="btn bc-tr-theme ml-10p capitalize bfull-resp bm-a-resp bmy-10p-resp">Request for tesing</button>
                                 </div>
                             </form>
                         </div>`
         let form = a.querySelector("form");
-        let inputs = Array.from(form.querySelectorAll('input'))
-        let extra_input = inputs.find(function (ins) {return ins.classList.contains('bevalue') })
+        let cInp = a.querySelector('div.cf-inps')
+        addLoadingTab(cInp)
+        let inputs
+        let extra_input = a.querySelector('input#tests')
         extra_input.addEventListener('keyup', async (event)=>{
             if (extra_input.value) {
                 data = await triggerRecs(extra_input,['id','name','department','price'],socket)
@@ -1293,6 +1289,23 @@ class popups{
 
             }
         })
+        extra_input.onblur = async function (event) {
+            let test = extra_input.getAttribute('data-id')
+            if (test) {
+                postschema.body = JSON.stringify({
+                    token: getdata('token'),
+                    test: test
+                })
+                let testInfo = await request('get-test',postschema)
+                if (!testInfo.success) {
+                    return alertMessage(testInfo.message)
+                }
+                const questions = testInfo.message.questions
+                removeLoadingTab(cInp)
+                addCFInps(questions,cInp)
+                inputs = Array.from(form.querySelectorAll('.main-input'))    
+            }
+        }
         let notify_button = form.querySelector('button[type="button"]')
          notify_button.addEventListener('click',async event=>{
             event.preventDefault()
@@ -1395,6 +1408,7 @@ class popups{
                
             }
         })
+        inputs = Array.from(form.querySelectorAll('.main-input'))
         form.addEventListener('submit', async event=>{
             event.preventDefault();
             l = 1
@@ -1412,10 +1426,10 @@ class popups{
                 for (const input of inputs) {
                     Object.assign(values,{[input.name]: (input.classList.contains('bevalue'))? input.getAttribute('data-id') : input.value })
                 }
-                Object.assign(values,{test: {id:values.test,sample: values.sample, result: values.result}})
+                Object.assign(values,{test: {id:values.test,sample: values.sample, results: values.results}})
                 Object.assign(values,{session: session.session_id,token: getdata('token')})
                 delete values.sample
-                delete values.result
+                delete values.results
                 postschema.body = JSON.stringify(values)
                 let results = await request('add-session-test',postschema)
                 if (results.success) {
@@ -1492,13 +1506,13 @@ class popups{
             }
         })
     }
-    operation(data){
+    async operation(data){
         const session = this.session
         const socket = this.socket
         let operationsP = addshade();
         a = document.createElement('div');
         operationsP.appendChild(a)
-        a.className = "w-350p h-a p-10p bsbb bc-white cntr zi-10000 br-5p b-mgc-resp card" 
+        a.className = "w-60 h-a p-10p bsbb bc-white cntr zi-10000 br-5p b-mgc-resp card mh" 
         a.innerHTML  =`<div class="head w-100 h-50p py-10p px-15p bsbb">
                             <span class="fs-18p bold-2 dgray capitalize igrid h-100 card-title">add an operation to session</span>
                         </div>
@@ -1506,19 +1520,22 @@ class popups{
                             <form method="post" id="req-test-info-form" name="req-test-info-form">
                                 <div class="col-md-12 px-10p py-6p bsbb p-r">
                                     <label for="test" class="form-label">operation name</label>
-                                    <input type="text" class="form-control bevalue" id="operations" placeholder="Demo operation" name="operation">
-                                    <small class="w-100 red pl-3p verdana"></small>
+                                    <input type="text" class="form-control bevalue main-input" id="operations" placeholder="applying operation" name="operation">
+                                    <small class="w-100 red pl-3p verdana hidden"></small>
+                                </div>
+                                <div class="cf-inps p-r ovh h-60p my-10p">
+                         
                                 </div>
                                 <div class="wrap center-2 px-10p bsbb bblock-resp">
                                     <button type="submit" class="btn btn-primary bfull-resp mr-10p  bm-a-resp bmy-10p-resp">Proceed</button>
-                                    <button type="button" class="btn bc-tr-theme ml-10p  capitalize bfull-resp bm-a-resp bmy-10p-resp">Request for tesing</button>
                                 </div>
                             </form>
                         </div>`
         let form = a.querySelector("form");
-        let inputs = Array.from(form.querySelectorAll('input'))
-
-        let extra_input = inputs.find(function (ins) {return ins.classList.contains('bevalue') })
+        let cInp = a.querySelector('div.cf-inps')
+        addLoadingTab(cInp)
+        let extra_input = form.querySelector('input#operations')
+        let inputs
         extra_input.addEventListener('keyup', (event)=>{
             if (extra_input.value) {
                 triggerRecs(extra_input,['id','name','department','price'],socket)
@@ -1527,33 +1544,35 @@ class popups{
 
             }
         })
-        
-        let notify_button = form.querySelector('button[type="button"]')
-         notify_button.addEventListener('click',async event=>{
-            event.preventDefault()
-            p = await showAvaiEmps(users);
-            l = Array.from(p.querySelectorAll('li.emp'))
-              for (const lis of l) {
-                lis.addEventListener('click',async function(event){
-                    event.preventDefault();
-                    this.classList.add('selected')
-                    let employee = this.getAttribute('data-id')
-                    j = JSON.parse(postschema.body)
-                    Object.assign(j,{title:'incoming patient',receiver: employee,type: 'p_message', content: `there is an incoming patient called ${r.message.Full_name}`,extra: {name: r.message.Full_name,patient: r.message.id,nid:r.message.nid,assurance: r.message.assurances},controller: {looping: false,recipients: []}})
-                    postschema.body = JSON.stringify(j)
-                    deletechild(p,p.parentNode)
-                    x.setAttribute('disabled',true)
-                    x.innerText = 'notifying the receiver...'
-                    r =  await request('send-message',postschema)
-                    x.removeAttribute('disabled')
-                    x.innerText = 'consultant notified !'
-                    x.classList.replace('btn-primary','btn-success')
-                    deletechild(d.parentNode,d.parentNode.parentNode)
-                    addsCard('consultant notified !',true)
-                  });
-              }
-        })
+        extra_input.onblur = async function (event) {
+            event.preventDefault();
+            let operation = this.getAttribute('data-id')
+            if (operation) {
+                postschema.body = JSON.stringify({
+                    token: getdata('token'),
+                    operation: operation
+                })
+                let opInfo = await request('operation',postschema)
+                if (!opInfo.success) {
+                    return alertMessage(opInfo.message)
+                }
+                const questions = opInfo.message.questions
+                removeLoadingTab(cInp)
+                addCFInps(questions,cInp)
+                inputs = Array.from(form.querySelectorAll('.main-input'))
+                let opin = inputs.find(function (inp) {
+                    return inp.name == 'operator'
+                  })
+                  opin.value=getdata('userinfo').Full_name
+                  opin.setAttribute('data-id',getdata('userinfo').id)
+                  opin.classList.add('bevalue')
+                  opin.setAttribute('readonly',true)
+                  opin.setAttribute('disabled',true)
+
+            }
+        }
         form.addEventListener('submit', async event=>{
+        inputs = Array.from(form.querySelectorAll('.main-input'))
             
             event.preventDefault();
             l = 1
@@ -1570,10 +1589,9 @@ class popups{
                 let values = {}
                 for (const input of inputs) {
                     Object.assign(values,{[input.name]: (input.classList.contains('bevalue'))? input.getAttribute('data-id') : input.value })
-                } 
+                }
                 Object.assign(values,{session: session.session_id,token: getdata('token')})
-                Object.assign(values,{operation: {id: values.operation, quantity: values.quantity}})
-                delete values.quantity
+                Object.assign(values,{operation: {id: values.operation,operator: values.operator}})
                 postschema.body = JSON.stringify(values)
                 let results = await request('add-session-operation',postschema)
                 if (results.success) {
@@ -1600,12 +1618,12 @@ class popups{
                             <form method="post" id="add-service-info-form" name="add-service-info-form">
                                 <div class="col-md-12 px-10p py-6p bsbb p-r">
                                     <label for="service" class="form-label">service name</label>
-                                    <input type="text" class="form-control bevalue" id="services" placeholder="Demo service" name="service">
+                                    <input type="text" class="form-control bevalue" id="services" placeholder="name of the service" name="service">
                                     <small class="w-100 red pl-3p verdana"></small>
                                 </div>
                                 <div class="col-md-12 px-10p py-6p bsbb p-r">
                                     <label for="quantity" class="form-label">quantity</label>
-                                    <input type="number" class="form-control" id="quantity" placeholder="Demo quantity" name="quantity">
+                                    <input type="number" class="form-control" id="quantity" placeholder="quantity served" name="quantity">
                                     <span class="p-a t-0 t-0 mx-20p r-0 mt-44p capitalize" name="unit-hol"></span>
                                     <small class="w-100 red pl-3p verdana"></small>
                                 </div>
@@ -1629,13 +1647,12 @@ class popups{
         let unit = form.querySelector('span[name="unit-hol"]')
         let val =  await new Promise((resolve, reject) => {
                     setTimeout(() => {
-                    resolve(extra_input.getAttribute('data-id'));
-                    }, 200);
+                    resolve(extra_input.getAttribute('data-unit'));
+                    }, 20);
                 });
-        let datauint = data.find(function (obj) {
-            return obj.id == val
-        })
-        unit.innerText = datauint.unit
+
+        
+        unit.innerText = val
        })
         form.addEventListener('submit', async event=>{
             
@@ -1678,18 +1695,18 @@ class popups{
         equipmentsP.appendChild(a)
         a.className = "w-350p h-a p-10p bsbb bc-white cntr zi-10000 br-5p b-mgc-resp card" 
         a.innerHTML  =`<div class="head w-100 h-50p py-10p px-15p bsbb">
-                            <span class="fs-18p bold-2 dgray capitalize igrid h-100 card-title">add an equipment to session</span>
+                            <span class="fs-18p bold-2 dgray capitalize igrid h-100 card-title">add a consumable to session</span>
                         </div>
                         <div class="body w-100 h-a p-5p grid">
                             <form method="post" id="equipment-info-form" name="equipment-info-form">
                                 <div class="col-md-12 px-10p py-6p bsbb p-r">
-                                    <label for="equipment" class="form-label">equipment name</label>
-                                    <input type="text" class="form-control bevalue" id="equipment" placeholder="Demo equipment" name="equipment">
+                                    <label for="equipment" class="form-label">Consumable name</label>
+                                    <input type="text" class="form-control bevalue" id="equipments" placeholder="name of consumable" name="equipment">
                                     <small class="w-100 red pl-3p verdana"></small>
                                 </div>
                                 <div class="col-md-12 px-10p py-6p bsbb p-r">
                                     <label for="quantity" class="form-label">quantity</label>
-                                    <input type="number" class="form-control" id="quantity" placeholder="Demo quantity" name="quantity">
+                                    <input type="number" class="form-control" id="quantity" placeholder="amount of entry" name="quantity">
                                     <span class="p-a t-0 t-0 mx-20p r-0 mt-42p capitalize" name="unit-hol"></span>
                                     <small class="w-100 red pl-3p verdana"></small>
                                 </div>
@@ -1703,7 +1720,7 @@ class popups{
         let extra_input = inputs.find(function (ins) {return ins.classList.contains('bevalue') })
         extra_input.addEventListener('keyup', (event)=>{
             if (extra_input.value) {
-                triggerRecs(extra_input,['id','name','department','price'],socket)
+                triggerRecs(extra_input,['id','name','price','unit'],socket)
             }else{
                 removeRec(extra_input)
 
@@ -1713,13 +1730,10 @@ class popups{
         let unit = form.querySelector('span[name="unit-hol"]')
         let val =  await new Promise((resolve, reject) => {
                     setTimeout(() => {
-                    resolve(extra_input.getAttribute('data-id'));
-                    }, 200);
+                    resolve(extra_input.getAttribute('data-unit'));
+                    }, 20);
                 });
-        let datauint = data.find(function (obj) {
-            return obj.id == val
-        })
-        unit.innerText = datauint.unit
+        unit.innerText = val
        })
         form.addEventListener('submit', async event=>{
             
@@ -1761,7 +1775,7 @@ class popups{
         commentsP.appendChild(a)
         a.className = "w-350p h-a p-10p bsbb bc-white cntr zi-10000 br-5p b-mgc-resp card" 
         a.innerHTML  =`<div class="head w-100 h-50p py-10p px-15p bsbb">
-                            <span class="fs-18p bold-2 dgray capitalize igrid h-100 card-title">add an operation to session</span>
+                            <span class="fs-18p bold-2 dgray capitalize igrid h-100 card-title">add comment to session</span>
                         </div>
                         <div class="body w-100 h-a p-5p grid">
                             <form method="post" id="req-test-info-form" name="req-test-info-form">
@@ -1815,7 +1829,7 @@ class popups{
         decisionsP.appendChild(a)
         a.className = "w-350p h-a p-10p bsbb bc-white cntr zi-10000 br-5p b-mgc-resp card" 
         a.innerHTML  =`<div class="head w-100 h-50p py-10p px-10p bsbb">
-                            <span class="fs-20p bold-2 dgray capitalize igrid h-100 card-title">add an operation to session</span>
+                            <span class="fs-20p bold-2 dgray capitalize igrid h-100 card-title">add result to session</span>
                         </div>
                         <span class="dgray px-5p fs-14p my-10p  bsbb capitalize">the diagnosis decisions after all diagonis operations caried out in the  session's process</span>
                         <div class="body w-100 h-a p-5p grid">
@@ -1867,11 +1881,82 @@ class popups{
                     Object.assign(values,{[input.name]:  getchips(input.parentNode.querySelector('div.chipsholder'),['id']) })
                 } 
                 Object.assign(values,{session: session.session_id,token: getdata('token')})
-                console.log(values)
                 postschema.body = JSON.stringify(values)
                 let results = await request('add-session-decisions',postschema)
                 if (results.success) {
                     deletechild(decisionsP,decisionsP.parentElement)
+                }
+                alertMessage(results.message)
+                button.removeAttribute('disabled')
+                button.innerHTML= 'proceed'
+
+            }
+        })
+    }
+    symptoms(){
+        const session = this.session
+        let symptomssP = addshade();
+        a = document.createElement('div');
+        symptomssP.appendChild(a)
+        a.className = "w-350p h-a p-10p bsbb bc-white cntr zi-10000 br-5p b-mgc-resp card" 
+        a.innerHTML  =`<div class="head w-100 h-50p py-10p px-10p bsbb">
+                            <span class="fs-20p bold-2 dgray capitalize igrid h-100 card-title">add symptoms to session</span>
+                        </div>
+                        <span class="dgray px-5p fs-14p my-10p  bsbb capitalize">the physical symptoms or the overall symptoms the patients is showing during the session's process</span>
+                        <div class="body w-100 h-a p-5p grid">
+                            <form method="post" id="req-symptom-info-form" name="req-symptom-info-form">
+                                <div class="input-group my-10p">
+                                    <input type="text" class="form-control chips-check" placeholder="Symptom name" name="symptoms" id="symptom">
+                                    <span class="input-group-text hover-2 us-none" id="add-symptom">add</span>
+                                    <small class="hidden w-100 red pl-3p verdana"></small>
+                                </div>
+                                <div class="wrap center-2 px-10p bsbb bblock-resp mt-15p">
+                                    <button type="submit" class="btn btn-primary bfull-resp bm-a-resp bmy-10p-resp">Proceed</button>
+                                </div>
+                            </form>
+                        </div>`
+        let form = a.querySelector("form");
+        let inputs = Array.from(form.querySelectorAll('.chips-check'))
+        let adb = form.querySelector('span#add-symptom');
+        adb.addEventListener('click',e=>{
+            let parent = adb.parentNode
+            let inp = parent.querySelector('input')
+            if (inp.value.trim()) {
+                let chipsHolder = parent.querySelector('div.chipsholder')
+                if (!chipsHolder) {
+                chipsHolder = document.createElement('div');
+                chipsHolder.className = 'chipsholder p-5p bsbb w-100'
+                chipsHolder.title = 'symptoms'
+                parent.insertAdjacentElement('beforeEnd',chipsHolder)
+                }
+                addChip({name:inp.value.trim(), id: inp.value.trim()},chipsHolder,['id'])
+                inp.value = null
+            }
+        })
+        form.addEventListener('submit', async event=>{
+            
+            event.preventDefault();
+            l = 1
+            for (const input of inputs) {
+                v = checkEmpty(input);
+                if (!v) {
+                    l = 0
+                }
+            }
+            if (l) {
+            let button = form.querySelector('button[type="submit"]')
+            button.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`
+            button.setAttribute('disabled',true)
+                let values = {}
+                for (const input of inputs) {
+                    Object.assign(values,{[input.name]:  getchips(input.parentNode.querySelector('div.chipsholder'),['id']) })
+                } 
+                Object.assign(values,{session: session.session_id,token: getdata('token')})
+                console.log(values)
+                postschema.body = JSON.stringify(values)
+                let results = await request('add-session-symptoms',postschema)
+                if (results.success) {
+                    deletechild(symptomssP,symptomssP.parentElement)
                 }
                 alertMessage(results.message)
                 button.removeAttribute('disabled')

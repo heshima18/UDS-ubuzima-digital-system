@@ -16,6 +16,20 @@ export const addService = async (req,res)=>{
       res.status(500).send({success:false, message: errorMessage.is_error})
     }
   }
+  export const editService = async (req,res)=>{
+    try {
+      let {name,unit,price,id} = req.body
+        let insert = await query(`update services set name = ? ,price = ? ,unit = ? where id = ?`,[name,price,unit,id])
+        if (!insert) {
+          return res.status(500).send({success:false, message: errorMessage.is_error})
+        }
+        res.send({success: true, message: errorMessage.supd_message})
+      
+    } catch (error) {
+      console.log(error)
+      res.status(500).send({success:false, message: errorMessage.is_error})
+    }
+  }
   export const getServices = async (req,res)=>{
     let select = await query(`select * from services`,[])
     if (!select) {

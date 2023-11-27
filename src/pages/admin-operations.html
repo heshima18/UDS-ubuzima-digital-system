@@ -58,7 +58,7 @@
                 <ul class="menu-inner py-1">
                     <li class="menu-item">
                         <a href="javascript:void(0);" class="menu-link menu-toggle">
-                            <i class="menu-icon tf-icons bx bx-user"></i>
+                            <i class="menu-icon far fa-flag"></i>
                             <div>Essentials</div>
                         </a>
                         <ul class="menu-sub">
@@ -81,7 +81,7 @@
                     </li>
                     <li class="menu-item">
                         <a href="javascript:void(0);" class="menu-link menu-toggle">
-                            <i class="menu-icon tf-icons bx bx-user"></i>
+                            <i class="menu-icon fas fa-pills"></i>
                             <div>Drugs</div>
                         </a>
                         <ul class="menu-sub">
@@ -99,7 +99,7 @@
                     </li>
                     <li class="menu-item">
                         <a href="javascript:void(0);" class="menu-link menu-toggle">
-                            <i class="menu-icon tf-icons bx bx-user"></i>
+                            <i class="menu-icon fas fa-plus"></i>
                             <div>Extras</div>
                         </a>
                         <ul class="menu-sub">
@@ -122,7 +122,7 @@
                     </li>
                     <li class="menu-item">
                         <a href="javascript:void(0);" class="menu-link menu-toggle">
-                            <i class="menu-icon tf-icons bx bx-user"></i>
+                            <i class="menu-icon fas fa-shield"></i>
                             <div>Assurances</div>
                         </a>
                         <ul class="menu-sub">
@@ -135,7 +135,7 @@
                     </li>
                     <li class="menu-item">
                         <a href="javascript:void(0);" class="menu-link menu-toggle">
-                            <i class="menu-icon tf-icons bx bx-user"></i>
+                            <i class="menu-icon fas fa-location"></i>
                             <div>Locations</div>
                         </a>
                         <ul class="menu-sub">
@@ -335,7 +335,7 @@
                         </div>
                         <div class="modal fade" id="view-operation" data-bs-backdrop="static">
                             <div class="modal-dialog modal-lg modal-dialog-centered">
-                                <div class="modal-content p-3 p-md-5">
+                                <div class="w-100 h-100" id="edit-operation">
                                     <div class="modal-header text-uppercase">
                                         <h3>edit an operation</h3>
                                     </div>
@@ -350,6 +350,11 @@
                                                 <label for="ahp-name" class="form-label">Operation Department</label>
                                                 <input type="text" name="department" id="department" class="form-control bevalue" placeholder="Demo Department">
                                                 <small class="fs-14p"></small>
+                                            </div>
+                                            <div class="col-md-12 p-r">
+                                                <label for="questions" class="form-label">consent questions</label>
+                                                <input type="button" name="questions" id="questions" class="btn btn-primary btn-sm chips-check block w-100 main-input" value="add CF Questions">
+                                                <small class="fs-14p red hidden"></small>
                                             </div>
                                             <div class="mb-2 col-md-12">
                                                 <label class="form-label" for="password">operation price</label>

@@ -3,13 +3,27 @@ import errorMessage from './response.message.controller'
 import id from "./randomInt.generator.controller";
 export const addEquipment = async (req,res)=>{
   try {
-    let {name,price} = req.body
+    let {name,price,unit} = req.body
       let uid = id()
-      let insert = await query(`insert into equipments(id,name,price)values(?,?,?)`,[uid,name,price])
+      let insert = await query(`insert into equipments(id,name,price,unit)values(?,?,?,?)`,[uid,name,price,unit])
       if (!insert) {
         return res.status(500).send({success:false, message: errorMessage.is_error})
       }
       res.send({success: true, message: errorMessage.ec_message})
+    
+  } catch (error) {
+    console.log(error)
+    res.status(500).send({success:false, message: errorMessage.is_error})
+  }
+}
+export const editEquipment = async (req,res)=>{
+  try {
+    let {name,price,unit,id} = req.body
+      let insert = await query(`update equipments set name = ? ,price = ? ,unit = ? where id = ?`,[name,price,unit,id])
+      if (!insert) {
+        return res.status(500).send({success:false, message: errorMessage.is_error})
+      }
+      res.send({success: true, message: errorMessage.eu_message})
     
   } catch (error) {
     console.log(error)

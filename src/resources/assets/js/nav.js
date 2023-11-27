@@ -21,7 +21,7 @@ nfPanel.parentNode.classList.add('h-75');
             return alertMessage(userinfo.message)
         }
         y = userinfo.message
-        localStorage.setItem('userinfo',JSON.stringify({Full_name: y.Full_name, title: y.title}))
+        localStorage.setItem('userinfo',JSON.stringify({Full_name: y.Full_name, title: y.title,id: y.id}))
         animskel()
         let dropdown_button = Array.from(document.querySelectorAll('a#dropdown-toggle'))
         removeLoadingTab(dropdown_button[0])

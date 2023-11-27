@@ -6,8 +6,8 @@ function generate2FAcode() {
     const hashedValue = hashCode(combinedValue);
     const userID = String(hashedValue).slice(0, 6);
   
-    // return userID;
-    return 123456;
+    return userID;
+    // return 123456;
 
   }
   function generateRandomComponent() {
