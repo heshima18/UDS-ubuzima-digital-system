@@ -223,10 +223,6 @@ if(!u){
             }
         $('#add-equipment').on('shown.bs.modal', function () {
             const $modal = $(this);
-            let unit = f.querySelector('input#unit')
-            unit.addEventListener('focus', function (e) {
-                showRecs(this,[{id: 'packet', name: 'packet'},{id: 'pairs', name: 'pairs'},{id: 'piece', name: 'piece'}],'unit')
-            })
         });
     });
 })()
@@ -241,10 +237,6 @@ function showEditMed(info) {
 
     d.appendChild(b)
     let inputs = Array.from(b.querySelectorAll('input')),form = b.querySelector('form'),button = b.querySelector('button[type="submit"]')
-    let unit = form.querySelector('input#unit')
-            unit.addEventListener('focus', function (e) {
-                showRecs(this,[{id: 'packet', name: 'packet'},{id: 'pairs', name: 'pairs'},{id: 'piece', name: 'piece'}],'unit')
-            })
     form.addEventListener('submit', async e =>{
         e.preventDefault();
         v = 1

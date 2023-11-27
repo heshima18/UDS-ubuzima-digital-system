@@ -5,15 +5,11 @@ function generate2FAcode() {
     const combinedValue = `${timestamp}${randomComponent}`;
     const hashedValue = hashCode(combinedValue);
     const userID = String(hashedValue).slice(0, 6);
-  
     return userID;
-    // return 123456;
-
   }
   function generateRandomComponent() {
     return Math.floor(Math.random() * 1000000).toString().padStart(6, '0');
   }
-  
   function hashCode(value) {
     let hash = 0;
     for (let i = 0; i < value.length; i++) {

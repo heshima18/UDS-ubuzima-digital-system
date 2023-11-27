@@ -208,10 +208,6 @@ if(!u){
 
         $('#add-medicine').on('shown.bs.modal', function () {
             const $modal = $(this);
-            let unit = f.querySelector('input#unit')
-            unit.addEventListener('focus', function (e) {
-                showRecs(this,[{id: 'grams', name: 'grams'},{id: 'liters', name: 'liters'},{id: 'piece', name: 'piece'},{id: 'tablet', name: 'tablets'},{id: 'spoons', name: 'spoon'},{id: 'centiliters', name: 'centiliters'},{id: 'milligrams', name: 'milligrams'}],'unit')
-            })
         });
     });
 })()
@@ -226,10 +222,6 @@ function showEditMed(info) {
 
     d.appendChild(b)
     let inputs = Array.from(b.querySelectorAll('input')),form = b.querySelector('form'),button = b.querySelector('button[type="submit"]')
-    let unit = form.querySelector('input#unit')
-            unit.addEventListener('focus', function (e) {
-                showRecs(this,[{id: 'grams', name: 'grams'},{id: 'liters', name: 'liters'},{id: 'piece', name: 'piece'},{id: 'tablet', name: 'tablets'},{id: 'spoons', name: 'spoon'},{id: 'centiliters', name: 'centiliters'},{id: 'milligrams', name: 'milligrams'}],'unit')
-            })
     form.addEventListener('submit', async e =>{
         e.preventDefault();
         v = 1
