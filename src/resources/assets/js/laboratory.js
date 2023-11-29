@@ -1,7 +1,7 @@
-import { alertMessage, getdata, getschema, postschema, request,initializeCleave,sessiondata, checkEmpty, showRecs, getchips,getPath,addsCard,cpgcntn, geturl, extractTime, getDate } from "../../../utils/functions.controller.js";
+import { alertMessage, getdata, getschema, postschema, request,initializeCleave,sessiondata, checkEmpty, showRecs, getchips,getPath,addsCard,cpgcntn, geturl, extractTime, getDate, addLoadingTab, removeLoadingTab, addCFInps } from "../../../utils/functions.controller.js";
 import {expirateMssg, getNfPanelLinks, pushNotifs, userinfo,m as messages, openmenu, addFilter} from "./nav.js";
 
-let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z,notificationlinks
+let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z,notificationlinks,session
 (async function () {
     z = userinfo
     let token = getdata('token')
@@ -124,7 +124,6 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z,notificationlinks
     notificationlinks = getNfPanelLinks()
     genClicks(notificationlinks)
     function genClicks(notificationlinks) {
-        let messages = sessiondata('messages')
         notificationlinks.map((link)=>{
             link.addEventListener(`click`, ()=>{
                 if (!link.classList.contains('list-link')) {
@@ -165,8 +164,6 @@ async function gsd(page,extra) {
         x = page.id
         if (x == 'home') {
             let num_hols = Array.from(page.querySelectorAll('[data-role="num_hol"]'))
-            
-          let messages = sessiondata('messages')
           let nmbrs = {inc_tests: 0,c_tests : 0,exp_t: 0}
             messages.map(function (me) {
             if (extractTime(me.dateadded,'date') == getDate('date')) {
@@ -242,9 +239,8 @@ async function gsd(page,extra) {
         }else if (x == 'record-tests') {
             try {
                 f = document.querySelector('form#record-test-form')
-                i = Array.from(f.querySelectorAll('.form-control'))
+                i = Array.from(f.querySelectorAll('.main-input'))
                 let extras_input = Array.from(f.querySelectorAll('input.extras'));
-                let op_input = f.querySelector('input[name="operations"]');
                 extras_input.map(function (input) {
                   input.addEventListener('focus', event=>{
                     showRecs(input,extra[input.id],input.id)
@@ -254,25 +250,48 @@ async function gsd(page,extra) {
                 s = i.find(function (e) {return e.id == 'session'})
                 t = i.find(function (e) {return e.id == 'test'})
                 if (extra) {
-                let session
-                if (extra.addins) {
-                    session = extra.addins
-                }else if (extra.extra) {
-                    session = extra.extra
-                }
-                  n.value = session.patient_name
-                  n.setAttribute('data-id',session.patient)
-                  s.value = `${session.patient_name}'s session`
-                  s.setAttribute('data-id',session.session)
-                  n.setAttribute('disabled',true),s.setAttribute('disabled',true),t.setAttribute('disabled',true)
-                  t.value = `${session.t_name}`
-                  t.setAttribute('data-id',session.test)
+                    if (extra.addins) {
+                        session = extra.addins
+                    }else if (extra.extra) {
+                        session = extra.extra
+                    }
+                    n.value = session.patient_name
+                    n.setAttribute('data-id',session.patient)
+                    s.value = `${session.patient_name}'s session`
+                    s.setAttribute('data-id',session.session)
+                    n.setAttribute('disabled',true),s.setAttribute('disabled',true),t.setAttribute('disabled',true)
+                    t.value = `${session.t_name}`
+                    t.setAttribute('data-id',session.test)
+                }else if (!session) {
+                    session = {
+                        patient_name: n.value, 
+                        t_name: t.value,
+                        patient: n.getAttribute('data-id'), 
+                        session: s.getAttribute('data-id'), 
+                        test: t.getAttribute('data-id')
+                    }   
                 }
                 let button = f.querySelector('button[type="submit"]')
+                let cInp = f.querySelector('div.cf-inps')
+                addLoadingTab(cInp)
+                let test = session.test
+                if(test){
+                    postschema.body = JSON.stringify({
+                        token: getdata('token'),
+                        test: test
+                    })
+                    let testInfo = await request('get-test',postschema)
+                    if (!testInfo.success) {
+                      return alertMessage(testInfo.message)
+                    }
+                    const questions = testInfo.message.questions
+                    removeLoadingTab(cInp)
+                    addCFInps(questions,cInp)
+                    i = Array.from(f.querySelectorAll('.main-input'))
+                }
                 f.onsubmit =  async e =>{
-                    let a,b,n,u,r;
-                    n = '';
-                    u = '';
+                    let a,b,r;
+                    
                     b = {}
                     v = 1
                     e.preventDefault();
@@ -290,9 +309,10 @@ async function gsd(page,extra) {
                     }
                     }
                     if (v) {
-                        Object.assign(b,{test: {id:b.test, result: b.result, sample: b.sample}})
-                        delete b.sample
-                        delete b.result
+                        if (!session) {
+                            return alertMessage('there was an error while recording the test please reload the page or re click the notification')
+                        }
+                        Object.assign(b,{test: {id:b.test, results: b.results, sample: b.sample}})
                         Object.assign(b,{ token: getdata('token')})
                         postschema.body = JSON.stringify(b)
                         button.setAttribute('disabled',true)

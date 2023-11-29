@@ -1256,7 +1256,7 @@ class popups{
         let testsP = addshade();
         a = document.createElement('div');
         testsP.appendChild(a)
-        a.className = "w-350p h-a p-10p bsbb bc-white cntr zi-10000 br-5p b-mgc-resp card" 
+        a.className = "w-40 h-a  mh-70 p-10p bsbb bc-white cntr zi-10000 br-5p b-mgc-resp card-1" 
         a.innerHTML  =`<div class="head w-100 h-50p py-10p px-15p bsbb">
                             <span class="fs-18p bold-2 dgray capitalize igrid h-100 card-title">add a test to session</span>
                         </div>
@@ -1265,7 +1265,7 @@ class popups{
                                 <div class="col-md-12 px-10p py-6p bsbb p-r">
                                     <label for="test" class="form-label">test taken</label>
                                     <input type="text" class="form-control bevalue main-input" id="tests" placeholder="applying test" name="test">
-                                    <small class="w-100 red pl-3p verdana"></small>
+                                    <small class="w-100 red pl-3p verdana hidden"></small>
                                 </div>
                                 <div class="cf-inps p-r h-60p">
                          
@@ -1355,12 +1355,12 @@ class popups{
                     if (!r.success) {
                         return alertMessage(r.message)
                     }
-                    deletechild(p,p.parentElement)
                     deletechild(testsP,testsP.parentNode)
                     notify_button.removeAttribute('disabled')
                     notify_button.innerText = 'receivers notified !'
-                    notify_button.classList.replace('bc-tr-theme','bc-tr-theme')
+                    notify_button.classList.replace('bc-tr-theme','bc-tr-grren')
                     addsCard('receivers notified !',true)
+
                 } catch (error) {
                     console.log(error)
                 }
@@ -1392,6 +1392,7 @@ class popups{
                 try {
                     postschema.body = JSON.stringify(j)
                     deletechild(p,p.parentNode)
+                    deletechild(testsP,testsP.parentNode)
                     notify_button.setAttribute('disabled',true)
                     notify_button.innerText = 'notifying the receiver...'
                     r =  await request('send-message',postschema)
@@ -1448,7 +1449,7 @@ class popups{
         let medicinesP = addshade();
         a = document.createElement('div');
         medicinesP.appendChild(a)
-        a.className = "w-350p h-a p-10p bsbb bc-white cntr zi-10000 br-5p b-mgc-resp card" 
+        a.className = "w-350p h-a p-10p bsbb bc-white cntr zi-10000 br-5p b-mgc-resp card-1" 
         a.innerHTML  =`<div class="head w-100 h-50p py-10p px-15p bsbb">
                             <span class="fs-18p bold-2 dgray capitalize igrid h-100 card-title">add a medication to session</span>
                         </div>
@@ -1610,7 +1611,7 @@ class popups{
         let servicesP = addshade();
         a = document.createElement('div');
         servicesP.appendChild(a)
-        a.className = "w-350p h-a p-10p bsbb bc-white cntr zi-10000 br-5p b-mgc-resp card" 
+        a.className = "w-350p h-a p-10p bsbb bc-white cntr zi-10000 br-5p b-mgc-resp card-1" 
         a.innerHTML  =`<div class="head w-100 h-50p py-10p px-15p bsbb">
                             <span class="fs-18p bold-2 dgray capitalize igrid h-100 card-title">add a service to session</span>
                         </div>
@@ -1693,7 +1694,7 @@ class popups{
         let equipmentsP = addshade();
         a = document.createElement('div');
         equipmentsP.appendChild(a)
-        a.className = "w-350p h-a p-10p bsbb bc-white cntr zi-10000 br-5p b-mgc-resp card" 
+        a.className = "w-350p h-a p-10p bsbb bc-white cntr zi-10000 br-5p b-mgc-resp card-1" 
         a.innerHTML  =`<div class="head w-100 h-50p py-10p px-15p bsbb">
                             <span class="fs-18p bold-2 dgray capitalize igrid h-100 card-title">add a consumable to session</span>
                         </div>
@@ -1773,7 +1774,7 @@ class popups{
         let commentsP = addshade();
         a = document.createElement('div');
         commentsP.appendChild(a)
-        a.className = "w-350p h-a p-10p bsbb bc-white cntr zi-10000 br-5p b-mgc-resp card" 
+        a.className = "w-350p h-a p-10p bsbb bc-white cntr zi-10000 br-5p b-mgc-resp card-1" 
         a.innerHTML  =`<div class="head w-100 h-50p py-10p px-15p bsbb">
                             <span class="fs-18p bold-2 dgray capitalize igrid h-100 card-title">add comment to session</span>
                         </div>
@@ -1827,7 +1828,7 @@ class popups{
         let decisionsP = addshade();
         a = document.createElement('div');
         decisionsP.appendChild(a)
-        a.className = "w-350p h-a p-10p bsbb bc-white cntr zi-10000 br-5p b-mgc-resp card" 
+        a.className = "w-350p h-a p-10p bsbb bc-white cntr zi-10000 br-5p b-mgc-resp card-1" 
         a.innerHTML  =`<div class="head w-100 h-50p py-10p px-10p bsbb">
                             <span class="fs-20p bold-2 dgray capitalize igrid h-100 card-title">add result to session</span>
                         </div>
@@ -1898,7 +1899,7 @@ class popups{
         let symptomssP = addshade();
         a = document.createElement('div');
         symptomssP.appendChild(a)
-        a.className = "w-350p h-a p-10p bsbb bc-white cntr zi-10000 br-5p b-mgc-resp card" 
+        a.className = "w-350p h-a p-10p bsbb bc-white cntr zi-10000 br-5p b-mgc-resp card-1" 
         a.innerHTML  =`<div class="head w-100 h-50p py-10p px-10p bsbb">
                             <span class="fs-20p bold-2 dgray capitalize igrid h-100 card-title">add symptoms to session</span>
                         </div>
@@ -1970,7 +1971,7 @@ class popups{
         let notifyP = addshade();
         a = document.createElement('div');
         notifyP.appendChild(a)
-        a.className = "w-350p h-a p-10p bsbb bc-white cntr zi-10000 br-5p b-mgc-resp card" 
+        a.className = "w-350p h-a p-10p bsbb bc-white cntr zi-10000 br-5p b-mgc-resp card-1" 
         a.innerHTML  =`<div class="head w-100 h-50p py-10p px-15p bsbb">
                             <span class="fs-18p bold-2 dgray capitalize igrid h-100 card-title">notify users on this session</span>
                         </div>
@@ -2006,7 +2007,6 @@ class popups{
                     return
                 }
                 j = JSON.parse(postschema.body)
-                console.log(input.value.trim())
                 Object.assign(j, 
                     {
                         title:'session preview request',
@@ -2042,7 +2042,7 @@ class popups{
         let b = addshade();
         a = document.createElement('div');
         b.appendChild(a)
-        a.className = "w-350p h-a p-10p bsbb bc-white cntr zi-10000 br-5p b-mgc-resp card" 
+        a.className = "w-350p h-a p-10p bsbb bc-white cntr zi-10000 br-5p b-mgc-resp card-1" 
         a.innerHTML  =`<div class="head w-100 h-50p py-10p px-10p bsbb">
                             <span class="fs-20p bold-2 dgray capitalize igrid h-100 card-title">select transfer type</span>
                         </div>
