@@ -1070,6 +1070,7 @@ export async function showAvaiEmps(emps,extra){
     u.appendChild(a)
     let group = {}
     var key;
+    console.log(extra)
     if (extra) {
       key = Object.keys(extra)[0]
       let suba

@@ -313,6 +313,12 @@ async function gsd(page,extra) {
                             return alertMessage('there was an error while recording the test please reload the page or re click the notification')
                         }
                         Object.assign(b,{test: {id:b.test, results: b.results, sample: b.sample}})
+                        for (const key of Object.keys(b)) {
+                            if (!key in b.test) {
+                                Object.assign(b.test,{[key]: b[key]})
+                            }
+                            
+                        }
                         Object.assign(b,{ token: getdata('token')})
                         postschema.body = JSON.stringify(b)
                         button.setAttribute('disabled',true)

@@ -1283,7 +1283,7 @@ class popups{
         let extra_input = a.querySelector('input#tests')
         extra_input.addEventListener('keyup', async (event)=>{
             if (extra_input.value) {
-                data = await triggerRecs(extra_input,['id','name','department','price'],socket)
+                data = await triggerRecs(extra_input,['id','name','department','price','type'],socket)
             }else{
                 removeRec(extra_input)
 
@@ -1318,7 +1318,7 @@ class popups{
             if (!testinfo) {
                 return alertMessage('Test not found')
             }
-            let emps = await showAvaiEmps(this.users,{department: testinfo.department});
+            let emps = await showAvaiEmps(this.users,(testinfo.type == 'quick test')? null : {department: testinfo.department});
             if (!emps) {
                 return
             }
@@ -1456,8 +1456,8 @@ class popups{
                         <div class="body w-100 h-a p-5p grid">
                             <form method="post" id="add-medicine-form" name="add-medicine-form">
                                 <div class="col-md-12 p-10p bsbb mb-5p p-r">
-                                    <label for="medicines" class="form-label">medicines</label>
-                                    <input type="text" class="form-control extras chips-check" id="medicines" placeholder="Demo medicine" name="medicines">
+                                    <label for="medicines" class="form-label">Applied Medicines</label>
+                                    <input type="text" class="form-control extras chips-check" id="medicines" placeholder="Medication name" name="medicines">
                                     <small class="hidden w-100 red pl-3p verdana"></small>
                                 </div>
                                 <div class="wrap center-2 px-10p bsbb bblock-resp">
@@ -1782,7 +1782,7 @@ class popups{
                             <form method="post" id="req-test-info-form" name="req-test-info-form">
                                 <div class="col-md-12 px-10p py-6p bsbb p-r">
                                     <label for="test" class="form-label">comment</label>
-                                    <textarea class="form-control" id="comment" placeholder="Demo comment" name="comment">${data}</textarea>
+                                    <textarea class="form-control" id="comment" placeholder="Concluding comment" name="comment">${data}</textarea>
                                     <small class="w-100 red pl-3p verdana"></small>
                                 </div>
                                 <div class="wrap center-2 px-10p bsbb bblock-resp">
@@ -1836,7 +1836,7 @@ class popups{
                         <div class="body w-100 h-a p-5p grid">
                             <form method="post" id="req-decision-info-form" name="req-decision-info-form">
                                 <div class="input-group my-10p">
-                                    <input type="text" class="form-control chips-check" placeholder="demo decision" name="decisions" id="decision">
+                                    <input type="text" class="form-control chips-check" placeholder="decision " name="decisions" id="decision">
                                     <span class="input-group-text hover-2 us-none" id="add-decision">add</span>
                                     <small class="hidden w-100 red pl-3p verdana"></small>
                                 </div>
@@ -2094,7 +2094,7 @@ class popups{
                                                             <form method="post" id="transfer-form" name="transfer-form">
                                                                 <div class="col-md-12 px-10p bsbb p-r h-94p">
                                                                     <label for="test" class="form-label uppercase dgray">session</label>
-                                                                    <input type="text" class="form-control bevalue" id="session" placeholder="Demo session" name="session" readonly disabled="true" value="${session.session_id}" data-id="${session.session_id}">
+                                                                    <input type="text" class="form-control bevalue" id="session" placeholder="Transferring session" name="session" readonly disabled="true" value="${session.session_id}" data-id="${session.session_id}">
                                                                     <small class="w-100 red pl-3p verdana"></small>
                                                                 </div>
                                                                 <div class="col-md-12 px-10p bsbb p-r h-94p">
