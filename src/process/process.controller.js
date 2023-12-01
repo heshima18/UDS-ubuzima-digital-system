@@ -43,11 +43,12 @@ export async function DailyProcess() {
     try {
         const leTime = DateTime.now();
         let now = leTime.setZone('Africa/Kigali');
-        // let time = now.toFormat('yyyy-MM-dd HH:mm:ss')
+        let today = now.toFormat('yyyy-MM-dd HH:mm:ss'),todayDate = now.toFormat('yyyy-MM-dd'),todayTime = now.toFormat('HH:mm:ss')
         let yesterday = now.minus({days: 1})
     
         yesterday = yesterday.toFormat('yyyy-MM-dd')
         let delExpiredMssgs = await query(`delete from messages where type = ? and DATE(dateadded) <= ?`,['info_access_req', yesterday])
+        let expirateAppointMents = await query(`update appointments set status = ? where DATE(time) <= ? AND TIME(time) <= ? AND status != ?`,['outdated', todayDate,todayTime,'outdated'])
         if (delExpiredMssgs) {
             console.log(`process started`)
         }

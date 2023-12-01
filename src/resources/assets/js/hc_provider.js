@@ -1,9 +1,10 @@
 
-import { alertMessage, getdata, getschema, postschema, request,deletechild, checkEmpty, showRecs, getchips,getPath,calcTime,addsCard,cpgcntn, geturl,sessiondata,addChip, showAvaiAssurances, adcm, addshade, addLoadingTab, removeLoadingTab, showAvaiEmps, fT, promptHpsToChoose, addAuthDiv, RemoveAuthDivs, showFingerprintDiv, removeRec, promptMessage, triggerRecs, extractTime, getDate, aDePh, addSpinner, addCFInps } from "../../../utils/functions.controller.js";
+import { alertMessage, getdata, getschema, postschema, request,deletechild, checkEmpty, showRecs, getchips,getPath,calcTime,addsCard,cpgcntn, geturl,sessiondata,addChip, showAvaiAssurances, adcm, addshade, addLoadingTab, removeLoadingTab, showAvaiEmps, fT, promptHpsToChoose, addAuthDiv, RemoveAuthDivs, showFingerprintDiv, removeRec, promptMessage, triggerRecs, extractTime, getDate, aDePh, addSpinner, addCFInps, removeSpinner } from "../../../utils/functions.controller.js";
+import { showPaymentPopup } from "../../../utils/payments.popup.controller.js";
 import { addUprofile } from "../../../utils/user.profile.controller.js";
 import {pushNotifs, userinfo,expirateMssg, getNfPanelLinks,m as messages, DateTime, openmenu, addFilter} from "./nav.js";
 import { viewTransfer } from "./transfer.js";
-let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,z,notificationlinks,socket,mh
+let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,z,notificationlinks,socket,mh,m,extra
 (async function () {
     z = userinfo
     let token = getdata('token')
@@ -278,11 +279,16 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,z,notificationlinks,socket,m
                 try {
                     
                     f = document.querySelector('form#create-session-form')
-                    i = Array.from(f.querySelectorAll('.form-control'))
+                    i = Array.from(f.querySelectorAll('.main-input'))
                     let asb = f.querySelector('span#add-symptom');
                     let arb = f.querySelector('span#add-decisions');
+                    let vsgns = f.querySelector('input#vs');
                     let extras_input = Array.from(f.querySelectorAll('input.extras'));
                     let op_input = f.querySelector('input[name="operations"]');
+                    vsgns.onclick = function (event) {
+                        event.preventDefault()
+                        promptVSPopup(this)
+                    }
                     extras_input.forEach(input => {
                         input.removeEventListener('keyup', input._keyupHandler);
                         input._keyupHandler = function(event) {
@@ -336,19 +342,26 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,z,notificationlinks,socket,m
                       }
                     }
                     n = i.find(function (e) {return e.id == 'patient'})
-                    if (sessiondata('pinfo')) {
-                      n.value = sessiondata('pinfo').name
-                      n.setAttribute('data-id',sessiondata('pinfo').patient)
+                    let ass = i.find(function (e) {return e.id == 'assurance'})
+
+                    if (addin) {
+                      n.value = addin.name
+                      n.setAttribute('data-id',addin.patient)
+                      if (typeof addin.assurance == 'object') {
+                        ass.value = addin.assurance[0].id
+                      }else{
+                          ass.value = addin.assurance
+                      }
                     }
                     let val
                     n.onfocus = ()=>{
-                        if (sessiondata('pinfo')) {
-                            if (sessiondata('pinfo').nid) {
-                                n.value = sessiondata('pinfo').nid
+                        if (addin) {
+                            if (addin.nid) {
+                                n.value = addin.nid
                             }else{
-                                n.value = sessiondata('pinfo').patient
+                                n.value = addin.patient
                             }
-                            n.setAttribute('data-id',sessiondata('pinfo').patient)
+                            n.setAttribute('data-id',addin.patient)
                         }
                         val = n.value
                     }
@@ -356,9 +369,9 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,z,notificationlinks,socket,m
                         if (n.value != val) {
                          v = await upPatInfo(n)
                         }
-                        if (sessiondata('pinfo')) {
-                            n.value = sessiondata('pinfo').name
-                            n.setAttribute('data-id',sessiondata('pinfo').patient)
+                        if (addin) {
+                            n.value = addin.name
+                            n.setAttribute('data-id',addin.patient)
                         }
                     }
                     async function upPatInfo(n) {
@@ -384,12 +397,12 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,z,notificationlinks,socket,m
                                   if (assurance == "null") {
                                     assurance = null
                                   }
-                                  sessionStorage.setItem('pinfo',JSON.stringify({patient:p.message.id,name:p.message.Full_name,assurance,nid:p.message.nid}))
+                                  addin = {patient:p.message.id,name:p.message.Full_name,assurance,nid:p.message.nid}
+                                  ass.value = addin.assurance
                                   deletechild(a,a.parentNode)
                                   addsCard('Assurance Selected',true)
                                 });
                             }
-                            
                           }else{
                             n.parentNode.querySelector('span').classList.replace('center-2','hidden')
                           }
@@ -426,8 +439,11 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,z,notificationlinks,socket,m
                         }
                         }
                         if (v) {
-                            Object.assign(b,{ assurance: sessiondata('pinfo').assurance})
+                            // Object.assign(b,{ assurance: sessiondata('pinfo').assurance})
                             Object.assign(b,{ token: getdata('token')})
+                            if (!b.assurance) {
+                                b.assurance = null
+                            }
                             postschema.body = JSON.stringify(b)
                             button.setAttribute('disabled',true)
                             button.textContent = 'recording session info...'
@@ -920,7 +936,9 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,z,notificationlinks,socket,m
                     let dataToHold = element.getAttribute('data-hold');
                     let dataToShow = sessiondata[dataToHold]
                     for (const data of dataToShow) {
-                        Object.assign(data,{total_amount: (Number(data.price) * Number(data.quantity)).toFixed(2)})
+                        if (dataToHold != 'tests') {
+                            Object.assign(data,{total_amount: (Number(data.price) * Number(data.quantity)).toFixed(2)})
+                        }
                         let clonedNode = element.cloneNode(true);
                         let dataHolders = Array.from(clonedNode.querySelectorAll('[name="looping-info-hol"]'))
                         if (dataToHold == 'medicines') {
@@ -936,14 +954,27 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,z,notificationlinks,socket,m
                                 span.className = `fs-10p p-a t-0 mt-50p l-0 ml-25p`
                                 clonedNode.appendChild(span)
                             }
+                        }else if (dataToHold == 'tests') {
+                            for (const key of Object.keys(data)) {
+                                if ('tester'!= key && 'name'!= key && 'id'!= key) {
+                                    let li = document.createElement('li')
+                                    li.className = `p-2p bsbb block`
+                                    li.innerHTML = `<span class="pname dgray fs-15p pr-5p block">${key}</span>
+                                        <span class="pname dgray fs-16p bold-2" name="looping-info-hol" data-hold="${key}" data-secondary-holder="true">${key}</span>`
+                                    clonedNode.appendChild(li)
+                                }
+                            }
+                            dataHolders = Array.from(clonedNode.querySelectorAll('[name="looping-info-hol"]'))
                         }
                        for (const dataHolder of dataHolders) {
                         if (dataHolder.getAttribute('data-hold').indexOf('quantity') != -1 || dataHolder.getAttribute('data-hold').indexOf('amount') != -1) {
                             dataHolder.innerText = adcm(data[dataHolder.getAttribute('data-hold')])
-                        }else if (dataHolder.getAttribute('data-hold').indexOf('result') != -1) {
+                        }else if (dataHolder.getAttribute('data-hold') == 'results') {
                             if (data[dataHolder.getAttribute('data-hold')] == "positive" || data[dataHolder.getAttribute('data-hold')] == "positif") {
                                 dataHolder.classList.add('green')
+                                dataHolder.classList.remove('dgray')
                             }else{
+                                dataHolder.classList.remove('dgray')
                                 dataHolder.classList.add('red')
                             }
                             dataHolder.innerText = data[dataHolder.getAttribute('data-hold')]
@@ -993,6 +1024,8 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,z,notificationlinks,socket,m
                             button.classList.add('loading')
                             button.classList.replace('bc-tr-theme','bc-gray')
                         }
+                    }else if (sessiondata.payment_info.status != 'awaiting payment' && button.getAttribute('data-role') == 'request-payment') {
+                        deletechild(button, button.parentElement)
                     }
                     button.onclick =  async  e=>{
                         e.preventDefault();
@@ -1044,6 +1077,12 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,z,notificationlinks,socket,m
                             deletechild(e,e.parentNode)
                             const evnt = new Event('urlchange', { bubbles: true });
                             window.dispatchEvent(evnt);
+                        }else if (role == `request-payment`) {
+                            if (button.classList.contains('loading')) {
+                                return
+                            }
+                            let data = {session: sessiondata.session_id,patient: sessiondata.p_info.id,paymentType: 'user-payment',socket,facility:sessiondata.hp_info}
+                            showPaymentPopup(data)
                         }
                     }
                 })
@@ -1090,6 +1129,10 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,z,notificationlinks,socket,m
                             </div>
                         </span>
                     </div>
+                    <div class="w-100 h-a my-10p">
+                        <span class="dgray capitalize block">custom time: </span>
+                        <input type="datetime-local" name="time" class="form-control" id="time">
+                    </div>
                     <div class="w-100 h-a py-10p mt-20p flex">
                         <span class="px-10p bsbb">
                             <button type="button" class="btn btn-primary capitalize" data-role="button" id="approve">approve</button>
@@ -1101,7 +1144,7 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,z,notificationlinks,socket,m
                 </div>
             </div>
         </div>`
-        let estDateHol = cont.querySelector(`[data-holder="date"]`)
+        let estDateHol = cont.querySelector(`[data-holder="date"]`),custTime = cont.querySelector(`input[name="time"]`)
         postschema.body = JSON.stringify({token: getdata('token')})
         let time = await request('getAppointmentETA', postschema)
         if (time.success) {
@@ -1116,6 +1159,12 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,z,notificationlinks,socket,m
                     return 0
                 }
                 if (button.id == 'approve') {
+                    let custTimef
+                    if (custTime.value) {
+                        custTimef = DateTime.fromISO(custTime.value)
+                        custTimef = custTimef.toFormat('yyyy-MM-dd HH:mm:ss')
+                        time.message = custTimef
+                    }
                     postschema.body = JSON.stringify({
                         token : getdata('token'),
                         patient : message.sender.id,
@@ -1126,10 +1175,12 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,z,notificationlinks,socket,m
                         dateadded : message.dateadded
                     })
                     button.classList.add('loading')
+
                     addSpinner(button)
                     let addApp = await request('add-appointment',postschema)
                     button.innerHTML = `approve`
                     button.classList.remove('loading')
+                    removeSpinner(button)
                     if (addApp.success) {
                         deletechild(bgDiv,bgDiv.parentElement)
                     }
@@ -1226,22 +1277,141 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,z,notificationlinks,socket,m
                     }else if ('addins' in message) {
                         viewTransfer(message.addins.transfer)
                     }
+                }else if (link.getAttribute('data-message-type') == 'p_message') {
+                    if (message.addins) { 
+                        Object.assign(message.addins, {sender: message.sender})
+                        extra = message.addins
+                    }else{
+                        Object.assign(message.extra, {sender: message.sender})
+                        extra = message.extra
+                        
+                    }
                 }else{
                     url.pathname = `/${getPath()[0]}/${link.getAttribute('data-href-target')}`;
                 }
                 v = document.querySelector(`div#${link.getAttribute('data-href-target')}`)
                 if (v) {
-                    
                     p = Array.from(v.parentElement.querySelectorAll('.pagecontentsection'))
                     window.history.pushState({},'',url.toString())
                     cpgcntn(p.indexOf(v),p)
-                    gsd(v,null)
+                    gsd(v,extra)
                 }
                }
             })
         })
     }
 })();
+function promptVSPopup(inp) {
+    b = addshade();
+    a = document.createElement('div');
+    b.appendChild(a)
+    a.className = "w-40 h-a mh-70 card-1 ovys h-a p-10p bsbb bc-white cntr zi-10000 br-5p" 
+    a.innerHTML = `<div class="head w-100 h-50p py-10p px-15p bsbb">
+                                    <span class="fs-17p dgray capitalize igrid h-100 verdana">enter vital signs information</span>
+                                </div>
+                                <div class="body w-100 h-a p-5p grid">
+                                    <form method="post" id="req-VS-info-form" name="req-VS-info-form">
+                                    <div class="col-md-12 px-10p py-6p bsbb p-r">
+                                      <label for="temperature" class="form-label">temperature</label>
+                                      <br>
+                                      <span class="dgray">Normal Range: 36.5–37.5 °C</span>
+                                      <input type="text" class="form-control" id="temperature" placeholder="Patient's temperature" name="temperature">
+                                      <span class="p-a unit r-0 t-0 mt-69p dgray mr-20p">C°</span>
+                                      <small class="w-100 red pl-3p verdana hidden"></small>
+                                    </div>
+                                    <div class="col-md-12 px-10p py-6p bsbb p-r">
+                                      <label for="heart rate" class="form-label">Heart Rate (Pulse)</label>
+                                      <span class="dgray"><br>Normal Range:
+                                        <br>Adults at rest: 60–100 bpm
+                                        <br>Children: 70–100 bpm
+                                        <br>Infants: 100–160 bpm
+                                        </span>
+                                      <input type="text" class="form-control" id="heart rate" placeholder="Patient's heart rate" name="heart rate">
+                                      <span class="p-a unit r-0 t-22 mt-100p dgray mr-20p">bpm</span>
+                                      <small class="w-100 red pl-3p verdana hidden"></small>
+                                    </div>
+                                    <div class="col-md-12 px-10p py-6p bsbb p-r">
+                                      <label for="Respiratory Rate" class="form-label">Respiratory Rate (Pulse)</label>
+                                      <span class="dgray"><br>Normal Range:
+                                        <br>Adults at rest: 12–20 bpm
+                                        <br>Children: 15–30 bpm
+                                        <br>Infants: 25–50 bpm
+                                        </span>
+                                      <input type="text" class="form-control" id="Respiratory Rate" placeholder="Patient's Respiratory Rate" name="Respiratory Rate">
+                                      <span class="p-a unit r-0 t-22 mt-100p dgray mr-20p">bpm</span>
+                                      <small class="w-100 red pl-3p verdana hidden"></small>
+                                    </div>
+                                    <div class="col-md-12 px-10p py-6p bsbb p-r">
+                                      <label for="Blood Pressure" class="form-label">Blood Pressure</label>
+                                      <span class="dgray"><br>Normal Range:
+                                      <br>Normal: <120/<80 mm Hg
+                                      <br>Elevated: 120–129/<80 mm Hg
+                                      <br>Hypertension Stage 1: 130–139/80–89 mm Hg
+                                      <br>Hypertension Stage 2: ≥140/≥90 mm Hg
+                                      </span>
+                                      <input type="text" class="form-control" id="Blood Pressure" placeholder="Patient's Blood Pressure" name="Blood Pressure">
+                                      <span class="p-a unit r-0 t-31 mt-100p dgray mr-20p">mm Hg</span>
+                                      <small class="w-100 red pl-3p verdana hidden"></small>
+                                    </div>
+                                    <div class="col-md-12 px-10p py-6p bsbb p-r">
+                                      <label for="Oxygen Saturation" class="form-label">Oxygen Saturation (SpO2)</label>
+                                      <span class="dgray"><br>Normal Range: 95–100%
+                                      </span>
+                                      <input type="text" class="form-control" id="Oxygen Saturation" placeholder="Patient's Oxygen Saturation" name="Oxygen Saturation">
+                                      <span class="p-a unit r-0 t-0 mt-69p dgray mr-20p">%</span>
+                                      <small class="w-100 red pl-3p verdana hidden"></small>
+                                    </div>
+                                    <div class="col-md-12 px-10p py-6p bsbb mb-5p p-r">
+                                      <label for="height" class="form-label">height</label>
+                                      <input type="text" class="form-control" id="height" placeholder="Patient's height" name="height">
+                                      <span class="p-a unit r-0 t-0 mt-43p dgray mr-20p">cm</span>
+                                      <small class="w-100 red pl-3p verdana hidden"></small>
+                                    </div>
+                                    <div class="col-md-12 px-10p py-6p bsbb mb-5p p-r">
+                                      <label for="weight" class="form-label">weight</label>
+                                      <input type="text" class="form-control" id="weight" placeholder="patient's weight"  name="weight">
+                                      <span class="p-a unit r-0 t-0 mt-43p dgray mr-20p">kg</span>
+
+                                      <small class="w-100 red pl-3p verdana hidden"></small>
+                                    </div>
+                                    <div class="center-2 my-15p px-10p bsbb">
+                                        <button type="submit" class="btn btn-primary mx-10p">Proceed</button>
+                                      </div>
+                                    </form>
+                                </div>`
+    m = a.querySelector('form#req-VS-info-form')
+    v = Array.from(a.querySelectorAll('input'))
+    let chipsHolder = inp.parentElement.childNodes[7]
+      if (!chipsHolder) {
+        chipsHolder = document.createElement('div');
+        chipsHolder.className = 'chipsholder p-5p bsbb w-100'
+        chipsHolder.title = 'CF Questions'
+        if (inp.classList.contains('chips-check')) {
+          inp.parentElement.insertAdjacentElement('beforeEnd',chipsHolder)
+        }
+      }
+    m.addEventListener('submit', (event)=>{
+      event.preventDefault();
+      l = 1
+      s = []
+      for (const input of v) {
+        k = checkEmpty(input);
+        if (!k) {
+          l = 0
+        }
+        if (k) {
+          s.push({name : input.name, value: input.value +" "+input.parentElement.querySelector('span.unit').innerText})
+        }
+      }
+      if (l) {
+        for (const vs of s) {
+            addChip(vs,chipsHolder,['name','value'])
+            
+        }
+        deletechild(b,b.parentNode)
+      }
+    })
+  }
 class popups{
     constructor(sessionData,users,socket){
         this.session = sessionData
@@ -1256,7 +1426,7 @@ class popups{
         let testsP = addshade();
         a = document.createElement('div');
         testsP.appendChild(a)
-        a.className = "w-40 h-a  mh-70 p-10p bsbb bc-white cntr zi-10000 br-5p b-mgc-resp card-1" 
+        a.className = "w-40 h-a mh-70 p-10p bsbb bc-white cntr zi-10000 br-5p b-mgc-resp card-1 ovys" 
         a.innerHTML  =`<div class="head w-100 h-50p py-10p px-15p bsbb">
                             <span class="fs-18p bold-2 dgray capitalize igrid h-100 card-title">add a test to session</span>
                         </div>
@@ -1267,7 +1437,7 @@ class popups{
                                     <input type="text" class="form-control bevalue main-input" id="tests" placeholder="applying test" name="test">
                                     <small class="w-100 red pl-3p verdana hidden"></small>
                                 </div>
-                                <div class="cf-inps p-r h-60p">
+                                <div class="cf-inps p-r  h-220p">
                          
                                   </div>
                                 <div class="wrap center-2 px-10p bsbb bblock-resp my-10p">
@@ -1413,23 +1583,31 @@ class popups{
         form.addEventListener('submit', async event=>{
             event.preventDefault();
             l = 1
+            let values = {}
             for (const input of inputs) {
                 v = checkEmpty(input);
                 if (!v) {
                     l = 0
+                }else{
+                    Object.assign(values,{[input.name]: (input.classList.contains('bevalue'))? input.getAttribute('data-id') : input.value })
                 }
             }
             if (l) {
             let button = form.querySelector('button[type="submit"]')
             button.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`
             button.setAttribute('disabled',true)
-                let values = {}
-                for (const input of inputs) {
-                    Object.assign(values,{[input.name]: (input.classList.contains('bevalue'))? input.getAttribute('data-id') : input.value })
+                
+                Object.assign(values,{test: {id:values.test}})
+                let nval = {}
+                for (const key of Object.keys(values)) {
+                    Object.assign(nval, {[key]: values[key]})
                 }
-                Object.assign(values,{test: {id:values.test,sample: values.sample, results: values.results}})
                 Object.assign(values,{session: session.session_id,token: getdata('token')})
+                Object.assign(nval,{id: values.test.id})
+                values.test = nval
                 delete values.sample
+                delete values.test.test
+                delete values.test.price
                 delete values.results
                 postschema.body = JSON.stringify(values)
                 let results = await request('add-session-test',postschema)
@@ -1513,7 +1691,7 @@ class popups{
         let operationsP = addshade();
         a = document.createElement('div');
         operationsP.appendChild(a)
-        a.className = "w-60 h-a p-10p bsbb bc-white cntr zi-10000 br-5p b-mgc-resp card mh" 
+        a.className = "w-60 h-a p-10p bsbb bc-white cntr zi-10000 br-5p b-mgc-resp card-1 mh ovys" 
         a.innerHTML  =`<div class="head w-100 h-50p py-10p px-15p bsbb">
                             <span class="fs-18p bold-2 dgray capitalize igrid h-100 card-title">add an operation to session</span>
                         </div>
@@ -1524,7 +1702,7 @@ class popups{
                                     <input type="text" class="form-control bevalue main-input" id="operations" placeholder="applying operation" name="operation">
                                     <small class="w-100 red pl-3p verdana hidden"></small>
                                 </div>
-                                <div class="cf-inps p-r ovh h-60p my-10p">
+                                <div class="cf-inps p-r ovh h-220p my-10p">
                          
                                 </div>
                                 <div class="wrap center-2 px-10p bsbb bblock-resp">
@@ -1703,13 +1881,13 @@ class popups{
                                 <div class="col-md-12 px-10p py-6p bsbb p-r">
                                     <label for="equipment" class="form-label">Consumable name</label>
                                     <input type="text" class="form-control bevalue" id="equipments" placeholder="name of consumable" name="equipment">
-                                    <small class="w-100 red pl-3p verdana"></small>
+                                    <small class="w-100 red pl-3p verdana hidden"></small>
                                 </div>
                                 <div class="col-md-12 px-10p py-6p bsbb p-r">
                                     <label for="quantity" class="form-label">quantity</label>
                                     <input type="number" class="form-control" id="quantity" placeholder="amount of entry" name="quantity">
                                     <span class="p-a t-0 t-0 mx-20p r-0 mt-42p capitalize" name="unit-hol"></span>
-                                    <small class="w-100 red pl-3p verdana"></small>
+                                    <small class="w-100 red pl-3p verdana hidden"></small>
                                 </div>
                                 <div class="wrap center-2 px-10p bsbb bblock-resp">
                                     <button type="submit" class="btn btn-primary bfull-resp bm-a-resp bmy-10p-resp">Proceed</button>

@@ -784,7 +784,7 @@ async function promptTestsPopup(info,chipsHolder) {
   a.innerHTML = `<div class="head w-100 h-50p py-10p px-15p bsbb">
                                   <span class="fs-17p dgray capitalize igrid h-100 verdana">${info.name}'s required information</span>
                               </div>
-                              <div class="body w-100 h-a p-5p">
+                              <div class="body w-100 h-a p-5p ovys">
                                   <form method="post" id="req-test-info-form" name="req-test-info-form">
                                   <div class="cf-inps p-r h-60p">
                          
@@ -837,7 +837,7 @@ export function promptCFQPopup(inp) {
   b = addshade();
   a = document.createElement('div');
   b.appendChild(a)
-  a.className = "w-350p h-a p-10p bsbb bc-white cntr zi-10000 br-5p" 
+  a.className = "w-40 h-a mh-70 card-1 h-a p-10p bsbb bc-white cntr zi-10000 br-5p" 
   a.innerHTML = `<div class="head w-100 h-50p py-10p px-15p bsbb">
                                   <span class="fs-17p dgray capitalize igrid h-100 verdana">enter consent form information</span>
                               </div>
@@ -846,6 +846,11 @@ export function promptCFQPopup(inp) {
                                   <div class="col-md-12 px-10p py-6p bsbb p-r">
                                     <label for="question" class="form-label">question</label>
                                     <input type="text" class="form-control" id="question" placeholder="CF question" name="question">
+                                    <small class="w-100 red pl-3p verdana hidden"></small>
+                                  </div>
+                                  <div class="col-md-12 px-10p py-6p bsbb p-r">
+                                    <label for="comment" class="form-label">comment</label>
+                                    <input type="text" class="form-control" id="comment" placeholder="CF comment" name="comment">
                                     <small class="w-100 red pl-3p verdana hidden"></small>
                                   </div>
                                   <div class="col-md-12 px-10p py-6p bsbb mb-5p p-r">
@@ -976,13 +981,13 @@ async function promptOperationPopup(info,chipsHolder) {
   })
 }
 export function addCFInps(data,parent) {
-  parent.classList.remove('h-60p','ovys')
+  parent.classList.remove('h-60p','ovys','h-220p')
   parent.innerHTML = null
   for (const question of data) {
     let inpt,div = document.createElement('div')
     div.className = `col-md-12 px-10p py-6p bsbb mb-5p p-r`
     parent.appendChild(div)
-    div.innerHTML = `<label for="${question.question}" class="form-label">${question.question}</label>`
+    div.innerHTML = `<label for="${question.question}" class="form-label capitalize">${question.question}</label> ${(question.comment)? `<span class="block dgray capitalize">${question.comment}</span>` : ''}`
     if (question.answer == 'closed question' || question.answer == 'open question' ) {
       if (question.answer == 'closed question') {
         inpt = document.createElement('input')
@@ -1070,7 +1075,6 @@ export async function showAvaiEmps(emps,extra){
     u.appendChild(a)
     let group = {}
     var key;
-    console.log(extra)
     if (extra) {
       key = Object.keys(extra)[0]
       let suba

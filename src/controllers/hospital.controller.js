@@ -124,7 +124,7 @@ export const getHPDeps = async (req,res)=>{
         return res.status(404).send({success: false, message: errorMessage._err_hc_404})
     }
       let response = await query(`SELECT
-      COALESCE(CONCAT('[', GROUP_CONCAT(DISTINCT JSON_OBJECT('id', users.id, 'department', users.department)), ']'), '[]') AS employees,
+      COALESCE(CONCAT('[', GROUP_CONCAT(DISTINCT JSON_OBJECT('id', users.id, 'department', users.department,'name', users.Full_name)), ']'), '[]') AS employees,
       CONCAT('[', GROUP_CONCAT(DISTINCT JSON_OBJECT('id', departments.id, 'name', departments.name)), ']') AS departments
     FROM
       hospitals

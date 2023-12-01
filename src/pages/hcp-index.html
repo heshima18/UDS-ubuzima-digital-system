@@ -25,6 +25,7 @@
     <script src="/assets/js/nav.js" type="module"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.min.js" integrity="sha512-Xm9qbB6Pu06k3PUwPj785dyTl6oHxgsv9nHp7ej7nCpAqGZT3OZpsELuCYX05DdonFpTlBpXMOxjavIAIUwr0w==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cleave.js/1.6.0/cleave.min.js" integrity="sha512-KaIyHb30iXTXfGyI9cyKFUIRSSuekJt6/vqXtyQKhQP6ozZEGY8nOtRS6fExqE4+RbYHus2yGyYg1BrqxzV6YA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="/assets/vendor/libs/cleavejs/cleave-phone.rw.js"></script>
     <script src="/assets/js/hc_provider.js" type="module"></script>
     <script src="/assets/js/footer.js" type="module"></script>
 
@@ -348,7 +349,7 @@
                                             <div class="col-md-12 p-10p bsbb mb-5p">
                                                 <label for="patient" class="form-label">Patient</label>
                                                 <div class="input-group">
-                                                    <input type="text" class="form-control bevalue" placeholder="NID, Phone number, email" name="patient" id="patient">
+                                                    <input type="text" class="form-control main-input bevalue" placeholder="NID, Phone number, email" name="patient" id="patient">
                                                     <span class="p-5p b-1-s-dgray hidden">
                                                         <div class="sk-grid sk-primary h-25p w-25p">
                                                             <div class="sk-grid-cube bc-theme"></div>
@@ -365,50 +366,49 @@
                                                     <small class="hidden w-100 red pl-3p verdana"></small>
                                                 </div>
                                             </div>
+                                            <input type="hidden" name="assurance" id="assurance" class="optional main-input" readonly disabled>
+                                            <div class="mb-5p col-md-12 p-10p p-r">
+                                                <label for="vs" class="form-label">vital signs</label>
+                                                <input type="button" name="vs" id="vs" class="btn btn-primary btn-sm chips-check block w-100 main-input" value="add vital signs">
+                                                <small class="fs-14p red hidden"></small>
+                                            </div>
                                             <div class="mb-5p col-md-12 p-10p">
                                                 <label for="symptoms" class="form-label">Symptoms</label>
                                                 <div class="input-group">
-                                                    <input type="text" class="form-control chips-check" placeholder="Symptoms" name="symptoms" id="symptoms">
+                                                    <input type="text" class="form-control main-input chips-check" placeholder="Symptoms" name="symptoms" id="symptoms">
                                                     <span class="input-group-text hover-2 us-none" id="add-symptom">add</span>
-                                                    <small class="hidden w-100 red pl-3p verdana"></small>
-                                                </div>
-                                            </div>
-                                            <div class="mb-5p col-md-12 p-10p">
-                                                <label for="weight" class="form-label">weight</label>
-                                                <div class="">
-                                                    <input type="number" class="form-control" placeholder="patient's weight" name="weight" id="weight">
                                                     <small class="hidden w-100 red pl-3p verdana"></small>
                                                 </div>
                                             </div>
                                             <div class="col-md-12 p-10p bsbb mb-5p p-r">
                                                 <label for="equipments" class="form-label">consumables</label>
-                                                <input type="text" class="form-control extras chips-check" id="equipments" placeholder="applied equipment" data-optional="true" name="equipments">
+                                                <input type="text" class="form-control main-input extras chips-check" id="equipments" placeholder="applied equipment" data-optional="true" name="equipments">
                                                 <small class="hidden w-100 red pl-3p verdana"></small>
                                             </div>
                                             <div class="col-md-12 p-10p bsbb mb-5p p-r">
                                                 <label for="tests" class="form-label">tests</label>
-                                                <input type="text" class="form-control extras chips-check chips-trigger" id="tests" placeholder="Applied test" data-optional="true" name="tests" data-chips-trigger="send-for-tests">
+                                                <input type="text" class="form-control main-input extras chips-check chips-trigger" id="tests" placeholder="Applied test" data-optional="true" name="tests" data-chips-trigger="send-for-tests">
                                                 <small class="hidden w-100 red pl-3p verdana"></small>
                                             </div>
                                             <div class="col-md-12 p-10p bsbb mb-5p p-r">
                                                 <label for="medicines" class="form-label">medicines</label>
-                                                <input type="text" class="form-control extras chips-check" id="medicines" placeholder="Applied medicine" name="medicines" data-optional="true">
+                                                <input type="text" class="form-control main-input extras chips-check" id="medicines" placeholder="Applied medicine" name="medicines" data-optional="true">
                                                 <small class="hidden w-100 red pl-3p verdana"></small>
                                             </div>
                                             <div class="col-md-12 p-10p bsbb mb-5p p-r">
                                                 <label for="services" class="form-label">services</label>
-                                                <input type="text" class="form-control extras chips-check" id="services" placeholder="Applied service" name="services" data-optional="true">
+                                                <input type="text" class="form-control main-input extras chips-check" id="services" placeholder="Applied service" name="services" data-optional="true">
                                                 <small class="hidden w-100 red pl-3p verdana"></small>
                                             </div>
                                             <div class="col-md-12 p-10p bsbb mb-5p p-r">
                                                 <label for="operations" class="form-label">operations</label>
-                                                <input type="text" class="form-control chips-check" id="operations" placeholder="Applied operation" name="operations" data-optional="true">
+                                                <input type="text" class="form-control main-input chips-check" id="operations" placeholder="Applied operation" name="operations" data-optional="true">
                                                 <small class="hidden w-100 red pl-3p verdana"></small>
                                             </div>
                                             <div class="mb-5p col-md-12 p-10p">
                                                 <label for="decisions" class="form-label">decisions</label>
                                                 <div class="input-group">
-                                                    <input type="text" class="form-control chips-check" placeholder="decisions" name="decision" id="decision" data-optional="true">
+                                                    <input type="text" class="form-control main-input chips-check" placeholder="decisions" name="decision" id="decision" data-optional="true">
                                                     <span class="input-group-text hover-2 us-none" id="add-decisions">add</span>
                                                     <small class="hidden w-100 red pl-3p verdana"></small>
                                                 </div>
@@ -452,6 +452,10 @@
                                                         <span class="pname dgray fs-14p pr-5p center hidden-resp">status : </span>
                                                         <span class="btn btn-sm bc-gray dgray mx-5p bfull-resp" name="info-hol" data-hold="status">[Session's-Status]</span>
                                                     </li>
+                                                    <li class="py-8p bsbb flex bblock-resp bfull-resp bsbb">
+                                                        <span class="pname dgray fs-14p pr-5p center hidden-resp">payment status : </span>
+                                                        <span class="btn btn-sm bc-gray dgray mx-5p bfull-resp status-holder" name="info-hol" data-hold="payment_info.status">[Session's-payment-Status]</span>
+                                                    </li>
                                                     <li  class="p-2p bsbb flex bblock-resp bfull-resp">
                                                         <ul class="ls-none px-3p py-5p flex buttons-holder">
                                                             <li class="p-2p bsbb flex">
@@ -465,6 +469,9 @@
                                                             </li>
                                                             <li class="p-2p bsbb flex">
                                                                 <span class="btn btn-sm btn-primary mx-5p data-buttons" data-identifier="true" data-role="notify">notify</span>
+                                                            </li>
+                                                            <li class="p-2p bsbb flex">
+                                                                <span class="btn btn-sm bc-tr-theme theme mx-5p data-buttons" data-identifier="true" data-role="request-payment">request payment</span>
                                                             </li>
                                                         </ul>
                                                     </li>
@@ -512,11 +519,6 @@
                                                             <span class="pdob dgray fs-12p" name="info-hol" data-hold="p_info.dob">[patients's-DOB]</span>
                                                         </li>
                                                         <li class="p-2p bsbb flex ">
-                                                            <span class="pname dgray fs-14p pr-5p">weight : </span>
-                                                            <span class="pdob dgray fs-12p" name="info-hol" data-hold="p_info.weight">[patients's-weight]</span>
-                                                            <span class="dgray fs-12p px-2p">KG</span>
-                                                        </li>
-                                                        <li class="p-2p bsbb flex ">
                                                             <span class="pname dgray fs-14p pr-5p">blood group : </span>
                                                             <span class="pdob dgray fs-14p" name="info-hol" data-hold="p_info.bgroup">[patients's-bloog group]</span>
                                                         </li>
@@ -533,6 +535,26 @@
                                                             <span class="sessionid dgray fs-14p" name="info-hol" data-hold="session_id">[session's-id]</span>
                                                         </li>
                                                     </ul>
+                                                </div>
+                                                <div class="pinfo my-15p">
+                                                    <div class="flex jc-sb my-20p bsbb">
+                                                        <span class="title bold-2 fs-16p capitalize block"><i class="fas fa-spedometer pr-5p"></i>vital signs</span>
+                                                        <!-- <div class="p-2p bsbb flex jc-sb">
+                                                            <span class="btn-primary btn capitalize data-buttons btn-sm" name="bc-tr-theme btn" data-role="medication">add medication</span>
+                                                        </div> -->
+                                                    </div>
+                                                    <div class="my-10p px-1p">
+                                                        <ul class="card-1 br-5p  ls-none my-10p iblock p-20p w-250p mx-5p my-5p bfull-resp bm-y-10p-resp bm-x-0-resp bblock-resp" name="looping-info" data-hold="vs">
+                                                            <li class="p-2p bsbb flex">
+                                                                <span class="bold-2 dgray card-title fs-20p" name="looping-info-hol" data-hold="name" data-secondary-holder="true">[vs's-name]</span>
+                                                            </li>
+                                                            <li class="p-2p bsbb flex jc-sb ">
+                                                                <span>
+                                                                    <span class="pname black fs-18p bold" name="looping-info-hol" data-hold="value" data-secondary-holder="true">[vs's-value]</span>
+                                                                </span>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
                                                 </div>
                                                 <div class="pinfo my-15p">
                                                     <div class="flex jc-sb my-20p bsbb">
@@ -578,20 +600,12 @@
                                                     </div>
                                                     <div class="my-2p px-1p">
                                                         <ul class="card-1 br-5p  ls-none my-10p iblock p-20p mx-5p my-5p bfull-resp bm-y-10p-resp bm-x-0-resp bblock-resp" name="looping-info" data-hold="tests">
-                                                            <li class="p-2p bsbb flex">
+                                                            <li class="p-2p bsbb flex cloness">
                                                                 <span class="bold-2 dgray card-title fs-20p" name="looping-info-hol" data-hold="name" data-secondary-holder="true">[tets's-name]</span>
                                                             </li>
                                                             <li class="p-2p bsbb block">
                                                                 <span class="pname dgray fs-15p pr-5p block">Tested by  </span>
                                                                 <span class="pname dgray fs-16p bold-2" name="looping-info-hol" data-hold="tester" data-secondary-holder="true">[tester's-name]</span>
-                                                            </li>
-                                                            <li class="p-2p bsbb">
-                                                                <span class="pname dgray fs-14p pr-5p capitalize block">sample taken</span>
-                                                                <span class="pdob dgray fs-16p bold-2" name="looping-info-hol" data-hold="sample" data-secondary-holder="true">[sample-taken]</span>
-                                                            </li>
-                                                            <li class="p-2p bsbb ">
-                                                                <span class="pname dgray fs-14p pr-5p block capitalize">results </span>
-                                                                <span class="plocation fs-16p bold-2" name="looping-info-hol" data-hold="result" data-secondary-holder="true">[results-found]</span>
                                                             </li>
                                                         </ul>
                                                     </div>

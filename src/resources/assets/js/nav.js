@@ -292,17 +292,6 @@ function clicks(l,b,m) {
                     h = messages.find(function (message) {
                         return message.id == element.getAttribute('data-id')
                     })
-                    if (h.addins) { 
-                        Object.assign(h.addins, {sender: h.sender})
-                        if (element.getAttribute('data-message-type') == 'p_message' || element.getAttribute('data-message-type') == 'req_test_message') {
-                            sessionStorage.setItem('pinfo',JSON.stringify(h.addins));
-                        }
-                    }else{
-                        Object.assign(h.extra, {sender: h.sender})
-                        if (element.getAttribute('data-message-type') == 'p_message' || element.getAttribute('data-message-type') == 'req_test_message') {
-                            sessionStorage.setItem('pinfo',JSON.stringify(h.extra));
-                        }
-                    }
                     // if (v) {
                     //     s = p.indexOf(v)
                     //     let url = new URL(window.location.href);

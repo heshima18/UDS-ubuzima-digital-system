@@ -1,4 +1,4 @@
-import { alertMessage, getdata, getschema, postschema, request,initializeCleave,sessiondata,addLoadingTab,removeLoadingTab, checkEmpty, showRecs, getchips,getPath,addsCard,cpgcntn, geturl, adcm, addshade, deletechild, RemoveAuthDivs, showFingerprintDiv, addAuthDiv, aDePh } from "../../../utils/functions.controller.js";
+import { alertMessage, getdata, getschema, postschema, request,addSpinner,removeSpinner,sessiondata,addLoadingTab,removeLoadingTab, checkEmpty, showRecs, getchips,getPath,addsCard,cpgcntn, geturl, adcm, addshade, deletechild, RemoveAuthDivs, showFingerprintDiv, addAuthDiv, aDePh } from "../../../utils/functions.controller.js";
 import { showPaymentPopup } from "../../../utils/payments.popup.controller.js";
 import { addUprofile } from "../../../utils/user.profile.controller.js";
 import {pushNotifs, userinfo,expirateMssg, getNfPanelLinks,m as messages, DateTime} from "./nav.js";
@@ -278,7 +278,330 @@ let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z,r,session_input,session_s_
                 sessiondata = sessiondata.message
                 showSession(sessiondata);     
               }
-            }
+            }else if (x == 'medical-prescriptions') {
+                let fileredData
+                 let t = page.querySelector('table')
+                 if (!t.classList.contains('loaded')) {
+                     addLoadingTab(page.querySelector('div.theb'));
+                 }
+                 let dateRangeForm = page.querySelector('form[name="date-range"]')
+                 let inputs = Array.from(dateRangeForm.querySelectorAll('input'))
+                 dateRangeForm.onsubmit = async function (event) {
+                     event.preventDefault();
+                     let values = {}
+                     for (const input of inputs) {
+                         if (!input.value) {
+                             return 0
+                         }
+                         Object.assign(values,{[input.id]: new Date(input.value).toISOString().split('T')[0]})
+                     }
+                     postschema.body = JSON.stringify({
+                         token: getdata('token'),
+                         values
+                     })
+                     let session_s_button = dateRangeForm.querySelector('button');
+                     addSpinner(session_s_button)
+                     let mh = await request('get-hospital-medical-history',postschema)
+                     removeSpinner(session_s_button)
+                     if (!mh.success) {
+                         return alertMessage( mh.message)
+                     }
+                     if (page.querySelector('.status').querySelector('select')) {
+                         page.querySelector('.status').removeChild(page.querySelector('.status').querySelector('select'));
+                         page.querySelector('.insurance').removeChild(page.querySelector('.insurance').querySelector('select'));
+                         page.querySelector('.hcp').removeChild(page.querySelector('.hcp').querySelector('select'));
+                         page.querySelector('.dptmnt').removeChild(page.querySelector('.dptmnt').querySelector('select'));
+ 
+ 
+                     }
+                     initTable(mh.message)
+                 }
+                 function initTable(data) {
+                     removeLoadingTab(page.querySelector('div.theb'))
+                     fileredData = undefined
+                     let table = $('.datatables-prescriptions');
+                     if (t.classList.contains('loaded')) {
+                         e.destroy()
+                     }
+                     e = table.DataTable({
+                         // Define the structure of the table
+                         dom: '<"row mx-2"<"col-md-2 p-10p"<"me-3"l>><"col-md-10 p-10p"<"dt-action-buttons text-xl-end text-lg-start text-md-end text-start d-flex align-items-center justify-content-end flex-md-row flex-column mb-3 mb-md-0"fB>>>t<"row mx-2"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>',
+                         language: { sLengthMenu: "_MENU_", search: "", searchPlaceholder: "Search..." },
+                         columns: [
+                             { data: "",title: "" }, // Responsive Control column
+                             { data: "p_info.name", title: "patient" },
+                             { data: "in_info.name", title: "Insurance" },
+                             { data: "p_info.insurance.number", title: "insurance number" },
+                             { data: "hcp.name", title: "healthcare provider" },
+                             { data: "dptmnt.name", title: "department" },
+                             { data: "payment_info.p_amount", title: "amount (RWF)" },
+                             { data: "payment_info.status2", title: "status" },
+                             { data: "dateclosed", title: "date" },
+                             { title: "Action", data: 'session_id'}
+                         ],
+                         columnDefs: [
+                             // Define column properties and rendering functions
+                             {
+                                 className: "control",
+                                 searchable: !1,
+                                 orderable: !1,
+                                 responsivePriority: 2,
+                                 targets: 0,
+                                 render: function () {
+                                     return "";
+                                 },
+                             },
+                             {
+                                 targets: 1,
+                                 searchable: 1,
+                                 orderable: 1,
+                                 render: function (e, t, a, n) {
+                                     return (
+                                         `<span class="capitalize">${e}</span>`
+                                     );
+                                 },
+                             },
+                             {
+                                 targets: 2,
+                                 searchable: 1,
+                                 orderable: 1,
+                                 render: function (e, t, a, n) {
+                                     return (
+                                         `<span class="">${e}</span>`
+                                     );
+                                 },
+                             },
+                             {
+                                 targets: 3,
+                                 searchable: 1,
+                                 orderable: !1,
+                                 render: function (e, t, a, n) {
+                                     return (
+                                         `<span class="">${e}</span>`
+                                     );
+                                 },
+                             },
+                             {
+                                 targets: 4,
+                                 searchable: 1,
+                                 orderable: 1,
+                                 render: function (e, t, a, n) {
+                                     return (
+                                         `<span class="">${e}</span>`
+                                     );
+                                 },
+                             },
+                             {
+                                 targets: 5,
+                                 searchable: 1,
+                                 orderable: 1,
+                                 render: function (e, t, a, n) {
+                                     return (
+                                         `<span class="">${e}</span>`
+                                     );
+                                 },
+                             },
+                             {
+                                 targets: 6,
+                                 searchable: !1,
+                                 orderable: 1,
+                                 render: function (e, t, a, n) {
+                                     return (
+                                         `<span class="">${adcm(e)}</span>`
+                                     );
+                                 },
+                             },
+                             {
+                                 targets: 7,
+                                 searchable: 1,
+                                 orderable: 1,
+                                 render: function (e, t, a, n) {
+                                     return (
+                                         `<span class="btn btn-sm ${(e == 'paid') ? 'bc-tr-green green' : 'bc-gray dgray'}">${e}</span>`
+                                     );
+                                 },
+                             },
+                             {
+                                 targets: 8,
+                                 searchable: 1,
+                                 orderable: 1,
+                                 render: function (e, t, a, n) {
+                                     return (
+                                         `<span class="">${e}</span>`
+                                     );
+                                 },
+                             },
+                             {
+                                 targets: -1,
+                                 searchable: !1,
+                                 orderable: !1,
+                                 render: function (e, t, a, n) {
+                                     return (
+                                         `<div class="d-inline-block text-nowrap">
+                                         <button class="btn btn-sm btn-icon view-button border border-3" data-id="${e}"><i class="bx bx-show"></i></button>
+                                     </div>`
+                                     );
+                                 },
+                             },
+                         ],
+                         order: [[1, "asc"]], // Initial sorting
+             
+                         // Provide the data from the imported inventory
+                         data: data,
+             
+                         // Define buttons for exporting and adding new inventory
+                         buttons: [
+                             {
+                                 extend: "collection",
+                                 className: "btn btn-primary dropdown-toggle mx-3",
+                                 text: '<i class="bx bx-export me-1"></i>Export',
+                                 buttons: [
+                                     {
+                                         extend: "print",
+                                         text: '<i class="bx bx-printer me-2" ></i>Print',
+                                         className: "dropdown-item",
+                                     },
+                                     {
+                                         extend: "excel",
+                                         text: '<i class="bx bxs-file-export me-2"></i>Excel',
+                                         className: "dropdown-item",
+                                     },
+                                     {
+                                         extend: "pdf",
+                                         text: '<i class="bx bxs-file-pdf me-2"></i>Pdf',
+                                         className: "dropdown-item",
+                                     },
+                                 ],
+                             },
+                         ],
+             
+                         // Initialize filters for position, health post, and status
+                         initComplete: function () {
+                             // Filter by Position
+                             t.classList.add('loaded')
+                             this.api().columns(7).every(function () {
+                                 var t = this,
+                                     a = $('<select class="form-select text-capitalize"><option value=""> Select Status </option></select>')
+                                         .appendTo(".status")
+                                         .on("change", function () {
+                                             var e = $.fn.dataTable.util.escapeRegex($(this).val());
+                                             t.search(e ? "^" + e + "$" : "", !0, !1).draw();
+                                         });
+                                 t.data().unique().sort().each(function (e, t) {
+                                     a.append('<option value="' + e + '">' + e + "</option>");
+                                 });
+                             });
+                             this.api().columns(2).every(function () {
+                                 var t = this,
+                                     a = $('<select class="form-select text-capitalize"><option value=""> Select insurance </option></select>')
+                                         .appendTo(".insurance")
+                                         .on("change", function () {
+                                             var e = $.fn.dataTable.util.escapeRegex($(this).val());
+                                             t.search(e ? "^" + e + "$" : "", !0, !1).draw();
+                                         });
+                                 t.data().unique().sort().each(function (e, t) {
+                                     a.append('<option value="' + e + '">' + e + "</option>");
+                                 });
+                             });
+                             this.api().columns(4).every(function () {
+                                 var t = this,
+                                     a = $('<select class="form-select text-capitalize"><option value=""> Select hcp </option></select>')
+                                         .appendTo(".hcp")
+                                         .on("change", function () {
+                                             var e = $.fn.dataTable.util.escapeRegex($(this).val());
+                                             t.search(e ? "^" + e + "$" : "", !0, !1).draw();
+                                         });
+                                 t.data().unique().sort().each(function (e, t) {
+                                     a.append('<option value="' + e + '">' + e + "</option>");
+                                 });
+                             });
+                             this.api().columns(5).every(function () {
+                                 var t = this,
+                                     a = $('<select class="form-select text-capitalize"><option value=""> Select Department </option></select>')
+                                         .appendTo(".dptmnt")
+                                         .on("change", function () {
+                                             var e = $.fn.dataTable.util.escapeRegex($(this).val());
+                                             t.search(e ? "^" + e + "$" : "", !0, !1).draw();
+                                         });
+                                 t.data().unique().sort().each(function (e, t) {
+                                     a.append('<option value="' + e + '">' + e + "</option>");
+                                 });
+                             });
+                         }
+                     });
+                     checkButtons()
+                     let tabl = page.querySelector('.dataTables_paginate');
+                     tabl.addEventListener('click', e=>{
+                         setTimeout(checkButtons,10)
+ 
+                     })
+                     if (e) {     
+                         $.fn.dataTable.ext.search.push(function (settings, data, dataIndex) {
+                             setTimeout(checkButtons,10)
+                             if (settings.nTable.classList.contains('datatables-prescriptions')) {
+                                 fileredData = e.rows({ search: 'applied'}).data().toArray();
+                             }      
+                             return true
+                         })
+                     }
+                 }
+                 function checkButtons() {
+                     let viewbuts = Array.from(page.querySelectorAll('button.view-button'))
+                     viewbuts.forEach(button => {
+                         button.onclick = async function (event) {
+                             event.preventDefault();
+                             let url = new URL(window.location.href);
+                             url.pathname = `/cashier/view-session/${this.getAttribute('data-id')}`;
+                             window.history.pushState({},'',url.toString())
+                             const evnt = new Event('urlchange', { bubbles: true });
+                             window.dispatchEvent(evnt);
+                         }
+                     });
+                 }
+                 let actButton  = page.querySelector('.act-button');
+                 let actDiv = page.querySelector('#act-div');
+                 actButton.onclick = function (event) {
+                     event.preventDefault();
+                     actDiv.classList.toggle('hidden')  
+                 }
+                 let actButtons = Array.from(actDiv.querySelectorAll('.act-buttons'));
+                 actButtons.forEach(button=>{
+                     button.onclick = async function (event) {
+                         actDiv.classList.toggle('hidden')
+                         event.preventDefault();
+                         if (!fileredData) {
+                             alertMessage('please filter data first')
+                             return 0
+                         }
+                         let amounts = fileredData.map(function (data) {
+                             return data.payment_info.a_amount
+                         })
+                         if (button.id == 'calculate-total-price') {
+                             let sum = 0
+                             amounts.map(function (value) {
+                                 return sum+=value
+                             })
+                             alertMessage(`the sum of the selected entries is <b>${adcm(sum)} RWF</b>`)
+                         }else if (button.id == 'mark-as-paid') {
+                             let min = inputs[0].value
+                             let max = inputs[1].value
+                             if (min,max) {
+                                 let dates_interval = {min,max}
+                                 let assurance = hp_in.getAttribute('data-id')
+                                 postschema.body = JSON.stringify({
+                                     token: getdata('token'),
+                                     range: dates_interval,
+                                     assurance
+                                 })
+                                 let update = await request('approve-assurance-payment',postschema)
+                                 alertMessage(update.message)
+                             }
+                         }
+ 
+                     }
+                 })
+                     
+             }
             function showSession(sessiondata) {
                 removeLoadingTab(page.querySelector('div.theb'))
                 Object.assign(sessiondata.payment_info,{total_amount: Number(sessiondata.payment_info.a_amount) + Number(sessiondata.payment_info.p_amount)})

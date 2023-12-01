@@ -321,6 +321,12 @@ export function page (req,res,page){
             case 'view-session':
                 file = path.join(__dirname,'..','pages', 'cashier-index.html')
                 break;
+            case 'medical-prescriptions/':
+                file = path.join(__dirname,'..','pages', 'cashier-index.html')
+                break;
+            case 'medical-prescriptions':
+                file = path.join(__dirname,'..','pages', 'cashier-index.html')
+                break;
             case 'search-patient/':
                 file = path.join(__dirname,'..','pages', 'cashier-index.html')
                 break;

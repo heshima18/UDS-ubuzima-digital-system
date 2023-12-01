@@ -743,13 +743,29 @@
 							<div class="br-5p w-100 h-100 p-a ovh hidden t-0 tr-0-3 pagecontentsection" id="medical-prescriptions">
 								<div class="w-100 h-a p-10p bsbb">
 									<span class="bblock-resp theme capitalize left flex bold fs-20p verdana h-100 pl-10p"><span class="dgray capitalize">Director of finance / </span>&nbsp;medical prescriptions</span>
-                                    <span class="bblock-resp bleft-resp inp-hospital px-10p bsbb p-r bp-y-10p-resp right bc-white br-5p p-5p w-300p b-1-s-gray">
-                                        <form action="" method="post" id="hp-form">
-                                            <div class="p-r  h-35p">
-                                                <input type="text" class="w-100 no-outline b-none dgray h-100 pb-6p bsbb bevalue" id="insurance"name="insurance"  placeholder="Insurance">
-                                                <button class="btn btn-primary btn-sm p-a t-0 r-0" name="search"><i class="bx bx-search h-20p w-a "></i></button>
+                                    <span class="bblock-resp bleft-resp bfull-resp inp-hospital px-10p bsbb p-r bp-y-10p-resp right bc-white br-5p p-5p w-400p b-1-s-gray"> 
+                                    <div class="p-r flex">
+                                        <form action="" method="post" name="date-range" class="flex bblock-resp w-100">
+                                            <div class="mx-5p">
+                                                <div class="">
+                                                    <label for="start" class="form-label left">Start Date</label>
+                                                    <input class="form-control" type="date" id="start" name="start">
+                                                </div>
+                                            </div>
+                                            <div class=" mx-5p">
+                                                <div class="">
+                                                    <label for="stop" class="form-label left">End Date</label>
+                                                    <input class="form-control" type="date" id="stop" name="stop">
+                                                </div>
+                                            </div>
+                                            <div class=" mx-5p h-70p">
+                                                <div class="center h-100">
+                                                    <button class="btn btn-primary btn-sm" name="search"><i class="bx bx-search h-20p w-a "></i></button>
+                                                </div>
                                             </div>
                                         </form>
+                                        <!-- <input type="text" class="w-100 no-outline b-none dgray h-100 pb-6p bsbb bevalue" id="insurance"name="insurance"  placeholder="Insurance"> -->
+                                    </div>
                                     </span>
 								</div>
 								<div class="pg-cntnt w-100 h-90 p-20p bp-0-resp bsbb ovys left scroll-2">
@@ -757,32 +773,19 @@
                                         <div class="card">
                                             <div class="card-header border-bottom text-center">
                                                 <div class="d-flex justify-content-between align-items-center row pt-3 gap-3 gap-md-0">
-                                                    <div class="col-md-3 status">
+                                                    <div class="col-md-2 status">
                                                         <label for="start" class="form-label block nowrap">filter by status</label>
                                                     </div>
-                                                    <div class="col-md-6 date-range flex">
-                                                        <form action="" method="post" name="date-range" class="flex bblock-resp w-100">
-                                                            <div class="col-md-5">
-                                                                <div class="col-md-10">
-                                                                    <label for="start" class="form-label">Start Date</label>
-                                                                    <input class="form-control" type="date" id="start">
-                                                                </div>
-                                                            </div>
-                                                            <div class="col-md-5">
-                                                                <div class="col-md-10">
-                                                                    <label for="start" class="form-label">End Date</label>
-                                                                    <input class="form-control" type="date" id="end">
-                                                                </div>
-                                                            </div>
-                                                            <div class="col-md-3">
-                                                                <div class="">
-                                                                    <label for="start" class="form-label block">filter</label>
-                                                                    <button class="btn btn-primary" type="submit">Filter</button>
-                                                                </div>
-                                                            </div>
-                                                        </form>
+                                                    <div class="col-md-2 insurance">
+                                                        <label for="start" class="form-label block nowrap">filter by insurance provider</label>
                                                     </div>
-                                                    <div class="col-md-3 date-range action">
+                                                    <div class="col-md-2 dptmnt">
+                                                        <label for="start" class="form-label block nowrap">filter by department</label>
+                                                    </div>
+                                                    <div class="col-md-2 hcp">
+                                                        <label for="start" class="form-label block nowrap">filter by healthcare provider</label>
+                                                    </div>
+                                                    <div class="col-md-2 date-range action">
                                                         <div class="col-md-10 p-r">
                                                             <label for="start" class="form-label block">action</label>
                                                             <button class="btn btn-primary act-button nowrap" type="button">with selected</button>
@@ -792,11 +795,6 @@
                                                                         <li class="w-100 ha px-15p py-10p bsbb hover-7 act-buttons" id="calculate-total-price">
                                                                             <span class="capitalize">
                                                                                 calculate sum
-                                                                            </span>
-                                                                        </li>
-                                                                        <li class="w-100 py-10p px-15p bsbb hover-7 act-buttons" id="pay-invoice">
-                                                                            <span class="capitalize">
-                                                                                pay invoice
                                                                             </span>
                                                                         </li>
                                                                     </ul>

@@ -667,7 +667,7 @@ postschema.body = JSON.stringify({token: getdata('token')});
                         removeSpinner(button)
 
                         if (!meds.success) {
-                            return alertMessage(meds.success)
+                            return alertMessage(meds.message)
                         }
                         showMeds(meds.message)
 
@@ -769,6 +769,11 @@ function addAppointmentDiv(socket) {
                             <small class="hidden w-100 red pl-3p verdana"></small>
                         </div>
                         <div class="col-md-12 p-10p bsbb mb-5p p-r">
+                            <label for="hc_provider" class="form-label">Specialist</label>
+                            <input type="text" class="form-control bevalue optional" data-optional="true" id="hc_provider" placeholder="health care provider" name="hc_provider">
+                            <small class="hidden w-100 red pl-3p verdana"></small>
+                        </div>
+                        <div class="col-md-12 p-10p bsbb mb-5p p-r">
                             <label for="subject" class="form-label">reason for appointment</label>
                             <input type="text" class="form-control" id="subject" placeholder="main cause" name="content">
                             <small class="hidden w-100 red pl-3p verdana"></small>
@@ -793,6 +798,9 @@ function addAppointmentDiv(socket) {
     })
     let departmentinput = inputs.find(function (element) {
         return element.id == 'department' 
+    })
+    let hc_providertinput = inputs.find(function (element) {
+        return element.id == 'hc_provider' 
     })
     hospitalinput.addEventListener('keyup', function (event) {
         if (hospitalinput.value) {
@@ -819,6 +827,7 @@ function addAppointmentDiv(socket) {
             }
         }
     })
+
     let receivers
     departmentinput.addEventListener('focus', function (event) {
         let hospital = hospitalinput.getAttribute('data-id')
@@ -840,6 +849,25 @@ function addAppointmentDiv(socket) {
         let departments = hospitalinfo.departments
         showRecs(this, departments,this.id)
     })
+    hc_providertinput.addEventListener('focus', function (event) {
+        let department = departmentinput.getAttribute('data-id')
+        if (!department) {
+            checkEmpty(departmentinput)
+            departmentinput.focus();
+            return 0
+        }
+        if (!hospitalinfo) {
+            return 0
+        }
+        departmentinput.addEventListener('blur', function (event) {
+            setTimeout(function () {
+                receivers = hospitalinfo.employees.filter(function (employee) {
+                    return employee.department == departmentinput.getAttribute('data-id')
+                })
+            },200)
+        })
+        showRecs(this, receivers,this.id)
+    })
     form.addEventListener(`submit`, async function (event) {
         event.preventDefault();
         if (this.classList.contains('loading')) {
@@ -855,9 +883,13 @@ function addAppointmentDiv(socket) {
             Object.assign(s,{[input.name]: (input.classList.contains('bevalue')? input.getAttribute('data-id') : input.value)})
         });
         if(v){
-            receivers = receivers.map(function (rec) {
-                return rec.id
-            })
+            if (s.hc_provider) {
+                receivers = [s.hc_provider]
+            }else{
+                receivers = receivers.map(function (rec) {
+                    return rec.id
+                })
+            }
             Object.assign(s,{
                 token: getdata(`token`),
                 type : '__APPNTMNT_MSSG_',

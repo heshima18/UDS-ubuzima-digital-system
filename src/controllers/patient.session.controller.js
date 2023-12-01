@@ -15,7 +15,7 @@ export const addSession = async (req,res)=>{
     const leTime = DateTime.now();
     let now = leTime.setZone('Africa/Kigali');
     now = now.toFormat('yyyy-MM-dd HH:mm:ss')
-    let {patient,symptoms,tests,decision,departments,medicines,comment,token,assurance,close,equipments,services,operations,weight} = req.body,notify
+    let {patient,symptoms,tests,decision,departments,medicines,comment,token,assurance,close,equipments,services,operations,vs} = req.body,notify
       let uid = id();
       tests = tests || []
       equipments = equipments || []
@@ -121,7 +121,7 @@ export const addSession = async (req,res)=>{
       }
       let insertpayment = await query(`insert into payments(id,user,session,amount,assurance_amount,status,date,assurance)values(?,?,?,?,?,?,?,?)`,[id(),patient,uid,pts.patient_amount,pts.assurance_amount,'awaiting payment',now,assurance])
       let insert = await query(`insert into
-       medical_history(id,patient,hospital,departments,hc_provider,symptoms,tests,medicines,decision,comment,status,assurance,services,operations,equipments,p_weight,dateadded)values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,[uid,patient,hp,departments,hc_provider,JSON.stringify(symptoms),JSON.stringify(tests),JSON.stringify(medicines),JSON.stringify(decision),comment,(close)? "closed" :"open",assurance,JSON.stringify(services),JSON.stringify(operations),JSON.stringify(equipments),weight,now])
+       medical_history(id,patient,hospital,departments,hc_provider,symptoms,tests,medicines,decision,comment,status,assurance,services,operations,equipments,vs,dateadded)values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,[uid,patient,hp,departments,hc_provider,JSON.stringify(symptoms),JSON.stringify(tests),JSON.stringify(medicines),JSON.stringify(decision),comment,(close)? "closed" :"open",assurance,JSON.stringify(services),JSON.stringify(operations),JSON.stringify(equipments),JSON.stringify(vs),now])
       query(`update patients set last_diagnosed = CURRENT_TIMESTAMP() where id = ?`,[uid,patient])
       if (!insert || !insertpayment) {
         return res.status(500).send({success:false, message: errorMessage.is_error})
@@ -288,10 +288,12 @@ export const session = async (req,res)=>{
     mh.medicines as raw_medicines,
     mh.decision as decisions,
     mh.dateadded as dateadded,
+    mh.vs as vs,
+
     mh.dateclosed as dateclosed,
     GROUP_CONCAT(
       DISTINCT 
-      JSON_OBJECT('id', p.id, 'name', p.Full_name, 'weight', mh.p_weight,'bgroup', p.b_group, 'dob', p.dob,'phone', p.phone,'nid', p.nid, 'location', 
+      JSON_OBJECT('id', p.id, 'name', p.Full_name, 'bgroup', p.b_group, 'dob', p.dob,'phone', p.phone,'nid', p.nid, 'location', 
         CONCAT(
           (SELECT name From provinces Where id = p.resident_province),' , ',
           (SELECT name From districts Where id = p.resident_district),' , ',
@@ -382,6 +384,7 @@ GROUP BY mh.id;
     response.decisions = JSON.parse(response.decisions);
     response.symptoms = JSON.parse(response.symptoms);
     response.tests = JSON.parse(response.tests)
+    response.vs = JSON.parse(response.vs)
     response.services = JSON.parse(response.services)
     response.equipments = JSON.parse(response.equipments)
     response.operations = JSON.parse(response.operations)
@@ -432,7 +435,16 @@ GROUP BY mh.id;
     }
     for (const tests of response.tests) {
       if (user == 'hc_provider' || user == 'patient' || user == 'householder') {
-        Object.assign(response.tests[response.tests.indexOf(tests)],{result: response.raw_tests[response.tests.indexOf(tests)].results,sample: response.raw_tests[response.tests.indexOf(tests)].sample})
+        let rawT = response.raw_tests.find(function (t) {
+          return t.id == tests.id
+        })
+        delete response.tests[response.tests.indexOf(tests)].price
+        for (const key of Object.keys(rawT)) {
+          if ('tester' != key && 'price' != key) {
+            Object.assign(response.tests[response.tests.indexOf(tests)], {[key]: rawT[key]})
+          }
+        }
+        // Object.assign(response.tests[response.tests.indexOf(tests)],{result: response.raw_tests[response.tests.indexOf(tests)].results,sample: response.raw_tests[response.tests.indexOf(tests)].sample})
       }
     }
     delete response.raw_tests
@@ -467,13 +479,17 @@ export const addSessionTests = async (req,res)=>{
       if(!assurance) return res.status(500).send({success: false, message: errorMessage.is_error})
       assurance = assurance[0]
       assurance = assurance.assurance
-      let tester = decoded.token
+      let tester = decoded.token.id
       let hp = decoded.token.hospital
       let itt = 0
       var testsInventory = await getInventoryEntry(hp,'tests')
       var t = testsInventory.find(function (itest) {
         return itest.id == test.id
       })
+      delete test.price
+      if (!test.tester) {
+        Object.assign(test,{tester})
+      }
       if (!t) {
         t = await query(`select price from tests where id = ?`, [test.id]);
         [t] = t
@@ -1016,7 +1032,7 @@ GROUP BY mh.id;
 }
 export const getHpsessions = async (req,res)=>{
   try { 
-      let {token,assurance} = req.body
+      let {token,values} = req.body
       let decoded = authenticateToken(token)
       let hp = decoded.token.hospital
       if (!hp) {hp = req.body.hospital}
@@ -1030,13 +1046,21 @@ export const getHpsessions = async (req,res)=>{
         JSON_OBJECT('id', p.id, 'name', p.Full_name ,'insurance', COALESCE(p.assurances,'[]'))
       ) AS p_info,
       GROUP_CONCAT(
+        DISTINCT 
+        JSON_OBJECT('id', u.id, 'name', u.Full_name)
+      ) AS hcp,
+      GROUP_CONCAT(
+        DISTINCT 
+        JSON_OBJECT('id', d.id, 'name', d.name)
+      ) AS dptmnt,
+      GROUP_CONCAT(
         DISTINCT
           JSON_OBJECT('id', a.id, 'name', a.name
         )
       ) AS in_info,
       GROUP_CONCAT(
         DISTINCT
-          JSON_OBJECT('id', pm.id, 'status', pm.assu_paym_status, 'a_amount', pm.assurance_amount, 'p_amount', pm.amount)
+          JSON_OBJECT('id', pm.id, 'status', pm.assu_paym_status,'status2', pm.status, 'a_amount', pm.assurance_amount, 'p_amount', pm.amount)
         ) AS payment_info
   
   FROM
@@ -1044,7 +1068,7 @@ export const getHpsessions = async (req,res)=>{
       INNER JOIN patients p ON mh.patient = p.id
       INNER JOIN users ON mh.Hc_provider = users.id
       LEFT JOIN users as tester ON JSON_CONTAINS(mh.tests, JSON_OBJECT('tester', tester.id), '$')
-      LEFT JOIN users as operator ON JSON_CONTAINS(mh.operations, JSON_OBJECT('operator', operator.id), '$')
+      LEFT JOIN users as u ON mh.hc_provider = u.id
       INNER JOIN hospitals ON mh.hospital = hospitals.id
       INNER JOIN payments as pm ON mh.id = pm.session
       LEFT JOIN medicines AS m ON JSON_CONTAINS(mh.medicines, JSON_OBJECT('id', m.id), '$')
@@ -1052,23 +1076,30 @@ export const getHpsessions = async (req,res)=>{
       LEFT JOIN services as s ON JSON_CONTAINS(mh.services, JSON_OBJECT('id', s.id), '$')
       LEFT JOIN operations as o ON JSON_CONTAINS(mh.operations, JSON_OBJECT('id', o.id), '$')
       LEFT JOIN tests AS t ON JSON_CONTAINS(mh.tests, JSON_OBJECT('id', t.id), '$')
-      LEFT JOIN departments as d ON JSON_CONTAINS(mh.departments, JSON_QUOTE(d.id), '$')
+      LEFT JOIN departments as d ON mh.departments = d.id
       left join assurances as a on mh.assurance = a.id
-    WHERE mh.hospital = ? and mh.assurance = ? and mh.status != ?
+    WHERE mh.hospital = ? and mh.dateadded >= ? and mh.dateadded <= ? and mh.status != ?
     GROUP BY
     mh.id;
-    `,[hp,assurance,'open'])
+    `,[hp,values.start,values.stop,'open'])
       if(!response) return res.status(500).send({success: false, message: errorMessage.is_error})
       for (const session of response) {
         response[response.indexOf(session)].in_info = JSON.parse(session.in_info);
-        response[response.indexOf(session)].p_info = JSON.parse(session.p_info)
+        response[response.indexOf(session)].p_info = JSON.parse(session.p_info);
+        response[response.indexOf(session)].hcp = JSON.parse(session.hcp);
+        response[response.indexOf(session)].dptmnt = JSON.parse(session.dptmnt);
         response[response.indexOf(session)].p_info.insurance = JSON.parse(session.p_info.insurance)
         response[response.indexOf(session)].payment_info = JSON.parse(session.payment_info)
         response[response.indexOf(session)].dateadded = new Date(session.dateadded).toISOString().split('T')[0]
         response[response.indexOf(session)].dateclosed = new Date(session.dateclosed).toISOString().split('T')[0]
         response[response.indexOf(session)].p_info.insurance = session.p_info.insurance.find(function (insurance) {
-          return insurance.id == assurance
+          return insurance.id ==  response[response.indexOf(session)].in_info.id
         })
+        if (!response[response.indexOf(session)].p_info.insurance) {
+          response[response.indexOf(session)].p_info.insurance = {number: 'N/A'}
+        response[response.indexOf(session)].in_info = {name: 'private'}
+
+        }
       }
       res.send({success: true, message: response})
     

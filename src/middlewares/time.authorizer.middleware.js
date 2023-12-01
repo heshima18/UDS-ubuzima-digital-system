@@ -5,6 +5,9 @@ import authenticateToken from "../controllers/token.verifier.controller";
 export const CheckAppointmentTimer = async (req, res, next) => {
     try {
       let {time,token,status} = req.body
+      const leTime = DateTime.now();
+      let now = leTime.setZone('Africa/Kigali');
+      now = now.toFormat('yyyy-MM-dd HH:mm:ss')
       if (status == 'declined') {
         return next()
       }
@@ -14,13 +17,21 @@ export const CheckAppointmentTimer = async (req, res, next) => {
       let q = await query(`select time from appointments where hc_provider = ? and status != ? and status != ? order by time desc limit 0,1`,[hc_provider,'outdated','declined'])
       if (!q) return res.status(500).send({ message: errorMessage.is_error, success: false });
       if(q.length == 0){
+        if (new Date(time) <= new Date(now)) {
+          return res.send({ message: errorMessage._err_hcp_unav, success: false });
+        }
         next();
         return
       }  
-      [q]=q
-      q.time =  new Date(q.time);
       time =  new Date(time);
-      if (time <= q.time) return res.send({ message: errorMessage._err_hcp_unav, success: false });
+      for (const dtime of q) {
+        let ctime =  new Date(dtime.time);
+        if (ctime == time) {
+          return res.send({ message: errorMessage._err_hcp_unav, success: false });
+        }
+        
+      }
+      if (time <= new Date(now)) return res.send({ message: errorMessage._err_hcp_unav, success: false });
       if (time.getHours() >= 18 || time.getHours() <= 8) return res.send({ message: errorMessage._err_hcp_unav, success: false });
       next();
     } catch (error) {

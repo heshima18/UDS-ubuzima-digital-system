@@ -20,9 +20,9 @@ const login = async (req, res) => {
       res.status(200).send({ success: false, message: errorMessage.lgIn_error_message });
       return;
     }
-
-    const user = select[0];
-    if (user.status !== 'active' && user.status !== 'unverified') {
+    [select] = select
+    let user = select
+    if (select.status !== 'active' && select.status !== 'unverified') {
       res.send({ success: false, message: errorMessage.uNa_error_message });
       return;
     }
@@ -38,7 +38,6 @@ const login = async (req, res) => {
     let updateResult;
     user.role == 'patient' || user.role == 'householder' ? updateResult = await query(`UPDATE patients SET FA = ? WHERE id = ?`, [FAcode, user.id]):
      updateResult = await query(`UPDATE users SET FA = ? WHERE id = ?`, [FAcode, user.id]);
-
     if (!updateResult) {
       res.status(500).send({ success: false, message: errorMessage.is_error });
       return;

@@ -61,7 +61,6 @@ export const searchMed = async (req,res)=>{
       entity = 'sector'
       needle = p.sector
     }
-    console.log(needle,entity)
   //   let select = await query(`SELECT
   //   hospitals.name AS hospital,
   //   CONCAT(
