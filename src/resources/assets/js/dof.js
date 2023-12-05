@@ -344,7 +344,87 @@ let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z,socket,assurances,inventor
                         }
                     });
                     
-                    let addMedic = page.querySelector('#add-medic'),buttons = Array.from(page.querySelectorAll('button.data-buttns'));
+                    let addMedic = page.querySelector('#add-medic'),buttons = Array.from(page.querySelectorAll('button.data-buttns')),fileredData;
+                    checkButtons()
+                    let tabl = page.querySelector('.dataTables_paginate');
+                    tabl.addEventListener('click', e=>{
+                        setTimeout(checkButtons,10)
+
+                    })
+                    if (e) {     
+                        $.fn.dataTable.ext.search.push(function (settings, data, dataIndex) {
+                            setTimeout(checkButtons,10)
+                            if (settings.nTable.classList.contains('datatables-medications')) {
+                                fileredData = e.rows({ search: 'applied'}).data().toArray();
+                            }      
+                            return true
+                        })
+                    }
+                
+                    function checkButtons() {
+                        buttons = Array.from(page.querySelectorAll('button.data-buttns'))
+                        buttons.forEach(bttn=>{
+                            bttn.onclick = async function (event) {
+                                event.preventDefault()
+                                let role = this.getAttribute('data-role'),objId = this.getAttribute('data-id'),type = this.getAttribute('data-type')
+                                if (role == 'delete') {
+                                    postschema.body = JSON.stringify({
+                                        token: getdata('token'),
+                                        type: type,
+                                        inventory: extra.id,
+                                        needle: objId
+                                    })
+                                    var row = e.row(event.target.closest('tr'))
+                                    row.remove().draw();
+                                    let result = await request('rIFromInv',postschema)
+                                    if (result.success) {
+                                        alertMessage(result.message)
+                                    }else{
+                                        alertMessage(result.message)
+                                    }
+                                }else if (role == 'edit') {
+                                    let targetMed = extra.medicines.find(function (medic) {
+                                        return medic.id == objId
+                                    })
+                                    let target = this.getAttribute('data-bs-target')
+                                    let cloneD = page.querySelector(`div${target}`)
+                                    cloneD = cloneD.cloneNode(true);
+                                    d = addshade();
+                                    d.appendChild(cloneD);
+                                    let eMform = cloneD.querySelector("form#edit-medicine-form");
+                                    let input = eMform.querySelector('input[name="medicine"]');
+                                    let quantity = eMform.querySelector('input[name="quantity"]');
+        
+                                    input.value = targetMed.name
+                                    input.setAttribute('readonly', true)
+                                    input.setAttribute('disabled', true)
+                                    input.setAttribute('data-id',targetMed.id)
+                                    quantity.value = targetMed.quantity
+                                    eMform.addEventListener('submit', async event=>{
+                                        event.preventDefault();
+                                            v = checkEmpty(quantity);               
+                                        if (v) {
+                                        let button = eMform.querySelector('button[type="submit"]')
+                                        button.innerText = `Editing entry`
+                                        button.setAttribute('disabled',true)
+                                            let values = {}
+                                            Object.assign(values,{needle : input.getAttribute('data-id'),upinfo: {quantity :quantity.value}, type : 'medicines' ,inventory: extra.id})
+                                            Object.assign(values,{token: getdata('token')})
+                                            postschema.body = JSON.stringify(values)
+                                            let results = await request('eInvEnt',postschema)
+                                            if (results.success) {
+                                                deletechild(d,d.parentNode)
+                                            }
+                                            alertMessage(results.message)
+                                            button.removeAttribute('disabled')
+                                            button.innerText= 'proceed'
+                            
+                                        }
+                                    })  
+                                }
+                            }
+                        })
+                    }
                     addMedic.onclick =  function(){
                         let target = this.getAttribute('data-bs-target')
                         let cloneD = page.querySelector(`div${target}`)
@@ -391,67 +471,67 @@ let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z,socket,assurances,inventor
                             }
                         }
                     }
-                    buttons.forEach(bttn=>{
-                        bttn.onclick = async function (event) {
-                            event.preventDefault()
-                            let role = this.getAttribute('data-role'),objId = this.getAttribute('data-id'),type = this.getAttribute('data-type')
-                            if (role == 'delete') {
-                                postschema.body = JSON.stringify({
-                                    token: getdata('token'),
-                                    type: type,
-                                    inventory: extra.id,
-                                    needle: objId
-                                })
-                                var row = e.row(event.target.closest('tr'))
-                                row.remove().draw();
-                                let result = await request('rIFromInv',postschema)
-                                if (result.success) {
-                                    alertMessage(result.message)
-                                }else{
-                                    alertMessage(result.message)
-                                }
-                            }else if (role == 'edit') {
-                                let targetMed = extra.medicines.find(function (medic) {
-                                    return medic.id == objId
-                                })
-                                let target = this.getAttribute('data-bs-target')
-                                let cloneD = page.querySelector(`div${target}`)
-                                cloneD = cloneD.cloneNode(true);
-                                d = addshade();
-                                d.appendChild(cloneD);
-                                let eMform = cloneD.querySelector("form#edit-medicine-form");
-                                let input = eMform.querySelector('input[name="medicine"]');
-                                let quantity = eMform.querySelector('input[name="quantity"]');
+                    // buttons.forEach(bttn=>{
+                    //     bttn.onclick = async function (event) {
+                    //         event.preventDefault()
+                    //         let role = this.getAttribute('data-role'),objId = this.getAttribute('data-id'),type = this.getAttribute('data-type')
+                    //         if (role == 'delete') {
+                    //             postschema.body = JSON.stringify({
+                    //                 token: getdata('token'),
+                    //                 type: type,
+                    //                 inventory: extra.id,
+                    //                 needle: objId
+                    //             })
+                    //             var row = e.row(event.target.closest('tr'))
+                    //             row.remove().draw();
+                    //             let result = await request('rIFromInv',postschema)
+                    //             if (result.success) {
+                    //                 alertMessage(result.message)
+                    //             }else{
+                    //                 alertMessage(result.message)
+                    //             }
+                    //         }else if (role == 'edit') {
+                    //             let targetMed = extra.medicines.find(function (medic) {
+                    //                 return medic.id == objId
+                    //             })
+                    //             let target = this.getAttribute('data-bs-target')
+                    //             let cloneD = page.querySelector(`div${target}`)
+                    //             cloneD = cloneD.cloneNode(true);
+                    //             d = addshade();
+                    //             d.appendChild(cloneD);
+                    //             let eMform = cloneD.querySelector("form#edit-medicine-form");
+                    //             let input = eMform.querySelector('input[name="medicine"]');
+                    //             let quantity = eMform.querySelector('input[name="quantity"]');
     
-                                input.value = targetMed.name
-                                input.setAttribute('readonly', true)
-                                input.setAttribute('disabled', true)
-                                input.setAttribute('data-id',targetMed.id)
-                                quantity.value = targetMed.quantity
-                                eMform.addEventListener('submit', async event=>{
-                                    event.preventDefault();
-                                        v = checkEmpty(quantity);               
-                                    if (v) {
-                                    let button = eMform.querySelector('button[type="submit"]')
-                                    button.innerText = `Editing entry`
-                                    button.setAttribute('disabled',true)
-                                        let values = {}
-                                        Object.assign(values,{needle : input.getAttribute('data-id'),upinfo: {quantity :quantity.value}, type : 'medicines' ,inventory: extra.id})
-                                        Object.assign(values,{token: getdata('token')})
-                                        postschema.body = JSON.stringify(values)
-                                        let results = await request('eInvEnt',postschema)
-                                        if (results.success) {
-                                            deletechild(d,d.parentNode)
-                                        }
-                                        alertMessage(results.message)
-                                        button.removeAttribute('disabled')
-                                        button.innerText= 'proceed'
+                    //             input.value = targetMed.name
+                    //             input.setAttribute('readonly', true)
+                    //             input.setAttribute('disabled', true)
+                    //             input.setAttribute('data-id',targetMed.id)
+                    //             quantity.value = targetMed.quantity
+                    //             eMform.addEventListener('submit', async event=>{
+                    //                 event.preventDefault();
+                    //                     v = checkEmpty(quantity);               
+                    //                 if (v) {
+                    //                 let button = eMform.querySelector('button[type="submit"]')
+                    //                 button.innerText = `Editing entry`
+                    //                 button.setAttribute('disabled',true)
+                    //                     let values = {}
+                    //                     Object.assign(values,{needle : input.getAttribute('data-id'),upinfo: {quantity :quantity.value}, type : 'medicines' ,inventory: extra.id})
+                    //                     Object.assign(values,{token: getdata('token')})
+                    //                     postschema.body = JSON.stringify(values)
+                    //                     let results = await request('eInvEnt',postschema)
+                    //                     if (results.success) {
+                    //                         deletechild(d,d.parentNode)
+                    //                     }
+                    //                     alertMessage(results.message)
+                    //                     button.removeAttribute('disabled')
+                    //                     button.innerText= 'proceed'
                         
-                                    }
-                                })  
-                            }
-                        }
-                    })
+                    //                 }
+                    //             })  
+                    //         }
+                    //     }
+                    // })
                     t.classList.add('loaded')
                 }
             }else if (x == 'tests-inventory') {
@@ -570,53 +650,24 @@ let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z,socket,assurances,inventor
                 }
                 
                 let addTest = page.querySelector('#add-test'),buttons = Array.from(page.querySelectorAll('button.data-buttns'));
-                addTest.onclick =  function(){
-                    let target = this.getAttribute('data-bs-target')
-                    let cloneD = document.querySelector(`div${target}`)
-                    cloneD = cloneD.cloneNode(true);
-                    d = addshade();
-                    d.appendChild(cloneD);
-                    let aMform = cloneD.querySelector("form");
-                    let inputs = Array.from(aMform.querySelectorAll('input'))
-                    inputs[0].onfocus = (event)=>{
-                        event.preventDefault()
-                            showRecs(inputs[0],tests.message,inputs[0].id)
-                    }
-                    aMform.onsubmit =  async event=>{
-
-                       event.preventDefault();
-                        l = 1
-                        for (const input of inputs) {
-                            v = checkEmpty(input);
-                            if (!v) {
-                                l = 0
-                            }
-                        }
-                        if (l) {
-                        let button = aMform.querySelector('button[type="submit"]')
-                        button.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`
-                        button.setAttribute('disabled',true)
-                            let values = {}
-                            for (const input of inputs) {
-                                Object.assign(values,{[input.name]: getchips(input.parentNode.querySelector('div.chipsholder'),['id','name','price']) })
-                            } 
-                            Object.assign(values,{assurance: this.assurance,token: getdata('token'), assurance: extra.id})
-                            postschema.body = JSON.stringify(values)
-                            let results = await request('add-inventory-tests',postschema)
-                            if (results.success) {
-                                values.tests.forEach(test=>{
-                                    e.row.add(test).draw()
-                                })
-                                deletechild(d,d.parentElement)
-                            }
-                            alertMessage(results.message)
-                            button.removeAttribute('disabled')
-                            button.innerHTML= 'proceed'
-
-                        }
-                    }
+                checkButtons()
+                let tabl = page.querySelector('.dataTables_paginate');
+                tabl.addEventListener('click', e=>{
+                    setTimeout(checkButtons,10)
+                })
+                if (e) {     
+                    $.fn.dataTable.ext.search.push(function (settings, data, dataIndex) {
+                        setTimeout(checkButtons,10)
+                        if (settings.nTable.classList.contains('datatables-tests')) {
+                            fileredData = e.rows({ search: 'applied'}).data().toArray();
+                        }      
+                        return true
+                    })
                 }
-                buttons.forEach(bttn=>{
+            
+                function checkButtons() {
+                    buttons = Array.from(page.querySelectorAll('button.data-buttns'))
+                    buttons.forEach(bttn=>{
                         bttn.onclick = async function (event) {
                             event.preventDefault()
                             let role = this.getAttribute('data-role'),objId = this.getAttribute('data-id'),type = this.getAttribute('data-type')
@@ -677,13 +728,116 @@ let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z,socket,assurances,inventor
                             }
                         }
                     })
+                }
+                addTest.onclick =  function(){
+                    let target = this.getAttribute('data-bs-target')
+                    let cloneD = document.querySelector(`div${target}`)
+                    cloneD = cloneD.cloneNode(true);
+                    d = addshade();
+                    d.appendChild(cloneD);
+                    let aMform = cloneD.querySelector("form");
+                    let inputs = Array.from(aMform.querySelectorAll('input'))
+                    inputs[0].onfocus = (event)=>{
+                        event.preventDefault()
+                            showRecs(inputs[0],tests.message,inputs[0].id)
+                    }
+                    aMform.onsubmit =  async event=>{
+
+                       event.preventDefault();
+                        l = 1
+                        for (const input of inputs) {
+                            v = checkEmpty(input);
+                            if (!v) {
+                                l = 0
+                            }
+                        }
+                        if (l) {
+                        let button = aMform.querySelector('button[type="submit"]')
+                        button.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`
+                        button.setAttribute('disabled',true)
+                            let values = {}
+                            for (const input of inputs) {
+                                Object.assign(values,{[input.name]: getchips(input.parentNode.querySelector('div.chipsholder'),['id','name','price']) })
+                            } 
+                            Object.assign(values,{assurance: this.assurance,token: getdata('token'), assurance: extra.id})
+                            postschema.body = JSON.stringify(values)
+                            let results = await request('add-inventory-tests',postschema)
+                            if (results.success) {
+                                values.tests.forEach(test=>{
+                                    e.row.add(test).draw()
+                                })
+                                deletechild(d,d.parentElement)
+                            }
+                            alertMessage(results.message)
+                            button.removeAttribute('disabled')
+                            button.innerHTML= 'proceed'
+
+                        }
+                    }
+                }
+                // buttons.forEach(bttn=>{
+                //         bttn.onclick = async function (event) {
+                //             event.preventDefault()
+                //             let role = this.getAttribute('data-role'),objId = this.getAttribute('data-id'),type = this.getAttribute('data-type')
+                //             if (role == 'delete') {
+                //                 postschema.body = JSON.stringify({
+                //                     token: getdata('token'),
+                //                     type: type,
+                //                     inventory: extra.id,
+                //                     needle: objId
+                //                 })
+                //                 var row = e.row(event.target.closest('tr'))
+                //                 row.remove().draw();
+                //                 let result = await request('rIFromInv',postschema)
+                //                 if (result.success) {
+                //                     alertMessage(result.message)
+                //                 }else{
+                //                     alertMessage(result.message)
+                //                 }
+                //             }else if (role == 'edit') {
+                //                 let targetTest = extra.tests.find(function (test) {
+                //                     return test.id == objId
+                //                 })
+                //                 let target = this.getAttribute('data-bs-target')
+                //                 let cloneD = page.querySelector(`div${target}`)
+                //                 cloneD = cloneD.cloneNode(true);
+                //                 d = addshade();
+                //                 d.appendChild(cloneD);
+                //                 let eMform = cloneD.querySelector("form#edit-test-form");
+                //                 let input = eMform.querySelector('input[name="test"]');
+                //                 let price = eMform.querySelector('input[name="price"]');
+    
+                //                 input.value = targetTest.name
+                //                 input.setAttribute('readonly', true)
+                //                 input.setAttribute('disabled', true)
+                //                 input.setAttribute('data-id',targetTest.id)
+                //                 price.value = targetTest.price
+                //                 eMform.addEventListener('submit', async event=>{
+                //                     event.preventDefault();
+                //                         v = checkEmpty(price);               
+                //                     if (v) {
+                //                     let button = eMform.querySelector('button[type="submit"]')
+                //                     button.innerText = `Editing entry`
+                //                     button.setAttribute('disabled',true)
+                //                         let values = {}
+                //                         Object.assign(values,{needle : input.getAttribute('data-id'),upinfo: {price :price.value}, type,inventory: extra.id})
+                //                         Object.assign(values,{token: getdata('token')})
+                //                         postschema.body = JSON.stringify(values)
+                //                         let results = await request('eInvEnt',postschema)
+                //                         if (results.success) {
+                //                             deletechild(d,d.parentNode)
+                //                         }
+                //                         alertMessage(results.message)
+                //                         button.removeAttribute('disabled')
+                //                         button.innerText= 'proceed'
+                        
+                //                     }
+                //                 })  
+                //             }
+                //         }
+                //     })
                 t.classList.add('loaded')
                 // Delete employee when delete icon clicked
-                table.find("tbody").on("click", ".delete-employee", function () {
-                    if (confirm("Are you sure you want to delete this employee?")) {
-                        e.row($(this).parents("tr")).remove().draw();
-                    }
-                })
             }else if (x == 'operations-inventory') {
                 let table = $('.datatables-operations');
                 let t = page.querySelector('table')
@@ -798,54 +952,25 @@ let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z,socket,assurances,inventor
                         }
                     });
                 }
-                let addOper = page.querySelector('#add-operation'),buttons = Array.from(page.querySelectorAll('button.data-buttns'));;
-                addOper.onclick =  function(){
-                    let target = this.getAttribute('data-bs-target')
-                    let cloneD = page.querySelector(`div${target}`)
-                    cloneD = cloneD.cloneNode(true);
-                    d = addshade();
-                    d.appendChild(cloneD);
-                    let aMform = cloneD.querySelector("form");
-                    let inputs = Array.from(aMform.querySelectorAll('input'))
-                    inputs[0].onfocus = (event)=>{
-                        event.preventDefault()
-                            showRecs(inputs[0],operations.message,inputs[0].id)
-                    }
-                    aMform.onsubmit =  async event=>{
-
-                       event.preventDefault();
-                        l = 1
-                        for (const input of inputs) {
-                            v = checkEmpty(input);
-                            if (!v) {
-                                l = 0
-                            }
-                        }
-                        if (l) {
-                        let button = aMform.querySelector('button[type="submit"]')
-                        button.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`
-                        button.setAttribute('disabled',true)
-                            let values = {}
-                            for (const input of inputs) {
-                                Object.assign(values,{[input.name]: getchips(input.parentNode.querySelector('div.chipsholder'),['id','name','price']) })
-                            } 
-                            Object.assign(values,{token: getdata('token')})
-                            postschema.body = JSON.stringify(values)
-                            let results = await request('add-inventory-operations',postschema)
-                            if (results.success) {
-                                values.operations.forEach(operation=>{
-                                   e.row.add(operation).draw()
-                                })
-                                deletechild(d,d.parentElement)
-                            }
-                            alertMessage(results.message)
-                            button.removeAttribute('disabled')
-                            button.innerHTML= 'proceed'
-
-                        }
-                    }
+                let addOper = page.querySelector('#add-operation'),buttons = Array.from(page.querySelectorAll('button.data-buttns'));
+                checkButtons()
+                let tabl = page.querySelector('.dataTables_paginate');
+                tabl.addEventListener('click', e=>{
+                    setTimeout(checkButtons,10)
+                })
+                if (e) {     
+                    $.fn.dataTable.ext.search.push(function (settings, data, dataIndex) {
+                        setTimeout(checkButtons,10)
+                        if (settings.nTable.classList.contains('datatables-operations')) {
+                            fileredData = e.rows({ search: 'applied'}).data().toArray();
+                        }      
+                        return true
+                    })
                 }
-                buttons.forEach(bttn=>{
+            
+                function checkButtons() {
+                    buttons = Array.from(page.querySelectorAll('button.data-buttns'))
+                    buttons.forEach(bttn=>{
                         bttn.onclick = async function (event) {
                             event.preventDefault()
                             let role = this.getAttribute('data-role'),objId = this.getAttribute('data-id'),type = this.getAttribute('data-type')
@@ -906,6 +1031,53 @@ let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z,socket,assurances,inventor
                             }
                         }
                     })
+                }
+                addOper.onclick =  function(){
+                    let target = this.getAttribute('data-bs-target')
+                    let cloneD = page.querySelector(`div${target}`)
+                    cloneD = cloneD.cloneNode(true);
+                    d = addshade();
+                    d.appendChild(cloneD);
+                    let aMform = cloneD.querySelector("form");
+                    let inputs = Array.from(aMform.querySelectorAll('input'))
+                    inputs[0].onfocus = (event)=>{
+                        event.preventDefault()
+                            showRecs(inputs[0],operations.message,inputs[0].id)
+                    }
+                    aMform.onsubmit =  async event=>{
+
+                       event.preventDefault();
+                        l = 1
+                        for (const input of inputs) {
+                            v = checkEmpty(input);
+                            if (!v) {
+                                l = 0
+                            }
+                        }
+                        if (l) {
+                        let button = aMform.querySelector('button[type="submit"]')
+                        button.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`
+                        button.setAttribute('disabled',true)
+                            let values = {}
+                            for (const input of inputs) {
+                                Object.assign(values,{[input.name]: getchips(input.parentNode.querySelector('div.chipsholder'),['id','name','price']) })
+                            } 
+                            Object.assign(values,{token: getdata('token')})
+                            postschema.body = JSON.stringify(values)
+                            let results = await request('add-inventory-operations',postschema)
+                            if (results.success) {
+                                values.operations.forEach(operation=>{
+                                   e.row.add(operation).draw()
+                                })
+                                deletechild(d,d.parentElement)
+                            }
+                            alertMessage(results.message)
+                            button.removeAttribute('disabled')
+                            button.innerHTML= 'proceed'
+
+                        }
+                    }
+                }
                 t.classList.add('loaded')
                 // Delete employee when delete icon clicked
                 table.find("tbody").on("click", ".delete-employee", function () {
@@ -1029,7 +1201,23 @@ let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z,socket,assurances,inventor
                     });
                 }
                 let buttons = Array.from(page.querySelectorAll('button.data-buttns'));
-                buttons.forEach(bttn=>{
+                checkButtons()
+                let tabl = page.querySelector('.dataTables_paginate');
+                tabl.addEventListener('click', e=>{
+                    setTimeout(checkButtons,10)
+                })
+                if (e) {     
+                    $.fn.dataTable.ext.search.push(function (settings, data, dataIndex) {
+                        setTimeout(checkButtons,10)
+                        if (settings.nTable.classList.contains('datatables-services')) {
+                            fileredData = e.rows({ search: 'applied'}).data().toArray();
+                        }      
+                        return true
+                    })
+                }
+                function checkButtons() {
+                    buttons = Array.from(page.querySelectorAll('button.data-buttns'))
+                    buttons.forEach(bttn=>{
                         bttn.onclick = async function (event) {
                             event.preventDefault()
                             let role = this.getAttribute('data-role'),objId = this.getAttribute('data-id'),type = this.getAttribute('data-type')
@@ -1090,6 +1278,68 @@ let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z,socket,assurances,inventor
                             }
                         }
                     })
+                }
+                // buttons.forEach(bttn=>{
+                //         bttn.onclick = async function (event) {
+                //             event.preventDefault()
+                //             let role = this.getAttribute('data-role'),objId = this.getAttribute('data-id'),type = this.getAttribute('data-type')
+                //             if (role == 'delete') {
+                //                 postschema.body = JSON.stringify({
+                //                     token: getdata('token'),
+                //                     type: type,
+                //                     inventory: extra.id,
+                //                     needle: objId
+                //                 })
+                //                 var row = e.row(event.target.closest('tr'))
+                //                 row.remove().draw();
+                //                 let result = await request('rIFromInv',postschema)
+                //                 if (result.success) {
+                //                     alertMessage(result.message)
+                //                 }else{
+                //                     alertMessage(result.message)
+                //                 }
+                //             }else if (role == 'edit') {
+                //                 let targetService = extra.services.find(function (service) {
+                //                     return service.id == objId
+                //                 })
+                //                 let target = this.getAttribute('data-bs-target')
+                //                 let cloneD = page.querySelector(`div${target}`)
+                //                 cloneD = cloneD.cloneNode(true);
+                //                 d = addshade();
+                //                 d.appendChild(cloneD);
+                //                 let eMform = cloneD.querySelector("form#edit-service-form");
+                //                 let input = eMform.querySelector('input[name="service"]');
+                //                 let price = eMform.querySelector('input[name="price"]');
+    
+                //                 input.value = targetService.name
+                //                 input.setAttribute('readonly', true)
+                //                 input.setAttribute('disabled', true)
+                //                 input.setAttribute('data-id',targetService.id)
+                //                 price.value = targetService.price
+                //                 eMform.addEventListener('submit', async event=>{
+                //                     event.preventDefault();
+                //                         v = checkEmpty(price);               
+                //                     if (v) {
+                //                     let button = eMform.querySelector('button[type="submit"]')
+                //                     button.innerText = `Editing entry`
+                //                     button.setAttribute('disabled',true)
+                //                         let values = {}
+                //                         Object.assign(values,{needle : input.getAttribute('data-id'),upinfo: {price :price.value}, type,inventory: extra.id})
+                //                         Object.assign(values,{token: getdata('token')})
+                //                         postschema.body = JSON.stringify(values)
+                //                         let results = await request('eInvEnt',postschema)
+                //                         if (results.success) {
+                //                             deletechild(d,d.parentNode)
+                //                         }
+                //                         alertMessage(results.message)
+                //                         button.removeAttribute('disabled')
+                //                         button.innerText= 'proceed'
+                        
+                //                     }
+                //                 })  
+                //             }
+                //         }
+                //     })
                 let addMedic = page.querySelector('#add-service');
                 addMedic.onclick =  function(){
                     let target = this.getAttribute('data-bs-target')
@@ -1264,7 +1514,24 @@ let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z,socket,assurances,inventor
                     });
                 }
                 let buttons = Array.from(page.querySelectorAll('button.data-buttns'));
-                buttons.forEach(bttn=>{
+                checkButtons()
+                let tabl = page.querySelector('.dataTables_paginate');
+                tabl.addEventListener('click', e=>{
+                    setTimeout(checkButtons,10)
+                })
+                if (e) {     
+                    $.fn.dataTable.ext.search.push(function (settings, data, dataIndex) {
+                        setTimeout(checkButtons,10)
+                        if (settings.nTable.classList.contains('datatables-assurances')) {
+                            fileredData = e.rows({ search: 'applied'}).data().toArray();
+                        }      
+                        return true
+                    })
+                }
+            
+                function checkButtons() {
+                    buttons = Array.from(page.querySelectorAll('button.data-buttns'))
+                    buttons.forEach(bttn=>{
                         bttn.onclick = async function (event) {
                             event.preventDefault()
                             let role = this.getAttribute('data-role'),objId = this.getAttribute('data-id'),type = this.getAttribute('data-type')
@@ -1286,6 +1553,8 @@ let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z,socket,assurances,inventor
                             }
                         }
                     })
+                }
+                
                 let addMedic = page.querySelector('#add-service');
                 addMedic.onclick =  function(){
                     let target = this.getAttribute('data-bs-target')
@@ -1465,67 +1734,86 @@ let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z,socket,assurances,inventor
                     });
                 }
                 let addEqu = page.querySelector('#add-equipment'),buttons = Array.from(page.querySelectorAll('button.data-buttns'));
-                buttons.forEach(bttn=>{
-                    bttn.onclick = async function (event) {
-                        event.preventDefault()
-                        let role = this.getAttribute('data-role'),objId = this.getAttribute('data-id'),type = this.getAttribute('data-type')
-                        if (role == 'delete') {
-                            postschema.body = JSON.stringify({
-                                token: getdata('token'),
-                                type: type,
-                                inventory: extra.id,
-                                needle: objId
-                            })
-                            var row = e.row(event.target.closest('tr'))
-                            row.remove().draw();
-                            let result = await request('rIFromInv',postschema)
-                            if (result.success) {
-                                alertMessage(result.message)
-                            }else{
-                                alertMessage(result.message)
-                            }
-                        }else if (role == 'edit') {
-                            let targetMed = extra.equipments.find(function (medic) {
-                                return medic.id == objId
-                            })
-                            let target = this.getAttribute('data-bs-target')
-                            let cloneD = page.querySelector(`div${target}`)
-                            cloneD = cloneD.cloneNode(true);
-                            d = addshade();
-                            d.appendChild(cloneD);
-                            let eMform = cloneD.querySelector("form#edit-equipment-form");
-                            let input = eMform.querySelector('input[name="equipment"]');
-                            let quantity = eMform.querySelector('input[name="quantity"]');
-
-                            input.value = targetMed.name
-                            input.setAttribute('readonly', true)
-                            input.setAttribute('disabled', true)
-                            input.setAttribute('data-id',targetMed.id)
-                            quantity.value = targetMed.quantity
-                            eMform.addEventListener('submit', async event=>{
-                                event.preventDefault();
-                                    v = checkEmpty(quantity);               
-                                if (v) {
-                                let button = eMform.querySelector('button[type="submit"]')
-                                button.innerText = `Editing entry`
-                                button.setAttribute('disabled',true)
-                                    let values = {}
-                                    Object.assign(values,{needle : input.getAttribute('data-id'),upinfo: {quantity :quantity.value}, type,inventory: extra.id})
-                                    Object.assign(values,{token: getdata('token')})
-                                    postschema.body = JSON.stringify(values)
-                                    let results = await request('eInvEnt',postschema)
-                                    if (results.success) {
-                                        deletechild(d,d.parentNode)
-                                    }
-                                    alertMessage(results.message)
-                                    button.removeAttribute('disabled')
-                                    button.innerText= 'proceed'
-                    
-                                }
-                            })  
-                        }
-                    }
+                checkButtons()
+                let tabl = page.querySelector('.dataTables_paginate');
+                tabl.addEventListener('click', e=>{
+                    setTimeout(checkButtons,10)
                 })
+                if (e) {     
+                    $.fn.dataTable.ext.search.push(function (settings, data, dataIndex) {
+                        setTimeout(checkButtons,10)
+                        if (settings.nTable.classList.contains('datatables-equipments')) {
+                            fileredData = e.rows({ search: 'applied'}).data().toArray();
+                        }      
+                        return true
+                    })
+                }
+            
+                function checkButtons() {
+                    buttons = Array.from(page.querySelectorAll('button.data-buttns'))
+                    buttons.forEach(bttn=>{
+                        bttn.onclick = async function (event) {
+                            event.preventDefault()
+                            let role = this.getAttribute('data-role'),objId = this.getAttribute('data-id'),type = this.getAttribute('data-type')
+                            if (role == 'delete') {
+                                postschema.body = JSON.stringify({
+                                    token: getdata('token'),
+                                    type: type,
+                                    inventory: extra.id,
+                                    needle: objId
+                                })
+                                var row = e.row(event.target.closest('tr'))
+                                row.remove().draw();
+                                let result = await request('rIFromInv',postschema)
+                                if (result.success) {
+                                    alertMessage(result.message)
+                                }else{
+                                    alertMessage(result.message)
+                                }
+                            }else if (role == 'edit') {
+                                let targetMed = extra.equipments.find(function (medic) {
+                                    return medic.id == objId
+                                })
+                                let target = this.getAttribute('data-bs-target')
+                                let cloneD = page.querySelector(`div${target}`)
+                                cloneD = cloneD.cloneNode(true);
+                                d = addshade();
+                                d.appendChild(cloneD);
+                                let eMform = cloneD.querySelector("form#edit-equipment-form");
+                                let input = eMform.querySelector('input[name="equipment"]');
+                                let quantity = eMform.querySelector('input[name="quantity"]');
+    
+                                input.value = targetMed.name
+                                input.setAttribute('readonly', true)
+                                input.setAttribute('disabled', true)
+                                input.setAttribute('data-id',targetMed.id)
+                                quantity.value = targetMed.quantity
+                                eMform.addEventListener('submit', async event=>{
+                                    event.preventDefault();
+                                        v = checkEmpty(quantity);               
+                                    if (v) {
+                                    let button = eMform.querySelector('button[type="submit"]')
+                                    button.innerText = `Editing entry`
+                                    button.setAttribute('disabled',true)
+                                        let values = {}
+                                        Object.assign(values,{needle : input.getAttribute('data-id'),upinfo: {quantity :quantity.value}, type,inventory: extra.id})
+                                        Object.assign(values,{token: getdata('token')})
+                                        postschema.body = JSON.stringify(values)
+                                        let results = await request('eInvEnt',postschema)
+                                        if (results.success) {
+                                            deletechild(d,d.parentNode)
+                                        }
+                                        alertMessage(results.message)
+                                        button.removeAttribute('disabled')
+                                        button.innerText= 'proceed'
+                        
+                                    }
+                                })  
+                            }
+                        }
+                    })
+                }
+                
                 addEqu.onclick =  function(){
                     let target = this.getAttribute('data-bs-target')
                     let cloneD = page.querySelector(`div${target}`)

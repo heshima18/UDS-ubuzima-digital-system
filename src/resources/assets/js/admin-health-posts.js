@@ -11,7 +11,7 @@ postschema.body = JSON.stringify({token : getdata('token')})
 h = await request('gethospitals',postschema)
 d = await request('get-departments',postschema)
 e = await request('get-employees',postschema)
-let extra = {map: m.message, employees: e.message, hospitals : h.message, departments: d.message}
+let extra = {map: m.message, employees: e.message, hospitals : h.message, departments: d.message},fileredData
 try {
     if (!m.success || !d.success) {return alertMessage(m.message)}
     [m] = m.message
@@ -330,17 +330,34 @@ $(document).ready(function () {
             }
         });
         let viewButtons = Array.from(document.querySelectorAll('[name="view"]'))
-        viewButtons.forEach(function (button) {
-            button.addEventListener('click', event =>{
-                if (button.classList.contains('loading')) {
-                    return 0
-                }
-                event.preventDefault();
-                button.classList.add('loading')
-                let hospitalId = button.getAttribute('data-id');
-                showHospital(hospitalId,button)
-            })
+        checkButtons()
+        let tabl = document.querySelector('.dataTables_paginate');
+        tabl.addEventListener('click', e=>{
+            setTimeout(checkButtons,10)
         })
+        if (e) {     
+            $.fn.dataTable.ext.search.push(function (settings, data, dataIndex) {
+                setTimeout(checkButtons,10)
+                if (settings.nTable.classList.contains('datatables-health-posts')) {
+                    fileredData = e.rows({ search: 'applied'}).data().toArray();
+                }      
+                return true
+            })
+        }
+        function checkButtons() {
+            viewButtons = Array.from(document.querySelectorAll('[name="view"]'))
+            viewButtons.forEach(function (button) {
+                button.addEventListener('click', event =>{
+                    if (button.classList.contains('loading')) {
+                        return 0
+                    }
+                    event.preventDefault();
+                    button.classList.add('loading')
+                    let hospitalId = button.getAttribute('data-id');
+                    showHospital(hospitalId,button)
+                })
+            })
+        }
     $('#add-health-post').on('shown.bs.modal', function () {
         const $modal = $(this);
         let departments = f.querySelector('input#departments')

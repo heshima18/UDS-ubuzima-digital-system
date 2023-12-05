@@ -199,18 +199,13 @@ if(!u){
                return true
             })
             let viewbut = Array.from(document.querySelectorAll('button.edit-equipment'))
-            viewbut.forEach(button => {
-                button.onclick = async function (event) {
-                    event.preventDefault();
-                    let med = m.find(function (medic) {
-                        return medic.id == button.getAttribute('data-id') 
-                    })
-                    showEditMed(med)
-                }
-            });
+            let tabl = page.querySelector('.dataTables_paginate');
+            tabl.addEventListener('click', e=>{
+                setTimeout(checkButtons,10)
+            })
+            checkButtons()
             function checkButtons() {
-                let viewbut = Array.from(document.querySelectorAll('button.edit-equipment'))
-               
+                viewbut = Array.from(document.querySelectorAll('button.edit-equipment'))
                 viewbut.forEach(button => {
                     button.onclick = async function (event) {
                         event.preventDefault();

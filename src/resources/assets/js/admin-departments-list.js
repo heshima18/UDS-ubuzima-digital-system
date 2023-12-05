@@ -90,7 +90,7 @@ u = getdata('token');
                         render: function (e, t, a, n) {
                             return (
                                 `<div class="d-inline-block text-nowrap">
-                                    <button class="btn btn-sm btn-icon border border-3" data-bs-toggle="modal" data-bs-target="#view-department" data-id="${a.id}"><i class="bx bx-show-alt"></i></button>
+                                    <button class="btn btn-sm btn-icon border border-3" name="view" data-id="${a.id}"><i class="bx bx-show-alt"></i></button>
                                 </div>`
                             );
                         },
@@ -155,7 +155,35 @@ u = getdata('token');
                     // Filter by Position
                 }
             });
-    
+            let viewButtons = Array.from(document.querySelectorAll('[name="view"]'))
+            checkButtons()
+            let tabl = document.querySelector('.dataTables_paginate');
+            tabl.addEventListener('click', e=>{
+                setTimeout(checkButtons,10)
+            })
+            if (e) {     
+                $.fn.dataTable.ext.search.push(function (settings, data, dataIndex) {
+                    setTimeout(checkButtons,10)
+                    if (settings.nTable.classList.contains('datatables-departments')) {
+                        fileredData = e.rows({ search: 'applied'}).data().toArray();
+                    }      
+                    return true
+                })
+            }
+            function checkButtons() {
+                viewButtons = Array.from(document.querySelectorAll('[name="view"]'))
+                viewButtons.forEach(function (button) {
+                    button.addEventListener('click', event =>{
+                        if (button.classList.contains('loading')) {
+                            return 0
+                        }
+                        event.preventDefault();
+                        button.classList.add('loading')
+                        let hospitalId = button.getAttribute('data-id');
+                        alertMessage(`showing department data of ${hospitalId}`)
+                    })
+                })
+            }
         table.find("tbody").on("click", ".delete-health-post", function () {
             if (confirm("Are you sure you want to delete this health post?")) {
                 e.row($(this).parents("tr")).remove().draw();

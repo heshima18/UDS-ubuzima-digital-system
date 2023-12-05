@@ -391,67 +391,86 @@ let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z,notificationlinks,addMedic
                         }
                     })
                 }
-                buttons.forEach(bttn=>{
-                    bttn.onclick = async function (event) {
-                        event.preventDefault()
-                        let role = this.getAttribute('data-role'),objId = this.getAttribute('data-id'),type = this.getAttribute('data-type')
-                        if (role == 'delete') {
-                            postschema.body = JSON.stringify({
-                                token: getdata('token'),
-                                type: type,
-                                inventory: f.message.id,
-                                needle: objId
-                            })
-                            var row = e.row(event.target.closest('tr'))
-                            row.remove().draw();
-                            let result = await request('rIFromInv',postschema)
-                            if (result.success) {
-                                alertMessage(result.message)
-                            }else{
-                                alertMessage(result.message)
-                            }
-                        }else if (role == 'edit') {
-                            let targetMed = f.message.medicines.find(function (medic) {
-                                return medic.id == objId
-                            })
-                            let target = this.getAttribute('data-bs-target')
-                            let cloneD = document.querySelector(`div${target}`)
-                            cloneD = cloneD.cloneNode(true);
-                            d = addshade();
-                            d.appendChild(cloneD);
-                            let eMform = cloneD.querySelector("form#edit-medicine-form");
-                            let input = eMform.querySelector('input[name="medicine"]');
-                            let quantity = eMform.querySelector('input[name="quantity"]');
+                let tabl = page.querySelector('.dataTables_paginate');
+                tabl.addEventListener('click', e=>{
+                    setTimeout(checkButtons,10)
 
-                            input.value = targetMed.name
-                            input.setAttribute('readonly', true)
-                            input.setAttribute('disabled', true)
-                            input.setAttribute('data-id',targetMed.id)
-                            quantity.value = targetMed.quantity
-                            eMform.addEventListener('submit', async event=>{
-                                event.preventDefault();
-                                    v = checkEmpty(quantity);               
-                                if (v) {
-                                let button = eMform.querySelector('button[type="submit"]')
-                                button.innerText = `Editing entry`
-                                button.setAttribute('disabled',true)
-                                    let values = {}
-                                    Object.assign(values,{needle : input.getAttribute('data-id'),upinfo: {quantity :quantity.value}, type : 'medicines' ,inventory: f.message.id})
-                                    Object.assign(values,{token: getdata('token')})
-                                    postschema.body = JSON.stringify(values)
-                                    let results = await request('eInvEnt',postschema)
-                                    if (results.success) {
-                                        deletechild(d,d.parentNode)
-                                    }
-                                    alertMessage(results.message)
-                                    button.removeAttribute('disabled')
-                                    button.innerText= 'proceed'
-                    
-                                }
-                            })  
-                        }
-                    }
                 })
+                if (e) {     
+                    $.fn.dataTable.ext.search.push(function (settings, data, dataIndex) {
+                        setTimeout(checkButtons,10)
+                        if (settings.nTable.classList.contains('datatables-medications')) {
+                            fileredData = e.rows({ search: 'applied'}).data().toArray();
+                        }      
+                        return true
+                    })
+                }
+                checkButtons();
+                    function checkButtons() {
+                        buttons = Array.from(page.querySelectorAll('button.data-buttns'));
+                        buttons.forEach(bttn=>{
+                            bttn.onclick = async function (event) {
+                                event.preventDefault()
+                                let role = this.getAttribute('data-role'),objId = this.getAttribute('data-id'),type = this.getAttribute('data-type')
+                                if (role == 'delete') {
+                                    postschema.body = JSON.stringify({
+                                        token: getdata('token'),
+                                        type: type,
+                                        inventory: f.message.id,
+                                        needle: objId
+                                    })
+                                    var row = e.row(event.target.closest('tr'))
+                                    row.remove().draw();
+                                    let result = await request('rIFromInv',postschema)
+                                    if (result.success) {
+                                        alertMessage(result.message)
+                                    }else{
+                                        alertMessage(result.message)
+                                    }
+                                }else if (role == 'edit') {
+                                    let targetMed = f.message.medicines.find(function (medic) {
+                                        return medic.id == objId
+                                    })
+                                    let target = this.getAttribute('data-bs-target')
+                                    let cloneD = document.querySelector(`div${target}`)
+                                    cloneD = cloneD.cloneNode(true);
+                                    d = addshade();
+                                    d.appendChild(cloneD);
+                                    let eMform = cloneD.querySelector("form#edit-medicine-form");
+                                    let input = eMform.querySelector('input[name="medicine"]');
+                                    let quantity = eMform.querySelector('input[name="quantity"]');
+        
+                                    input.value = targetMed.name
+                                    input.setAttribute('readonly', true)
+                                    input.setAttribute('disabled', true)
+                                    input.setAttribute('data-id',targetMed.id)
+                                    quantity.value = targetMed.quantity
+                                    eMform.addEventListener('submit', async event=>{
+                                        event.preventDefault();
+                                            v = checkEmpty(quantity);               
+                                        if (v) {
+                                        let button = eMform.querySelector('button[type="submit"]')
+                                        button.innerText = `Editing entry`
+                                        button.setAttribute('disabled',true)
+                                            let values = {}
+                                            Object.assign(values,{needle : input.getAttribute('data-id'),upinfo: {quantity :quantity.value}, type : 'medicines' ,inventory: f.message.id})
+                                            Object.assign(values,{token: getdata('token')})
+                                            postschema.body = JSON.stringify(values)
+                                            let results = await request('eInvEnt',postschema)
+                                            if (results.success) {
+                                                deletechild(d,d.parentNode)
+                                            }
+                                            alertMessage(results.message)
+                                            button.removeAttribute('disabled')
+                                            button.innerText= 'proceed'
+                            
+                                        }
+                                    })  
+                                }
+                            }
+                        })
+                    }
+                
 
 
                 t.classList.add('loaded')

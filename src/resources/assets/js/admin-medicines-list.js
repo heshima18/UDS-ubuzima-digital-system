@@ -182,16 +182,11 @@ if(!u){
                 setTimeout(checkButtons,10)
                return true
             })
-            let viewbut = Array.from(document.querySelectorAll('button.edit-med'))
-            viewbut.forEach(button => {
-                button.onclick = async function (event) {
-                    event.preventDefault();
-                    let med = m.find(function (medic) {
-                        return medic.id == button.getAttribute('data-id') 
-                    })
-                    showEditMed(med)
-                }
-            });
+            checkButtons();
+            let tabl = document.querySelector('.dataTables_paginate');
+                tabl.addEventListener('click', e=>{
+                    setTimeout(checkButtons,10)
+                })
             function checkButtons() {
                 let viewbut = Array.from(document.querySelectorAll('button.edit-med'))
                

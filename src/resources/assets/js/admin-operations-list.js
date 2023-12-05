@@ -191,19 +191,15 @@ d = await request('get-departments',postschema),
                 setTimeout(checkButtons,10)
                 return true
                 })
+
                 let viewbut = Array.from(document.querySelectorAll('button.edit-operation'))
-                viewbut.forEach(button => {
-                    button.onclick = async function (event) {
-                        event.preventDefault();
-                        let opera = m.find(function (operation) {
-                            return operation.id == button.getAttribute('data-id') 
-                        })
-                        showEditOperation(opera)
-                    }
-                });
+                let tabl = document.querySelector('.dataTables_paginate');
+                tabl.addEventListener('click', e=>{
+                    setTimeout(checkButtons,10)
+                })
+                checkButtons();
                 function checkButtons() {
-                    let viewbut = Array.from(document.querySelectorAll('button.edit-operation'))
-                   
+                    viewbut = Array.from(document.querySelectorAll('button.edit-operation'))
                     viewbut.forEach(button => {
                         button.onclick = async function (event) {
                             event.preventDefault();

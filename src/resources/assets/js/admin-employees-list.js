@@ -1,5 +1,5 @@
 // Import the Employees from 'constants.js'
-import { alertMessage, getdata, getschema, postschema, request, initializeCleave,checkEmpty,showRecs, addshade, getLocs, deletechild } from "../../../utils/functions.controller.js";
+import { alertMessage, getdata, getschema, postschema, request, initializeCleave,checkEmpty,showRecs, addshade, getLocs, deletechild, viewEmployeeProfile } from "../../../utils/functions.controller.js";
 
 
 
@@ -42,7 +42,7 @@ $(document).ready(async function () {
                 { data: "hp", title: "Health Post" },
                 { data: "department", title: "Department" },
                 { data: "status", title: "Status" },
-                { data: "action", title: "Action", }
+                { data: "id", title: "Action", }
             ],
             columnDefs: [
                 // Define column properties and rendering functions
@@ -63,7 +63,7 @@ $(document).ready(async function () {
                     render: function (e, t, a, n) {
                         return (
                             `<div class="d-inline-block text-nowrap">
-                            <button class="btn btn-sm btn-icon border border-3" data-bs-toggle="modal" data-bs-target="#view-employee" data-role="view-button"><i class="bx bx-show-alt"></i></button>
+                            <button class="btn btn-sm btn-icon border border-3" name="view" data-role="view-button" data-id="${e}"><i class="bx bx-show-alt"></i></button>
                         </div>`
                         );
                     },
@@ -179,6 +179,34 @@ $(document).ready(async function () {
                 });
             }
         });
+        checkButtons()
+        let tabl = document.querySelector('.dataTables_paginate');
+        tabl.addEventListener('click', e=>{
+            setTimeout(checkButtons,10)
+        })
+        if (e) {     
+            $.fn.dataTable.ext.search.push(function (settings, data, dataIndex) {
+                setTimeout(checkButtons,10)
+                if (settings.nTable.classList.contains('datatables-employees')) {
+                    fileredData = e.rows({ search: 'applied'}).data().toArray();
+                }      
+                return true
+            })
+        }
+        function checkButtons() {
+            let viewButtons = Array.from(document.querySelectorAll('[name="view"]'))
+            viewButtons.forEach(function (button) {
+                button.addEventListener('click', event =>{
+                    if (button.classList.contains('loading')) {
+                        return 0
+                    }
+                    event.preventDefault();
+                    button.classList.add('loading')
+                    let hospitalId = button.getAttribute('data-id');
+                    viewEmployeeProfile(hospitalId)
+                })
+            })
+        }
     async function getMOHSLimitInfo() {
         let div = addshade();
         a = document.createElement('div');
