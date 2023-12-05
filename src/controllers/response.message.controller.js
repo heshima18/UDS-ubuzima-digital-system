@@ -26,6 +26,7 @@ const errorMessage = {
     transc_message:'transfer created successfully',
     me_message:'message edited successfully',
     dc_message:'department created successfully',
+    dic_message:'disease created successfully',
     asuutohp_message:'insurance was added to supported list successfully',
     appoi_appr_message:'appointment approved successfully',
     appoi_decli_message:'appointment declined successfully',

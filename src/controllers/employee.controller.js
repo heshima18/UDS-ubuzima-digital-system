@@ -130,6 +130,42 @@ export const getEmployees = async (req,res)=>{
       return res.status(500).send({success:false, message: errorMessage.is_error})
   }
 }
+export const getEmployeeProfile = async (req,res)=>{
+  try {
+      let {employee} = req.params
+      let select = await query(`
+          SELECT
+           users.id,
+           users.online,
+           users.Full_name as name,
+           users.phone,
+           users.email,
+           users.title as position,
+           users.nid,
+           users.status,
+           COALESCE(hospitals.name, 'N/A')  as hp,
+           COALESCE(departments.name, 'N/A')  as department,
+           COALESCE(users.license, 'N/A')  as license
+          FROM 
+           users left join hospitals on JSON_CONTAINS(hospitals.employees, JSON_QUOTE(users.id), '$')
+           left join departments on users.department = departments.id
+          where 
+            users.id = ?
+            AND 
+            users.role!= 'system'
+      `,[employee])
+      if (!select) {
+          return res.status(500).send({success:false, message: errorMessage.is_error})
+      }
+      if (!select.length) {
+        return res.status(404).send({success:false, message: errorMessage._err_u_404})
+      }
+      res.send({success: true, message: select[0]})
+  } catch (error) {
+      console.log(error)
+      return res.status(500).send({success:false, message: errorMessage.is_error})
+  }
+}
 export const getEmployeesByRole = async (req,res)=>{
   try {
       let {role} = req.params
@@ -230,6 +266,29 @@ export async function getHpEmployeesByDepartment(hospital,department){
           return null
       }
       return select
+  } catch (error) {
+      console.log(error)
+      return null
+  }
+}
+export async function getEmployee(employee){
+  try {
+      let select = await query(`
+          SELECT
+           users.id,
+           users.Full_name,
+           users.role,
+           users.phone,
+           users.title
+          FROM
+           users 
+          WHERE 
+          users.id = ?
+      `,[employee])
+      if (!select) {
+          return null
+      }
+      return select[0]
   } catch (error) {
       console.log(error)
       return null

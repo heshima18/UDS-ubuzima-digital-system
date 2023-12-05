@@ -508,7 +508,7 @@ export function addChip(info,parent,datatoadd) {
   d.className = `p-5p bsbb consolas dgray fs-12p`
   d.innerText = info.name
   for (const item of datatoadd) {
-    d.setAttribute(`data-${item}`,info[item])
+    d.setAttribute(`data-${item.replace(/ /g, '_')}`,info[item])
   }
   c.appendChild(d)
   c.appendChild(r)
@@ -556,6 +556,7 @@ export function getchips(parent,datatoget) {
     attris = attris.map(function(attribute){
       if (attribute.name.indexOf('data-') != -1) {
         let data = attribute.name.split('-')[1]
+
         return data
       }
     }) 
@@ -568,7 +569,7 @@ export function getchips(parent,datatoget) {
       v = {}
       for (const data of datatoget) {
 
-        Object.assign(v,{[data]: chip.querySelector('span').getAttribute(`data-${data}`)})
+        Object.assign(v,{[data.replace(/_/g, ' ')]: chip.querySelector('span').getAttribute(`data-${data}`)})
       }
       d.push(v)
     }
@@ -780,7 +781,7 @@ async function promptTestsPopup(info,chipsHolder) {
   a = document.createElement('div');
   b.appendChild(a)
   info = info[0]
-  a.className = "w-50 h-a mh-70 p-10p bsbb bc-white cntr zi-10000 br-5p" 
+  a.className = "w-50 h-a mh-70 p-10p bsbb bc-white cntr zi-10000 br-5p ovys" 
   a.innerHTML = `<div class="head w-100 h-50p py-10p px-15p bsbb">
                                   <span class="fs-17p dgray capitalize igrid h-100 verdana">${info.name}'s required information</span>
                               </div>
@@ -850,7 +851,7 @@ export function promptCFQPopup(inp) {
                                   </div>
                                   <div class="col-md-12 px-10p py-6p bsbb p-r">
                                     <label for="comment" class="form-label">comment</label>
-                                    <input type="text" class="form-control" id="comment" placeholder="CF comment" name="comment">
+                                    <input type="text" class="form-control optional" data-optional="true" id="comment" placeholder="CF comment" name="comment">
                                     <small class="w-100 red pl-3p verdana hidden"></small>
                                   </div>
                                   <div class="col-md-12 px-10p py-6p bsbb mb-5p p-r">
@@ -909,7 +910,6 @@ export function promptCFQPopup(inp) {
       Object.assign(s,{[v[0].value]: v[0].getAttribute('data-name')})
       Object.assign(s,{name: v[0].value})
       i.push('name')
-      
       addChip(s,chipsHolder,i)
       deletechild(b,b.parentNode)
     }
@@ -920,7 +920,7 @@ async function promptOperationPopup(info,chipsHolder) {
   a = document.createElement('div');
   b.appendChild(a)
   info = info[0]
-  a.className = "w-350p h-a mh-70 p-10p bsbb bc-white cntr zi-10000 br-5p b-mgc-resp" 
+  a.className = "w-50 h-a mh-70 p-10p bsbb bc-white cntr zi-10000 br-5p b-mgc-resp ovys" 
   a.innerHTML = `<div class="head w-100 h-50p py-10p px-15p bsbb">
                   <span class="fs-17p dgray capitalize igrid h-100 verdana">${info.name}'s required information</span>
                   </div>
@@ -952,30 +952,32 @@ async function promptOperationPopup(info,chipsHolder) {
   let opin = v.find(function (inp) {
     return inp.name == 'operator'
   })
-  opin.value=getdata('userinfo').Full_name
-  opin.setAttribute('data-id',getdata('userinfo').id)
-  opin.classList.add('bevalue')
-  opin.setAttribute('readonly',true)
-  opin.setAttribute('disabled',true)
+  if (opin) {
+    opin.value=getdata('userinfo').Full_name
+    opin.setAttribute('data-id',getdata('userinfo').id)
+    opin.classList.add('bevalue')
+    opin.setAttribute('readonly',true)
+    opin.setAttribute('disabled',true)
+  }
   m.addEventListener('submit', (event)=>{
     event.preventDefault();
     l = 1
     i = []
-    s = {}
+    let values = {}
     for (const input of v) {
       k = checkEmpty(input);
       if (!k) {
         l = 0
       }
       if (k) {
-        Object.assign(s,{[input.name]: input.value})
+        Object.assign(values,{[input.name]: input.value})
         i.push(input.name)
       }
     }
     if (l) {
-      Object.assign(s,{id: info.id,name:info.name})
+      Object.assign(values,{id: info.id,name:info.name})
       i.push('id')
-      addChip(s,chipsHolder,i)
+      addChip(values,chipsHolder,i)
       deletechild(b,b.parentNode)
     }
   })
@@ -1659,4 +1661,61 @@ export function RemoveAuthDivs() {
   authDivs.forEach(authdiv=>{
     deletechild(authdiv.parentNode,authdiv.parentNode.parentNode)
   })
+}
+export async function viewEmployeeProfile(employee) {
+  if (!employee || employee == 'null') {
+    return alertMessage('this user is not available')
+  }
+  let bgDiv = addshade();
+  let cont = document.createElement('div')
+  bgDiv.appendChild(cont)
+  cont.className = `br-10p cntr card p-10p bsbb w-450p h-a b-mgc-resp`
+  cont.innerHTML = `<div class="w-100 h-100 p-5p bp-0-resp">
+                      <div class="head w-100 px-5p py-10p bsbb">
+                          <span class="capitalize bold-2 fs-20p">user profile</span>
+                      </div>
+                      <div class="p-5p bsbb w-100 h-91 ovh p-r">
+                          <div class="w-100 h-100 ovys scroll-2 body">
+                              <div class="w-100 h-a my-10p">
+                                  <span class="dgray capitalize block">Names: </span>
+                                  <span class="black capitalize block" data-holder="true" data-hold="name"> </span>
+                              </div>
+                              <div class="w-100 h-a my-10p">
+                                  <span class="dgray capitalize block">title: </span>
+                                  <span class="black capitalize block" data-holder="true" data-hold="position"> </span>
+                              </div>
+                              <div class="w-100 h-a my-10p">
+                                  <span class="dgray capitalize block">phone: </span>
+                                  <span class="black capitalize block" data-holder="true" data-hold="phone"> </span>
+                              </div>
+                               <div class="w-100 h-a my-10p">
+                                  <span class="dgray capitalize block">email: </span>
+                                  <span class="black block" data-holder="true" data-hold="email"> </span>
+                              </div>
+                              <div class="w-100 h-a my-10p">
+                                  <span class="dgray capitalize block">license: </span>
+                                  <span class="black capitalize block" data-holder="true" data-hold="license">
+                                  </span>
+                              </div>
+                          </div>
+                          </div>
+                      </div>
+                  </div>`
+  let body = cont.querySelector('div.body')
+  addLoadingTab(body)
+  postschema.body = JSON.stringify({
+      token : getdata('token'),
+  })
+  employee = await request(`employee/${employee}`,postschema)
+  if (!employee.success) {
+      return alertMessage(employee.message)
+  }
+  employee = employee.message
+  removeLoadingTab(body)
+  let dataHolders = Array.from(cont.querySelectorAll('[data-holder="true"]'))
+  dataHolders.forEach( dataHolder =>{
+    let dataToHold = dataHolder.getAttribute('data-hold')
+    dataHolder.innerText = employee[dataToHold]
+  })
+
 }

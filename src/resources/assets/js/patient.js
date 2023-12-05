@@ -1,4 +1,4 @@
-import { alertMessage, getdata, getschema, postschema, request,deletechild, checkEmpty, showRecs, getchips,getPath,addsCard,cpgcntn, geturl,sessiondata,addChip, showAvaiAssurances, adcm, addshade, addLoadingTab, removeLoadingTab, showAvaiEmps, fT, calcTime, aDePh, extractTime, getDate, triggerRecs, removeRec, addSpinner, removeSpinner, getLocs } from "../../../utils/functions.controller.js";
+import { alertMessage, getdata, getschema, postschema, request,deletechild, checkEmpty, showRecs, getchips,getPath,addsCard,cpgcntn, geturl,sessiondata,addChip, showAvaiAssurances, adcm, addshade, addLoadingTab, removeLoadingTab, showAvaiEmps, fT, calcTime, aDePh, extractTime, getDate, triggerRecs, removeRec, addSpinner, removeSpinner, getLocs, viewEmployeeProfile } from "../../../utils/functions.controller.js";
 import { showReqCardInFo } from "../../../utils/payments.popup.controller.js";
 import {expirateMssg, getNfPanelLinks, pushNotifs, userinfo,m as messages, openmenu, addFilter} from "./nav.js";
 
@@ -337,8 +337,12 @@ postschema.body = JSON.stringify({token: getdata('token')});
                                     let span = document.createElement('span')
                                     span.innerText = '( served out )'
                                     span.className = `fs-10p p-a t-0 mt-50p l-0 ml-25p`
-                                    clonedNode.appendChild(span)
+                                    clonedNode.children[1].appendChild(span)
                                 }
+                                let prescriberElem = dataHolders.find(function (elem) {
+                                    return elem.getAttribute('data-hold') == 'prescribedBy'
+                                })
+                                prescriberElem.setAttribute('data-id', data.prescriberId)
                             }
                            for (const dataHolder of dataHolders) {
                             if (dataHolder.getAttribute('data-hold').indexOf('quantity') != -1 || dataHolder.getAttribute('data-hold').indexOf('amount') != -1) {
@@ -374,6 +378,9 @@ postschema.body = JSON.stringify({token: getdata('token')});
                                     holder.setAttribute('data-role', 'show-profile')
                                     holder.setAttribute('data-id', sessiondata[objectId[0]].id)
                                 } else{
+                                    if (holder.getAttribute('data-profile-link') && objectId[0] == 'hcp_info' && objectId[1] == 'name') {
+                                        holder.setAttribute('data-id',sessiondata.hcp_info.id)
+                                    }
                                     holder.innerText = sessiondata[objectId[0]][objectId[1]]
                                 }
                             }else{
@@ -389,6 +396,14 @@ postschema.body = JSON.stringify({token: getdata('token')});
                                 holder.innerText = sessiondata[objectId]
                             }
                     }
+                    let profileLinks = Array.from(d.querySelectorAll(['[data-profile-link="true"]']))
+                    profileLinks.forEach(link =>{
+                        link.onclick = function (event) {
+                            event.preventDefault();
+                            let id = this.getAttribute('data-id')
+                            viewEmployeeProfile(id)
+                        }
+                    })
                 }
             }else if (x == 'payments-history') {
                 let paymentsHolder = document.querySelector('ul[data-role="payments-holder"]')

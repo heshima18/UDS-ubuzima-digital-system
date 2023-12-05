@@ -407,11 +407,8 @@
                                             </div>
                                             <div class="mb-5p col-md-12 p-10p">
                                                 <label for="decisions" class="form-label">decisions</label>
-                                                <div class="input-group">
-                                                    <input type="text" class="form-control main-input chips-check" placeholder="decisions" name="decision" id="decision" data-optional="true">
-                                                    <span class="input-group-text hover-2 us-none" id="add-decisions">add</span>
-                                                    <small class="hidden w-100 red pl-3p verdana"></small>
-                                                </div>
+                                                <input type="text" class="form-control main-input chips-check optional" placeholder="decisions" name="decision" id="diseases" data-optional="true">
+                                                <small class="hidden w-100 red pl-3p verdana"></small>
                                             </div>
                                             <div class="col-md-12 p-10p bsbb mb-5p">
                                                 <div class="input-group">
@@ -457,21 +454,21 @@
                                                         <span class="btn btn-sm bc-gray dgray mx-5p bfull-resp status-holder" name="info-hol" data-hold="payment_info.status">[Session's-payment-Status]</span>
                                                     </li>
                                                     <li  class="p-2p bsbb flex bblock-resp bfull-resp">
-                                                        <ul class="ls-none px-3p py-5p flex buttons-holder">
+                                                        <ul class="ls-none px-3p py-5p flex bblock-resp buttons-holder">
                                                             <li class="p-2p bsbb flex">
                                                                 <span class="px-5p dgray center">Action : </span>
                                                             </li>
-                                                            <li class="p-2p bsbb flex">
-                                                                <span class="btn btn-sm bc-tr-theme mx-5p data-buttons" data-role="close" data-identifier="true">close</span>
+                                                            <li class="p-2p bsbb flex bblock-resp">
+                                                                <span class="btn btn-sm bc-tr-theme mx-5p data-buttons bfull-resp bma-resp" data-role="close" data-identifier="true">close</span>
                                                             </li>
-                                                            <li class="p-2p bsbb flex">
-                                                                <span class="btn btn-sm bc-gray dgray mx-5p data-buttons" data-identifier="true" data-role="transfer">transfer</span>
+                                                            <li class="p-2p bsbb flex bblock-resp">
+                                                                <span class="btn btn-sm bc-gray dgray mx-5p data-buttons bfull-resp bma-resp" data-identifier="true" data-role="transfer">transfer</span>
                                                             </li>
-                                                            <li class="p-2p bsbb flex">
-                                                                <span class="btn btn-sm btn-primary mx-5p data-buttons" data-identifier="true" data-role="notify">notify</span>
+                                                            <li class="p-2p bsbb flex bblock-resp">
+                                                                <span class="btn btn-sm btn-primary mx-5p data-buttons bfull-resp bma-resp" data-identifier="true" data-role="notify">notify</span>
                                                             </li>
-                                                            <li class="p-2p bsbb flex">
-                                                                <span class="btn btn-sm bc-tr-theme theme mx-5p data-buttons" data-identifier="true" data-role="request-payment">request payment</span>
+                                                            <li class="p-2p bsbb flex bblock-resp">
+                                                                <span class="btn btn-sm bc-tr-theme theme mx-5p data-buttons bfull-resp bma-resp" data-identifier="true" data-role="request-payment">request payment</span>
                                                             </li>
                                                         </ul>
                                                     </li>
@@ -588,6 +585,12 @@
                                                                     <span class="pname dgray fs-14p px-3p block" name="looping-info-hol" data-hold="comment"></span>
                                                                 </span>
                                                             </li>
+                                                            <li class="p-2p bsbb flex jc-sb ">
+                                                                <span>
+                                                                    <span class="pname block fs-18p bold">Prescribed by</span>
+                                                                    <span class="pname dgray fs-14p px-3p hover-6" data-profile-link="true" name="looping-info-hol" data-hold="prescribedBy"></span>
+                                                                </span>
+                                                            </li>
                                                         </ul>
                                                     </div>
                                                 </div>
@@ -605,7 +608,7 @@
                                                             </li>
                                                             <li class="p-2p bsbb block">
                                                                 <span class="pname dgray fs-15p pr-5p block">Tested by  </span>
-                                                                <span class="pname dgray fs-16p bold-2" name="looping-info-hol" data-hold="tester" data-secondary-holder="true">[tester's-name]</span>
+                                                                <span class="pname dgray fs-16p bold-2 hover-6" data-profile-link="true" name="looping-info-hol" data-hold="tester" data-secondary-holder="true">[tester's-name]</span>
                                                             </li>
                                                         </ul>
                                                     </div>
@@ -666,7 +669,7 @@
                                                             </li>
                                                             <li class="p-2p bsbb block">
                                                                 <span class="pname dgray fs-14p pr-5p capitalize block">operated by </span>
-                                                                <span class="pname dgray fs-16p bold-2" name="looping-info-hol" data-hold="operator" data-secondary-holder="true">[operator's-name]</span>
+                                                                <span class="pname dgray fs-16p bold-2 hover-6" data-profile-link="true" name="looping-info-hol" data-hold="operator" data-secondary-holder="true">[operator's-name]</span>
                                                             </li>
                                                         </ul>
                                                     </div>
@@ -706,7 +709,7 @@
                                                     </div>
                                                     <ul class="ls-none my-10p px-3p">
                                                         <li class="p-2p bsbb flex ">
-                                                            <span class="dname black fs-16p" name="info-hol" data-hold="hcp_info.name">[HCP's-name]</span>
+                                                            <span class="dname black fs-16p hover-6" name="info-hol" data-hold="hcp_info.name" data-profile-link="true">[HCP's-name]</span>
                                                         </li>
                                                         <li class="p-2p bsbb flex ">
                                                             <span class="pname dgray fs-14p pr-5p">title : </span>

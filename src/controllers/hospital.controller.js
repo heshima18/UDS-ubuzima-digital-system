@@ -191,7 +191,6 @@ export const searchHP = async (req,res)=>{
 }
 export async function getCustomHps (ids){
   try {
-      console.log(ids)
       let s = ''
       for (const hpid of ids) {
         if (ids.indexOf(hpid) == ids.length-1) {

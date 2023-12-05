@@ -312,17 +312,23 @@ async function gsd(page,extra) {
                         if (!session) {
                             return alertMessage('there was an error while recording the test please reload the page or re click the notification')
                         }
-                        Object.assign(b,{test: {id:b.test, results: b.results, sample: b.sample}})
+                        let bv = {}
+                        Object.assign(b,{id:b.test})
                         for (const key of Object.keys(b)) {
-                            if (!key in b.test) {
-                                Object.assign(b.test,{[key]: b[key]})
+                            if (!key in b) {
+                                Object.assign(bv,{[key]: b[key]})
                             }
                             
                         }
-                        Object.assign(b,{ token: getdata('token')})
-                        postschema.body = JSON.stringify(b)
+                        Object.assign(bv, {test: b})
+                        Object.assign(bv,{token: getdata('token'),session: b.session})
+                        delete bv.test.session
+                        delete bv.test.patient
+                        delete bv.test.test
+                        postschema.body = JSON.stringify(bv)
                         button.setAttribute('disabled',true)
                         button.textContent = 'recording session test info...'
+                        // return console.log(bv)
                         r = await request('add-session-test',postschema);
                         button.removeAttribute('disabled',true)
                         button.textContent = 'submit test'

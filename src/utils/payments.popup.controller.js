@@ -170,6 +170,10 @@ export function showPaymentPopup(data) {
             }
         }
     }
+    let mmpmfrm = cont.querySelector('form[name="mobile-money-form"]')
+    mmpmfrm.onsubmit = function (event) {
+        event.preventDefault()
+    }
 }
 export async function showReqCardInFo(data) {
     let shade = addshade();

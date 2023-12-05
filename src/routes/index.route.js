@@ -9,7 +9,7 @@ import homeController from '../controllers/home.controller';
 import signup from '../controllers/signup.controller';
 import { authorizeRawRole, authorizeRole } from '../middlewares/roles.authorizer.middleware';
 import { authorizeAdmin, authorizeAssuranceManager, authorizeCashier, authorizeHc_provider, authorizeHcp_ptnt, authorizeLaboratory_scientist, authorizeMultipleRoles, authorizePatient, authorizePatientToken, authorizePharmacist } from '../middlewares/users.authoriser.middleware';
-import {addEmployeetoAssurance, addEmployeetoHp, addemployee, getEmployees, getEmployeesByRole, getHpEmployees, removeEmployeFromHospital} from '../controllers/employee.controller';
+import {addEmployeetoAssurance, addEmployeetoHp, addemployee, getEmployeeProfile, getEmployees, getEmployeesByRole, getHpEmployees, removeEmployeFromHospital} from '../controllers/employee.controller';
 import { getHP, getHPs, searchHP,addhospital, hospitalASSU, getHPDeps } from '../controllers/hospital.controller';
 import {addSession, addSessionComment, addSessionDecision, addSessionEquipment, addSessionMedicine, addSessionOperation, addSessionService, addSessionSymptoms, addSessionTests, approveAssuPayment, approvePayment, assuranceMH, closeSession, getDailyHpSessions, getHc_pSessions, getHpsessions, getUsessions, markMedicineAsServed, session, testPay } from '../controllers/patient.session.controller';
 import {addmedicine, editmedicine, getMed, getMeds, searchMed} from '../controllers/medicine.controller';
@@ -40,6 +40,7 @@ import { addPati2fa } from '../middlewares/user.2fa.access.middleware';
 import { createTransfer, viewTransfer } from '../controllers/transfer.controller';
 import getAdminNmbrs from '../controllers/admin-numbers.controller';
 import { checkFPAvai } from '../middlewares/fp.avai.middleware';
+import { addDisease, getDiseases } from '../controllers/diseases.controller';
 const router = express.Router({ strict: false });
 router.post('/verify',verification)
 router.post('/getnmbrs',authorizeRole,authorizeAdmin,getAdminNmbrs)
@@ -102,25 +103,38 @@ router.post("/getTrNsfr",authorizeRole,viewTransfer)
 router.post('/close-session',authorizeRole,authorizeHc_provider,(req,res,next) => authorizeSession(req,res,next,'isowner'),(req,res,next) => authorizeSession(req,res,next,'ismyfacilty'),closeSession);
 router.post('/approve-assurance-payment',authorizeRole,(req,res,next) => authorizeMultipleRoles(req,res,next,['dof']),approveAssuPayment);
 router.post('/approve-payment',authorizeRole,(req,res,next) => authorizeSession(req,res,next,'isnotopen'),authorizeCashier,approvePayment);
+router.post('/addsession',authorizeRole,authorizeHc_provider,authorizePatient,authorizeUserAssurance,authorizeHospitalAssurance,addSession)
 // end of session routes
 router.post("/add-cell",authorizeRole,authorizeAdmin,addCell)
+router.get('/get-map',getMap);
+router.get('/get-assurances',getAssurances);
+router.post('/appointment/:id',authorizeRole,authorizeAppointmentAccess,appointment)
+router.post('/addPatiBg',authorizeRole,authorizePatient,addPatiBg)
+router.get('/api/test',test);
+router.post('/my-appointments',authorizeRole,authorizePatientToken,myAppointments)
+router.post('/hcp-appointments',authorizeRole,authorizeHc_provider,hcpAppointments)
+router.post('/appointment/:id',authorizeRole,authorizeHc_provider,appointment)
+router.post('/search-medicine/:medicine',authorizeRole,searchMed);
+router.get('/medicine/:medicine',getMed);
+
+// =========================================  > EMPLOYEES ROUTES <  ===========================================================================
+
+
 router.post('/addemployee',authorizeRole,authorizeAdmin,(req,res,next) => authorizeHospital(req,res,next,'isoptional'),addemployee)
 router.post('/add-employee-to-hp',authorizeRole,authorizeAdmin,authorizeHospital,addEmployeetoHp)
 router.post('/get-hp-employees',authorizeRole,authorizeHospital,getHpEmployees)
 router.post('/get-employees',authorizeRole,authorizeAdmin,getEmployees)
+router.post('/employee/:employee',authorizeRole,getEmployeeProfile)
 router.post('/get-employees-by-role/:role',authorizeRole,authorizeAdmin,getEmployeesByRole)
-router.post('/addsession',authorizeRole,authorizeHc_provider,authorizePatient,authorizeUserAssurance,authorizeHospitalAssurance,addSession)
-router.get('/api/test',test);
-router.get('/get-map',getMap);
-router.get('/get-assurances',getAssurances);
-router.post('/appointment/:id',authorizeRole,authorizeAppointmentAccess,appointment)
-router.post('/my-appointments',authorizeRole,authorizePatientToken,myAppointments)
-router.post('/addPatiBg',authorizeRole,authorizePatient,addPatiBg)
-router.post('/hcp-appointments',authorizeRole,authorizeHc_provider,hcpAppointments)
-router.post('/appointment/:id',authorizeRole,authorizeHc_provider,appointment)
-router.get('/medicine/:medicine',getMed);
-router.post('/search-medicine/:medicine',authorizeRole,searchMed);
-// inventoy routes
+
+
+// =========================================  >END OF EMPLOYEES ROUTES <  ===========================================================================
+
+
+// =========================================  >INVENTORY ROUTES <  ===========================================================================
+
+
+
 router.post('/add-inventory',authorizeRole,(req,res,next) => authorizeMultipleRoles(req,res,next,['dof','pharmacist']),addInventory);
 router.post('/add-inventory-tests',authorizeRole,(req,res,next) => authorizeMultipleRoles(req,res,next,['dof','pharmacist']),addInventoryTests);
 router.post('/add-inventory-operations',authorizeRole,(req,res,next) => authorizeMultipleRoles(req,res,next,['dof','pharmacist']),addInventoryOperations);
@@ -129,7 +143,12 @@ router.post('/add-inventory-services',authorizeRole,(req,res,next) => authorizeM
 router.post('/get-inventory',authorizeRole,(req,res,next) => authorizeMultipleRoles(req,res,next,['dof','pharmacist']),getInventory);
 router.post("/rIFromInv/",authorizeRole,(req,res,next)=> authorizeMultipleRoles(req,res,next,['pharmacist','dof']),removeItemFromInventory)
 router.post("/eInvEnt",authorizeRole,(req,res,next)=> authorizeMultipleRoles(req,res,next,['pharmacist','dof']),editItemFromInventory)
-// end of inventory routes
+
+
+// =========================================  >END OF INVENTORY ROUTES <  ===========================================================================
+
+
+
 router.post('/getmeds',authorizeRole,getMeds);
 router.post('/approve-appointment',authorizeRole,authorizeHc_provider,approveAppointment);
 router.post('/getAppointmentETA',authorizeRole,authorizeHc_provider,getAppointmentETA)
@@ -150,6 +169,8 @@ router.post('/remove-employee-from-hp',authorizeRole,authorizeAdmin,removeEmploy
 router.post('/remove-department-from-hp',authorizeRole,authorizeAdmin,removeDepartmentFromHospital)
 
 router.post('/get-departments',authorizeRole,authorizeAdmin,getDepartments)
+router.post('/get-diseases',authorizeRole,authorizeAdmin,getDiseases)
+router.post('/add-disease',authorizeRole,authorizeAdmin,addDisease)
 router.get('/styles/:filename',stylesheet);
 router.get('/plugins/:filename',pluginScripts);
 router.get('/utils/:filename',utilsScripts);

@@ -15,6 +15,12 @@ export function page (req,res,page){
             case 'home':
                 file = path.join(__dirname,'..','pages', 'admin-index.html')
                 break;
+            case 'diseases/':
+                file = path.join(__dirname,'..','pages', 'admin-diseases.html')
+                break;
+            case 'diseases':
+                file = path.join(__dirname,'..','pages', 'admin-diseases.html')
+                break;
             case 'employees/':
                 file = path.join(__dirname,'..','pages', 'admin-employees.html') 
                 break;

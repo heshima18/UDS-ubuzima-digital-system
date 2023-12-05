@@ -1,5 +1,5 @@
 
-import { alertMessage, getdata, getschema, postschema, request,deletechild, checkEmpty, showRecs, getchips,getPath,calcTime,addsCard,cpgcntn, geturl,sessiondata,addChip, showAvaiAssurances, adcm, addshade, addLoadingTab, removeLoadingTab, showAvaiEmps, fT, promptHpsToChoose, addAuthDiv, RemoveAuthDivs, showFingerprintDiv, removeRec, promptMessage, triggerRecs, extractTime, getDate, aDePh, addSpinner, addCFInps, removeSpinner } from "../../../utils/functions.controller.js";
+import { alertMessage, getdata, getschema, postschema, request,deletechild, checkEmpty, showRecs, getchips,getPath,calcTime,addsCard,cpgcntn, geturl,sessiondata,addChip, showAvaiAssurances, adcm, addshade, addLoadingTab, removeLoadingTab, showAvaiEmps, fT, promptHpsToChoose, addAuthDiv, RemoveAuthDivs, showFingerprintDiv, removeRec, promptMessage, triggerRecs, extractTime, getDate, aDePh, addSpinner, addCFInps, removeSpinner, viewEmployeeProfile } from "../../../utils/functions.controller.js";
 import { showPaymentPopup } from "../../../utils/payments.popup.controller.js";
 import { addUprofile } from "../../../utils/user.profile.controller.js";
 import {pushNotifs, userinfo,expirateMssg, getNfPanelLinks,m as messages, DateTime, openmenu, addFilter} from "./nav.js";
@@ -281,7 +281,6 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,z,notificationlinks,socket,m
                     f = document.querySelector('form#create-session-form')
                     i = Array.from(f.querySelectorAll('.main-input'))
                     let asb = f.querySelector('span#add-symptom');
-                    let arb = f.querySelector('span#add-decisions');
                     let vsgns = f.querySelector('input#vs');
                     let extras_input = Array.from(f.querySelectorAll('input.extras'));
                     let op_input = f.querySelector('input[name="operations"]');
@@ -326,21 +325,15 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,z,notificationlinks,socket,m
                         inp.value = null
                       }
                     }
-                    arb.onclick = e=>{
-                      let parent = arb.parentNode
-                      let inp = parent.querySelector('input')
-                      if (inp.value.trim()) {
-                        let chipsHolder = parent.querySelector('div.chipsholder')
-                        if (!chipsHolder) {
-                          chipsHolder = document.createElement('div');
-                          chipsHolder.className = 'chipsholder p-5p bsbb w-100'
-                          chipsHolder.title = 'results'
-                          parent.insertAdjacentElement('beforeEnd',chipsHolder)
+                    let di_in = f.querySelector('input#diseases')
+                    di_in.addEventListener('keyup', async (event)=>{
+                        if (di_in.value) {
+                            await triggerRecs(di_in,['id','name'],socket)
+                        }else{
+                            removeRec(di_in)
+
                         }
-                        addChip({name:inp.value.trim(), id: inp.value.trim()},chipsHolder,['id'])
-                        inp.value = null
-                      }
-                    }
+                    })
                     n = i.find(function (e) {return e.id == 'patient'})
                     let ass = i.find(function (e) {return e.id == 'assurance'})
 
@@ -936,7 +929,7 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,z,notificationlinks,socket,m
                     let dataToHold = element.getAttribute('data-hold');
                     let dataToShow = sessiondata[dataToHold]
                     for (const data of dataToShow) {
-                        if (dataToHold != 'tests') {
+                        if (dataToHold != 'tests' && dataToHold != 'operations') {
                             Object.assign(data,{total_amount: (Number(data.price) * Number(data.quantity)).toFixed(2)})
                         }
                         let clonedNode = element.cloneNode(true);
@@ -951,17 +944,33 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,z,notificationlinks,socket,m
                             if (data.servedOut) {
                                 let span = document.createElement('span')
                                 span.innerText = '( served out )'
-                                span.className = `fs-10p p-a t-0 mt-50p l-0 ml-25p`
-                                clonedNode.appendChild(span)
+                                span.className = `fs-10p p-5p bsbb`
+                                clonedNode.children[1].appendChild(span)
                             }
-                        }else if (dataToHold == 'tests') {
+                            let prescriberElem = dataHolders.find(function (elem) {
+                                return elem.getAttribute('data-hold') == 'prescribedBy'
+                            })
+                            prescriberElem.setAttribute('data-id', data.prescriberId)
+                            
+                        }else if (dataToHold == 'tests' || dataToHold == 'operations') {
                             for (const key of Object.keys(data)) {
-                                if ('tester'!= key && 'name'!= key && 'id'!= key) {
+                                if ('operator'!= key && 'tester'!= key && 'name'!= key && 'id'!= key && 'testerId'!= key && 'operatorId'!= key) {
                                     let li = document.createElement('li')
                                     li.className = `p-2p bsbb block`
                                     li.innerHTML = `<span class="pname dgray fs-15p pr-5p block">${key}</span>
                                         <span class="pname dgray fs-16p bold-2" name="looping-info-hol" data-hold="${key}" data-secondary-holder="true">${key}</span>`
                                     clonedNode.appendChild(li)
+                                }
+                                if (key == 'operator') {
+                                    let operatorElem = dataHolders.find(function (elem) {
+                                        return elem.getAttribute('data-hold') == 'operator'
+                                    })
+                                    operatorElem.setAttribute('data-id', data.operatorId)
+                                }else if(key == 'tester'){
+                                    let testerElem = dataHolders.find(function (elem) {
+                                        return elem.getAttribute('data-hold') == 'tester'
+                                    })
+                                    testerElem.setAttribute('data-id', data.testerId)
                                 }
                             }
                             dataHolders = Array.from(clonedNode.querySelectorAll('[name="looping-info-hol"]'))
@@ -1004,6 +1013,9 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,z,notificationlinks,socket,m
                                 holder.setAttribute('data-role', 'show-profile')
                                 holder.setAttribute('data-id', sessiondata[objectId[0]].id)
                             } else{
+                                if (holder.getAttribute('data-profile-link') && objectId[0] == 'hcp_info' && objectId[1] == 'name') {
+                                    holder.setAttribute('data-id',sessiondata.hcp_info.id)
+                                }
                                 holder.innerText = sessiondata[objectId[0]][objectId[1]]
                             }
                         }else{
@@ -1086,6 +1098,14 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,z,notificationlinks,socket,m
                         }
                     }
                 })
+            let profileLinks = Array.from(page.querySelectorAll(['[data-profile-link="true"]']))
+            profileLinks.forEach(link =>{
+                link.onclick = function (event) {
+                    event.preventDefault();
+                    let id = this.getAttribute('data-id')
+                    viewEmployeeProfile(id)
+                }
+            })
             }
             
         } catch (error) {
@@ -1742,11 +1762,13 @@ class popups{
                 let opin = inputs.find(function (inp) {
                     return inp.name == 'operator'
                   })
-                  opin.value=getdata('userinfo').Full_name
-                  opin.setAttribute('data-id',getdata('userinfo').id)
-                  opin.classList.add('bevalue')
-                  opin.setAttribute('readonly',true)
-                  opin.setAttribute('disabled',true)
+                  if (opin) {
+                      opin.value=getdata('userinfo').Full_name
+                      opin.setAttribute('data-id',getdata('userinfo').id)
+                      opin.classList.add('bevalue')
+                      opin.setAttribute('readonly',true)
+                      opin.setAttribute('disabled',true)
+                  }
 
             }
         }
@@ -2013,9 +2035,8 @@ class popups{
                         <span class="dgray px-5p fs-14p my-10p  bsbb capitalize">the diagnosis decisions after all diagonis operations caried out in the  session's process</span>
                         <div class="body w-100 h-a p-5p grid">
                             <form method="post" id="req-decision-info-form" name="req-decision-info-form">
-                                <div class="input-group my-10p">
-                                    <input type="text" class="form-control chips-check" placeholder="decision " name="decisions" id="decision">
-                                    <span class="input-group-text hover-2 us-none" id="add-decision">add</span>
+                                <div class="parent p-r my-10p">
+                                    <input type="text" class="form-control chips-check" placeholder="decision " name="decisions" id="diseases">
                                     <small class="hidden w-100 red pl-3p verdana"></small>
                                 </div>
                                 <div class="wrap center-2 px-10p bsbb bblock-resp mt-15p">
@@ -2025,20 +2046,13 @@ class popups{
                         </div>`
         let form = a.querySelector("form");
         let inputs = Array.from(form.querySelectorAll('.chips-check'))
-        let adb = form.querySelector('span#add-decision');
-        adb.addEventListener('click',e=>{
-            let parent = adb.parentNode
-            let inp = parent.querySelector('input')
-            if (inp.value.trim()) {
-                let chipsHolder = parent.querySelector('div.chipsholder')
-                if (!chipsHolder) {
-                chipsHolder = document.createElement('div');
-                chipsHolder.className = 'chipsholder p-5p bsbb w-100'
-                chipsHolder.title = 'symptoms'
-                parent.insertAdjacentElement('beforeEnd',chipsHolder)
-                }
-                addChip({name:inp.value.trim(), id: inp.value.trim()},chipsHolder,['id'])
-                inp.value = null
+        let extra_input = a.querySelector('input#diseases')
+        extra_input.addEventListener('keyup', async (event)=>{
+            if (extra_input.value) {
+                await triggerRecs(extra_input,['id','name'],socket)
+            }else{
+                removeRec(extra_input)
+
             }
         })
         form.addEventListener('submit', async event=>{
