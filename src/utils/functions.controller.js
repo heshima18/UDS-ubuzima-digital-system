@@ -374,7 +374,8 @@ export function showRecs(input, data,type,noInpAction) {
     parent.appendChild(div)
     const items = div.querySelectorAll('li.item')
     items.forEach(item =>{
-     item.addEventListener('mousedown', (e)=>{
+     item.onmousedown = (e)=>{ 
+      input.value = null;
       if (input.classList.contains('chips-check')) {
         if (type == 'medicines' || type == 'equipments' || type == 'services') {
           if (input.classList.contains('no-quantity-addin')) {
@@ -463,7 +464,7 @@ export function showRecs(input, data,type,noInpAction) {
           }
         }) 
       }
-     })
+     }
     })
     input.addEventListener('blur', function () {
       try {
@@ -517,11 +518,12 @@ export function addChip(info,parent,datatoadd) {
       if (chip) {
           t = chip.childNodes[0]
           if (t && t.textContent == info.name) {
-           found = 1  
+           found = 1
+           deletechild(chip,parent)
           }
       }
   }
-  (!found)? parent.appendChild(c): null
+  parent.appendChild(c)
   r = Array.from(document.querySelectorAll('div.remove'));
   r.forEach(remove=>{
       remove.addEventListener('click',e=>{
@@ -612,12 +614,12 @@ export function getPath(index) {
   
 }
 function promptin(info,chipsHolder,type) {
-  b = addshade();
+  let shd = addshade(),
   a = document.createElement('div');
-  b.appendChild(a)
+  shd.appendChild(a)
   info = info[0]
   a.className = "w-400p h-a p-10p bsbb bc-white cntr zi-10000 br-5p b-mgc-resp" 
-  a.innerHTML = `<div class="head w-100 h-50p py-10p px-15p bsbb">
+  a.innerHTML = `<div class="head w-100 h-a py-10p px-15p bsbb">
                                   <span class="fs-17p dgray capitalize igrid h-100 verdana">enter the quantity of ${info.name}</span>
                               </div>
                               <div class="body w-100 h-a p-5p grid">
@@ -672,8 +674,8 @@ function promptin(info,chipsHolder,type) {
                                     </div>
                                   </form>
                               </div>`
-  m = a.querySelector('form#rec-quantity-form')
-  v = a.querySelector('input#quantity');
+  let m = a.querySelector('form#rec-quantity-form'),
+  v = a.querySelector('input#quantity'),
   c  = a.querySelector('#comment');
   let stats = Array.from(a.querySelectorAll('input[type="radio"]'));
   if (stats.length) {
@@ -687,7 +689,7 @@ function promptin(info,chipsHolder,type) {
     
   }
   v.focus()
-  m.addEventListener('submit', (event)=>{
+  m.addEventListener('submit', async (event)=>{
     event.preventDefault()
     if (v.value.trim() != '' && Number(v.value.trim()) > 0 ) {
       if (stats.length) {
@@ -696,21 +698,27 @@ function promptin(info,chipsHolder,type) {
 
         addChip({name:info.name, id: info.id ,unit: info.unit , quantity: v.value, status: cs.value, comment: c.value},chipsHolder,['id','name','quantity','status','unit','comment'])
       }else{
-        addChip({name:info.name, id: info.id ,unit: info.unit ,price: info.price , quantity: v.value},chipsHolder,['id','name','quantity','price','unit'])
+        if (chipsHolder.parentElement.querySelector('.form-control').classList.contains('price-addin')) {
+          let price = await promptPrice([info],chipsHolder,true),
+          cInfo = {name:info.name, id: info.id ,unit: info.unit ,price: price , quantity: v.value}
+          addChip(cInfo,chipsHolder,['id','name','unit','quantity','price','unit'])
+        }else{
+          addChip({name:info.name, id: info.id ,unit: info.unit ,price: info.price , quantity: v.value},chipsHolder,['id','name','quantity','price','unit'])
+        }
       }
-      deletechild(b,b.parentNode)
+      deletechild(shd,shd.parentNode)
     }else{
       setErrorFor(v,'enter the quantity')
     }
   })
 }
-function promptPrice(info,chipsHolder) {
-  b = addshade();
+function promptPrice(info,chipsHolder,retP) {
+  let b = addshade(),
   a = document.createElement('div');
   b.appendChild(a)
   info = info[0]
   a.className = "w-400p h-a p-10p bsbb bc-white cntr zi-10000 br-5p" 
-  a.innerHTML = `<div class="head w-100 h-50p py-10p px-15p bsbb">
+  a.innerHTML = `<div class="head w-100 h-a py-10p px-15p bsbb">
                                   <span class="fs-17p dgray capitalize igrid h-100 verdana">enter the price of ${info.name}</span>
                               </div>
                               <div class="body w-100 h-a p-5p grid">
@@ -728,16 +736,22 @@ function promptPrice(info,chipsHolder) {
                                     </div>
                                   </form>
                               </div>`
-  m = a.querySelector('form#rec-price-form')
+  let m = a.querySelector('form#rec-price-form'),
   v = a.querySelector('input#price');
   v.focus()
-  m.addEventListener('submit', (event)=>{
-    event.preventDefault()
-    if (v.value.trim() != '') {
-        addChip({name:info.name, id: info.id , price: v.value},chipsHolder,['id','name','price'])
-      deletechild(b,b.parentNode)
-    }else{
-      setErrorFor(v,'enter the price')
+  return new Promise((resolve, reject) => {
+    m.onsubmit =  (event)=>{
+      event.preventDefault()
+      if (v.value.trim() != '') {
+        if (retP) {
+          resolve(v.value)
+        }else{
+          addChip({name:info.name, id: info.id , price: v.value},chipsHolder,['id','name','price'])
+        }
+        deletechild(b,b.parentNode)
+      }else{
+        setErrorFor(v,'enter the price')
+      }
     }
   })
 }
@@ -1252,7 +1266,7 @@ export function shuffleArray(array) {
 }
 export function addsCard(message,dec) {
   let div = document.createElement('div')
-  div.className = `w-100 h-60p center p-f t-0 zi-100`
+  div.className = `w-100 h-60p center p-f t-0 zi-100 scardHol`
   let sCard = document.createElement('div');
   let thenav
      thenav = document.querySelector('div#cont');
@@ -1275,7 +1289,8 @@ export function addsCard(message,dec) {
 	}else{
     c = document.querySelectorAll('div.nwecard')
     c.forEach(card=>{
-      card.parentNode.removeChild(card)
+      deletechild(card.parentElement,card.parentNode.parentElement)
+
     })
 	}
 	
@@ -1287,6 +1302,10 @@ function removecard(sCard) {
 function deleteCard(sCard) {
   let navbar = document.querySelector('div#cont')
 	navbar.removeChild(sCard.parentElement);
+  let sCardsHol = Array.from(document.querySelectorAll('div.scardHol'))
+  sCardsHol.map(div=>{
+    deletechild(div,navbar)
+  })
 }
 export async  function cpgcntn(step,pages) {
   try {

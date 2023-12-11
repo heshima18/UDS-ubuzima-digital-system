@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Director General - Home | UDS</title>
+    <link rel="stylesheet" type="text/css" href="/styles/styling.css">
+    <link rel="icon" type="image/x-icon" href="/assets/img/icons/logo/logo-alt.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
+    <link  href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&amp;display=swap"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/boxicons/2.1.4/css/boxicons.min.css" integrity="sha512-cn16Qw8mzTBKpu08X0fwhTSv02kK/FojjNLz0bwp2xJ4H+yalwzXKFw/5cLzuBZCxGWIA+95X4skzvo8STNtSg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" integrity="sha512-b2QcS5SsA8tZodcDtGRELiGv5SaKSk1vDHDaQRda0htPYWZ6046lr3kJ5bAAQdpV2mmA/4v0wQF9MyU6/pDIAg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/spinkit/2.0.0/spinkit.min.css" integrity="sha512-kRYkjiYH/VXxoiaDK2oGNMKIi8VQVfie1lkYGX3kmfzWNR2kfaF5ze0885W3/eE6lIiURBsZA91M/WNvCajHMw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <!-- Core CSS -->
+    <!-- Core CSS -->
+    <!-- Vendors CSS -->
+    <link rel="stylesheet" href="/styles/styling.css">
+    <script src="/assets/js/nav.js" type="module"></script>
+    <script src="/assets/js/footer.js" type="module"></script>
+    <script src="/assets/js/dg.js" type="module"></script>
+    <script src="/assets/js/config.js" type="module"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cleave.js/1.6.0/cleave.min.js" integrity="sha512-KaIyHb30iXTXfGyI9cyKFUIRSSuekJt6/vqXtyQKhQP6ozZEGY8nOtRS6fExqE4+RbYHus2yGyYg1BrqxzV6YA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.min.js" integrity="sha512-Xm9qbB6Pu06k3PUwPj785dyTl6oHxgsv9nHp7ej7nCpAqGZT3OZpsELuCYX05DdonFpTlBpXMOxjavIAIUwr0w==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/apexcharts/3.44.0/apexcharts.min.js" integrity="sha512-9ktqS1nS/L6/PPv4S4FdD2+guYGmKF+5DzxRKYkS/fV5gR0tXoDaLqqQ6V93NlTj6ITsanjwVWZ3xe6YkObIQQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+	<link rel="shortcut icon" href="/icons/favicon.png" type="image/x-icon">
+</head>
+<body class="p-0 m-0 w-100 h-100 p-a ovh">
+<div class="cont w-100 h-100 ovxh" id="cont">
+	<div class="theshade w-100 h-100 p-f bc-tr-black zi-20 pl-300p bsbb tr-0-3 hidden"></div>
+	<div id="body" class="bc-gray w-100 h-100 p-r bsbb">
+        <div class="w-100 h-a bsbb m-0 t-0 p-f p-10p zi-100">
+            <nav class="w-100 card-1 bc-white br-5p flex jc-sb pr-15p pl-15p" id="layout-navbar">
+                <div class="h-54p center">
+                    <a class="nav-item nav-link px-0 me-xl-4 flex" href="javascript:void(0)">
+                        <span>
+                            <img src="/assets/img/icons/logo/logo-alt.png" alt="logo" class="w-a contain h-50p">
+                        </span>
+                    </a>
+                </div>
+                <div class="h-54p center" id="navbar-collapse">
+                    <ul class="flex h-54p p-0 m-0 ls-none">
+                        <li class="center-2 px-10p">
+                            <a class="td-none center-2 " id="dropdown-toggle" href="javascript:void(0);" data-bs-toggle="profile-dropdown">
+                                    <div class="sk-wave sk-primary w-25p shaddow">
+                                        <div class="bc-theme sk-wave-rect"></div>
+                                        <div class="bc-theme sk-wave-rect"></div>
+                                        <div class="bc-theme sk-wave-rect"></div>
+                                        <div class="bc-theme sk-wave-rect"></div>
+                                        <div class="bc-theme sk-wave-rect"></div>
+                                    </div>
+                            </a>
+                            <ul class="profile-dropdown bc-white card-5 h-a w-250p bsbb t-80p p-f mr-20p r-0 ls-none br-10p p-0 hidden" name="profile-dropdown">
+                                <li class="px-10p bsbb py-2p my-10p w-100 h-a">
+                                    <a class="dropdown-item" href="#">
+                                        <div class="flex px-5p py-10p bsbb">
+                                            <div class="left w-100">
+                                                <span class="fw-semibold d-bloc data-role bsbb" data-role="profile-name"><span class="skel w-65p h-10p br-2p block my-5p"></span></span>
+                                                <small class="text-muted block data-role" data-role="profile-title"><span class="skel w-50p h-10p br-2p block my-5p"></span></small>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </li>
+                                <li class="bsbb py-2p">
+                                    <div class="dropdown-divider bb-1-s-g"></div>
+                                </li>
+                                <li class="px-10p bsbb py-2p my-10p w-100 h-a">
+                                    <a class="left td-none dgray" href="../my-account">
+                                        <div class="center-2 w-a">
+                                            <i class="bx bxs-user-account px-10p bx-sm"></i>
+                                            <span class="dgray mt--5p">My Account</span>
+                                        </div>
+                                    </a>
+                                </li>
+                                <li class="bsbb py-2p">
+                                    <div class="dropdown-divider bb-1-s-g"></div>
+                                </li>
+                                <li class="px-10p bsbb py-2p my-10p w-100 h-a">
+                                    <a class="left td-none dgray" href="logout" target="_blank">
+                                        <div class="center-2 w-a">
+                                            <i class="bx bx-log-out px-10p bx-sm"></i>
+                                            <span class="dgray mt--5p">Log Out</span>
+                                        </div>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li class="center-2">
+                            <a class="p-r p-10p bsbb center td-none" id="dropdown-toggle" href="javascript:void(0);" data-bs-toggle="notification-dropdown" data-bs-auto-close="outside">
+                                <i class="bx bx-bell bx-sm dgray"></i>
+                                <span class="p-a bc-red br-50 w-15p h-15p fs-9p white hidden t-5p r-0  data-role" data-role="notification-count-badge">0</span>
+                            </a>
+                            <ul class="notification-dropdown bc-white card-5 br-10p h-500p w-390p p-0 t-80p p-f mr-20p r-0 ls-none bw-90-500-resp bm-x-10p-resp hidden" data-bs-popper="static" name="notification-dropdown" id="notification-dropdown">
+                                <li class="dropdown-menu-header border-bottom px-15p py-15p bsbb">
+                                    <div class="dropdown-header d-flex align-items-center py-10p">
+                                        <i class='bx bx-notification px-10p bx-sm dgray'></i><h5 class=" mb-0 me-auto capitalize dgray">Notifications</h5>
+                                    </div>
+                                </li>
+                                <li class="dropdown-notifications-list scrollable-container h-78 ovys scroll-3">
+                                    <ul class="list-group list-group-flush nf-panel h-100">
+                                       <li class="w-100 h-100 center">
+                                        <div class="center">
+                                            <div class="sk-grid sk-blue">
+                                                <div class="sk-grid-cube bc-theme"></div>
+                                                <div class="sk-grid-cube bc-theme"></div>
+                                                <div class="sk-grid-cube bc-theme"></div>
+                                                <div class="sk-grid-cube bc-theme"></div>
+                                                <div class="sk-grid-cube bc-theme"></div>
+                                                <div class="sk-grid-cube bc-theme"></div>
+                                                <div class="sk-grid-cube bc-theme"></div>
+                                                <div class="sk-grid-cube bc-theme"></div>
+                                                <div class="sk-grid-cube bc-theme"></div>
+                                            </div>
+                                        </div>
+                                        <div class="w-100 h-a dgray capitalize">loading...</div>
+                                       </li>
+                                    </ul>
+                                </li>
+                                <li class="dropdown-menu-footer border-top h-50p center-2">
+                                    <a href="javascript:void(0);" class="dropdown-item d-flex justify-content-center p-3">
+                                        Mark all as seen
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+        </div>
+		<div class="thebody w-100 h-95 p-r pt-60p bsbb">
+			<div class="w-100 h-100 mb-10p">
+				<div class="w-100 m-a h-100 p-10p br-10p mb-30p bsbb">
+					<div class="w-100 h-100 p-10p bsbb flex bblock-resp bp-0-resp bc-white" aria-controls="cont">
+						<div class="w-240p bfull-resp h-a bh-70p-resp p-10p bsbb the-h">
+							<div class="cont w-100 h-100">
+								<div class="the-h w-210p m-a bfull-resp bsbb h-a ovxs scroll-3 p-5p bsbb bc-white br-5p">
+									<ul class="ls-none p-0 m-0 jc-sb w-100 bflex-resp">
+										<li class="p-5p bsbb">
+											<span class="w-100 h-100 p-10p hover-7 cpcards bsbb flex verdana nowrap capitalize fs-13p br-5p active bb-1-s-theme bc-tr-theme theme dgray" data-item-type="home">
+                                                <span class="w-a h-19p mr-10p"><i class='bx bx-home-alt bx-sm'></i></span>
+                                                <span class="center pt-2p bsbb">
+                                                     Home
+                                                </span>
+                                             </span>
+										</li>
+										<li class="p-5p bsbb">
+											<span class="w-100 h-100 p-10p hover-7 cpcards bsbb flex verdana nowrap capitalize fs-13p br-5p dgray" data-item-type="my-account"> 
+                                                <span class="w-a h-19p mr-10p"><i class="bx bxs-user-account bx-sm"></i></span>
+                                                <span class="center pt-2p bsbb">
+                                                    my account
+                                                </span>
+                                            </span>
+										</li>
+									</ul>
+								</div>
+							</div>
+						</div>
+						<div class="the-b w-100 h-95 p-r ovxh">
+							<!-- home section -->
+							<div class="br-5p w-100 h-100 p-r ovh block tr-0-3 pagecontentsection zi-10" id="home">
+								<div class="w-100 h-a p-10p bsbb">
+									<span class="theme capitalize left flex bold fs-20p verdana h-100 pl-10p"><span class="dgray capitalize">director general / </span>&nbsp;Home</span>
+								</div>
+								<div class="pg-cntnt w-100 h-90 bh-80-resp scroll-3 p-20p bsbb ovys left bp-0-resp">
+                                    <div class="row">
+                                        <div class="col-md-12 order-2 order-md-3 order-lg-2 mb-4">
+                                            <div class="card h-100">
+                                                <div class="row row-bordered g-0 h-100">
+                                                    <div class="col-md-8">
+                                                        <h5 class="card-header m-0 me-2 pb-3 dgray"><span><i class="far fa-chart-bar fa-rotate-270 mx-10p"></i></span>Analytics</h5>
+                                                        <div class="w-100 h-100 p-10p bsbb">
+                                                            <div class="w-100 h-70">
+                                                                <div class="w-100 h-100" id="mainChart"></div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <div class="p-5p">
+                                                            <div class="p-5p">
+                                                                <span class="capitalize dgray bold-2">actions</span>
+                                                            </div>
+                                                            <div class="p-10p bsbb">
+                                                                <div class="title">
+                                                                    <span class="capitalize">comparison</span>
+                                                                </div>
+                                                                <div class="px-5p my-10p">
+                                                                    <div class="title">
+                                                                        <span class="capitalize">type</span>
+                                                                    </div>
+                                                                    <div class="buttons">
+                                                                        <div class="BttnsHol">
+                                                                            <button type="button" data-role="custom-buttns" data-target="comparisonType" id="date" class="capitalize bc-tr-theme theme btn btn-sm my-4p mx-1p nowrap">date</button>
+                                                                            <button type="button" data-role="custom-buttns" data-target="comparisonType" id="month" class="capitalize bc-tr-theme theme btn btn-sm my-4p mx-1p nowrap">month</button>
+                                                                            <button type="button" data-role="custom-buttns" data-target="comparisonType" id="year" class="capitalize bc-tr-theme theme btn btn-sm my-4p mx-1p nowrap  b-1-s-theme">year</button>
+        
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="w-100 h-45p typesHolCont p-r ovh">
+                                                                        <div class="flex py-10p typesHol w-100 active tr-0-2 p-a" data-id="year">
+                                                                            <div class="text-center w-40">
+                                                                                <input class="form-control form-control-sm require-cleave year" data-id="year" type="text" id="start" placeholder="2023">
+                                                                            </div>
+                                                                            <span class="center capitalize px-10p w-20">with</span>
+                                                                            <div class="text-center w-40">
+                                                                                <input class="form-control form-control-sm require-cleave year" data-id="year" type="text" id="stop" placeholder="2025">
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="flex py-10p typesHol w-100 tr-0-2 p-a mt-60p" data-id="month">
+                                                                            <div class="text-center w-40">
+                                                                                <input class="form-control form-control-sm" type="month" id="start" data-id="month">
+                                                                            </div>
+                                                                            <span class="center capitalize px-10p w-20">with</span>
+                                                                            <div class="text-center w-40">
+                                                                                <input class="form-control form-control-sm" type="month" id="stop" data-id="month">
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="flex py-10p typesHol w-100 tr-0-2 p-a mt-60p" data-id="date">
+                                                                            <div class="text-center w-40">
+                                                                                <input class="form-control form-control-sm" type="date" id="start" data-id="date">
+                                                                            </div>
+                                                                            <span class="center capitalize px-10p w-20">with</span>
+                                                                            <div class="text-center w-40">
+                                                                                <input class="form-control form-control-sm" type="date" id="stop" data-id="date">
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div class=" p-10p">
+                                                                    <button class="btn btn-primary btn-sm" id="compareSearch">proceed</button>
+                                                                </div>
+                                                            </div>
+                                                            <div class="p-10p bsbb">
+                                                                <div class="title">
+                                                                    <span class="capitalize">group by</span>
+                                                                </div>
+                                                                <div class="buttons">
+                                                                    <div class="BttnsHol h-80p p-r" id="groupByBttnsHol">
+                                                                        <div class="w-100 h-100 ovh p-a bsbb bc-white t-0 blur shaddow zi-20" data-role="shade">
+                                                                            <div class="center w-70p h-70p ovh">
+                                                                                <div class="sk-grid sk-primary">
+                                                                                    <div class="sk-grid-cube bc-theme"></div>
+                                                                                    <div class="sk-grid-cube bc-theme"></div>
+                                                                                    <div class="sk-grid-cube bc-theme"></div>
+                                                                                    <div class="sk-grid-cube bc-theme"></div>
+                                                                                    <div class="sk-grid-cube bc-theme"></div>
+                                                                                    <div class="sk-grid-cube bc-theme"></div>
+                                                                                    <div class="sk-grid-cube bc-theme"></div>
+                                                                                    <div class="sk-grid-cube bc-theme"></div>
+                                                                                    <div class="sk-grid-cube bc-theme"></div>
+                                                                                  </div>
+                                                                            </div>
+                                                                        </div>
+                                                                        
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="p-10p bsbb">
+                                                            <div class="title">
+                                                                <span class="capitalize">view by</span>
+                                                            </div>
+                                                            <div class="buttons">
+                                                                <div class="BttnsHol h-a p-r" id="viewByBttnsHol">
+                                                                    <div class="w-100 h-100 ovh p-a bsbb bc-white t-0 blur shaddow zi-20" data-role="shade">
+                                                                        <div class="center w-70p h-70p ovh">
+                                                                            <div class="sk-grid sk-primary">
+                                                                                <div class="sk-grid-cube bc-theme"></div>
+                                                                                <div class="sk-grid-cube bc-theme"></div>
+                                                                                <div class="sk-grid-cube bc-theme"></div>
+                                                                                <div class="sk-grid-cube bc-theme"></div>
+                                                                                <div class="sk-grid-cube bc-theme"></div>
+                                                                                <div class="sk-grid-cube bc-theme"></div>
+                                                                                <div class="sk-grid-cube bc-theme"></div>
+                                                                                <div class="sk-grid-cube bc-theme"></div>
+                                                                                <div class="sk-grid-cube bc-theme"></div>
+                                                                              </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class=" col-md-12 order-3 order-md-2">
+                                            <div class="col-12 mb-4">
+                                                <div class="card patientsDiv h-300p">
+                                                    <div class="card-body">
+                                                        <div class="d-flex justify-content-between flex-sm-row flex-column gap-3 h-100">
+                                                            <div class="d-flex flex-sm-column flex-row align-items-start justify-content-between">
+                                                                <div class="card-title">
+                                                                    <h5 class="text-nowrap mb-2 dgray"><i class="fas fa-chart-line"></i> Patients Growth Chart Report</h5>
+                                                                    <small class="dgray capitalize"> in the selected range and date</small>
+                                                                </div>
+                                                                <div class="mt-sm-auto">
+                                                                    <small class=" text-nowrap fw-semibold percentage flex">
+                                                                        <span class="bc-gray p-5p w-80p br-10p skel"></span>
+                                                                    </small>
+                                                                    <span class="block pn-holder my-10p">
+                                                                        <span class="bc-gray p-5p w-70p br-10p skel block mb-5p"></span>
+                                                                        <span class="bc-gray p-5p w-40p br-10p skel block"></span>
+                                                                    </span>
+                                                                </div>
+                                                            </div>
+                                                            <div id="profileReportChart" class="w-70  bw-70-resp h-a ovh p-r">
+                                                                <div class="w-100 h-100 ovh p-a bsbb bc-white t-0 blur shaddow zi-20" data-role="shade">
+                                                                    <div class="cntr center w-70p h-70p ovh">
+                                                                        <div class="sk-grid sk-primary">
+                                                                            <div class="sk-grid-cube bc-theme"></div>
+                                                                            <div class="sk-grid-cube bc-theme"></div>
+                                                                            <div class="sk-grid-cube bc-theme"></div>
+                                                                            <div class="sk-grid-cube bc-theme"></div>
+                                                                            <div class="sk-grid-cube bc-theme"></div>
+                                                                            <div class="sk-grid-cube bc-theme"></div>
+                                                                            <div class="sk-grid-cube bc-theme"></div>
+                                                                            <div class="sk-grid-cube bc-theme"></div>
+                                                                            <div class="sk-grid-cube bc-theme"></div>
+                                                                          </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div id="patientsChart" class="h-100 ovxh" data-dd=""></div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                    </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-12 mb-4">
+                                            <div class="my-10p">
+                                                <span class="capitalize dgray bold-2">diagnosis insights</span>
+                                            </div>
+                                        </div>
+                                        <div class="p-r w-96 bfull-resp m-a" id="resInsights">
+                                            <div class="w-a bfull-resp mb-4 resCard iblock mx-5p bm-x-0-resp">
+                                                <div class="card">
+                                                    <div class="card-body">
+                                                        <h3 class="d-block mb-1 name capitalize bold-2">...</h3>
+                                                        <div class="flex">
+                                                            <h4 class="card-title text-nowrap mb-2 total">...</h4>
+                                                            <span class="capitalize px-10p">case(s)</span>
+                                                        </div>
+                                                        <div class="py-5p flex">
+                                                            <span class=" fw-semibold" id="perc-hol"><i class='bx bx-down-arrow-alt'></i> 0.00%</span>
+                                                        </div>
+                                                    
+                                                        <div>
+                                                            <span>
+                                                                <button class="btn-primary btn btn-sm" id="view-res" data-role="view-res-button">view</button>
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="w-100 h-100 ovh p-a bsbb bc-white t-0 blur shaddow zi-20" data-role="shade">
+                                                <div class="cntr center w-70p h-70p ovh">
+                                                    <div class="sk-grid sk-primary">
+                                                        <div class="sk-grid-cube"></div>
+                                                        <div class="sk-grid-cube"></div>
+                                                        <div class="sk-grid-cube"></div>
+                                                        <div class="sk-grid-cube"></div>
+                                                        <div class="sk-grid-cube"></div>
+                                                        <div class="sk-grid-cube"></div>
+                                                        <div class="sk-grid-cube"></div>
+                                                        <div class="sk-grid-cube"></div>
+                                                        <div class="sk-grid-cube"></div>
+                                                      </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-12 mb-4">
+                                            <div class="my-10p">
+                                                <span class="capitalize dgray bold-2">rankings insights</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 col-lg-4 col-xl-4 order-0 mb-4 ranks" id="rankByDiags" data-to-hold="groupByResults">
+                                            <div class="card h-100 ovh">
+                                                <div class="card-header py-10p bsbb d-flex align-items-center justify-content-between">
+                                                    <div class="card-title mb-0 py-10p dray">
+                                                        <h5 class="m-0 me-2">Diagnosis Rankings</h5>
+                                                        <small class="text-muted">in the selected range and location</small>
+                                                    </div>
+                                                    <div class="dropdown">
+                                                        <button class="btn p-0" type="button" id="orederStatistics" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                            <i class="bx bx-dots-vertical-rounded"></i>
+                                                        </button>
+                                                        <div class="dropdown-menu dropdown-menu-end" aria-labelledby="orederStatistics">
+                                                            <a class="dropdown-item" href="javascript:void(0);">Select All</a>
+                                                            <a class="dropdown-item" href="javascript:void(0);">Refresh</a>
+                                                            <a class="dropdown-item" href="javascript:void(0);">Share</a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="card-body">
+                                                    <div class="text-muted">
+                                                        <small>This one includes the diagnosis results and the health post or location on which it appears the most</small>
+                                                    </div>
+                                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                                        <div class="d-flex flex-column gap-1">
+                                                            <h2 class="mb-2" id="mainTotal"><span class="bc-gray p-5p br-5p mx-10p my-5p w-70p block"></span></h2>
+                                                            <span>Total Diagnosis Results</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="w-100 h-100 ovh p-a bsbb bc-white t-0 blur shaddow zi-20" data-role="shade">
+                                                        <div class="cntr center w-70p h-70p ovh">
+                                                            <div class="sk-grid sk-primary">
+                                                                <div class="sk-grid-cube"></div>
+                                                                <div class="sk-grid-cube"></div>
+                                                                <div class="sk-grid-cube"></div>
+                                                                <div class="sk-grid-cube"></div>
+                                                                <div class="sk-grid-cube"></div>
+                                                                <div class="sk-grid-cube"></div>
+                                                                <div class="sk-grid-cube"></div>
+                                                                <div class="sk-grid-cube"></div>
+                                                                <div class="sk-grid-cube"></div>
+                                                              </div>
+                                                        </div>
+                                                    </div>
+                                                    <ul class="px-25p m-0 h-400p ovys scroll-2" id="ranks-cont">
+                                                        <li class="d-flex mb-4 pb-1 hover-2">
+                                                            <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
+                                                                <div class="me-2">
+                                                                    <h6 class="mb-0 capitalize" id="name">...</h6>
+                                                                    <span class="flex">
+                                                                        <small class="text-muted d-block mb-1 pr-6p" id="date">...</small>
+                                                                        <span class="dgray fs-12p">
+                                                                            (<small class="mb-0  px-5p" id="datecount">...</small>)
+                                                                        </span>
+                                                                    </span>
+                                                                </div>
+                                                                <div class="user-progress align-items-center gap-1">
+                                                                    <span class="flex">
+                                                                        <h6 class="mb-0 center" id="total">...</h6> <span class="text-muted mx-5p">Patients</span>
+                                                                    </span>
+                                                                </div>
+                                                            </div>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 col-lg-4 col-xl-4 order-0 mb-4 ranks" id="groupByEmptyDiags" data-to-hold="groupByEmptyDiags">
+                                            <div class="card h-100">
+                                                <div class="card-header py-10p bsbb d-flex align-items-center justify-content-between">
+                                                    <div class="card-title mb-0 py-10p dray">
+                                                        <h5 class="m-0 me-2 capitalize">un discovered diagnosis Report</h5>
+                                                        <small class="text-muted">in the selected range and location</small>
+                                                    </div>
+                                                    <div class="dropdown">
+                                                        <button class="btn p-0" type="button" id="orederStatistics" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                            <i class="bx bx-dots-vertical-rounded"></i>
+                                                        </button>
+                                                        <div class="dropdown-menu dropdown-menu-end" aria-labelledby="orederStatistics">
+                                                            <a class="dropdown-item" href="javascript:void(0);">Select All</a>
+                                                            <a class="dropdown-item" href="javascript:void(0);">Refresh</a>
+                                                            <a class="dropdown-item" href="javascript:void(0);">Share</a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="card-body">
+                                                    <div class="text-muted">
+                                                        <small>Sorting the cases with symptoms accordingly but they often get no results</small>
+                                                    </div>
+                                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                                        <div class="d-flex flex-column align-items-center gap-1">
+                                                            <h2 class="mb-2" id="mainTotal">0</h2>
+                                                            <span>Total cases</span>
+                                                        </div>
+                                                        <div id="orderStatisticsChart"></div>
+                                                    </div>
+                                                    <ul class="p-0 m-0" id="ranks-cont">
+                                                        <li class="d-flex mb-4 pb-1">
+                                                            <div class="avatar flex-shrink-0 me-3">
+                                                                <span class="avatar-initial rounded bg-label-primary">#1</span>
+                                                            </div>
+                                                            <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
+                                                                <div class="me-2">
+                                                                    <h6 class="mb-0">common appearence</h6>
+                                                                    <small class="text-muted">symptoms: Headache, Fever, coughing</small>
+                                                                </div>
+                                                                <div class="user-progress">
+                                                                    <small class="fw-semibold">82 cases</small>
+                                                                </div>
+                                                            </div>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 col-lg-4 col-xl-4 order-0 mb-4 ranks" id="groupByMedSuccessRate" data-to-hold="groupByMedSuccessRate">
+                                            <div class="card h-100 ovh">
+                                                <div class="card-header py-10p bsbb d-flex align-items-center justify-content-between">
+                                                    <div class="card-title mb-0 py-10p dray">
+                                                        <h5 class="m-0 me-2  capitalize">medications success rate Rankings</h5>
+                                                        <small class="text-muted">in the selected range and location</small>
+                                                    </div>
+                                                    <div class="dropdown">
+                                                        <button class="btn p-0" type="button" id="orederStatistics" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                            <i class="bx bx-dots-vertical-rounded"></i>
+                                                        </button>
+                                                        <div class="dropdown-menu dropdown-menu-end" aria-labelledby="orederStatistics">
+                                                            <a class="dropdown-item" href="javascript:void(0);">Select All</a>
+                                                            <a class="dropdown-item" href="javascript:void(0);">Refresh</a>
+                                                            <a class="dropdown-item" href="javascript:void(0);">Share</a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="card-body">
+                                                    <div class="text-muted">
+                                                        <small>medications successfullness rate on a certain health facility or location according to patients interactions with it</small>
+                                                    </div>
+                                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                                        <div class="d-flex flex-column gap-1">
+                                                            <h2 class="mb-2" id="mainTotal"><span class="bc-gray p-5p br-5p mx-10p my-5p w-70p block"></span></h2>
+                                                            <span>Total Diagnosis Results</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="w-100 h-100 ovh p-a bsbb bc-white t-0 blur shaddow zi-20" data-role="shade">
+                                                        <div class="cntr center w-70p h-70p ovh">
+                                                            <div class="sk-grid sk-primary">
+                                                                <div class="sk-grid-cube"></div>
+                                                                <div class="sk-grid-cube"></div>
+                                                                <div class="sk-grid-cube"></div>
+                                                                <div class="sk-grid-cube"></div>
+                                                                <div class="sk-grid-cube"></div>
+                                                                <div class="sk-grid-cube"></div>
+                                                                <div class="sk-grid-cube"></div>
+                                                                <div class="sk-grid-cube"></div>
+                                                                <div class="sk-grid-cube"></div>
+                                                              </div>
+                                                        </div>
+                                                    </div>
+                                                    <ul class="px-25p m-0 h-400p ovys scroll-2" id="ranks-cont">
+                                                        <li class="d-flex mb-4 pb-1 hover-2">
+                                                            <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
+                                                                <div class="me-2">
+                                                                    <h6 class="mb-0 capitalize" id="name">Malaria</h6>
+                                                                    <span class="flex">
+                                                                        <small class="text-muted d-block mb-1 pr-6p" id="hosp">CHUB</small>
+                                                                        <span class="dgray fs-12p">
+                                                                            (<small class="mb-0  px-5p" id="hospcount">83</small>)
+                                                                        </span>
+                                                                    </span>
+                                                                </div>
+                                                                <div class="user-progress align-items-center gap-1">
+                                                                    <span class="flex">
+                                                                        <h6 class="mb-0 center" id="total">838</h6> <span class="text-muted mx-5p">Patients</span>
+                                                                    </span>
+                                                                </div>
+                                                            </div>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 col-lg-4 col-xl-4 order-0 mb-4 ranks" id="groupByMedsSideEffect" data-to-hold="groupByMedsSideEffect">
+                                            <div class="card h-100">
+                                                <div class="card-header py-10p bsbb d-flex align-items-center justify-content-between">
+                                                    <div class="card-title mb-0 py-10p dray">
+                                                        <h5 class="m-0 me-2 capitalize">medications side effects Report</h5>
+                                                        <small class="text-muted">in the selected range and location</small>
+                                                    </div>
+                                                    <div class="dropdown">
+                                                        <button class="btn p-0" type="button" id="orederStatistics" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                            <i class="bx bx-dots-vertical-rounded"></i>
+                                                        </button>
+                                                        <div class="dropdown-menu dropdown-menu-end" aria-labelledby="orederStatistics">
+                                                            <a class="dropdown-item" href="javascript:void(0);">Select All</a>
+                                                            <a class="dropdown-item" href="javascript:void(0);">Refresh</a>
+                                                            <a class="dropdown-item" href="javascript:void(0);">Share</a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="card-body">
+                                                    <div class="text-muted">
+                                                        <small>Medications sorting according to the site effects the medication caused to the consumers in a certain location and range</small>
+                                                    </div>
+                                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                                        <div class="d-flex flex-column align-items-center gap-1">
+                                                            <h2 class="mb-2" id="mainTotal">0</h2>
+                                                            <span>Total cases</span>
+                                                        </div>
+                                                        <div id="orderStatisticsChart"></div>
+                                                    </div>
+                                                    <div class="w-100 h-100 ovh p-a bsbb bc-white t-0 blur shaddow zi-20" data-role="shade">
+                                                        <div class="cntr center w-70p h-70p ovh">
+                                                            <div class="sk-grid sk-primary">
+                                                                <div class="sk-grid-cube"></div>
+                                                                <div class="sk-grid-cube"></div>
+                                                                <div class="sk-grid-cube"></div>
+                                                                <div class="sk-grid-cube"></div>
+                                                                <div class="sk-grid-cube"></div>
+                                                                <div class="sk-grid-cube"></div>
+                                                                <div class="sk-grid-cube"></div>
+                                                                <div class="sk-grid-cube"></div>
+                                                                <div class="sk-grid-cube"></div>
+                                                              </div>
+                                                        </div>
+                                                    </div>
+                                                    <ul class="px-25p m-0 h-400p ovys scroll-2" id="ranks-cont">
+                                                        <li class="d-flex mb-4 pb-1 hover-2">
+                                                            <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
+                                                                <div class="me-2">
+                                                                    <h6 class="mb-0 capitalize" id="name">Malaria</h6>
+                                                                    <span class="flex">
+                                                                        <small class="text-muted d-block mb-1 pr-6p" id="hosp">CHUB</small>
+                                                                        <span class="dgray fs-12p">
+                                                                            (<small class="mb-0  px-5p" id="hospcount">83</small>)
+                                                                        </span>
+                                                                    </span>
+                                                                </div>
+                                                                <div class="user-progress align-items-center gap-1">
+                                                                    <span class="flex">
+                                                                        <h6 class="mb-0 center" id="total">838</h6> <span class="text-muted mx-5p">Patients</span>
+                                                                    </span>
+                                                                </div>
+                                                            </div>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+								</div>
+							</div>
+							<!-- my account section -->
+							<div class="br-5p w-100 h-100 p-a ovh hidden t-0 tr-0-3 pagecontentsection" id="my-account">
+								<div class="w-100 h-50p ">
+									<span class="theme capitalize left center bold fs-20p verdana h-100 pl-10p">my account</span>
+								</div>
+								<div class="pg-cntnt w-100 h-90 p-20p bsbb ovys left">
+									<div>
+										<div class="w-100 h-a bsbb">
+											<div class="w-100 h-a center">
+												<div class="b-1-s-g p-10p">
+													<div class="header w-100 h-120p center">
+														<div class="w-100p h-100p">
+															<span class="w-100 h-100 bc-tr-theme br-50 theme fs-50p capitalize uihol courier bold-2 center n-img">a</span>
+														</div>
+													</div>
+													<div class="desc center">
+														<div class="names w-100 h-70p mt-30 center">
+															<span class="fs-15p bsbb dgray capitalize namehol verdana name">aaa aaa</span>
+															<div class="w-100 mt-10p h-a center">
+																<span class="icon-edit-icon center w-40p h-20p bc-gray br-2p p-10p bsbb verdana capitalize fs-10p dgray hover-2" data-target="names">
+																	edit
+																</span>
+															</div>
+														</div>
+														<div class="names w-100 h-70p mt-30 center">
+															<span class="fs-15p bsbb dgray capitalize namehol verdana">*********</span>
+															<div class="w-100 mt-10p h-a center">
+																<span class="icon-edit-icon center w-40p h-20p bc-gray br-2p p-10p bsbb verdana capitalize fs-10p dgray hover-2" data-target="password">
+																	edit
+																</span>
+															</div>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+							<!-- end of my account section -->
+						</div>
+					</div>
+				</div>
+                <div class="hidden">
+                    <div class="h-100" id="resDiv">
+                        <div class="h-100">
+                            <div class="card h-100">
+                                <div class="row row-bordered g-0 h-100 ovys">
+                                    <div class="col-md-8">
+                                        <h5 class="card-header m-0 me-2 pb-3 dgray"><span><i class="far fa-chart-bar fa-rotate-270 mx-10p"></i></span><span class="capitalize" id="dec-name"></span></h5>
+                                        <div class="w-100 h-91 p-10p bsbb">
+                                            <div class="w-100 h-70">
+                                                <div class="w-100 h-100" id="resChart"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="p-5p">
+                                            <div class="p-5p">
+                                                <span class="capitalize dgray bold-2">actions</span>
+                                            </div>
+                                            <div class="p-10p bsbb">
+                                                <div class="title">
+                                                    <span class="capitalize">range</span>
+                                                </div>
+                                                <div class="px-5p my-10p">
+                                                    <div class="w-100 h-45p p-r ovh">
+                                                        <div class="flex py-10p w-100" data-id="date">
+                                                            <div class="text-center w-40">
+                                                                <input class="form-control form-control-sm required-inps" type="date" id="start" name="start">
+                                                            </div>
+                                                            <span class="center capitalize px-10p w-20">to</span>
+                                                            <div class="text-center w-40">
+                                                                <input class="form-control form-control-sm required-inps" type="date" id="stop" name="stop">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="title">
+                                                    <span class="capitalize">age grouping interval</span>
+                                                </div>
+                                                <div class="px-5p my-10p">
+                                                    <div class="w-100 h-45p p-r ovh">
+                                                        <div class="flex py-10p w-100">
+                                                            <div class="text-center w-100">
+                                                                <input class="form-control form-control-sm required-inps" type="number" name="gap" id="ageGap" placeholder="age gap">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class=" p-10p">
+                                                    <button class="btn btn-primary btn-sm" id="computeSearch">proceed</button>
+                                                </div>
+                                            </div>
+                                            <div class="p-10p bsbb">
+                                                <div class="title">
+                                                    <span class="capitalize">group by</span>
+                                                </div>
+                                                <div class="buttons">
+                                                    <div class="BttnsHol h-70p p-r" id="groupByBttnsHol">
+                                                        <div class="w-100 h-100 ovh p-a bsbb bc-white t-0 blur shaddow zi-20" data-role="shade">
+                                                            <div class="center w-70p h-70p ovh">
+                                                                <div class="sk-grid sk-primary">
+                                                                    <div class="sk-grid-cube bc-theme"></div>
+                                                                    <div class="sk-grid-cube bc-theme"></div>
+                                                                    <div class="sk-grid-cube bc-theme"></div>
+                                                                    <div class="sk-grid-cube bc-theme"></div>
+                                                                    <div class="sk-grid-cube bc-theme"></div>
+                                                                    <div class="sk-grid-cube bc-theme"></div>
+                                                                    <div class="sk-grid-cube bc-theme"></div>
+                                                                    <div class="sk-grid-cube bc-theme"></div>
+                                                                    <div class="sk-grid-cube bc-theme"></div>
+                                                                  </div>
+                                                            </div>
+                                                        </div>
+                                                        
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="p-10p bsbb">
+                                                <div class="title">
+                                                    <span class="capitalize">view by</span>
+                                                </div>
+                                                <div class="buttons">
+                                                    <div class="BttnsHol h-a p-r" id="ResViewByBttnsHol">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- footer section -->
+                <div class="w-100 h-a p-f b-0">
+                    <footer class="content-footer footer bg-footer-theme">
+                        <div class="flex p-20p jc-sb">
+                            <div class="mb-2 mb-md-0 text-uppercase">
+                                ©
+                                <script>
+                                    document.write(new Date().getFullYear())
+                                </script>
+                                <strong>UDS</strong>
+                            </div>
+                            <div>
+                            Powered by <a href="https://prtlfo.vercel.app/" target="_blank" class="footer-link fw-bolder">#_himself</a>
+                            </div>
+                        </div>
+                    </footer>
+                </div>
+                <!-- end of footer section -->
+			</div>
+		</div>		
+	</div>
+</div>
+</body>
+</html>

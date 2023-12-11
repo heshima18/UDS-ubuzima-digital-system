@@ -85,7 +85,7 @@ form.addEventListener('submit', async e=>{
                 window.location.href = '../receptionist/home/'
                 
             }else if (z.role == 'director_general') {
-                window.location.href = '../dg/home/'
+                window.location.href = '../director_general/home/'
                 
             }else if (z.role == 'dof') {
                 window.location.href = '../dof/home/'

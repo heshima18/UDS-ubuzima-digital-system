@@ -9,8 +9,9 @@ export const roles = [
     "receptionist" ,
     "cashier" ,
     "patient",
-    "director_general",
+    "director_general" ,
     "householder",
     "insurance_manager",
-    "surgeon"
+    "surgeon",
+    "dg"
 ]

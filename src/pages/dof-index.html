@@ -323,7 +323,7 @@
 									</div>
 								</div>
 							</div>
-                            <!-- manage restricted medications section -->
+                            <!-- manage medications inventory section -->
 							<div class="br-5p w-100 h-100 p-a ovh hidden t-0 tr-0-3 pagecontentsection" id="medications-inventory">
 								<div class="w-100 h-a p-10p bsbb">
 									<span class="theme capitalize left flex bold fs-20p verdana h-100 pl-10p"><span class="dgray capitalize">Director of finance / </span>&nbsp;medications inventory</span>
@@ -351,7 +351,7 @@
                                                     <form method="post" id="add-medicine-form" name="add-medicine-form">
                                                         <div class="col-md-12 p-10p bsbb mb-5p p-r">
                                                             <label for="medicines" class="form-label">medicines</label>
-                                                            <input type="text" class="form-control chips-check" id="medicines" placeholder="Demo medicine" name="medicines">
+                                                            <input type="text" class="form-control chips-check price-addin" id="medicines" placeholder="Demo medicine" name="medicines">
                                                             <small class="hidden w-100 red pl-3p verdana"></small>
                                                         </div>
                                                         <div class="col-12 text-center d-flex gap-3 justify-content-end my-10p">
@@ -381,7 +381,12 @@
                                                         </div>
                                                         <div class="col-md-12 p-10p bsbb mb-5p p-r">
                                                             <label for="quantity" class="form-label">quantity</label>
-                                                            <input type="number" class="form-control" id="quantity" placeholder="Demo quantity" name="quantity">
+                                                            <input type="number" class="form-control" id="quantity" placeholder="Medication quantity" name="quantity">
+                                                            <small class="hidden w-100 red pl-3p verdana"></small>
+                                                        </div>
+                                                        <div class="col-md-12 p-10p bsbb mb-5p p-r">
+                                                            <label for="price" class="form-label">price</label>
+                                                            <input type="number" class="form-control" id="price" placeholder="Medication price" name="price">
                                                             <small class="hidden w-100 red pl-3p verdana"></small>
                                                         </div>
                                                         <div class="col-12 text-center d-flex gap-3 justify-content-end my-10p">
@@ -396,7 +401,7 @@
                                     </div>
                                 </div>
 							</div>
-							<!-- end of manage restricted medications section -->
+							<!-- end of manage medications inventory section -->
                             <!-- manage tests inventory section -->
 							<div class="br-5p w-100 h-100 p-a ovh hidden t-0 tr-0-3 pagecontentsection" id="tests-inventory">
 								<div class="w-100 h-a p-10p bsbb">

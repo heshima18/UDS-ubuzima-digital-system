@@ -5,7 +5,7 @@ import { alertMessage, getdata, getschema, postschema, request, initializeCleave
 
 // Wait for the document to be ready
 $(document).ready(async function () {
-    let t, a, n, u, z, v, d, h, f, i, s, b, x, c, info;
+    let t, a, n, u, z, v, d, h, f, i, s, b, x, c, info,fileredData;
     u = getdata('token')
     if(!u){
         window.location.href = '../../login'

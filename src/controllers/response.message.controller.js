@@ -81,6 +81,7 @@ const errorMessage = {
     _err_ms_404: 'the provided medical session was not found',
     _err_unknown: 'Oops an unknown error occured',
     _session_clo_message: 'medical session was closed successfully',
+    _session_owner_message: 'session ownership claimed successfully',
     _err_hcp_404: 'the provided healthcare provider  was not found',
     _err_hH_404: 'the provided House holder  was not found',
     _err_hcp_unav: 'the selected healthcare provider  is not available in the selected time',

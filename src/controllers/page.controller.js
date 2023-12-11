@@ -142,6 +142,39 @@ export function page (req,res,page){
                     file = 'N/A'
                 break;
         } 
+    }else if (user == 'director_general') {
+        switch (filename) {
+            case '':
+                file = path.join(__dirname,'..','pages', 'dg-index.html')
+                break;
+            case 'home/':
+                file = path.join(__dirname,'..','pages', 'dg-index.html')
+                break;
+            case 'home':
+                file = path.join(__dirname,'..','pages', 'dg-index.html')
+                break;
+            case 'search-patient/':
+                file = path.join(__dirname,'..','pages', 'dg-index.html')
+                break;
+            case 'search-patient':
+                file = path.join(__dirname,'..','pages', 'dg-index.html')
+                break;
+            case 'register-patient/':
+                file = path.join(__dirname,'..','pages', 'dg-index.html')
+                break;
+            case 'register-patient':
+                file = path.join(__dirname,'..','pages', 'dg-index.html')
+                break;
+            case 'my-account/':
+                file = path.join(__dirname,'..','pages', 'dg-index.html')
+                break;
+            case 'my-account':
+                file = path.join(__dirname,'..','pages', 'dg-index.html')
+                break;
+            default:
+                    file = 'N/A'
+                break;
+        } 
     }else if (user == 'pharmacist') {
         switch (filename) {
             case '':

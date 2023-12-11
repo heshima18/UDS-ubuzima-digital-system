@@ -59,15 +59,16 @@ export const addSession = async (req,res)=>{
       for (const medicine of medicines) {
         var m = await query(`select price from medicines where id = ?`, [medicine.id]);
         Object.assign(medicines[medicines.indexOf(medicine)],{prescribedBy: hc_provider})
+        delete (medicines[medicines.indexOf(medicine)].name)
         for (const medic of meds) {
           if (medic.id == medicine.id) {
             if (Number(medic.quantity) < Number(medicine.quantity)) {
-              Object.assign(medicines[medicines.indexOf(medicine)],{servedOut: true, status: null, price: m.price * medicine.quantity})
+              Object.assign(medicines[medicines.indexOf(medicine)],{servedOut: true, status: null, price: m[0].price * medicine.quantity})
             }else{
               if(m.length == 0)  return res.status(500).send({success:false, message: errorMessage._err_med_404})
               m = m[0]
-              imt +=(m.price * parseInt(medicine.quantity))
-              Object.assign(medicines[medicines.indexOf(medicine)],{servedOut: false, price: m.price * parseInt(medicine.quantity)})
+              imt +=(medic.price * parseInt(medicine.quantity))
+              Object.assign(medicines[medicines.indexOf(medicine)],{servedOut: false, price: medic.price * parseInt(medicine.quantity)})
              if (medicine.status == 'served') {
                   meds[meds.indexOf(medic)].quantity = parseInt(meds[meds.indexOf(medic)].quantity) - parseInt(medicine.quantity)
                 }
@@ -75,7 +76,7 @@ export const addSession = async (req,res)=>{
           }
         }
         if (!('servedOut' in medicines[medicines.indexOf(medicine)])) {
-          Object.assign(medicines[medicines.indexOf(medicine)], {servedOut : true, price: 0})
+          Object.assign(medicines[medicines.indexOf(medicine)], {servedOut : true, price: 0,status: null})
         }
         if (!medicine.servedOut && medicine.status != 'served') {
           notify = true
@@ -328,7 +329,7 @@ export const session = async (req,res)=>{
     COALESCE(
       CONCAT('[',
         GROUP_CONCAT(
-          DISTINCT  CASE WHEN m.id IS NOT NULL THEN JSON_OBJECT('id', m.id, 'name', m.name,'unit', m.unit, 'price', (SELECT price FROM medicines where id = m.id))  ELSE NULL END SEPARATOR ','  
+          DISTINCT  CASE WHEN m.id IS NOT NULL THEN JSON_OBJECT('id', m.id, 'name', m.name,'unit', m.unit,'price', (SELECT price FROM medicines where id = m.id))  ELSE NULL END SEPARATOR ','  
         ),
       ']'),
     '[]') AS medicines,
@@ -407,34 +408,47 @@ GROUP BY mh.id;
       delete response.symptoms
 
     }
-    for (const medicine of response.medicines) {
+    response.medicines = await Promise.all(response.medicines.map(async function (medicine) {
       let rawM = response.raw_medicines.find(function (m) {
-        return m.id == medicine.id
-      })
-      let prescriber = await getEmployee(rawM.prescribedBy)
-      if (!prescriber) {
-        prescriber = {id: null, Full_name: 'N/A'}
+          return m.id == medicine.id;
+      });
+  
+      let price = await getInventoryEntry(response.hp_info.id, 'medicines');
+      price = price.find(function (med) {
+          return med.id == medicine.id;
+      });
+  
+      if (price) {
+          price = price.price;
+      } else {
+          price = medicine.price;
       }
-      Object.assign(
-        response.medicines[response.medicines.indexOf(medicine)],
-        {
+  
+      let prescriber = await getEmployee(rawM.prescribedBy);
+      if (!prescriber) {
+          prescriber = { id: null, Full_name: 'N/A' };
+      }
+  
+      Object.assign(medicine, {
           quantity: rawM.quantity,
           servedOut: rawM.servedOut,
           status: rawM.status,
           comment: rawM.comment,
+          price,
           prescribedBy: prescriber.Full_name,
           prescriberId: prescriber.id
-
-        }
-      )
+      });
+  
       if (user != 'hc_provider' && user != 'patient' && user != 'householder') {
-        if (response.raw_medicines[response.medicines.indexOf(medicine)].servedOut) {
-          response.medicines.splice(response.medicines.indexOf(medicine), 1)
-        }
-      }else if (user != 'cashier' && user != 'insurance_manager' && user != 'dof' && user != 'patient' && user != 'householder') {
-        delete response.medicines[response.medicines.indexOf(medicine)].price
+          if (rawM.servedOut) {
+              medicine = null
+          }
+      } else if (user != 'cashier' && user != 'insurance_manager' && user != 'dof' && user != 'patient' && user != 'householder') {
+          delete medicine.price;
       }
-    }
+      return medicine;
+  }))
+  response.medicines = response.medicines.filter(medicine => medicine !== null);
     for (const services of response.services) {
       if (user != 'cashier' && user != 'insurance_manager' && user != 'dof' && user != 'patient' && user != 'householder') {
         delete response.services[response.services.indexOf(services)].price
@@ -447,25 +461,37 @@ GROUP BY mh.id;
       }
         Object.assign(response.equipments[response.equipments.indexOf(equipment)],{quantity: response.raw_equipments[response.equipments.indexOf(equipment)].quantity})
     }
-    for (const tests of response.tests) {
+    response.tests = await Promise.all(response.tests.map(async function(tests){
+      
       if (user == 'hc_provider' || user == 'patient' || user == 'householder') {
         let rawT = response.raw_tests.find(function (t) {
           return t.id == tests.id
         })
-      let tester = await getEmployee(rawT.tester)
-      if (!tester) {
-        tester = {id: null, Full_name: 'N/A'}
-      }
-      Object.assign(response.tests[response.tests.indexOf(tests)], {tester: tester.Full_name,testerId: tester.id})
-      delete response.tests[response.tests.indexOf(tests)].price
-      for (const key of Object.keys(rawT)) {
-        if ('tester' != key && 'price' != key) {
-          Object.assign(response.tests[response.tests.indexOf(tests)], {[key]: rawT[key]})
+        let tester = await getEmployee(rawT.tester)
+        if (!tester) {
+          tester = {id: null, Full_name: 'N/A'}
         }
+        Object.assign(tests, {tester: tester.Full_name,testerId: tester.id})
+        delete tests.price
+        for (const key of Object.keys(rawT)) {
+          if ('tester' != key && 'price' != key) {
+            Object.assign(tests, {[key]: rawT[key]})
+          }
+        }
+      }else if (user== "cashier" || user == 'dof' || user == 'insurance_manager') {
+        let price = await getInventoryEntry(response.hp_info.id, 'tests');
+        price = price.find(function (test) {
+            return test.id == tests.id;
+        });
+        if (price) {
+          price = price.price;
+        } else {
+          price = tests.price;
+        }
+        tests.price = price
       }
-      // Object.assign(response.tests[response.tests.indexOf(tests)],{result: response.raw_tests[response.tests.indexOf(tests)].results,sample: response.raw_tests[response.tests.indexOf(tests)].sample})
-      }
-    }
+      return tests
+    }))
     for (const operations of response.operations) {
       if (user == 'hc_provider' || user == 'patient' || user == 'householder') {
         let rawO = response.raw_operations.find(function (o) {
@@ -790,8 +816,8 @@ export const addSessionMedicine = async (req,res)=>{
                 Object.assign(medicines[medicines.indexOf(medicine)],{servedOut: true, price: m.price * parseInt(medicine.quantity), status: null})
               }else{
                 Object.assign(medicine, {servedOut : false})
-                Object.assign(medicines[medicines.indexOf(medicine)],{servedOut: false, price: m.price * parseInt(medicine.quantity)})
-                itt += (m.price * medicine.quantity)
+                Object.assign(medicines[medicines.indexOf(medicine)],{servedOut: false, price: medic.price * parseInt(medicine.quantity)})
+                itt += (medic.price * medicine.quantity)
                 if (medicine.status == 'served') {
                   meds[meds.indexOf(medic)].quantity = parseInt(meds[meds.indexOf(medic)].quantity) - parseInt(medicine.quantity)
                 }
@@ -947,6 +973,27 @@ export const closeSession = async (req,res)=>{
         return res.status(401).send({success:false, message: errorMessage._err_forbidden})
       }
       res.send({success: true, message: errorMessage._session_clo_message})
+    
+  } catch (error) {
+    console.log(error)
+    res.status(500).send({success:false, message: errorMessage.is_error})
+  }
+}
+export const TransferInteralSession = async (req,res)=>{
+  try {
+    const leTime = DateTime.now();
+    let now = leTime.setZone('Africa/Kigali');
+    now = now.toFormat('yyyy-MM-dd HH:mm:ss')
+    let {session,token} = req.body
+      let decoded = authenticateToken(token)
+      let Hc_provider = decoded.token.id;
+      let close = await  query(`update medical_history set hc_provider = ? where id = ?`,[Hc_provider,session])
+      if (!close) {
+        return res.status(500).send({success:false, message: errorMessage.is_error})
+      }else if (close.affectedRows == 0) {
+        return res.status(401).send({success:false, message: errorMessage._err_forbidden})
+      }
+      res.send({success: true, message: errorMessage._session_owner_message})
     
   } catch (error) {
     console.log(error)

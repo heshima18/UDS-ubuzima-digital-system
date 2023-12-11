@@ -3,7 +3,7 @@ import { alertMessage, getdata, getschema, postschema, request,deletechild, chec
 import { showPaymentPopup } from "../../../utils/payments.popup.controller.js";
 import { addUprofile } from "../../../utils/user.profile.controller.js";
 import {pushNotifs, userinfo,expirateMssg, getNfPanelLinks,m as messages, DateTime, openmenu, addFilter} from "./nav.js";
-import { viewTransfer } from "./transfer.js";
+import { viewTInternalTransfer, viewTransfer } from "./transfer.js";
 let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,z,notificationlinks,socket,mh,m,extra
 (async function () {
     z = userinfo
@@ -1297,6 +1297,12 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,z,notificationlinks,socket,m
                     }else if ('addins' in message) {
                         viewTransfer(message.addins.transfer)
                     }
+                }else if (link.getAttribute('data-message-type') == 'session_handover_mssg' ) {
+                    if ('extra' in message) {
+                        viewTInternalTransfer(message.extra.session,message.content)
+                    }else if ('addins' in message) {
+                        viewTInternalTransfer(message.addins.session,message.content)
+                    }
                 }else if (link.getAttribute('data-message-type') == 'p_message') {
                     if (message.addins) { 
                         Object.assign(message.addins, {sender: message.sender})
@@ -2272,8 +2278,39 @@ class popups{
                             })
                         })
                         if (await type == 'internal') {
-                            let emps = await  showAvaiEmps(users)
-                            console.log(emps)
+                            let emps = await  showAvaiEmps(users),
+                            j = {}
+                            let message = await promptMessage()
+                            Object.assign(j, 
+                                {
+                                    token: getdata('token'),
+                                    title:'incoming session handover',
+                                    token: getdata('token'),
+                                    receiver: emps,
+                                    type: 'session_handover_mssg', 
+                                    content: message,
+                                    extra: {
+                                        session: session.session_id,  
+                                    },
+                                    controller: {
+                                        looping: (typeof emps == 'object')? true : false,
+                                        recipients: emps
+                                    }
+                                }
+                            )
+                            try {
+                                postschema.body = JSON.stringify(j)
+                                if (!session) {
+                                    return 0
+                                }
+                                r =  await request('send-message',postschema)
+                                if (!r.success) {
+                                    return alertMessage(r.message)
+                                }
+                                addsCard('user (s) notified !',true)
+                            } catch (error) {
+                                console.log(error)
+                            }
                         }else{
                             let transnFormHol = addshade(),
                             transFormDiv = document.createElement('div')

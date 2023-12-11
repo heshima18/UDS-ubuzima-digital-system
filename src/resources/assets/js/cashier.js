@@ -629,7 +629,7 @@ let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z,r,session_input,session_s_
                         if (dataHolder.getAttribute(`data-id-holder`)) {
                             dataHolder.setAttribute('data-id',data.id)
                         }
-                        if (dataHolder.getAttribute('data-hold').indexOf('quantity') != -1 || dataHolder.getAttribute('data-hold').indexOf('amount') != -1) {
+                        if (dataHolder.getAttribute('data-hold').indexOf('quantity') != -1 || dataHolder.getAttribute('data-hold').indexOf('amount') != -1 || dataHolder.getAttribute('data-hold').indexOf('price') != -1) {
                             dataHolder.innerText = adcm(data[dataHolder.getAttribute('data-hold')])
                         }else if (dataHolder.getAttribute('data-hold').indexOf('status') != -1) {
                             if (data[dataHolder.getAttribute('data-hold')] != 'served') {
@@ -656,7 +656,7 @@ let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z,r,session_input,session_s_
                         let objectId = holder.getAttribute('data-hold')
                         if (objectId.indexOf('.') != -1) {
                             objectId = objectId.split('.')
-                            if (objectId[1].indexOf('amount') != -1) {
+                            if (objectId[1].indexOf('amount') != -1 || objectId[1] == 'price') {
                                 holder.innerText = adcm(sessiondata[objectId[0]][objectId[1]])
                             }else if (objectId[1].indexOf('status') != -1 && objectId[0].indexOf('payment_info') != -1) {
                                 if (sessiondata[objectId[0]][objectId[1]] == 'paid') {

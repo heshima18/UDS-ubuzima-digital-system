@@ -25,7 +25,7 @@ export const addInventory = async (req,res)=>{
             return res.status(500).send({success:false, message: errorMessage.is_error})
           }
           if (!objectAvai.length) {
-            insert = await query(`UPDATE inventories SET medicines = JSON_ARRAY_APPEND(medicines, '$', JSON_OBJECT("id", ?, "quantity", ?)) WHERE hospital = ?`, [medicine.id, medicine.quantity, hospital]);
+            insert = await query(`UPDATE inventories SET medicines = JSON_ARRAY_APPEND(medicines, '$', JSON_OBJECT("id", ?, "quantity", ?, "price", ?)) WHERE hospital = ?`, [medicine.id, medicine.quantity,Number(medicine.price), hospital]);
           }else{
             found = 1
           }
@@ -191,7 +191,7 @@ export const getInventory = async (req,res)=>{
       COALESCE(
         CONCAT('[',
           GROUP_CONCAT(
-            DISTINCT  CASE WHEN m.id IS NOT NULL THEN JSON_OBJECT('id', m.id, 'name', m.name,'unit', m.unit, 'price', (SELECT price FROM medicines where id = m.id))  ELSE NULL END SEPARATOR ',' 
+            DISTINCT  CASE WHEN m.id IS NOT NULL THEN JSON_OBJECT('id', m.id, 'name', m.name,'unit', m.unit)  ELSE NULL END SEPARATOR ',' 
           ),
         ']'),
       '[]') AS medicines,
@@ -250,7 +250,10 @@ export const getInventory = async (req,res)=>{
 
 
       for (const medicine of select.medicines) {
-        Object.assign(select.medicines[select.medicines.indexOf(medicine)],{quantity: select.raw_medicines[select.medicines.indexOf(medicine)].quantity})
+        let rawM = select.raw_medicines.find(function (med) {
+          return med.id == medicine.id
+        })
+        Object.assign(select.medicines[select.medicines.indexOf(medicine)],{quantity: rawM.quantity,price: rawM.price})
       }
       for (const test of select.tests) {
         Object.assign(select.tests[select.tests.indexOf(test)],{price: select.raw_tests[select.tests.indexOf(test)].price})
@@ -310,9 +313,9 @@ export const editItemFromInventory = async (req,res)=>{
       if (type == 'medicines') {
         inv = inv.map(function (medicine) {
           if(medicine.id == needle){
-            return {id: medicine.id, quantity: Number(upinfo.quantity)}
+            return {id: medicine.id, quantity: Number(upinfo.quantity),price : Number(upinfo.price)}
           }else{
-            return {id: medicine.id, quantity: Number(medicine.quantity)}
+            return {id: medicine.id, quantity: Number(medicine.quantity),price : Number(medicine.price)}
           }
         })
       }else if (type == 'tests') {

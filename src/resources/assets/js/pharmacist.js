@@ -1,9 +1,9 @@
-import { alertMessage, getdata, getschema, postschema, request,initializeCleave,sessiondata,addLoadingTab,removeLoadingTab, checkEmpty, showRecs, getchips,getPath,addsCard,cpgcntn, geturl, adcm, addshade, deletechild, extractTime, getDate } from "../../../utils/functions.controller.js";
+import { alertMessage, getdata, getschema, postschema, request,initializeCleave,sessiondata,addLoadingTab,removeLoadingTab, checkEmpty, showRecs, getchips,getPath,addsCard,cpgcntn, geturl, adcm, addshade, deletechild, extractTime, getDate, triggerRecs, removeRec, viewEmployeeProfile, aDePh } from "../../../utils/functions.controller.js";
 import {pushNotifs, userinfo,expirateMssg, getNfPanelLinks,m as messages, DateTime} from "./nav.js";
 import { viewTransfer } from "./transfer.js";
 
 
-let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z,notificationlinks,addMedic
+let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z,notificationlinks,addMedic,socket
 (async function () {
     z = userinfo
     let token = getdata('token')
@@ -17,7 +17,7 @@ let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z,notificationlinks,addMedic
     if (z.success) {
         z = z.message
         try {
-            const socket = io(geturl(),{ query : { id: z.id} });
+            socket = io(geturl(),{ query : { id: z.id} });
             socket.on('connect', () => {
             console.log('Connected to the server');
             });
@@ -232,19 +232,20 @@ let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z,notificationlinks,addMedic
                 }
           
             }else if (x == 'manage-inventory') {
-                var table = $('.datatables-employees');
+                let table = $('.datatables-medications');
                 let t = document.querySelector('table')
                 if (!t.classList.contains('loaded')) {
                     e = table.DataTable({
                         // Define the structure of the table
-                        dom: '<"row mx-2"<"col-md-2 py-10p"<"me-3"l>><"col-md-10 py-10p"<"dt-action-buttons text-xl-end text-lg-start text-md-end text-start d-flex align-items-center justify-content-end flex-md-row flex-column mb-3 mb-md-0"fB>>>t<"row mx-2"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>',
+                        dom: '<"row mx-2"<"col-md-2 p-10p"<"me-3"l>><"col-md-10 p-10p"<"dt-action-buttons text-xl-end text-lg-start text-md-end text-start d-flex align-items-center justify-content-end flex-md-row flex-column mb-3 mb-md-0"fB>>>t<"row mx-2"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>',
                         language: { sLengthMenu: "_MENU_", search: "", searchPlaceholder: "Search..." },
                         columns: [
-                            { data: "" }, // Responsive Control column
+                            { data: "",title: "" }, // Responsive Control column
                             { data: "name", title: "Name" },
-                            { data: "quantity", title: "amount available" },
-                            { data: "unit", title: "measuring unit" },
-                            { data: "id", title: "Action", }
+                            { data: "quantity", title: "Quantity available" },
+                            { data: "unit", title: "Measuring unit" },
+                            { data: "price", title: "medication's price (RWF)" },
+                            { title: "Action", data: 'id'}
                         ],
                         columnDefs: [
                             // Define column properties and rendering functions
@@ -260,7 +261,7 @@ let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z,notificationlinks,addMedic
                             },
                             {
                                 targets: 1,
-                                searchable: !1,
+                                searchable: 1,
                                 orderable: 1,
                                 render: function (e, t, a, n) {
                                     return (
@@ -275,6 +276,26 @@ let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z,notificationlinks,addMedic
                                 render: function (e, t, a, n) {
                                     return (
                                         `<span class="">${adcm(e)}</span>`
+                                    );
+                                },
+                            },
+                            {
+                                targets: 3,
+                                searchable: !1,
+                                orderable: 1,
+                                render: function (e, t, a, n) {
+                                    return (
+                                        `<span class="capitalize">${e}</span>`
+                                    );
+                                },
+                            },
+                            {
+                                targets: 4,
+                                searchable: !1,
+                                orderable: 1,
+                                render: function (e, t, a, n) {
+                                    return (
+                                        `<span class="capitalize">${adcm(e)}</span>`
                                     );
                                 },
                             },
@@ -347,67 +368,29 @@ let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z,notificationlinks,addMedic
                     });
                     addMedic = document.createElement('button')
                     addMedic.className = `btn btn-primary mx-10p`
-                    addMedic.innerHTML =`<i class="fas fa-plus"></i> add`
+                    addMedic.innerHTML =`<i class="fas fa-plus"></i> add medication`
                     addMedic.id = 'add-medic'
                     addMedic.setAttribute('data-bs-target','#add-medicine')
-                }
-                // dt-action-buttons
-               
-                let buttons = Array.from(page.querySelectorAll('button.data-buttns'));
-                document.querySelector('div.dt-action-buttons').appendChild(addMedic)
-                addMedic.onclick =  function(){
-                    let target = this.getAttribute('data-bs-target')
-                    let cloneD = document.querySelector(`div${target}`)
-                    cloneD = cloneD.cloneNode(true);
-                    d = addshade();
-                    d.appendChild(cloneD);
-                    let aMform = cloneD.querySelector("form#add-medicine-form");
-                    let input = aMform.querySelector('input[name="medicines"]')
-                    input.addEventListener('focus', (event)=>{
-                        event.preventDefault()
-                            showRecs(input,m.message,input.id)
-                    })
-                    aMform.addEventListener('submit', async event=>{
-                        
-                        event.preventDefault();
-                            v = checkEmpty(input);
-        
-                        if (v) {
-                        let button = aMform.querySelector('button[type="submit"]')
-                        button.innerText = `Recording medication(s)`
-                        button.setAttribute('disabled',true)
-                            let values = {}
-                            Object.assign(values,{[input.name]: getchips(input.parentNode.querySelector('div.chipsholder'),['id','quantity']) })
-                            Object.assign(values,{token: getdata('token')})
-                            postschema.body = JSON.stringify(values)
-                            let results = await request('add-inventory',postschema)
-                            if (results.success) {
-                                deletechild(d,d.parentNode)
-                            }
-                            alertMessage(results.message)
-                            button.removeAttribute('disabled')
-                            button.innerText= 'proceed'
-            
-                        }
-                    })
-                }
-                let tabl = page.querySelector('.dataTables_paginate');
-                tabl.addEventListener('click', e=>{
-                    setTimeout(checkButtons,10)
-
-                })
-                if (e) {     
-                    $.fn.dataTable.ext.search.push(function (settings, data, dataIndex) {
+                    let buttons = Array.from(page.querySelectorAll('button.data-buttns')),fileredData;
+                    document.querySelector('div.dt-action-buttons').appendChild(addMedic)
+                    checkButtons()
+                    let tabl = page.querySelector('.dataTables_paginate');
+                    tabl.addEventListener('click', e=>{
                         setTimeout(checkButtons,10)
-                        if (settings.nTable.classList.contains('datatables-medications')) {
-                            fileredData = e.rows({ search: 'applied'}).data().toArray();
-                        }      
-                        return true
+
                     })
-                }
-                checkButtons();
+                    if (e) {     
+                        $.fn.dataTable.ext.search.push(function (settings, data, dataIndex) {
+                            setTimeout(checkButtons,10)
+                            if (settings.nTable.classList.contains('datatables-medications')) {
+                                fileredData = e.rows({ search: 'applied'}).data().toArray();
+                            }      
+                            return true
+                        })
+                    }
+                
                     function checkButtons() {
-                        buttons = Array.from(page.querySelectorAll('button.data-buttns'));
+                        buttons = Array.from(page.querySelectorAll('button.data-buttns'))
                         buttons.forEach(bttn=>{
                             bttn.onclick = async function (event) {
                                 event.preventDefault()
@@ -432,19 +415,21 @@ let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z,notificationlinks,addMedic
                                         return medic.id == objId
                                     })
                                     let target = this.getAttribute('data-bs-target')
-                                    let cloneD = document.querySelector(`div${target}`)
+                                    let cloneD = page.querySelector(`div${target}`)
                                     cloneD = cloneD.cloneNode(true);
                                     d = addshade();
                                     d.appendChild(cloneD);
                                     let eMform = cloneD.querySelector("form#edit-medicine-form");
                                     let input = eMform.querySelector('input[name="medicine"]');
                                     let quantity = eMform.querySelector('input[name="quantity"]');
+                                    let price = eMform.querySelector('input[name="price"]');
         
                                     input.value = targetMed.name
                                     input.setAttribute('readonly', true)
                                     input.setAttribute('disabled', true)
                                     input.setAttribute('data-id',targetMed.id)
                                     quantity.value = targetMed.quantity
+                                    price.value = targetMed.price
                                     eMform.addEventListener('submit', async event=>{
                                         event.preventDefault();
                                             v = checkEmpty(quantity);               
@@ -453,7 +438,7 @@ let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z,notificationlinks,addMedic
                                         button.innerText = `Editing entry`
                                         button.setAttribute('disabled',true)
                                             let values = {}
-                                            Object.assign(values,{needle : input.getAttribute('data-id'),upinfo: {quantity :quantity.value}, type : 'medicines' ,inventory: f.message.id})
+                                            Object.assign(values,{needle : input.getAttribute('data-id'),upinfo: {quantity :quantity.value,price: price.value}, type : 'medicines' ,inventory: f.message.id})
                                             Object.assign(values,{token: getdata('token')})
                                             postschema.body = JSON.stringify(values)
                                             let results = await request('eInvEnt',postschema)
@@ -470,10 +455,59 @@ let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z,notificationlinks,addMedic
                             }
                         })
                     }
-                
-
-
-                t.classList.add('loaded')
+                    addMedic.onclick =  function(){
+                        let target = this.getAttribute('data-bs-target')
+                        let cloneD = page.querySelector(`div${target}`)
+                        cloneD = cloneD.cloneNode(true);
+                        d = addshade();
+                        d.appendChild(cloneD);
+                        let aMform = cloneD.querySelector("form");
+                        let inputs = Array.from(aMform.querySelectorAll('input'))
+                        inputs[0].onkeyup =  function(event){
+                            if (this.value) {
+                                triggerRecs(inputs[0],['id','name','unit','price'],socket)
+                            }else{
+                                removeRec(inputs[0])
+    
+                            }
+                        
+                        }
+                        aMform.onsubmit =  async event=>{
+    
+                           event.preventDefault();
+                            l = 1
+                            for (const input of inputs) {
+                                v = checkEmpty(input);
+                                if (!v) {
+                                    l = 0
+                                }
+                            }
+                            if (l) {
+                            let button = aMform.querySelector('button[type="submit"]')
+                            button.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`
+                            button.setAttribute('disabled',true)
+                                let values = {}
+                                for (const input of inputs) {
+                                    Object.assign(values,{[input.name]: getchips(input.parentNode.querySelector('div.chipsholder'),['id','name','price','quantity','unit']) })
+                                } 
+                                Object.assign(values,{token: getdata('token')})
+                                postschema.body = JSON.stringify(values)
+                                let results = await request('add-inventory',postschema)
+                                values.medicines.forEach(medicine=>{
+                                    e.row.add(medicine).draw()
+                                })
+                                if (results.success) {
+                                    deletechild(d,d.parentElement)
+                                }
+                                alertMessage(results.message)
+                                button.removeAttribute('disabled')
+                                button.innerHTML= 'proceed'
+    
+                            }
+                        }
+                    }
+                    t.classList.add('loaded')
+                }
             }else if (x == 'view-session') {
                 theb.innerHTML = raw
                 if (extra) {
@@ -542,6 +576,10 @@ let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z,notificationlinks,addMedic
                             }else{
                                 clonedNode.classList.add('bc-gray')
                             }
+                            let prescriberElem = dataHolders.find(function (elem) {
+                                return elem.getAttribute('data-hold') == 'prescribedBy'
+                            })
+                            prescriberElem.setAttribute('data-id', data.prescriberId)
                         }
                        for (const dataHolder of dataHolders) {
                         if (dataHolder.getAttribute(`data-id-holder`)) {
@@ -564,6 +602,9 @@ let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z,notificationlinks,addMedic
                        }
                        element.parentNode.appendChild(clonedNode)
                     }
+                    if(dataToShow.length == 0){
+                        aDePh(element.parentElement)
+                    }
                     element.parentNode.removeChild(element)
     
                 }
@@ -573,7 +614,15 @@ let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z,notificationlinks,addMedic
                             objectId = objectId.split('.')
                             if (objectId[1].indexOf('amount') != -1) {
                                 holder.innerText = adcm(sessiondata[objectId[0]][objectId[1]])
-                            }else{
+                            }else if (objectId[0] == 'p_info' && objectId[1].indexOf('name') != -1) {
+                                holder.innerHTML = sessiondata[objectId[0]][objectId[1]] + '<i class="fas fa-external-link-alt px-5p"></i>'
+                                holder.classList.add('hover-6','data-buttons')
+                                holder.setAttribute('data-role', 'show-profile')
+                                holder.setAttribute('data-id', sessiondata[objectId[0]].id)
+                            } else{
+                                if (holder.getAttribute('data-profile-link') && objectId[0] == 'hcp_info' && objectId[1] == 'name') {
+                                    holder.setAttribute('data-id',sessiondata.hcp_info.id)
+                                }
                                 holder.innerText = sessiondata[objectId[0]][objectId[1]]
                             }
                         }else{
@@ -583,8 +632,20 @@ let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z,notificationlinks,addMedic
                                 }
                             }
                             holder.innerText = sessiondata[objectId]
+                            if(!sessiondata[objectId]){
+                                aDePh(holder)
+                            }
+                            console.log(sessiondata[objectId])
                         }
                 }
+                let profileLinks = Array.from(page.querySelectorAll(['[data-profile-link="true"]']))
+                profileLinks.forEach(link =>{
+                    link.onclick = function (event) {
+                        event.preventDefault();
+                        let id = this.getAttribute('data-id')
+                        viewEmployeeProfile(id)
+                    }
+                })
                let mark_buttons = Array.from(page.querySelectorAll('span.mark-button'))
                let bigbuttons = Array.from(page.querySelectorAll('span.data-buttons'))
                sessiondata.medicines.forEach(function (medic) {

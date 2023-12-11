@@ -11,7 +11,7 @@ import { authorizeRawRole, authorizeRole } from '../middlewares/roles.authorizer
 import { authorizeAdmin, authorizeAssuranceManager, authorizeCashier, authorizeHc_provider, authorizeHcp_ptnt, authorizeLaboratory_scientist, authorizeMultipleRoles, authorizePatient, authorizePatientToken, authorizePharmacist } from '../middlewares/users.authoriser.middleware';
 import {addEmployeetoAssurance, addEmployeetoHp, addemployee, getEmployeeProfile, getEmployees, getEmployeesByRole, getHpEmployees, removeEmployeFromHospital} from '../controllers/employee.controller';
 import { getHP, getHPs, searchHP,addhospital, hospitalASSU, getHPDeps } from '../controllers/hospital.controller';
-import {addSession, addSessionComment, addSessionDecision, addSessionEquipment, addSessionMedicine, addSessionOperation, addSessionService, addSessionSymptoms, addSessionTests, approveAssuPayment, approvePayment, assuranceMH, closeSession, getDailyHpSessions, getHc_pSessions, getHpsessions, getUsessions, markMedicineAsServed, session, testPay } from '../controllers/patient.session.controller';
+import {TransferInteralSession, addSession, addSessionComment, addSessionDecision, addSessionEquipment, addSessionMedicine, addSessionOperation, addSessionService, addSessionSymptoms, addSessionTests, approveAssuPayment, approvePayment, assuranceMH, closeSession, getDailyHpSessions, getHc_pSessions, getHpsessions, getUsessions, markMedicineAsServed, session, testPay } from '../controllers/patient.session.controller';
 import {addmedicine, editmedicine, getMed, getMeds, searchMed} from '../controllers/medicine.controller';
 import {addDepartment, addDepartmentToHp, getDepartments, removeDepartmentFromHospital} from '../controllers/departments.controller';
 import {addtest,edittest,getTest,getTests} from '../controllers/tests.controller';
@@ -35,7 +35,7 @@ import { addOperation, editOperation, getOperation, getOperations } from '../con
 import { addEquipment, editEquipment, getEquipments } from '../controllers/equipments.controller';
 import { organiseTitles, titles } from '../utils/titles.controller';
 import { checkTest } from '../middlewares/tests.middleware';
-import { insightsStats } from '../controllers/insights.controller';
+import { DGResinsightsStats, DGinsightsStats, insightsStats } from '../controllers/insights.controller';
 import { addPati2fa } from '../middlewares/user.2fa.access.middleware';
 import { createTransfer, viewTransfer } from '../controllers/transfer.controller';
 import getAdminNmbrs from '../controllers/admin-numbers.controller';
@@ -101,6 +101,7 @@ router.post("/add-session-symptoms",authorizeRole,(req,res,next) => authorizeSes
 router.post("/crTrns",authorizeRole,(req,res,next) => authorizeSession(req,res,next,'isnotclosed'),authorizeHc_provider,createTransfer)
 router.post("/getTrNsfr",authorizeRole,viewTransfer)
 router.post('/close-session',authorizeRole,authorizeHc_provider,(req,res,next) => authorizeSession(req,res,next,'isowner'),(req,res,next) => authorizeSession(req,res,next,'ismyfacilty'),closeSession);
+router.post('/tsfOnsp',authorizeRole,authorizeHc_provider,(req,res,next) => authorizeSession(req,res,next,'ismyfacilty'),TransferInteralSession);
 router.post('/approve-assurance-payment',authorizeRole,(req,res,next) => authorizeMultipleRoles(req,res,next,['dof']),approveAssuPayment);
 router.post('/approve-payment',authorizeRole,(req,res,next) => authorizeSession(req,res,next,'isnotopen'),authorizeCashier,approvePayment);
 router.post('/addsession',authorizeRole,authorizeHc_provider,authorizePatient,authorizeUserAssurance,authorizeHospitalAssurance,addSession)
@@ -158,6 +159,8 @@ router.post('/get-messages',authorizeRole,getMessages);
 router.post('/get-sent-messages',authorizeRole,getSentMessages);
 router.post('/mark-as-seen',authorizeRole,markAsSeen);
 router.post('/insights',authorizeRole,(req,res,next) => authorizeMultipleRoles(req,res,next,['mohs']),insightsStats);
+router.post('/hp-insights',authorizeRole,(req,res,next) => authorizeMultipleRoles(req,res,next,['director_general']),DGinsightsStats);
+router.post('/hp-res-insights',authorizeRole,(req,res,next) => authorizeMultipleRoles(req,res,next,['director_general']),DGResinsightsStats);
 router.post('/gethospitals',authorizeRole,getHPs)
 router.post('/hospital/:hospital?',authorizeRole,getHP)
 router.post('/hpDeps/:hospital?',authorizeRole,getHPDeps)
