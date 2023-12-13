@@ -192,6 +192,12 @@ export function page (req,res,page){
             case 'view-session':
                 file = path.join(__dirname,'..','pages', 'pharmacist-index.html')
                 break;
+            case 'my-account/':
+                file = path.join(__dirname,'..','pages', 'pharmacist-index.html')
+                break;
+            case 'my-account':
+                file = path.join(__dirname,'..','pages', 'pharmacist-index.html')
+                break;
             case 'manage-inventory/':
                 file = path.join(__dirname,'..','pages', 'pharmacist-index.html')
                 break;

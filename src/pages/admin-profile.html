@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en" class="light-style layout-navbar-fixed layout-menu-fixed" data-theme="theme-default"
+    data-assets-path="/assets/">
+
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport"
+            content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
+        <title>UDS | Admin - Home</title>
+        <link rel="icon" type="image/x-icon" href="/assets/img/icons/logo/logo-alt.png" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&amp;display=swap"
+            rel="stylesheet" />
+    
+
+    
+        <!-- Core CSS -->
+        <link rel="stylesheet" href="/assets/vendor/css/core.css" class="template-customizer-core-css" />
+        <link rel="stylesheet" href="/assets/vendor/css/theme-default.css" class="template-customizer-theme-css" />
+        <link rel="stylesheet" href="/assets/css/demo.css" />
+    
+        <!-- Vendors CSS -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/boxicons/2.1.4/css/boxicons.min.css" integrity="sha512-cn16Qw8mzTBKpu08X0fwhTSv02kK/FojjNLz0bwp2xJ4H+yalwzXKFw/5cLzuBZCxGWIA+95X4skzvo8STNtSg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/spinkit/2.0.0/spinkit.min.css" integrity="sha512-kRYkjiYH/VXxoiaDK2oGNMKIi8VQVfie1lkYGX3kmfzWNR2kfaF5ze0885W3/eE6lIiURBsZA91M/WNvCajHMw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    
+        <link rel="stylesheet" type="text/css" href="/styles/styling.css">
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/cleave.js/1.6.0/cleave.min.js" integrity="sha512-KaIyHb30iXTXfGyI9cyKFUIRSSuekJt6/vqXtyQKhQP6ozZEGY8nOtRS6fExqE4+RbYHus2yGyYg1BrqxzV6YA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+        <script src="/assets/vendor/libs/cleavejs/cleave-phone.rw.js"></script>
+        <!-- App Configurations -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.min.js" integrity="sha512-Xm9qbB6Pu06k3PUwPj785dyTl6oHxgsv9nHp7ej7nCpAqGZT3OZpsELuCYX05DdonFpTlBpXMOxjavIAIUwr0w==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+        <script src="/assets/vendor/js/helpers.js"></script>
+        <script src="/assets/js/config.js" type="module"></script>
+        <script src="/assets/js/nav.js" type="module"></script>
+        <script src="/assets/js/admin.js" type="module"></script>
+        <script src="/assets/js/footer.js" type="module"></script>
+
+    </head>
+
+<body>
+    <div class="layout-wrapper layout-content-navbar cont">
+        <div class="layout-container" id="body">
+            <aside id="layout-menu" class="layout-menu menu-vertical menu bg-menu-theme">
+                <div class="app-brand demo">
+                    <a href="/admin/home" class="app-brand-link">
+                        <span>
+                            <img src="/assets/img/icons/logo/logo-alt.png" alt="logo" class="w-a contain h-50p">
+                        </span>
+                        <span class="app-brand-text demo menu-text fw-bolder ms-2">UDS</span>
+                    </a>
+                    <a href="javascript:void(0);" class="layout-menu-toggle menu-link text-large ms-auto">
+                        <i class="bx bx-chevron-left bx-sm align-middle"></i>
+                    </a>
+                </div>
+                <div class="menu-inner-shadow"></div>
+                <ul class="menu-inner py-1">
+                    <li class="menu-item">
+                        <a href="javascript:void(0);" class="menu-link menu-toggle">
+                            <i class="menu-icon far fa-flag"></i>
+                            <div>Essentials</div>
+                        </a>
+                        <ul class="menu-sub">
+                            <li class="menu-item">
+                                <a href="/admin/health-posts/" class="menu-link">
+                                    <div>Health Posts</div>
+                                </a>
+                            </li>
+                            <li class="menu-item">
+                                <a href="/admin/departments/" class="menu-link">
+                                    <div>Departments</div>
+                                </a>
+                            </li>
+                            <li class="menu-item">
+                                <a href="/admin/employees/" class="menu-link">
+                                    <div>Employees</div>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="menu-item">
+                        <a href="javascript:void(0);" class="menu-link menu-toggle">
+                            <i class="menu-icon fas fa-pills"></i>
+                            <div>Drugs</div>
+                        </a>
+                        <ul class="menu-sub">
+                            <li class="menu-item">
+                                <a href="/admin/tests/" class="menu-link">
+                                    <div>Tests</div>
+                                </a>
+                            </li>
+                            <li class="menu-item">
+                                <a href="/admin/medicines/" class="menu-link">
+                                    <div>Medicines</div>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="menu-item">
+                        <a href="javascript:void(0);" class="menu-link menu-toggle">
+                            <i class="menu-icon fas fa-plus"></i>
+                            <div>Extras</div>
+                        </a>
+                        <ul class="menu-sub">
+                            <li class="menu-item">
+                                <a href="/admin/equipments/" class="menu-link">
+                                    <div>Equipments</div>
+                                </a>
+                            </li>
+                            <li class="menu-item">
+                                <a href="/admin/services/" class="menu-link">
+                                    <div>Services</div>
+                                </a>
+                            </li>
+                            <li class="menu-item">
+                                <a href="/admin/operations/" class="menu-link">
+                                    <div>Operations</div>
+                                </a>
+                            </li>
+                            <li class="menu-item">
+                                <a href="/admin/diseases/" class="menu-link">
+                                    <div>diseases</div>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="menu-item">
+                        <a href="javascript:void(0);" class="menu-link menu-toggle">
+                            <i class="menu-icon fas fa-shield"></i>
+                            <div>Assurances</div>
+                        </a>
+                        <ul class="menu-sub">
+                            <li class="menu-item">
+                                <a href="/admin/assurances/" class="menu-link">
+                                    <div>Assurances</div>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="menu-item">
+                        <a href="javascript:void(0);" class="menu-link menu-toggle">
+                            <i class="menu-icon fas fa-location"></i>
+                            <div>Locations</div>
+                        </a>
+                        <ul class="menu-sub">
+                            <li class="menu-item">
+                                <a href="/admin/provinces/" class="menu-link">
+                                    <div>Provinces</div>
+                                </a>
+                            </li>
+                            <li class="menu-item">
+                                <a href="/admin/districts/" class="menu-link">
+                                    <div>Districts</div>
+                                </a>
+                            </li>
+                            <li class="menu-item">
+                                <a href="/admin/sectors/" class="menu-link">
+                                    <div>Sectors</div>
+                                </a>
+                            </li>
+                            <li class="menu-item">
+                                <a href="/admin/cells/" class="menu-link">
+                                    <div>Cells</div>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="menu-header small text-uppercase">
+                        <span class="menu-header-text">Account</span>
+                    </li>
+                    <li class="menu-item">
+                        <a href="/admin/profile/" class="menu-link">
+                            <i class="menu-icon tf-icons bx bx-cog"></i>
+                            <div>Settings</div>
+                        </a>
+                    </li>
+                    <li class="menu-item">
+                        <a href="/login" class="menu-link">
+                            <i class="menu-icon tf-icons bx bx-power-off"></i>
+                            <div>Logout</div>
+                        </a>
+                    </li>
+                </ul>
+            </aside>
+            <div class="layout-page pt-0">
+                <nav class="layout-navbar container-xxl navbar navbar-expand-xl navbar-detached align-items-center bg-navbar-theme jc-sb" id="layout-navbar">
+                    <div class="h-54p center">
+                        <a class="nav-item nav-link px-0 me-xl-4 flex" href="javascript:void(0)">
+                            <span>
+                                <img src="/assets/img/icons/logo/logo-alt.png" alt="logo" class="w-a contain h-50p">
+                            </span>
+                        </a>
+                    </div>
+                    <div class="h-54p center" id="navbar-collapse">
+                        <ul class="flex h-54p p-0 m-0 ls-none">
+                            <li class="center-2 px-10p">
+                                <a class="td-none center-2 " id="dropdown-toggle" href="javascript:void(0);" data-bs-toggle="profile-dropdown">
+                                        <div class="sk-wave sk-primary w-25p shaddow">
+                                            <div class="bc-theme sk-wave-rect"></div>
+                                            <div class="bc-theme sk-wave-rect"></div>
+                                            <div class="bc-theme sk-wave-rect"></div>
+                                            <div class="bc-theme sk-wave-rect"></div>
+                                            <div class="bc-theme sk-wave-rect"></div>
+                                        </div>
+                                </a>
+                                <ul class="profile-dropdown bc-white card-5 h-a w-250p bsbb t-80p p-f mr-20p r-0 ls-none br-10p p-0 hidden" name="profile-dropdown">
+                                    <li class="px-10p bsbb py-2p my-10p w-100 h-a">
+                                        <a class="dropdown-item" href="#">
+                                            <div class="flex px-5p py-10p bsbb">
+                                                <div class="left w-100">
+                                                    <span class="fw-semibold d-bloc data-role bsbb" data-role="profile-name"><span class="skel w-65p h-10p br-2p block my-5p"></span></span>
+                                                    <small class="text-muted block data-role" data-role="profile-title"><span class="skel w-50p h-10p br-2p block my-5p"></span></small>
+                                                </div>
+                                            </div>
+                                        </a>
+                                    </li>
+                                    <li class="bsbb py-2p">
+                                        <div class="dropdown-divider bb-1-s-g"></div>
+                                    </li>
+                                    <li class="px-10p bsbb py-2p my-10p w-100 h-a">
+                                        <a class="left td-none dgray" href="../my-account">
+                                            <div class="center-2 w-a">
+                                                <i class="bx bxs-user-account px-10p bx-sm"></i>
+                                                <span class="dgray mt--5p">My Account</span>
+                                            </div>
+                                        </a>
+                                    </li>
+                                    <li class="bsbb py-2p">
+                                        <div class="dropdown-divider bb-1-s-g"></div>
+                                    </li>
+                                    <li class="px-10p bsbb py-2p my-10p w-100 h-a">
+                                        <a class="left td-none dgray" href="logout" target="_blank">
+                                            <div class="center-2 w-a">
+                                                <i class="bx bx-log-out px-10p bx-sm"></i>
+                                                <span class="dgray mt--5p">Log Out</span>
+                                            </div>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li class="center-2">
+                                <a class="p-r p-10p bsbb center td-none" id="dropdown-toggle" href="javascript:void(0);" data-bs-toggle="notification-dropdown" data-bs-auto-close="outside">
+                                    <i class="bx bx-bell bx-sm dgray"></i>
+                                    <span class="p-a bc-red br-50 w-15p h-15p fs-9p white hidden t-5p r-0  data-role" data-role="notification-count-badge">0</span>
+                                </a>
+                                <ul class="notification-dropdown bc-white card-5 br-10p h-500p w-390p p-0 t-80p p-f mr-20p r-0 ls-none bw-90-500-resp bm-x-10p-resp hidden" data-bs-popper="static" name="notification-dropdown" id="notification-dropdown">
+                                    <li class="dropdown-menu-header border-bottom px-15p py-15p bsbb">
+                                        <div class="dropdown-header d-flex align-items-center">
+                                            <i class='bx bx-notification px-10p bx-sm dgray'></i><h5 class=" mb-0 me-auto capitalize dgray">Notifications</h5>
+                                        </div>
+                                    </li>
+                                    <li class="dropdown-notifications-list scrollable-container h-78 ovys scroll-3">
+                                        <ul class="list-group list-group-flush nf-panel h-100">
+                                           <li class="w-100 h-100 center">
+                                            <div class="center">
+                                                <div class="sk-grid sk-blue">
+                                                    <div class="sk-grid-cube"></div>
+                                                    <div class="sk-grid-cube"></div>
+                                                    <div class="sk-grid-cube"></div>
+                                                    <div class="sk-grid-cube"></div>
+                                                    <div class="sk-grid-cube"></div>
+                                                    <div class="sk-grid-cube"></div>
+                                                    <div class="sk-grid-cube"></div>
+                                                    <div class="sk-grid-cube"></div>
+                                                    <div class="sk-grid-cube"></div>
+                                                </div>
+                                            </div>
+                                            <div class="w-100 h-a dgray capitalize">loading...</div>
+                                           </li>
+                                        </ul>
+                                    </li>
+                                    <li class="dropdown-menu-footer border-top h-50p center-2">
+                                        <a href="javascript:void(0);" class="dropdown-item d-flex justify-content-center p-3">
+                                            Mark all as seen
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                </nav>
+                <div class="content-wrapper thebody">
+                    <div class="container-xxl flex-grow-1 container-p-y">
+                        <div class="row">
+                            <!-- User Sidebar -->
+                            <div class="col-xl-4 col-lg-5 col-md-5 order-1 order-md-0">
+                                <!-- User Card -->
+                                <div class="card mb-4">
+                                    <div class="card-body">
+                                        <div class="user-avatar-section">
+                                            <div class=" d-flex align-items-center flex-column">
+                                                <span class="n-img w-100p h-100p br-50 bc-theme center capitalize white fs-30p"></span>
+                                                <div class="user-info text-center my-10p">
+                                                    <h4 class="mb-2"> <span class="name capitalize text-muted">...</span></h4>
+                                                    <span class="uppercase fs-10p dgray px-15p py-5p br-5p bc-gray" data-holder="true" id="title">...</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <h5 class="pb-2 border-bottom mb-4">Details</h5>
+                                        <div class="info-container">
+                                            <ul class="list-unstyled">
+                                                <li class="mb-3">
+                                                    <span class="fw-bold me-2">Username:</span>
+                                                    <span data-holder="true" id="username">...</span>
+                                                    <span class="px-5p dgray hover-2 edit-p-info" data-role="edit_uname" id="username"><i class="fas fa-edit"></i></span>
+                                                </li>
+                                                <li class="mb-3">
+                                                    <span class="fw-bold me-2">Email:</span>
+                                                    <span data-holder="true" id="email">...</span>
+                                                    <span class="px-5p dgray hover-2 edit-p-info" data-role="edit_email" id="email"><i class="fas fa-edit"></i></span>
+                                                </li>
+                                                <li class="mb-3">
+                                                    <span class="fw-bold me-2">Status:</span>
+                                                    <span class="btn green bc-tr-green" data-holder="true" id="status">Active</span>
+                                                </li>
+                                                <li class="mb-3">
+                                                    <span class="fw-bold me-2">Contact:</span>
+                                                    <span class="phone" data-holder="true" id="phone">...</span>
+                                                    <span class="px-5p dgray hover-2 edit-p-info" data-role="edit_phone" id="phone"><i class="fas fa-edit"></i></span>
+    
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- /User Card -->
+                            </div>
+                            <!--/ User Sidebar -->
+                        
+                        
+                            <!-- User Content -->
+                            <div class="col-xl-8 col-lg-7 col-md-7 order-0 order-md-1">
+                                <!-- User Pills -->
+                                <ul class="nav nav-pills flex-column flex-md-row mb-3">
+                                    <li class="nav-item"><a class="nav-link active" href="javascript:void(0);"><i class="bx bx-lock-alt me-1"></i>Security</a></li>
+                                </ul>
+                                <!--/ User Pills -->
+                        
+                                <!-- Change Password -->
+                                <div class="card mb-4">
+                                    <h5 class="card-header">Change Password</h5>
+                                    <div class="card-body">
+                                        <form id="change-password" method="POST">
+                                            <div class="alert alert-warning" role="alert">
+                                                <h6 class="alert-heading fw-bold mb-1">Ensure that these requirements are met</h6>
+                                                <span>Minimum 6 characters long, uppercase &amp; symbol</span>
+                                            </div>
+                                            <div class="row">
+                                                <div class="mb-3 col-12 col-sm-6 form-password-toggle fv-plugins-icon-container">
+                                                    <label class="form-label" for="password">New Password</label>
+                                                    <div class="input-group input-group-merge has-validation">
+                                                        <input class="form-control" type="password" id="password" name="password" placeholder="············">
+                                                        <span class="input-group-text cursor-pointer text-muted hover-2 showP"><i class="fas fa-eye fs-13p"></i></span>
+                                                        <small class="hidden w-100 red pl-3p verdana"></small>
+                                                    </div>
+                                                    
+                                                </div>
+                        
+                                                <div class="mb-3 col-12 col-sm-6 form-password-toggle fv-plugins-icon-container">
+                                                    <label class="form-label" for="confirm">Confirm New Password</label>
+                                                    <div class="input-group input-group-merge has-validation">
+                                                        <input class="form-control" type="password" name="confirm" id="confirm" placeholder="············">
+                                                        <span class="input-group-text cursor-pointer text-muted hover-2 showP"><i class="fas fa-eye fs-13p"></i></span>
+                                                        <small class="hidden w-100 red pl-3p verdana"></small>
+    
+                                                    </div>
+                                                </div>
+                                                <div>
+                                                    <button type="submit" class="btn btn-primary me-2">Change Password</button>
+                                                </div>
+                                            </div>
+                                        <input type="hidden"></form>
+                                    </div>
+                                </div>
+                                <!--/ Change Password -->
+                        
+                                <!-- Two-steps verification -->
+                                <div class="card mb-4">
+                                    <div class="card-header">
+                                        <h5 class="card-title mb-2">Two-steps verification</h5>
+                                        <span class="card-subtitle">Keep your account secure with authentication step.</span>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="block">
+                                            <h6>SMS</h6>
+                                            <div class="d-flex justify-content-between border-bottom mb-4 pb-2">
+                                                <span data-holder="true" id="phone">...</span>
+                                                <div class="action-icons">
+                                                    <a href="javascript:;" class="text-body me-1" data-bs-target="#enableOTP" data-bs-toggle="modal"><i class="bx bx-edit"></i></a>
+                                                    <a href="javascript:;" class="text-body"><i class="bx bx-trash-alt"></i></a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="block">
+                                            <h6>Email</h6>
+                                            <div class="d-flex justify-content-between border-bottom mb-4 pb-2">
+                                                <span data-holder="true" id="email">...</span>
+                                                <div class="action-icons">
+                                                    <a href="javascript:;" class="text-body me-1" data-bs-target="#enableOTP" data-bs-toggle="modal"><i class="bx bx-edit"></i></a>
+                                                    <a href="javascript:;" class="text-body"><i class="bx bx-trash-alt"></i></a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <p class="mb-0">Two-factor authentication adds an additional layer of security to your account by
+                                            requiring more than just a password to log in.
+                                        </p>
+                                    </div>
+                                </div>
+                                <!--/ Two-steps verification -->   
+                            </div>
+                            <!--/ User Content -->
+                        </div>
+                        <footer class="content-footer footer bg-footer-theme">
+                            <div class="container-xxl d-flex flex-wrap justify-content-between py-3 flex-md-row flex-column">
+                                <div class="mb-2 mb-md-0 text-uppercase">
+                                    &copy;
+                                    <script>
+                                        document.write(new Date().getFullYear())
+                                    </script>
+                                    <strong>UDS</strong>
+                                </div>
+                                <div>
+                                Powered by <a href="https://prtlfo.vercel.app/" target="_blank"
+                                        class="footer-link fw-bolder">#_himself</a>
+                                </div>
+                            </div>
+                        </footer>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="layout-overlay layout-menu-toggle"></div>
+        <div class="drag-target"></div>
+    </div>
+
+    <!-- Core JS -->
+    <!-- build:js assets/vendor/js/core.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="/assets/vendor/js/menu.js"></script>
+    <!-- endbuild -->
+
+    <!-- Vendors JS -->
+    <!-- Main JS -->
+    <script src="/assets/js/main.js" type="module"></script><!-- Page JS -->
+    <script src="/assets/js/admin-profile.js" type="module"></script>
+
+
+</body>
+
+</html>

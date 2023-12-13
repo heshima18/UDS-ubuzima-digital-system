@@ -1,5 +1,6 @@
 import { alertMessage, getdata, getschema, postschema, request,addSpinner,removeSpinner,sessiondata,addLoadingTab,removeLoadingTab, checkEmpty, showRecs, getchips,getPath,addsCard,cpgcntn, geturl, adcm, addshade, deletechild, RemoveAuthDivs, showFingerprintDiv, addAuthDiv, aDePh } from "../../../utils/functions.controller.js";
 import { showPaymentPopup } from "../../../utils/payments.popup.controller.js";
+import { shedtpopup } from "../../../utils/profile.editor.controller.js";
 import { addUprofile } from "../../../utils/user.profile.controller.js";
 import {pushNotifs, userinfo,expirateMssg, getNfPanelLinks,m as messages, DateTime} from "./nav.js";
 
@@ -220,16 +221,57 @@ let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z,r,session_input,session_s_
                 n = page.querySelector('span.name')
                 z = getdata('userinfo')
                 n.textContent = z.Full_name
-                i = page.querySelector('span-img');
+                i = page.querySelector('span.n-img');
                 i.textContent = z.Full_name.substring(0,1)
-                let editbuts = Array.from(page.querySelectorAll('span.icon-edit-icon'))
+                let dataHolders = Array.from(page.querySelectorAll('span[data-holder="true"]')),
+                info = userinfo.message,editPform = page.querySelector('form#change-password')
+                dataHolders.forEach(holder=>{
+                    let id = holder.id
+                    holder.innerText = info[id]
+                })
+                let editbuts = Array.from(page.querySelectorAll('span.edit-p-info'))
                 for (const button of editbuts) {
                     button.addEventListener('click',()=>{
-                        l = button.getAttribute('data-target')
-                        shedtpopup(l,r);
+                        let id = button.id
+                        shedtpopup(id,info)
                     })
                 }
-          
+                let ins = Array.from(editPform.querySelectorAll('input')),shbuts = Array.from(editPform.querySelectorAll('span.showP'))
+                shbuts.forEach(button=>{
+                    button.onclick = function (event) {
+                        event.preventDefault();
+                        if (ins[shbuts.indexOf(this)].type == 'password') {
+                            this.querySelector('i').classList.replace('fa-eye','fa-eye-slash')
+                            ins[shbuts.indexOf(this)].type = 'text'
+                        }else{
+                            this.querySelector('i').classList.replace('fa-eye-slash','fa-eye')
+                            ins[shbuts.indexOf(this)].type = 'password'
+                        }
+                    }
+                })
+                editPform.onsubmit = async function (event) {
+                    event.preventDefault();
+                    let v = 1,s = 1
+                    let password = ins.find(function (input) {return input.name == 'password'}),confirm = ins.find(function (input) {return input.name == 'confirm'})
+                    
+                    v = checkEmpty(password)
+                    s = checkEmpty(confirm)
+                    if(!v || !s) return 0
+                
+                    if (password.value.length < 6) {
+                        return setErrorFor(password, 'this password does not meet minimum requirements')
+                    }else if (password.value != confirm.value) {
+                        return setErrorFor(password, 'passwords do not match')
+                    }else{
+                        postschema.body = JSON.stringify({
+                            token: getdata('token'),
+                            type : 'password',
+                            value : password.value
+                        })
+                        let response = await request('edit-profile',postschema)
+                        alertMessage(response.message)
+                    }
+                }
             }else if (x == 'view-session') {
                 theb.innerHTML = raw
                 if (extra) {

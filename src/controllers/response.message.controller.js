@@ -2,6 +2,7 @@ const errorMessage = {
     err_entr_avai: 'some entries were not recorded because they are already available',
     entr_removed: 'the provided entry was removed succesfully',
     entr_updated: 'the provided entry was updated succesfully',
+    profile_updated: 'profile was updated succesfully',
     err_entr_not_avai: 'the provided entry was not found',
     is_error: 'there was en error while processing your request',
     uc_message:'user created successfully',

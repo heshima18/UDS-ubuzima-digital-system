@@ -755,6 +755,42 @@ function promptPrice(info,chipsHolder,retP) {
     }
   })
 }
+export async function promptPassword() {
+  let b = addshade(),
+  a = document.createElement('div');
+  b.appendChild(a)
+  a.className = "w-400p h-a p-10p bsbb bc-white cntr zi-10000 br-5p" 
+  a.innerHTML = `<div class="head w-100 h-a py-10p px-15p bsbb">
+                                  <span class="fs-17p dgray capitalize igrid h-100 verdana">Password Authentication</span>
+                              </div>
+                              <div class="body w-100 h-a p-5p grid">
+                                <small class="text-muted p-10p bsbb">you need to enter your current password for this action</small>
+                                  <form method="post" id="rec-password-form" name="rec-password-form">
+                                    <div class="col-md-12 p-10p">
+                                      <label for="password" class="form-label capitalize">current password</label>
+                                      <input type="password" class="form-control" placeholder="password" name="password" id="password">
+                                      <small class="w-100 red pl-3p verdana capitalize"></small>
+                                    </div>
+                                    <div class="center-2 my-10p px-10p bsbb">
+                                      <button type="submit" class="btn btn-primary">Proceed</button>
+                                    </div>
+                                  </form>
+                              </div>`
+  let m = a.querySelector('form#rec-password-form'),
+  v = a.querySelector('input#password');
+  v.focus()
+  return new Promise((resolve, reject) => {
+    m.onsubmit =  (event)=>{
+      event.preventDefault()
+      if (v.value.trim() != '') {
+          resolve(v.value)
+        deletechild(b,b.parentNode)
+      }else{
+        setErrorFor(v,'enter the password')
+      }
+    }
+  })
+}
 function promptan(info,chipsHolder) {
   b = addshade();
   a = document.createElement('div');

@@ -26,7 +26,8 @@
     <script src="/assets/js/nav.js" type="module"></script>
     <script src="/assets/js/insurance.js" type="module"></script>
     <script src="/assets/js/footer.js" type="module"></script>
-
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cleave.js/1.6.0/cleave.min.js" integrity="sha512-KaIyHb30iXTXfGyI9cyKFUIRSSuekJt6/vqXtyQKhQP6ozZEGY8nOtRS6fExqE4+RbYHus2yGyYg1BrqxzV6YA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="/assets/vendor/libs/cleavejs/cleave-phone.rw.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.min.js" integrity="sha512-Xm9qbB6Pu06k3PUwPj785dyTl6oHxgsv9nHp7ej7nCpAqGZT3OZpsELuCYX05DdonFpTlBpXMOxjavIAIUwr0w==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 	<script src="/assets/vendor/libs/datatables-bs5/datatables-bootstrap5.js"></script>
@@ -616,37 +617,148 @@
 									<span class="theme capitalize left center bold fs-20p verdana h-100 pl-10p">my account</span>
 								</div>
 								<div class="pg-cntnt w-100 h-90 p-20p bsbb ovys left">
-									<div>
-										<div class="w-100 h-a bsbb">
-											<div class="w-100 h-a center">
-												<div class="b-1-s-g p-10p">
-													<div class="header w-100 h-120p center">
-														<div class="w-100p h-100p">
-															<span class="w-100 h-100 bc-tr-theme br-50 theme fs-50p capitalize uihol courier bold-2 center n-img">a</span>
-														</div>
-													</div>
-													<div class="desc center">
-														<div class="names w-100 h-70p mt-30 center">
-															<span class="fs-15p bsbb dgray capitalize namehol verdana name">aaa aaa</span>
-															<div class="w-100 mt-10p h-a center">
-																<span class="icon-edit-icon center w-40p h-20p bc-gray br-2p p-10p bsbb verdana capitalize fs-10p dgray hover-2" data-target="names">
-																	edit
-																</span>
-															</div>
-														</div>
-														<div class="names w-100 h-70p mt-30 center">
-															<span class="fs-15p bsbb dgray capitalize namehol verdana">*********</span>
-															<div class="w-100 mt-10p h-a center">
-																<span class="icon-edit-icon center w-40p h-20p bc-gray br-2p p-10p bsbb verdana capitalize fs-10p dgray hover-2" data-target="password">
-																	edit
-																</span>
-															</div>
-														</div>
-													</div>
-												</div>
-											</div>
-										</div>
-									</div>
+									<div class="row">
+                                        <!-- User Sidebar -->
+                                        <div class="col-xl-4 col-lg-5 col-md-5 order-1 order-md-0">
+                                            <!-- User Card -->
+                                            <div class="card mb-4">
+                                                <div class="card-body">
+                                                    <div class="user-avatar-section">
+                                                        <div class=" d-flex align-items-center flex-column">
+                                                            <span class="n-img w-100p h-100p br-50 bc-theme center capitalize white fs-30p"></span>
+                                                            <div class="user-info text-center my-10p">
+                                                                <h4 class="mb-2"> <span class="name capitalize text-muted">...</span></h4>
+                                                                <span class="uppercase fs-10p dgray px-15p py-5p br-5p bc-gray" data-holder="true" id="title">...</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <h5 class="pb-2 border-bottom mb-4">Details</h5>
+                                                    <div class="info-container">
+                                                        <ul class="list-unstyled">
+                                                            <li class="mb-3">
+                                                                <span class="fw-bold me-2">Username:</span>
+                                                                <span data-holder="true" id="username">...</span>
+                                                                <span class="px-5p dgray hover-2 edit-p-info" data-role="edit_uname" id="username"><i class="fas fa-edit"></i></span>
+                                                            </li>
+                                                            <li class="mb-3">
+                                                                <span class="fw-bold me-2">Email:</span>
+                                                                <span data-holder="true" id="email">...</span>
+                                                                <span class="px-5p dgray hover-2 edit-p-info" data-role="edit_email" id="email"><i class="fas fa-edit"></i></span>
+                                                            </li>
+                                                            <li class="mb-3">
+                                                                <span class="fw-bold me-2">Status:</span>
+                                                                <span class="btn green bc-tr-green" data-holder="true" id="status">Active</span>
+                                                            </li>
+                                                            <li class="mb-3">
+                                                                <span class="fw-bold me-2">hospital:</span>
+                                                                <span class="department" data-holder="true" id="hp_name">Doctor</span>
+                                                            </li>
+                                                            <li class="mb-3">
+                                                                <span class="fw-bold me-2">department:</span>
+                                                                <span class="department" data-holder="true" id="dep_name">Doctor</span>
+                                                            </li>
+                                                            <li class="mb-3">
+                                                                <span class="fw-bold me-2">Position:</span>
+                                                                <span class="title" data-holder="true" id="title">Doctor</span>
+                                                            </li>
+
+                                                            <li class="mb-3">
+                                                                <span class="fw-bold me-2">Contact:</span>
+                                                                <span class="phone" data-holder="true" id="phone">...</span>
+                                                                <span class="px-5p dgray hover-2 edit-p-info" data-role="edit_phone" id="phone"><i class="fas fa-edit"></i></span>
+
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <!-- /User Card -->
+                                        </div>
+                                        <!--/ User Sidebar -->
+                                    
+                                    
+                                        <!-- User Content -->
+                                        <div class="col-xl-8 col-lg-7 col-md-7 order-0 order-md-1">
+                                            <!-- User Pills -->
+                                            <ul class="nav nav-pills flex-column flex-md-row mb-3">
+                                                <li class="nav-item"><a class="nav-link active" href="javascript:void(0);"><i class="bx bx-lock-alt me-1"></i>Security</a></li>
+                                            </ul>
+                                            <!--/ User Pills -->
+                                    
+                                            <!-- Change Password -->
+                                            <div class="card mb-4">
+                                                <h5 class="card-header">Change Password</h5>
+                                                <div class="card-body">
+                                                    <form id="change-password" method="POST">
+                                                        <div class="alert alert-warning" role="alert">
+                                                            <h6 class="alert-heading fw-bold mb-1">Ensure that these requirements are met</h6>
+                                                            <span>Minimum 6 characters long, uppercase &amp; symbol</span>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="mb-3 col-12 col-sm-6 form-password-toggle fv-plugins-icon-container">
+                                                                <label class="form-label" for="password">New Password</label>
+                                                                <div class="input-group input-group-merge has-validation">
+                                                                    <input class="form-control" type="password" id="password" name="password" placeholder="············">
+                                                                    <span class="input-group-text cursor-pointer text-muted hover-2 showP"><i class="fas fa-eye fs-13p"></i></span>
+                                                                    <small class="hidden w-100 red pl-3p verdana"></small>
+                                                                </div>
+                                                                
+                                                            </div>
+                                    
+                                                            <div class="mb-3 col-12 col-sm-6 form-password-toggle fv-plugins-icon-container">
+                                                                <label class="form-label" for="confirm">Confirm New Password</label>
+                                                                <div class="input-group input-group-merge has-validation">
+                                                                    <input class="form-control" type="password" name="confirm" id="confirm" placeholder="············">
+                                                                    <span class="input-group-text cursor-pointer text-muted hover-2 showP"><i class="fas fa-eye fs-13p"></i></span>
+                                                                    <small class="hidden w-100 red pl-3p verdana"></small>
+
+                                                                </div>
+                                                            </div>
+                                                            <div>
+                                                                <button type="submit" class="btn btn-primary me-2">Change Password</button>
+                                                            </div>
+                                                        </div>
+                                                    <input type="hidden"></form>
+                                                </div>
+                                            </div>
+                                            <!--/ Change Password -->
+                                    
+                                            <!-- Two-steps verification -->
+                                            <div class="card mb-4">
+                                                <div class="card-header">
+                                                    <h5 class="card-title mb-2">Two-steps verification</h5>
+                                                    <span class="card-subtitle">Keep your account secure with authentication step.</span>
+                                                </div>
+                                                <div class="card-body">
+                                                    <div class="block">
+                                                        <h6>SMS</h6>
+                                                        <div class="d-flex justify-content-between border-bottom mb-4 pb-2">
+                                                            <span data-holder="true" id="phone">...</span>
+                                                            <div class="action-icons">
+                                                                <a href="javascript:;" class="text-body me-1" data-bs-target="#enableOTP" data-bs-toggle="modal"><i class="bx bx-edit"></i></a>
+                                                                <a href="javascript:;" class="text-body"><i class="bx bx-trash-alt"></i></a>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="block">
+                                                        <h6>Email</h6>
+                                                        <div class="d-flex justify-content-between border-bottom mb-4 pb-2">
+                                                            <span data-holder="true" id="email">...</span>
+                                                            <div class="action-icons">
+                                                                <a href="javascript:;" class="text-body me-1" data-bs-target="#enableOTP" data-bs-toggle="modal"><i class="bx bx-edit"></i></a>
+                                                                <a href="javascript:;" class="text-body"><i class="bx bx-trash-alt"></i></a>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <p class="mb-0">Two-factor authentication adds an additional layer of security to your account by
+                                                        requiring more than just a password to log in.
+                                                    </p>
+                                                </div>
+                                            </div>
+                                            <!--/ Two-steps verification -->   
+                                        </div>
+                                        <!--/ User Content -->
+                                    </div>
 								</div>
 							</div>
 							<!-- end of my account section -->

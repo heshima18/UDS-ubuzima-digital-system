@@ -29,18 +29,22 @@ const verification = async (req,res)=>{
              users.email,
              users.Full_name,
              users.role,
+             users.phone,
+             users.username,
              users.status,
              users.department,
+             departments.name as dep_name,
              users.title,
              users.extra 
              FROM
-              users 
+              users
+              left join departments on users.department = departments.id
             where 
             (email = ? AND fa = ?)
             OR (username = ? AND fa = ?) 
             OR (phone = ? AND fa = ?) 
             OR (NID = ? AND fa = ?) 
-            OR (id = ? AND fa = ?)`,
+            OR (users.id = ? AND fa = ?)`,
             [email,_2FA_code,email,_2FA_code,email,_2FA_code,email,_2FA_code,email,_2FA_code])
         }
         if (!select) return res.status(500).send({success:false, message: errorMessage.is_error})
@@ -67,9 +71,9 @@ const verification = async (req,res)=>{
                    return res.status(403).send({success: false, message: errorMessage.emp_inassigned_to_hp_error_message}) 
                 }
                 if ('id' in hospital) {
-                    token = addToken({id:select.id,Full_name:select.Full_name,role: select.role,status: select.status,hospital: hospital.id,department: select.department, title: select.title,hp_name:hospital.name })
+                    token = addToken({id:select.id,Full_name:select.Full_name,role: select.role,status: select.status,hospital: hospital.id,department: select.department, dep_name: select.dep_name, title: select.title,hp_name:hospital.name,email: select.email, phone: select.phone, username: select.username })
                 }else{
-                    token = addToken({id:select.id,Full_name:select.Full_name,role: select.role,status: select.status,hospital,department: select.department, title: select.title,hp_name:'N/A' })
+                    token = addToken({id:select.id,Full_name:select.Full_name,role: select.role,status: select.status,hospital,department: select.department,dep_name: select.dep_name, title: select.title,hp_name:'N/A',email: select.email, phone: select.phone, username: select.username  })
                 }
             }else if (select.role == 'insurance_manager') {
                 let assurance = await query(`select id from assurances where JSON_CONTAINS(managers, JSON_QUOTE(?),'$')`,[select.id])
@@ -91,7 +95,7 @@ const verification = async (req,res)=>{
                     token = addToken({id:select.id,Full_name:select.Full_name,role: select.role,status: select.status,title: select.title, limit: select.extra.limit, location: select.extra.location})
                 }
             }else{
-                 token = addToken({id:select.id,Full_name:select.Full_name,role: select.role,status: select.status})
+                 token = addToken({id:select.id,Full_name:select.Full_name,role: select.role,status: select.status,email: select.email, phone: select.phone, username: select.username})
             }
             return res.send({success: true, message: token})
             

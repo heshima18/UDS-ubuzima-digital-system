@@ -9,7 +9,7 @@ import homeController from '../controllers/home.controller';
 import signup from '../controllers/signup.controller';
 import { authorizeRawRole, authorizeRole } from '../middlewares/roles.authorizer.middleware';
 import { authorizeAdmin, authorizeAssuranceManager, authorizeCashier, authorizeHc_provider, authorizeHcp_ptnt, authorizeLaboratory_scientist, authorizeMultipleRoles, authorizePatient, authorizePatientToken, authorizePharmacist } from '../middlewares/users.authoriser.middleware';
-import {addEmployeetoAssurance, addEmployeetoHp, addemployee, getEmployeeProfile, getEmployees, getEmployeesByRole, getHpEmployees, removeEmployeFromHospital} from '../controllers/employee.controller';
+import {addEmployeetoAssurance, addEmployeetoHp, addemployee, editProfile, getEmployeeProfile, getEmployees, getEmployeesByRole, getHpEmployees, removeEmployeFromHospital} from '../controllers/employee.controller';
 import { getHP, getHPs, searchHP,addhospital, hospitalASSU, getHPDeps } from '../controllers/hospital.controller';
 import {TransferInteralSession, addSession, addSessionComment, addSessionDecision, addSessionEquipment, addSessionMedicine, addSessionOperation, addSessionService, addSessionSymptoms, addSessionTests, approveAssuPayment, approvePayment, assuranceMH, closeSession, getDailyHpSessions, getHc_pSessions, getHpsessions, getUsessions, markMedicineAsServed, session, testPay } from '../controllers/patient.session.controller';
 import {addmedicine, editmedicine, getMed, getMeds, searchMed} from '../controllers/medicine.controller';
@@ -157,6 +157,7 @@ router.post('/decline-appointment',authorizeRole,authorizeHc_provider,declineApp
 router.post('/send-message',authorizeRole,sendMessage);
 router.post('/get-messages',authorizeRole,getMessages);
 router.post('/get-sent-messages',authorizeRole,getSentMessages);
+router.post("/edit-profile",authorizeRole,editProfile)
 router.post('/mark-as-seen',authorizeRole,markAsSeen);
 router.post('/insights',authorizeRole,(req,res,next) => authorizeMultipleRoles(req,res,next,['mohs']),insightsStats);
 router.post('/hp-insights',authorizeRole,(req,res,next) => authorizeMultipleRoles(req,res,next,['director_general']),DGinsightsStats);

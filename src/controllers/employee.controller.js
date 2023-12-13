@@ -7,6 +7,8 @@ import {checkEmail, checkNID, checku_name, checkPhone, checkArrayAvai} from './c
 import authenticateToken from './token.verifier.controller';
 import { titles } from '../utils/titles.controller';
 import { roles } from '../utils/roles.controller';
+import { io } from '../socket.io/connector.socket.io';
+import addToken from './token.signer.controller';
 
 export const addemployee = async (req,res)=>{
   try {
@@ -279,7 +281,8 @@ export async function getEmployee(employee){
            users.Full_name,
            users.role,
            users.phone,
-           users.title
+           users.title,
+           users.password
           FROM
            users 
           WHERE 
@@ -292,5 +295,55 @@ export async function getEmployee(employee){
   } catch (error) {
       console.log(error)
       return null
+  }
+}
+export const editProfile = async (req,res)=>{
+  try {
+      let {type, password, value, token} = req.body
+      let decoded = authenticateToken(token)
+      decoded = decoded.token
+      var user =  decoded.id;
+      user = await getEmployee(user)
+      if (user) {
+        if (type!='password') {
+          if (user.password !== password) {
+           return res.send({success: false, message: errorMessage._err_forbidden})
+          }
+          if (type == 'email') {
+            let des = await checkEmail(value,'users')
+            if(!des) return res.status(500).send({success: false, message : errorMessage.is_error});
+            if (des.length) return res.send({success: false, message : errorMessage._err_email_avai});
+          }else if(type == 'phone'){
+            let des4 = await checkPhone(value,'users')
+            if(!des4) return res.status(500).send({success: false, message : errorMessage.is_error});
+            if (des4.length) return res.send({success: false, message : errorMessage._err_phone_avai});
+          }else if (type == 'username') {
+            let des3 = await checku_name(value,'users')
+            if(!des3) return res.status(500).send({success: false, message : errorMessage.is_error});
+            if (des3.length) return res.send({success: false, message : errorMessage._err_uname_avai});
+          }
+        }
+        let update = await query(`UPDATE users set ${type} = ? where id = ?`,[value,user.id])
+        if (!update) {
+          return res.send({success: false, message: errorMessage.is_error})
+        }
+        if (type != 'password') {   
+          const recipientSocket = Array.from(io.sockets.sockets.values()).find((sock) => sock.handshake.query.id === user.id)
+          if (recipientSocket) {
+            decoded[type] = value
+            decoded = addToken(decoded)
+            recipientSocket.emit('changetoken',decoded)
+          }else{
+              console.log('recepient is not online')
+          }
+        }
+        return res.send({success: true, message: errorMessage.profile_updated})
+        
+      }
+      res.send({success: false, message: errorMessage._err_u_404})
+
+  } catch (error) {
+      res.status(500).send({success:false, message: errorMessage.is_error})
+      console.log(error)
   }
 }
