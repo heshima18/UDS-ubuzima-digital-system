@@ -31,6 +31,11 @@ const map = await request('get-map',getschema);
                 addsCard(message.title,true)
 
             });
+            socket.on('changetoken',(token)=>{
+                alertMessage('token changed')
+                localStorage.setItem('token',token)
+                window.location.href = window.location.href
+            })
             socket.on('expiratemssg', (message) => {
                 expirateMssg(message);
             });

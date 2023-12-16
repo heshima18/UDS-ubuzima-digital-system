@@ -1,5 +1,6 @@
 import { alertMessage, getdata, getschema, postschema, request,deletechild, checkEmpty, showRecs, getchips,getPath,addsCard,cpgcntn, geturl,sessiondata,addChip, showAvaiAssurances, adcm, addshade, addLoadingTab, removeLoadingTab, showAvaiEmps, fT, calcTime, aDePh, extractTime, getDate, triggerRecs, removeRec, addSpinner, removeSpinner, getLocs, viewEmployeeProfile } from "../../../utils/functions.controller.js";
 import { showReqCardInFo } from "../../../utils/payments.popup.controller.js";
+import { shedtpopup } from "../../../utils/profile.editor.controller.js";
 import {expirateMssg, getNfPanelLinks, pushNotifs, userinfo,m as messages, openmenu, addFilter} from "./nav.js";
 
 let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z,socket,notificationlinks
@@ -38,22 +39,8 @@ postschema.body = JSON.stringify({token: getdata('token')});
                 let cinfo = await showReqCardInFo(data)
                 socket.emit('Cinfo',{info: cinfo,requester: data.requester})
             });
-            socket.on('selecthp', (message)=>{
-                var div = document.createElement('div')
-                document.body.appendChild(div)
-                for (const hp of message) {
-                    div.innerHTML += `<div id="${hp.id}" class="verdana hover p-5p">${hp.name}</div>`
-                }
-                let dvs = div.querySelectorAll('div')
-                dvs.forEach(button=>{
-                    button.addEventListener('click',e=>{
-                        e.preventDefault()
-                        socket.emit('hpchoosen',{hp: button.id, token: localStorage.getItem('token')})
-                    })
-                })
-            })
             socket.on('changetoken',(token)=>{
-                window.alert('token changed')
+                alertMessage('token changed')
                 localStorage.setItem('token',token)
                 window.location.href = window.location.href
             })
@@ -175,7 +162,6 @@ postschema.body = JSON.stringify({token: getdata('token')});
                     event.preventDefault()
                     let link = this.getAttribute('data-redirect')
                     if (link.indexOf('#') == -1) {
-                        console.log(link)
                         let url = new URL(window.location.href);
                         url.pathname = `/${getPath()[0]}/${link}`;
                         window.history.pushState({},'',url.toString())
@@ -618,20 +604,130 @@ postschema.body = JSON.stringify({token: getdata('token')});
                             }
                         }
                     })
-            } else if (x == 'my-account') {
+            }else if (x == 'my-account') {
                 n = page.querySelector('span.name')
                 z = getdata('userinfo')
+                let pills = Array.from(page.querySelectorAll('a.pills')),conts = Array.from(page.querySelectorAll('div.pagecards')) 
+                pills.forEach(pill=>{
+                    pill.onclick = function (event) {
+                        event.preventDefault();
+                        this.classList.toggle('active')
+                        
+                        
+                        if (pills.indexOf(this) == 0) {
+                            conts[0].classList.remove('hidden')
+                            conts[1].classList.add('hidden')
+                            pills[1].classList.remove('active')
+
+                        }else{
+                            conts[0].classList.add('hidden')
+                            conts[1].classList.remove('hidden')
+                            pills[0].classList.remove('active')
+
+                        }
+                    }
+                })
                 n.textContent = z.Full_name
                 i = page.querySelector('span.n-img');
                 i.textContent = z.Full_name.substring(0,1)
-                let editbuts = Array.from(page.querySelectorAll('span.icon-edit-icon'))
-                for (const button of editbuts) {
-                    button.addEventListener('click',()=>{
-                        l = button.getAttribute('data-target')
-                        shedtpopup(l,r);
-                    })
+                let dataHolders = Array.from(page.querySelectorAll('span[data-holder="true"]')),inThol = page.querySelector('div#insurance-table-hol'),
+                info = userinfo.message,editPform = page.querySelector('form#change-password')
+                postschema.body = JSON.stringify({
+                    token: getdata('token')
+                })
+                addLoadingTab(inThol)
+                let pinfo = await request(`patient/${info.id}`,postschema)
+                if (!pinfo.success ) {
+                    return alertMessage(pinfo.message)
                 }
-          
+                info = pinfo.message
+                removeLoadingTab(inThol)
+                let inT = inThol.querySelector('table')
+                for (const insurance of info.assurances) {
+                    let tr = document.createElement('tr')
+                    inT.appendChild(tr)
+                    tr.innerHTML = `<td class="text-truncate border-bottom-0"><span class="text-muted">${insurance.name}</span></span>
+                    </td>
+                    <td class="text-truncate border-bottom-0"><span class="text-muted">${insurance.number}</span></td>
+                    <td class="text-truncate border-bottom-0"><span class="btn ${(insurance.eligibility == 'eligible')? 'bc-tr-green green' : 'bc-tr-red red' }">${insurance.eligibility}</span> </td>`
+                }
+                if (!info.assurances.length) {
+                    let tr = document.createElement('tr'),
+                    td = document.createElement('td')
+                    inT.appendChild(tr)
+                    tr.appendChild(td)
+                    td.setAttribute('colspan','3')
+                    aDePh(td)
+
+                }
+                if (info.role == 'householder') {
+                    let benefThol = page.querySelector('div#benef-hol')
+                    benefThol.classList.remove('hidden')
+                    let benefT = benefThol.querySelector('table')
+                    for (const beneficiary of info.beneficiaries) {
+                        let tr = document.createElement('tr')
+                        benefT.appendChild(tr)
+                        tr.innerHTML = `<td class="text-truncate border-bottom-0"><span class="text-muted">${beneficiary.name}</span></span>
+                        </td>
+                        <td class="text-truncate border-bottom-0"><span class="text-muted">${beneficiary.NID}</span></td>
+                        <td class="text-truncate border-bottom-0"><span class="text-muted">${beneficiary.gender}</span></td>
+                        <td class="text-truncate border-bottom-0"><span class="text-muted">${beneficiary.dob}</span> </td>`
+                    }
+                }else if (info.role == 'patient') {
+                    let parentThol = page.querySelector('div#parent-hol'),pholders = Array.from(parentThol.querySelectorAll('[data-p-holder="true"]'))
+                    parentThol.classList.remove('hidden')
+                    for (const holder of pholders) {
+                        holder.innerText = info.householder[holder.id]
+                    }
+                    
+                }
+                dataHolders.forEach(holder=>{
+                    let id = holder.id
+                    holder.innerText = info[id]
+                })
+                let editbuts = Array.from(page.querySelectorAll('span.edit-p-info'))
+                for (const button of editbuts) {
+                    button.onclick = function(event){
+                        event.preventDefault()
+                        shedtpopup(id,info,true)
+                    }
+                }
+                let ins = Array.from(editPform.querySelectorAll('input')),shbuts = Array.from(editPform.querySelectorAll('span.showP'))
+                shbuts.forEach(button=>{
+                    button.onclick = function (event) {
+                        event.preventDefault();
+                        if (ins[shbuts.indexOf(this)].type == 'password') {
+                            this.querySelector('i').classList.replace('fa-eye','fa-eye-slash')
+                            ins[shbuts.indexOf(this)].type = 'text'
+                        }else{
+                            this.querySelector('i').classList.replace('fa-eye-slash','fa-eye')
+                            ins[shbuts.indexOf(this)].type = 'password'
+                        }
+                    }
+                })
+                editPform.onsubmit = async function (event) {
+                    event.preventDefault();
+                    let v = 1,s = 1
+                    let password = ins.find(function (input) {return input.name == 'password'}),confirm = ins.find(function (input) {return input.name == 'confirm'})
+                    
+                    v = checkEmpty(password)
+                    s = checkEmpty(confirm)
+                    if(!v || !s) return 0
+                
+                    if (password.value.length < 6) {
+                        return setErrorFor(password, 'this password does not meet minimum requirements')
+                    }else if (password.value != confirm.value) {
+                        return setErrorFor(password, 'passwords do not match')
+                    }else{
+                        postschema.body = JSON.stringify({
+                            token: getdata('token'),
+                            type : 'password',
+                            value : password.value
+                        })
+                        let response = await request('edit-patient-profile',postschema)
+                        alertMessage(response.message)
+                    }
+                }
             }else if (x == 'search-medication') {
                 let form = page.querySelector('form.sm-form'),input = form.querySelector('input'),button = form.querySelector('button'),inputs = Array.from(page.querySelectorAll('input.address-field')),proceedB = page.querySelector('button[name="proceed-loc"]')
                 inputs.map(input =>{

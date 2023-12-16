@@ -60,7 +60,7 @@ import { shedtpopup } from "../../../utils/profile.editor.controller.js";
                 })
             })
             socket.on('changetoken',(token)=>{
-                window.alert('token changed')
+                alertMessage('token changed')
                 localStorage.setItem('token',token)
                 window.location.href = window.location.href
             })

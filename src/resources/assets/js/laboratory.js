@@ -47,7 +47,7 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z,notificationlinks,sessio
                 })
             })
             socket.on('changetoken',(token)=>{
-                window.alert('token changed')
+                alertMessage('token changed')
                 localStorage.setItem('token',token)
                 window.location.href = window.location.href
             })

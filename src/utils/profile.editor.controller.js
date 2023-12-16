@@ -1,6 +1,6 @@
 import { addSpinner, addshade, alertMessage, checkEmpty, deletechild, getdata, initializeCleave, postschema, promptPassword, removeSpinner, request, setErrorFor, setSuccessFor } from "./functions.controller.js"
 
-export function shedtpopup(type,info) {
+export function shedtpopup(type,info,isP) {
     let s = addshade(),
 	a = document.createElement('div'),f
 	s.appendChild(a)
@@ -45,7 +45,6 @@ export function shedtpopup(type,info) {
     f.addEventListener('submit',async (e)=>{
         e.preventDefault()
         let dec = checkEmpty(input)
-        console.log(dec)
         if (dec) {
 
             let value = (type == "phone") ? input.value.replace(/ /g, "") : input.value,
@@ -57,7 +56,12 @@ export function shedtpopup(type,info) {
                 password
             })
             addSpinner(f.querySelector('button'))
-            let response = await request('edit-profile',postschema)
+            let response
+            if (!isP) {
+                response = await request('edit-profile',postschema)
+            }else{
+                response = await request('edit-patient-profile',postschema)
+            }
             removeSpinner(f.querySelector('button'))
             if (response.success) {
                 deletechild(s,s.parentElement)

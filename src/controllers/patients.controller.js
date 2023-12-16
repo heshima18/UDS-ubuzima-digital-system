@@ -4,6 +4,9 @@ import errorMessage from './response.message.controller'
 import authenticateToken from './token.verifier.controller';
 import id from "./randomInt.generator.controller";
 import EventEmitter from 'events';
+import { io } from '../socket.io/connector.socket.io';
+import addToken from './token.signer.controller';
+import { checkEmail, checkPhone, checku_name } from './credentials.verifier.controller';
 class MyEventEmitter extends EventEmitter {}
 const event = new MyEventEmitter();
 export const getPatients = async (req,res)=>{
@@ -75,14 +78,15 @@ export const getPatient = async (req,res)=>{
             SELECT
                 patients.id,
                 COALESCE( CONCAT('[', GROUP_CONCAT(DISTINCT CASE WHEN assurances.id IS NOT NULL THEN JSON_OBJECT('id', assurances.id, 'name', assurances.name) ELSE NULL END ), ']'), '[]') AS assurances,
-                COALESCE( CONCAT('[', GROUP_CONCAT(DISTINCT CASE WHEN p2.id IS NOT NULL THEN JSON_OBJECT('id', p2.id, 'name', p2.Full_name) ELSE NULL END SEPARATOR ','), ']'), '[]') AS beneficiaries,
+                COALESCE( CONCAT('[', GROUP_CONCAT(DISTINCT CASE WHEN p2.id IS NOT NULL THEN JSON_OBJECT('id', p2.id, 'name', p2.Full_name,'gender', p2.gender,'dob', DATE(p2.DOB),'NID', p2.nid) ELSE NULL END SEPARATOR ','), ']'), '[]') AS beneficiaries,
                 COALESCE( GROUP_CONCAT(
-                    DISTINCT CASE WHEN p3.id IS NOT NULL THEN JSON_OBJECT('id', p3.id, 'name', p3.Full_name) ELSE NULL END
+                    DISTINCT CASE WHEN p3.id IS NOT NULL THEN JSON_OBJECT('id', p3.id, 'name', p3.Full_name, 'phone', p3.phone, 'NID', p3.nid) ELSE NULL END
                     ), null) AS householder,
                 patients.Full_name,
                 patients.assurances as raw_assurances,
                 patients.phone,
                 patients.email,
+                patients.username,
                 patients.gender,
                 patients.nid,
                 patients.dob,
@@ -165,7 +169,7 @@ export const addUserAssurance = async (req,res)=>{
 }
 export async function selectPatient(patient) {
     try {
-        let p = await query('select id, Full_name, email, phone,resident_province as province,resident_district as district,resident_sector as sector,resident_cell as cell,FA from patients where id = ?',[patient])
+        let p = await query('select id, Full_name,password, email, phone,resident_province as province,resident_district as district,resident_sector as sector,resident_cell as cell,FA from patients where id = ?',[patient])
         if (!p) {
             return null
         }else{
@@ -235,3 +239,55 @@ export const addPatiBg = async (req,res) => {
         res.status(500).send({success:false, message: errorMessage.is_error})
       }
 }
+export const editPatientProfile = async (req,res)=>{
+    try {
+        let {type, password, value, token} = req.body
+        let decoded = authenticateToken(token)
+        decoded = decoded.token
+        var patient =  decoded.id;
+        patient = await selectPatient(patient)
+
+        if (patient) {
+          if (type!='password') {
+            if (patient.password !== password) {
+             return res.send({success: false, message: errorMessage._err_forbidden})
+            }
+            if (type == 'email') {
+              let des = await checkEmail(value,'patients')
+              if(!des) return res.status(500).send({success: false, message : errorMessage.is_error});
+              if (des.length) return res.send({success: false, message : errorMessage._err_email_avai});
+            }else if(type == 'phone'){
+              let des4 = await checkPhone(value,'patients')
+              if(!des4) return res.status(500).send({success: false, message : errorMessage.is_error});
+              if (des4.length) return res.send({success: false, message : errorMessage._err_phone_avai});
+            }else if (type == 'patientname') {
+              let des3 = await checku_name(value,'patients')
+              if(!des3) return res.status(500).send({success: false, message : errorMessage.is_error});
+              if (des3.length) return res.send({success: false, message : errorMessage._err_uname_avai});
+            }
+          }
+          let update = await query(`UPDATE patients set ${type} = ? where id = ?`,[value,patient.id])
+          if (!update) {
+            return res.send({success: false, message: errorMessage.is_error})
+          }
+          if (type != 'password') {   
+            const recipientSocket = Array.from(io.sockets.sockets.values()).find((sock) => sock.handshake.query.id === patient.id)
+            if (recipientSocket) {
+              decoded[type] = value
+              decoded = addToken(decoded)
+              recipientSocket.emit('changetoken',decoded)
+            }else{
+                console.log('recepient is not online')
+            }
+          }
+          return res.send({success: true, message: errorMessage.profile_updated})
+          
+        }else{
+            res.send({success: false, message: errorMessage._err_p_404})
+        }
+  
+    } catch (error) {
+        res.status(500).send({success:false, message: errorMessage.is_error})
+        console.log(error)
+    }
+  }

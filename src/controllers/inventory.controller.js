@@ -381,6 +381,9 @@ export async function getInventoryEntry(inventory,entry) {
     LEFT JOIN ${entry} AS m ON JSON_CONTAINS(i.${entry}, JSON_OBJECT('id', m.id), '$')
     WHERE i.id = ? OR i.hospital = ?
     GROUP BY i.id;`,[inventory,inventory]);
+    if (!q.length) {
+      return q
+    }
     q = q[0]
     q[entry] = JSON.parse(q[entry])
     q[`raw_${entry}`] = JSON.parse(q[`raw_${entry}`])  

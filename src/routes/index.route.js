@@ -24,7 +24,7 @@ import {getInventory,addInventory, addInventoryTests, addInventoryOperations, ad
 import { getMessages, getSentMessages, markAsSeen, sendMessage } from '../controllers/message.controller';
 import { authorizeAppointmentAccess } from '../middlewares/appointment.authorizer.middleware';
 import { authorizeSession } from '../middlewares/session.authorizer.middleware';
-import { addPatiBg, addPatientFP, addUserAssurance, getPatient, getPatients } from '../controllers/patients.controller';
+import { addPatiBg, addPatientFP, addUserAssurance, editPatientProfile, getPatient, getPatients } from '../controllers/patients.controller';
 import { addAssurance, addEquipmentToAssuranceRestrictedList, addMedicineToAssuranceRestrictedList, addOperationToAssuranceRestrictedList, addServiceToAssuranceRestrictedList, addTestToAssuranceRestrictedList, assurance, getAssurances, removeItemFromAssurancelist,assuranceHP, addassuranceToHp } from '../controllers/assurance.controller';
 import { authorizeHospitalAssurance, authorizeUserAssurance } from '../middlewares/assurance.authorizer.middleware';
 import { at } from '../controllers/token.verifier.controller';
@@ -158,6 +158,7 @@ router.post('/send-message',authorizeRole,sendMessage);
 router.post('/get-messages',authorizeRole,getMessages);
 router.post('/get-sent-messages',authorizeRole,getSentMessages);
 router.post("/edit-profile",authorizeRole,editProfile)
+router.post("/edit-patient-profile",authorizeRole,editPatientProfile)
 router.post('/mark-as-seen',authorizeRole,markAsSeen);
 router.post('/insights',authorizeRole,(req,res,next) => authorizeMultipleRoles(req,res,next,['mohs']),insightsStats);
 router.post('/hp-insights',authorizeRole,(req,res,next) => authorizeMultipleRoles(req,res,next,['director_general']),DGinsightsStats);

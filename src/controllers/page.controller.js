@@ -519,6 +519,12 @@ export function page (req,res,page){
             case 'home':
                 file = path.join(__dirname,'..','pages', 'mohs-index.html')
                 break;
+             case 'my-account/':
+                file = path.join(__dirname,'..','pages', 'mohs-index.html')
+                break;
+            case 'my-account':
+                file = path.join(__dirname,'..','pages', 'mohs-index.html')
+                break;
             default:
                     file = 'N/A'
                 break;

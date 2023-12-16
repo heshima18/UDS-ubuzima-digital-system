@@ -27,6 +27,11 @@ import { shedtpopup } from "../../../utils/profile.editor.controller.js"
                 addsCard(message.title,true)
 
             });
+            socket.on('changetoken',(token)=>{
+                alertMessage('token changed')
+                localStorage.setItem('token',token)
+                window.location.href = window.location.href
+            })
             socket.on('expiratemssg', (message) => {
                 expirateMssg(message);
             });
@@ -103,7 +108,7 @@ import { shedtpopup } from "../../../utils/profile.editor.controller.js"
             })
             cudstp.classList.add('active','bb-1-s-theme','bc-tr-theme','theme')
             let url = new URL(window.location.href);
-            url.pathname = `/dg/${cudstp.getAttribute('data-item-type')}`;
+            url.pathname = `/director_general/${cudstp.getAttribute('data-item-type')}`;
             window.history.pushState({},'',url.toString())
             cpgcntn(c.indexOf(cudstp),p,extra)
             let page = p.find(function (elem) {
@@ -830,7 +835,6 @@ function generateResViewBy(type,data,container,resChart) {
             }
         })
         removeLoadingTab(container)
-        console.log(container.childNodes)
     }else{
         container.innerHTML = null
         aDePh(container)
