@@ -28,7 +28,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cleave.js/1.6.0/cleave.min.js" integrity="sha512-KaIyHb30iXTXfGyI9cyKFUIRSSuekJt6/vqXtyQKhQP6ozZEGY8nOtRS6fExqE4+RbYHus2yGyYg1BrqxzV6YA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="/assets/vendor/js/bootstrap.js"></script>
     <script src="/assets/vendor/libs/cleavejs/cleave-phone.rw.js"></script>
-	<link rel="shortcut icon" href="/icons/favicon.png" type="image/x-icon">
 </head>
 <body class="p-0 m-0 w-100 h-100 p-a ovh">
 <div class="cont w-100 h-100 ovxh" id="cont">
@@ -360,10 +359,11 @@
 							<div class="br-5p w-100 h-100 p-a ovh hidden t-0 tr-0-3 pagecontentsection" id="feedbacks">
 								<div class="w-100 h-a p-10p bsbb flex jc-sb">
 									<span class="theme capitalize left flex bold fs-20p verdana h-100 w-100"><span class="dgray capitalize">patient / </span>&nbsp;feedbacks</span>
-                                    <span class="btn btn-primary nowrap">add feedback</span>
 								</div>
 								<div class="pg-cntnt w-100 h-90 p-20p bp-0-resp bsbb ovys left">
-                                    
+                                    <ul class="ls-none p-0" data-role="feedbacks-holder">
+                                        
+                                    </ul>
 								</div>
 							</div>
 							<!-- end of feedbacks section -->
@@ -585,6 +585,7 @@
 				</div>
                 <div class="modals">
                     <div class="left mb-10p w-100 view-session hidden ovys" id="view-session">
+                        <button class="p-a t-0 r-0 btn btn-primary mr-10p mt-10p" id="add-fb">add feedback</button>
                         <div class="dinfo my-5p">
                             <span class="title bold fs-1p capitalize block">facility's information</span>
                             <ul class="ls-none px-3p">

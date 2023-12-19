@@ -1,5 +1,5 @@
 
-import { alertMessage, getdata, getschema, postschema, request,deletechild, checkEmpty, showRecs, getchips,getPath,calcTime,addsCard,cpgcntn, geturl,sessiondata,addChip, showAvaiAssurances, adcm, addshade, addLoadingTab, removeLoadingTab, showAvaiEmps, fT, promptHpsToChoose, addAuthDiv, RemoveAuthDivs, showFingerprintDiv, removeRec, promptMessage, triggerRecs, extractTime, getDate, aDePh, addSpinner, addCFInps, removeSpinner, viewEmployeeProfile } from "../../../utils/functions.controller.js";
+import { alertMessage, getdata, getschema, postschema, request,deletechild, checkEmpty, showRecs, getchips,getPath,calcTime,addsCard,cpgcntn, geturl,sessiondata,addChip, showAvaiAssurances, adcm, addshade, addLoadingTab, removeLoadingTab, showAvaiEmps, fT, promptHpsToChoose, addAuthDiv, RemoveAuthDivs, showFingerprintDiv, removeRec, promptMessage, triggerRecs, extractTime, getDate, aDePh, addSpinner, addCFInps, removeSpinner, viewEmployeeProfile, viewFB } from "../../../utils/functions.controller.js";
 import { showPaymentPopup } from "../../../utils/payments.popup.controller.js";
 import { shedtpopup } from "../../../utils/profile.editor.controller.js";
 import { addUprofile } from "../../../utils/user.profile.controller.js";
@@ -378,11 +378,11 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,z,notificationlinks,socket,m
                     })
                     n = i.find(function (e) {return e.id == 'patient'})
                     let ass = i.find(function (e) {return e.id == 'assurance'})
-
+                    console.log(addin)
                     if (addin) {
                       n.value = addin.name
                       n.setAttribute('data-id',addin.patient)
-                      if (typeof addin.assurance == 'object') {
+                      if (typeof addin.assurance == 'object' && addin.assurance !== null) {
                         ass.value = addin.assurance[0].id
                       }else{
                           ass.value = addin.assurance
@@ -474,7 +474,6 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,z,notificationlinks,socket,m
                         }
                         }
                         if (v) {
-                            // Object.assign(b,{ assurance: sessiondata('pinfo').assurance})
                             Object.assign(b,{ token: getdata('token')})
                             if (!b.assurance) {
                                 b.assurance = null
@@ -541,6 +540,9 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,z,notificationlinks,socket,m
                 }
               }
             }else if (x == 'appointments') {
+                if (getPath(2)) {
+                    viewAppointmentDiv(getPath(2))
+                }
                 if (!page.classList.contains('loaded')) {
                     let appointments = await request('hcp-appointments',postschema)
                     if (appointments.success) {
@@ -899,8 +901,7 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,z,notificationlinks,socket,m
                         v = addshade();
                         let cont = document.createElement('div')
                         v.appendChild(cont)
-                        cont.className = `br-10p cntr card p-10p bsbb w-450p h-a b-mgc-resp`
-                        cont.className = `br-10p cntr card p-10p bsbb w-450p h-a b-mgc-resp`
+                        cont.className = `br-10p cntr card-1 bc-white p-10p bsbb w-450p h-a b-mgc-resp`
                         cont.innerHTML = `<div class="w-100 h-100 p-5p bp-0-resp">
                             <div class="head w-100 px-5p py-10p bsbb">
                                 <span class="capitalize bold-2 fs-20p">add blood group</span>
@@ -1158,7 +1159,7 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,z,notificationlinks,socket,m
         let bgDiv = addshade();
         let cont = document.createElement('div')
         bgDiv.appendChild(cont)
-        cont.className = `br-10p cntr card p-10p bsbb w-450p h-a b-mgc-resp`
+        cont.className = `br-10p cntr card-1 p-10p bsbb w-450p h-a b-mgc-resp`
         cont.innerHTML = `<div class="w-100 h-100 p-5p bp-0-resp">
             <div class="head w-100 px-5p py-10p bsbb">
                 <span class="capitalize bold-2 fs-20p">Appointment Request from ${message.sender.name}</span>
@@ -1251,7 +1252,7 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,z,notificationlinks,socket,m
                     let sdiv = addshade();
                     let scont = document.createElement('div')
                     sdiv.appendChild(scont)
-                    scont.className = `br-10p cntr card p-10p bsbb w-450p h-a b-mgc-resp`
+                    scont.className = `br-10p cntr card-1 p-10p bsbb w-450p h-a b-mgc-resp`
                     scont.innerHTML = `<div class="w-100 h-100 p-5p bp-0-resp">
                                         <div class="head w-100 px-5p py-10p bsbb">
                                             <span class="capitalize bold-2 fs-20p">reason for declining</span>
@@ -1309,7 +1310,6 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,z,notificationlinks,socket,m
         })
     }
     function genClicks(notificationlinks) {
-        let messages = sessiondata('messages')
         notificationlinks.map((link)=>{
             link.addEventListener(`click`, ()=>{
                 if (!link.classList.contains('list-link')) {
@@ -1333,6 +1333,8 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,z,notificationlinks,socket,m
                 }else if (link.getAttribute('data-message-type') == '__APPNTMNT_MSSG_') {
                     appApprovalCont(message)
                     url.pathname = `/${getPath()[0]}/${link.getAttribute('data-href-target')}`;
+                }else if (link.getAttribute('data-message-type') == 'feedback') {
+                    viewFB(message)
                 }else if (link.getAttribute('data-message-type') == 'transfer_message' ) {
                     if ('extra' in message) {
                         viewTransfer(message.extra.transfer)
@@ -1665,7 +1667,7 @@ class popups{
             button.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`
             button.setAttribute('disabled',true)
                 
-                Object.assign(values,{test: {id:values.test}})
+                Object.assign(values,{test: {id:values.test, tester: getdata('userinfo').id}})
                 let nval = {}
                 for (const key of Object.keys(values)) {
                     Object.assign(nval, {[key]: values[key]})
@@ -1840,7 +1842,7 @@ class popups{
                     Object.assign(values,{[input.name]: (input.classList.contains('bevalue'))? input.getAttribute('data-id') : input.value })
                 }
                 Object.assign(values,{session: session.session_id,token: getdata('token')})
-                Object.assign(values,{operation: {id: values.operation,operator: values.operator}})
+                Object.assign(values,{operation: {id: values.operation, operator: getdata('userinfo').id}})
                 postschema.body = JSON.stringify(values)
                 let results = await request('add-session-operation',postschema)
                 if (results.success) {
@@ -2473,7 +2475,7 @@ async function viewAppointmentDiv(appointment) {
     let bgDiv = addshade();
     let cont = document.createElement('div')
     bgDiv.appendChild(cont)
-    cont.className = `br-10p cntr card p-10p bsbb w-450p h-a b-mgc-resp`
+    cont.className = `br-10p cntr card-1 p-10p bsbb w-450p h-a b-mgc-resp bc-white`
     cont.innerHTML = `<div class="w-100 h-100 p-5p bp-0-resp">
                         <div class="head w-100 px-5p py-10p bsbb">
                             <span class="capitalize bold-2 fs-20p">Appointment # <span class="consolas">${appointment}</span></span>

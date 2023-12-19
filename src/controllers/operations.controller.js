@@ -67,3 +67,22 @@ export const getOperation = async (req,res)=>{
     return res.send({success: false, message: errorMessage.is_error})
   }
 }
+export const getOperationInfo = async function (operation) {
+  try {
+      const select = await query(`
+          SELECT operations.id, operations.name, price, departments.name AS department_name, departments.id AS department
+          FROM operations
+          INNER JOIN departments ON operations.department = departments.id
+          WHERE operations.id = ?`,
+          [operation]
+      );
+
+      if (!select || select.length === 0) {
+          return undefined;
+      }
+
+      return select[0];
+  } catch (error) {
+      throw error;
+  }
+};

@@ -73,6 +73,7 @@ export const myAppointments = async (req,res)=>{
             hospitals.name as hospital,
             appointments.time,
             appointments.status,
+            appointments.hc_provider,
             appointments.dateadded as date_booked
           FROM
             appointments

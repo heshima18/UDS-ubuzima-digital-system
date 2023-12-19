@@ -1477,7 +1477,7 @@ let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z,assurance
                     async function showSession(session) {
                         q = addshade();
                         d = document.createElement('div')
-                        d.className = `br-10p cntr card p-20p bsbb w-80 h-85 b-mgc-resp ovh`
+                        d.className = `br-10p cntr card-1 bc-white p-20p bsbb w-80 h-85 b-mgc-resp ovh`
                         q.appendChild(d)
                         b = document.getElementById('view-session')
                         b = b.cloneNode(true)

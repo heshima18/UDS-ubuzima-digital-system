@@ -1,5 +1,5 @@
 import { postschema, request,alertMessage, getdata,getschema, animskel, deletechild,getPath,cpgcntn, sessiondata, calcTime,DateTime,geturl, adcm, removeLoadingTab, initializeSpecialCleave, aDePh, checkEmpty, addSpinner, removeSpinner, showRecs, getLocs, addshade, addLoadingTab} from "../../../utils/functions.controller.js"
-let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,z,x,c,v,b,n,m,extra,comparison,Resthingtoclone
+let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,z,x,c,v,b,n,m,extra,comparison,Resthingtoclone,Opthingtoclone
 import userinfo from "./nav.js"
 import {config} from "./config.js"
 import { shedtpopup } from "../../../utils/profile.editor.controller.js"
@@ -197,7 +197,7 @@ import { shedtpopup } from "../../../utils/profile.editor.controller.js"
                             but.setAttribute('data-role','custom-buttns');
                             but.className = `capitalize theme bc-tr-theme btn btn-sm my-4p mx-2p`
                             but.innerText = group
-                            but.id = (group == 'tests')? 'groupByTests': (group == 'medications')? 'groupByMeds':(group == 'results')? 'groupByResults': '';
+                            but.id = (group == 'tests')? 'groupByTests': (group == 'medications')? 'groupByMeds':(group == 'results')? 'groupByResults': (group == 'operations')? 'groupByOperations': '';
                             container.appendChild(but);
                             (group == 'results')? but.classList.add('b-1-s-theme'): '';
                             
@@ -245,7 +245,9 @@ import { shedtpopup } from "../../../utils/profile.editor.controller.js"
                 drawMainChart(extra.groupByResults)
                 generateViewBy('groupByResults',extra.groupByResults,viewByCont)
                 Resthingtoclone = document.querySelector('div.resCard')
+                Opthingtoclone = document.querySelector('div.opCard')
                 makeDiagsInsights(extra.groupByResults,Resthingtoclone)
+                makeOpsInsights(extra.groupByOperations,Opthingtoclone)
                 let rankingsDivs = Array.from(document.querySelectorAll('div.ranks'))
                 rankingsDivs.forEach(div=>{
                     prepT(div,div.id,extra[div.getAttribute('data-to-hold')])
@@ -575,7 +577,6 @@ function drawResChart(grp,resChart, compType) {
         categories = grp.map(function (key) {
             return  key.name
         })
-        console.log(series1,series2,total1,total2)
         resChartOptions = {
             series: [
                 { name: series1, data:  total1},
@@ -721,32 +722,33 @@ async function computeComp(page){
 }
 function generateViewBy(type,data,container) {
 
-    if (type == 'groupByTests') {
-        let Tests = Object.keys(data)
-        container.innerHTML = null
-        Tests.forEach((test)=>{
-            let button = document.createElement('button');
-            button.className = 'capitalize theme bc-tr-theme btn btn-sm my-4p mx-2p'
-            button.innerText = `${test}'s results`
-            button.setAttribute('data-role',"custom-buttns")
-            button.id = `${test}`
-            container.appendChild(button)
+    // if (type == 'groupByTests') {
+    //     let Tests = Object.keys(data)
+    //     container.innerHTML = null
+    //     Tests.forEach((test)=>{
+    //         let button = document.createElement('button');
+    //         button.className = 'capitalize theme bc-tr-theme btn btn-sm my-4p mx-2p'
+    //         button.innerText = `${test}'s results`
+    //         button.setAttribute('data-role',"custom-buttns")
+    //         button.id = `${test}`
+    //         container.appendChild(button)
             
-        })
-        let buttons = Array.from(container.querySelectorAll('button'))
-        buttons.map(function (b) {
-            b.onclick = function (event) {
-                event.preventDefault()
-                let test = this.id
-                let testData = data[test].resultsCounts,grp = {}
-                testData.map(function (data) {
-                    Object.assign(grp,{[data.name]: {total: data.total}})
-                })
-                drawMainChart(grp,null)
-                changeBtnBrdrClr(this)
-            }
-        })
-    }else if (type == 'groupByResults') {
+    //     })
+    //     let buttons = Array.from(container.querySelectorAll('button'))
+    //     buttons.map(function (b) {
+    //         b.onclick = function (event) {
+    //             event.preventDefault()
+    //             let test = this.id
+    //             let testData = data[test].resultsCounts,grp = {}
+    //             testData.map(function (data) {
+    //                 Object.assign(grp,{[data.name]: {total: data.total}})
+    //             })
+    //             drawMainChart(grp,null)
+    //             changeBtnBrdrClr(this)
+    //         }
+    //     })
+    // }else
+     if (type == 'groupByResults') {
         let Results = Object.keys(data)
         container.innerHTML = null
         Results.forEach((result)=>{
@@ -793,7 +795,6 @@ function generateResViewBy(type,data,container,resChart) {
 
     if (type == 'groupByAges') {
         let ranges = Object.keys(data)
-        console.log(data)
         container.innerHTML = null
         let button = document.createElement('button')
         button.className = 'capitalize theme bc-tr-theme btn btn-sm my-4p mx-2p'
@@ -889,4 +890,222 @@ function makeDiagsInsights(results,thingtoclone) {
         drawChartForRes(resInfo)
        } 
     })
+}
+function makeOpsInsights(operations,thingtoclone) {
+    let parent = document.querySelector('div#opsInsights')
+    // parent.innerHTML = null
+    for (const operation of Object.keys(operations)) {
+        let resInfo = operations[operation]
+        let resCard = thingtoclone.cloneNode(true)
+        let first = resInfo.dateCounts[0].count,last = resInfo.dateCounts[resInfo.dateCounts.length - 1].count,
+        percentage = Math.round((((first - last) / first) * 100),2),
+        percentageHolder = resCard.querySelector('#perc-hol')
+        if (first > last) {
+            percentageHolder.classList.add('text-danger')
+            percentageHolder.innerHTML = `<span class="left">
+                    <i class='bx bx-chevron-up'></i>
+                </span> <span class="left">${percentage}%</span>`
+        }else if (first < last) {
+            percentageHolder.classList.add('text-success')
+            percentageHolder.innerHTML = `<span class="left">
+                    <i class='bx bx-chevron-down'></i>
+                </span> <span class="left">${percentage}%</span>`
+
+        }else{
+            percentageHolder.classList.add('text-success')
+            percentageHolder.innerHTML = `<span class="left">
+                    <i class='bx bx-chevron-up'></i>
+                </span> <span class="left">${percentage}%</span>`
+        }
+        let vb = resCard.querySelector('button#view-op')
+        vb.setAttribute('data-id', operations[operation].id)
+        resCard.querySelector('.name').innerText = operation
+        resCard.querySelector('.total').innerText = adcm(operations[operation].total)
+        parent.appendChild(resCard)
+    }
+    if(Object.keys(operations).length == 0){
+        aDePh(parent)
+    }
+    deletechild(thingtoclone,thingtoclone.parentElement)
+    let vb = Array.from(parent.querySelectorAll('button[data-role="view-op-button"]'))
+    vb.forEach(function (button) {
+       button.onclick = function (event) {
+        event.preventDefault();
+        let id = this.getAttribute('data-id')
+        let opsInfo = Object.keys(operations).find(function (res) {
+            return operations[res].id == id
+        })
+        opsInfo = operations[opsInfo]
+        drawChartForOps(opsInfo)
+       } 
+    })
+}
+async function drawChartForOps(operation) {
+    let shade = addshade()
+    let dd = document.createElement('div')
+    dd.className = `w-80 h-80 bfull-resp card-1 cntr br-10p ovh`
+    shade.appendChild(dd)
+    let div = document.querySelector('#opsDiv')
+    div = div.cloneNode(true)
+    dd.appendChild(div)
+    let OpsChart = div.querySelector('#opsChart')
+    let title = div.querySelector('#op-name'),OpsViewByBttnsHol = div.querySelector('div#OpsViewByBttnsHol')
+    addLoadingTab(OpsChart)
+    postschema.body = JSON.stringify({
+        token: getdata('token'),
+        range: {
+            start: '',
+            stop: '',
+        },
+        gap: 10,
+        operation: operation.id
+    })
+    const insights = await request('hp-ops-insights',postschema);
+    if (!insights.success) {
+        return alertMessage(insights.message)
+    }
+    operation = insights.message
+    let defObj = []
+    defObj = operation.dateCounts.map(function (data) {
+        return {name: data.date, count: data.count}
+    })
+    removeLoadingTab(OpsChart)
+    drawOpChart(defObj,OpsChart)
+    generateResViewBy('dateCounts',operation.dateCounts,OpsViewByBttnsHol)
+    title.innerHTML = operation.name + '&nbsp;insights'
+    let groupByBttnsHol = div.querySelector('div#groupByBttnsHol')
+    removeLoadingTab(groupByBttnsHol)
+    let proceed = div.querySelector('button#computeSearch')
+    proceed.onclick = async function (event) {
+        event.preventDefault();
+        let inputs,start,stop,gap
+        inputs = Array.from(div.querySelectorAll('input.required-inps')) 
+        for (const input of inputs) {
+            if (!input.value.trim()) {
+                return 0
+            }
+        }
+        start = inputs[0].value,stop = inputs[1].value,gap = inputs[2].value
+        let  leTime = DateTime.now();
+        leTime = leTime.setZone('Africa/Kigali');
+        leTime = leTime.toString();
+        
+        if (start > leTime || gap < 1) {
+            return 0
+        }
+        postschema.body = JSON.stringify({
+            token: getdata('token'),
+            range: {
+                start,
+                stop,
+            },
+            gap,
+            operation: operation.id
+        })
+        const insights = await request('hp-ops-insights',postschema);
+        if (!insights.success) {
+            return alertMessage(insights.message)
+        }
+        operation = insights.message
+        let defObj = []
+        defObj = operation.dateCounts.map(function (data) {
+            return {name: data.date, count: data.count}
+        })
+        drawOpChart(defObj,OpsChart)
+        generateResViewBy('dateCounts',operation.dateCounts,OpsViewByBttnsHol)
+
+    }
+    let avaiGroupings = ['age','dates','gender']
+    for (const group of avaiGroupings) {
+        let but = document.createElement('button');
+        but.setAttribute('type','button');
+        but.setAttribute('data-role','custom-buttns');
+        but.className = `capitalize theme bc-tr-theme btn btn-sm my-4p mx-2p resCustButs`
+        but.innerText = group
+        but.id = (group == 'age')? 'groupByAges': (group == 'dates')? 'groupByDates':(group == 'gender')? 'groupByGender': '';
+        groupByBttnsHol.appendChild(but);
+        (group == 'dates')? but.classList.add('b-1-s-theme'): '';
+        
+    }
+    let ResButs = groupByBttnsHol.querySelectorAll('button.resCustButs')
+    ResButs.forEach(button=>{
+        button.onclick = function(event){
+            event.preventDefault();
+            changeBtnBrdrClr(this)
+            let target = button.getAttribute('id')
+            if (target == 'groupByAges') {
+                let defObj = []
+                defObj = operation.groupByAges.map(function (data) {
+                    return {name: data.range, count: data.count}
+                })
+                drawOpChart(defObj,OpsChart)
+                generateResViewBy('groupByAges',operation.groupByAges,OpsViewByBttnsHol,OpsChart)
+            }else if (target == 'groupByDates') {
+                let defObj = []
+                defObj = operation.dateCounts.map(function (data) {
+                    return {name: data.date, count: data.count}
+                })
+                drawOpChart(defObj,OpsChart)
+                generateResViewBy('dateCounts',operation.dateCounts,OpsViewByBttnsHol,OpsChart)
+            }else if (target == 'groupByGender') {
+                let defObj = [{name: 'male', count: operation.genderCount.male},{name: 'female', count: operation.genderCount.female}]
+                drawOpChart(defObj,OpsChart)
+                generateResViewBy('groupByGender',operation.groupByGender,OpsViewByBttnsHol,OpsChart)
+            }
+            
+        }
+    })
+    drawOpChart(defObj,OpsChart)
+}
+function drawOpChart(grp,resChart, compType) {
+    let total1,total2,series1,series2,total,categories,resChartOptions,labels
+    resChart.innerHTML = null
+    if (compType) {
+        series1 = 'male'
+        series2 = 'female'
+        total1 = grp.map(function (key) {
+            return key.genders.male
+        })
+        total2 = grp.map(function (key) {
+            return  key.genders.female
+        })
+        categories = grp.map(function (key) {
+            return  key.name
+        })
+        resChartOptions = {
+            series: [
+                { name: series1, data:  total1},
+                { name: series2, data:  total2},
+            ],
+            chart: { height: 500, stacked: !0, type: "bar", toolbar: { show: !1 } },
+            plotOptions: { bar: { horizontal: !1, columnWidth: "33px", borderRadius: 5} },
+            colors: [config.colors.primary,config.colors.success],
+            dataLabels: { enabled: !1 },
+            legend: { show: !0, horizontalAlign: "left", position: "top", markers: { height: 8, width: 8, radius: 12, offsetX: -3 }, labels: { colors: e }, itemMargin: { horizontal: 10 } },
+            xaxis: { categories: categories, labels: { style: { fontSize: "13px", colors: t } }, axisTicks: { show: !1 }, axisBorder: { show: !1 } },
+            states: { hover: { filter: { type: "none" } }, active: { filter: { type: "none" } } },
+        }
+    }else{
+        total = grp.map(function (inst) {
+            return inst.count
+        })
+        labels = grp.map(function (inst) {
+            return inst.name
+        })
+        resChartOptions = {
+            series: [
+                { name: "Patients", data:  total},
+            ],
+            chart: { height: 500, stacked: !0, type: "bar", toolbar: { show: !1 } },
+            plotOptions: { bar: { horizontal: !1, columnWidth: "33px", borderRadius: 5} },
+            colors: [config.colors.primary],
+            dataLabels: { enabled: !1 },
+            legend: { show: !0, horizontalAlign: "left", position: "top", markers: { height: 8, width: 8, radius: 12, offsetX: -3 }, labels: { colors: e }, itemMargin: { horizontal: 10 } },
+            xaxis: { categories: labels, labels: { style: { fontSize: "13px", colors: t } }, axisTicks: { show: !1 }, axisBorder: { show: !1 } },
+            states: { hover: { filter: { type: "none" } }, active: { filter: { type: "none" } } },
+        }
+
+    }
+    resChart = new ApexCharts(resChart, resChartOptions);
+    resChart.render(); 
 }

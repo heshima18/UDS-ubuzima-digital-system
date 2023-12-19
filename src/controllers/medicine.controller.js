@@ -110,7 +110,8 @@ export const searchMed = async (req,res)=>{
                 ),
               ']'),
             '[]')
-      ) as hospitals
+      ) as hospitals,
+      inventories.medicines as raw_m
       FROM 
       inventories 
       INNER JOIN medicines as m
@@ -127,7 +128,15 @@ export const searchMed = async (req,res)=>{
     }
     select = select.map((record)=>{
       record.hospitals = JSON.parse(record.hospitals)
+      record.raw_m = JSON.parse(record.raw_m)
       record.hospitals.medicines = JSON.parse(record.hospitals.medicines)
+      record.hospitals.medicines = record.hospitals.medicines.map(function(medicine){
+        let med = record.raw_m.find(function (target) {
+          return target.id == medicine.id
+        })
+        medicine.price = med.price
+        return medicine
+      })
       return record.hospitals
     })
     res.send({success: true, message: select})

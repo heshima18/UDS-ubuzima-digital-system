@@ -159,7 +159,9 @@ export const getSentMessages = async(req,res) =>{
     messages.type,	
     messages.title,	
     messages.status,	
-    messages.dateadded
+    messages.content,	
+    messages.dateadded,
+    messages.addins
     FROM
     messages
     where user = ? GROUP BY messages.sessionid order by messages.dateadded desc`,[user])
@@ -167,6 +169,7 @@ export const getSentMessages = async(req,res) =>{
     if (!q.length) return res.send({success:true, message: q})
     for (const message of q) {
       q[q.indexOf(message)].dateadded = DateTime.fromISO(message.dateadded).toFormat('yyyy-MM-dd')
+      q[q.indexOf(message)].addins = JSON.parse(q[q.indexOf(message)].addins)
     }
     res.send({success:true, message: q})
   } catch (error) {

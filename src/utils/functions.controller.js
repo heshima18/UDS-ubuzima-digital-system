@@ -1025,8 +1025,8 @@ async function promptOperationPopup(info,chipsHolder) {
       }
     }
     if (l) {
-      Object.assign(values,{id: info.id,name:info.name})
-      i.push('id')
+      Object.assign(values,{id: info.id,name:info.name, operator: getdata('userinfo').id})
+      i.push('id','operator')
       addChip(values,chipsHolder,i)
       deletechild(b,b.parentNode)
     }
@@ -1083,7 +1083,7 @@ export function promptMessage(){
                   <div class="body w-100 h-a p-5p grid">
                       <form method="post" id="notify" name="notify">
                           <div class="col-md-12 px-10p py-6p bsbb p-r">
-                              <label for="test" class="form-label uppercase dgray"><i class="far fa-comment"></i> message</label>
+                              <label for="message" class="form-label uppercase dgray"><i class="far fa-comment"></i> message</label>
                               <textarea class="form-control" id="message" placeholder="Text message" name="message"></textarea>
                               <small class="w-100 red pl-3p verdana"></small>
                           </div>
@@ -1724,7 +1724,7 @@ export async function viewEmployeeProfile(employee) {
   let bgDiv = addshade();
   let cont = document.createElement('div')
   bgDiv.appendChild(cont)
-  cont.className = `br-10p cntr card p-10p bsbb w-450p h-a b-mgc-resp`
+  cont.className = `br-10p cntr card-1 p-10p bc-white bsbb w-450p h-a b-mgc-resp`
   cont.innerHTML = `<div class="w-100 h-100 p-5p bp-0-resp">
                       <div class="head w-100 px-5p py-10p bsbb">
                           <span class="capitalize bold-2 fs-20p">user profile</span>
@@ -1773,4 +1773,77 @@ export async function viewEmployeeProfile(employee) {
     dataHolder.innerText = employee[dataToHold]
   })
 
+}
+export function viewFB(data) {
+  if (!data.addins) {
+    Object.assign(data,{addins: data.extra})
+  }
+  s = addshade();
+  a = document.createElement('div')
+  s.appendChild(a)
+  window.addEventListener('urlchange', function() {
+    deletechild(s,s.parentElement)
+  })
+  a.className = "w-500p h-a p-20p bsbb bc-white cntr zi-10000 card-1 br-10p b-mgc-resp"
+  a.innerHTML = `<div class="head w-100 h-40p p-5p bsbb bb-1-s-dg">
+							<span class="fs-18p black capitalize igrid center h-100 verdana">view feedback</span>
+						</div>
+						<div class="body w-100 h-a p-5p grid mt-10p">
+              <div class="card">
+                <span class="card-header"><h6 class="capitalize dgray"><i class="fas fa-user px-5p"></i> user</h6></span>
+                <div class="card-body"><span class="dgray hover-6 capitalize" data-link="true" data-id="${data.sender.id}" id="profile">${data.sender.name} <i class="fas fa-external-link-alt px-5p"></i> </snan></div>
+              </div>
+              <div class="card my-10p">
+                <span class="card-header"><h6 class="capitalize dgray">${data.addins.type}</h6></span>
+                <div class="card-body"><span class="dgray hover-6" data-link="true" data-id="${data.addins.value}" id="${data.addins.type}">${data.addins.value} <i class="fas fa-external-link-alt px-5p"></i> </snan></div>
+              </div>
+              <div class="w-100 h-a mb-10p p-10p bsbb">
+                  <span class="black bold verdana capitalize">user rating</span>
+                  <div class="p-5p bsbb w-100 h-a my-10p flex rates-hol">
+                  
+                  </div>
+              </div>
+              <div class="w-100 h-a mb-10p p-10p bsbb">
+                  <div class="p-r w-100 igrid mr-10p left parent">
+                      <p><span class="text-muted capitalize"><i class="fas fa-message px-5p"></i> message</span></p>
+                      <p><span class="dgray">${data.addins.message}</span></p>
+                  </div>
+              </div>
+						</div>`
+		
+        let rateshol = a.querySelector('div.rates-hol'),links = Array.from(a.querySelectorAll('[data-link="true"]'))
+        for (let index = 1; index <= 5; index++) {
+            rateshol.innerHTML+= ` <span class="#icon h-40p center-2 w-40p">
+            <svg xmlns="http://www.w3.org/2000/svg" class="rateicon" fill="${(index <= data.addins.rating) ? 'var(--main-color)' : '#f2f2f2' }" width="40" height="40" id="${index}" viewBox="0 0 32 32" version="1.1">
+            <path d="M3.488 13.184l6.272 6.112-1.472 8.608 7.712-4.064 7.712 4.064-1.472-8.608 6.272-6.112-8.64-1.248-3.872-7.808-3.872 7.808z"/>
+            </svg>
+        </span>`
+            
+        }
+        links.forEach(link=>{
+          link.onclick = function (event) {
+            event.preventDefault();
+            let type = this.id,value = this.getAttribute('data-id'),basePath = getPath(0)[0]
+            let url = new URL(window.location.href);
+            if (type == 'appointment') {
+              url.pathname = `/${basePath}/appointments/${value}`;
+            }else if (type == 'session') {
+              if (basePath == 'patient' || basePath == 'householder') {
+                url.pathname = `/${basePath}/medical-history/${value}`;
+              }else{
+                url.pathname = `/${basePath}/view-session/${value}`;
+              }
+            }else if (type == 'profile') {
+              if (basePath == 'patient' || basePath == 'householder') {
+                url.pathname = `/${basePath}/my-account`;
+              }else{
+                url.pathname = `/${basePath}/search-patient/${value}`;
+              }
+            }
+            window.history.pushState({},'',url.toString())
+            const evnt = new Event('urlchange', { bubbles: true });
+            window.dispatchEvent(evnt);
+          }
+        })
+        
 }

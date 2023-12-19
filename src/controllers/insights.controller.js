@@ -1,4 +1,5 @@
 import { getMedInfo } from "./medicine.controller";
+import { getOperationInfo } from "./operations.controller";
 import query from "./query.controller"
 import errorMessage from "./response.message.controller"
 import { getTestInfo } from "./tests.controller";
@@ -390,7 +391,7 @@ export const DGinsightsStats = async (req,res)=>{
         if (!hospital) {
             hospital = req.params.hospital
         }
-        avaiGroupings.push('tests','medications','results')
+        avaiGroupings.push('tests','medications','results','operations')
         if (!range.start || !range.stop) {
             let start_date = `${now.year}-${now.month - 1}-${now.day} 00:00:00`
             range.start = start_date,range.stop = now.toFormat('yyyy-MM-dd HH:mm:ss')
@@ -409,26 +410,10 @@ export const DGinsightsStats = async (req,res)=>{
              mh.symptoms,
              mh.tests,
              mh.medicines,
+             mh.operations,
              mh.dateclosed as date,
-             hospitals.id as hpid,
-             hospitals.name as hpname,
-             GROUP_CONCAT(DISTINCT JSON_OBJECT(
-                 'province', (SELECT name From provinces Where id = hospitals.province), 
-                 'district', (SELECT name From districts Where id = hospitals.district), 
-                 'sector', (SELECT name From sectors Where id = hospitals.sector),
-                 'cell', (SELECT name From cells Where id = hospitals.cell)
-                )
-              ) as hp_loc,
-              GROUP_CONCAT(DISTINCT JSON_OBJECT(
-                'province',  hospitals.province, 
-                'district', hospitals.district, 
-                'sector', hospitals.sector,
-                'cell', hospitals.cell
-               )
-             ) as hp_loc_ids,
              GROUP_CONCAT(DISTINCT JSON_OBJECT('id', p.id,'name', p.Full_name,'age',p.DOB, 'gender', p.gender)) as p_info
             FROM medical_history as mh
-             LEFT JOIN hospitals ON mh.hospital = hospitals.id
              left join patients as p ON mh.patient = p.id
              LEFT JOIN diseases as dis ON JSON_CONTAINS(mh.decision, JSON_QUOTE(dis.id), '$')
             WHERE  mh.dateclosed >= ? AND mh.dateclosed <= ? AND mh.status != ? AND mh.hospital = ?
@@ -439,10 +424,17 @@ export const DGinsightsStats = async (req,res)=>{
         results = await Promise.all(results.map(async function (field) {
             field.medicines = JSON.parse(field.medicines);
             field.tests = JSON.parse(field.tests);
+            field.operations = JSON.parse(field.operations);
             field.tests = await Promise.all(field.tests.map(async function (test) {
                 let testsInfo = await getTestInfo(test.id);
                 if (testsInfo) {
                     return {id: test.id,name: testsInfo.name, result: test.result};
+                }
+            }));
+            field.operations = await Promise.all(field.operations.map(async function (operation) {
+                let operationInfo = await getOperationInfo(operation.id);
+                if (operationInfo) {
+                    return {id: operation.id,name: operationInfo.name};
                 }
             }));
             field.medicines = await Promise.all(field.medicines.map(async function (medicine) {
@@ -452,11 +444,9 @@ export const DGinsightsStats = async (req,res)=>{
             field.symptoms = JSON.parse(field.symptoms);
             field.decision = JSON.parse(field.decision);
             field.p_info = JSON.parse(field.p_info);
-            field.hp_loc = JSON.parse(field.hp_loc);
-            field.hp_loc_ids = JSON.parse(field.hp_loc_ids);
             return field;
         }));
-        let groupByResults = {},groupByDates = {},groupByMeds = {},groupByTests = {},groupByEmptyDiags = {}, groupByMedSuccessRate = {},groupByMedsSideEffect = {}
+        let groupByResults = {},groupByDates = {},groupByMeds = {},groupByTests = {},groupByEmptyDiags = {}, groupByMedSuccessRate = {},groupByMedsSideEffect = {},groupByOperations = {}
         results.forEach(async (session)=>{
             const fDate = formatDate(session.date,dateGroupType)
             if (!(fDate in groupByDates)) {
@@ -471,7 +461,7 @@ export const DGinsightsStats = async (req,res)=>{
                     })
             }
             const decisions = session.decision;
-            const tests = session.tests;
+            const tests = session.tests,operations = session.operations
             const Meds = session.medicines;
             const p_info = {
                 age: now.diff(DateTime.fromFormat(session.p_info.age,'yyyy-yy-dd'), ["years", "months", "days"]).toObject().years,
@@ -527,6 +517,56 @@ export const DGinsightsStats = async (req,res)=>{
                   }
               }
             });
+            operations.forEach((operation) => {
+                if (!groupByOperations[operation.name]) {
+                  groupByOperations[operation.name] = {
+                    total: (compType)? {
+                      [formatDate(range.start,compType)]: 0,
+                      [formatDate(range.stop,compType)]: 0
+                    } : 0,
+                    mostAppearance: {date: '', count: 0 },
+                    dateCounts: [],
+                    id: operation.id,
+                    name: operation.name,
+                    genderCount: 
+                          {
+                              male: 0,
+                              female: 0,
+                          }
+                  };
+                }
+                if (compType) {
+                  if (formatDate(session.date,compType) == formatDate(range.start,compType)) {
+                    groupByOperations[operation.name].total[formatDate(range.start,compType)]++;
+                  }else if (formatDate(session.date,compType) == formatDate(range.stop,compType)) {
+                    groupByOperations[operation.name].total[formatDate(range.stop,compType)]++; 
+                  }
+                }else{
+                    groupByOperations[operation.name].total++;
+                }
+                let avai =  groupByOperations[operation.name].dateCounts.find(function (needle) {
+                    return needle.date == formatDate(session.date,'month')
+                })
+                if (p_info.gender == 'male') {
+                  groupByOperations[operation.name].genderCount.male+=1
+                }else{
+                  groupByOperations[operation.name].genderCount.female+=1
+                }
+                if (!avai) {
+                    groupByOperations[operation.name].dateCounts.push({date: formatDate(session.date,'month'), count: 1})
+                    if (!groupByOperations[operation.name].mostAppearance.count) {
+                        groupByOperations[operation.name].mostAppearance.date = formatDate(session.date,'month');
+                        groupByOperations[operation.name].mostAppearance.count = 1
+                    }
+                }else{
+                    groupByOperations[operation.name].dateCounts[groupByOperations[operation.name].dateCounts.indexOf(avai)].count++;
+                    if (groupByOperations[operation.name].dateCounts[groupByOperations[operation.name].dateCounts.indexOf(avai)].count >
+                      groupByOperations[operation.name].mostAppearance.count) {
+                      groupByOperations[operation.name].mostAppearance.date = groupByOperations[operation.name].dateCounts[groupByOperations[operation.name].dateCounts.indexOf(avai)].date;
+                      groupByOperations[operation.name].mostAppearance.count = groupByOperations[operation.name].dateCounts[groupByOperations[operation.name].dateCounts.indexOf(avai)].count;
+                    }
+                }
+              });
             tests.map(async (test) => {
                 try {
                     if (test) {
@@ -596,7 +636,7 @@ export const DGinsightsStats = async (req,res)=>{
         dataArray.sort(([, a], [, b]) => b.total - a.total);
         const sortedData = Object.fromEntries(dataArray);
         groupByResults = sortedData
-        res.send({success: true, message: {groupByResults,avaiGroupings,groupByDates,groupByMeds,groupByTests,groupByEmptyDiags,groupByMedSuccessRate,groupByMedsSideEffect}})    
+        res.send({success: true, message: {groupByResults,avaiGroupings,groupByDates,groupByMeds,groupByTests,groupByEmptyDiags,groupByMedSuccessRate,groupByMedsSideEffect,groupByOperations}})    
     } catch (error) {
         console.log(error)
         return res.status(500).send({success: false, message: errorMessage.is_error})
@@ -742,6 +782,151 @@ export const DGResinsightsStats = async (req,res)=>{
         const sortedData = Object.fromEntries(dataArray);
         groupByResults = sortedData
         res.send({success: true, message: groupByResults[Object.keys(groupByResults)[0]]})    
+    } catch (error) {
+        console.log(error)
+        return res.status(500).send({success: false, message: errorMessage.is_error})
+    }
+    
+}
+export const DGOpsinsightsStats = async (req,res)=>{
+    try {
+        const leTime = DateTime.now();
+        let now = leTime.setZone('Africa/Kigali');
+        let {hospital,range,token,operation,gap} = req.body,avaiGroupings = [],ageObj
+        token = authenticateToken(token)
+        token = token.token
+        hospital = token.hospital
+        if (!hospital) {
+            hospital = req.params.hospital
+        }
+        if (!gap) {
+           gap = 5 
+        }
+        gap = Number(gap)
+        ageObj = gnGapObj(gap)
+        avaiGroupings.push('tests','medications','operations','age')
+        if (!range.start || !range.stop) {
+            let start_date = `${now.year}-${now.month - 1}-${now.day} 00:00:00`
+            range.start = start_date,range.stop = now.toFormat('yyyy-MM-dd HH:mm:ss')
+        }
+        let dateGroupType = getDateIntervalDescription(new Date(range.start), new Date(range.stop));
+        let results = await query(`
+            SELECT
+            COALESCE(
+                CONCAT('[',
+                  GROUP_CONCAT(
+                    DISTINCT CASE WHEN op.id IS NOT NULL THEN JSON_OBJECT('id', op.id, 'name', op.name) END SEPARATOR ','  
+                  ),
+                ']'),
+              '[]') AS operation,
+             mh.id,
+             mh.dateclosed as date,
+             GROUP_CONCAT(DISTINCT JSON_OBJECT('id', p.id,'name', p.Full_name,'age',p.DOB, 'gender', p.gender)) as p_info
+            FROM medical_history as mh
+             left join patients as p ON mh.patient = p.id
+             LEFT JOIN operations as op ON JSON_CONTAINS(mh.operations, JSON_OBJECT('id', op.id), '$')
+            WHERE  mh.dateclosed >= ? AND mh.dateclosed <= ? AND mh.status != ? AND mh.hospital = ? AND JSON_CONTAINS(mh.operations, JSON_OBJECT('id', ?), '$')
+            GROUP BY mh.id order by mh.dateclosed asc
+        `,[range.start,range.stop,'open', hospital,operation])
+        if (!results) return res.status(500).send({success: false, message: errorMessage.is_error})
+        if (!results.length) return res.status(404).send({success: false, message: errorMessage._err_recs_404})
+        results = await Promise.all(results.map(async function (field) {
+            field.operation = JSON.parse(field.operation);
+            field.p_info = JSON.parse(field.p_info);
+            return field;
+        }));
+        let groupByOperations = {}
+        results.forEach(async (session)=>{
+            let operations = session.operation;
+            const p_info = {
+                age: now.diff(DateTime.fromFormat(session.p_info.age,'yyyy-yy-dd'), ["years", "months", "days"]).toObject().years,
+                gender: session.p_info.gender
+            }
+            operations = operations.filter(function (op) {
+                return op.id == operation
+            })
+            operations.forEach((operation) => {
+              if (!groupByOperations[operation.name]) {
+                groupByOperations[operation.name] = {
+                  total: (dateGroupType)? {
+                    [formatDate(range.start,dateGroupType)]: 0,
+                    [formatDate(range.stop,dateGroupType)]: 0
+                  } : 0,
+                  mostAppearance: {date: '', count: 0 },
+                  dateCounts: [],
+                  count: 1,
+                  id: operation.id,
+                  name: operation.name,
+                  genderCount: 
+                        {
+                            male: 0,
+                            female: 0,
+                        },
+                  groupByAges: []
+                };
+              }
+              groupByOperations[operation.name].count++;
+              if (dateGroupType) {
+                if (formatDate(session.date,dateGroupType) == formatDate(range.start,dateGroupType)) {
+                  groupByOperations[operation.name].total[formatDate(range.start,dateGroupType)]++;
+                }else if (formatDate(session.date,dateGroupType) == formatDate(range.stop,dateGroupType)) {
+                  groupByOperations[operation.name].total[formatDate(range.stop,dateGroupType)]++; 
+                }
+              }else{
+                  groupByOperations[operation.name].total++;
+              }
+              let avai =  groupByOperations[operation.name].dateCounts.find(function (needle) {
+                  return needle.date == formatDate(session.date,'month')
+              })
+              let ageG = ageObj.find(function (group) {
+                if (group.min <= p_info.age && group.max > p_info.age) {
+                    return group
+                }
+              })
+              let avaiAgeGroup = groupByOperations[operation.name].groupByAges.find(function (needle) {
+                return needle.range == ageG.name
+              })
+              if (!avaiAgeGroup) {
+                groupByOperations[operation.name].groupByAges.push({range: ageG.name, count: 1, genders: {male: (p_info.gender == 'male')? 1 : 0 , female: (p_info.gender == 'female')? 1 : 0}})
+              }else{
+                groupByOperations[operation.name].groupByAges[groupByOperations[operation.name].groupByAges.indexOf(avaiAgeGroup)].count++;
+                if (p_info.gender == 'male') {
+                    groupByOperations[operation.name].groupByAges[groupByOperations[operation.name].groupByAges.indexOf(avaiAgeGroup)].genders.male++;
+                }else{
+                    groupByOperations[operation.name].groupByAges[groupByOperations[operation.name].groupByAges.indexOf(avaiAgeGroup)].genders.female++;
+                }
+              }
+              if (p_info.gender == 'male') {
+                groupByOperations[operation.name].genderCount.male+=1
+              }else{
+                groupByOperations[operation.name].genderCount.female+=1
+              }
+              if (!avai) {
+                  groupByOperations[operation.name].dateCounts.push({date: formatDate(session.date,'month'), count: 1,genders: {male: (p_info.gender == 'male')? 1 : 0 , female: (p_info.gender == 'female')? 1 : 0}})
+                  if (!groupByOperations[operation.name].mostAppearance.count) {
+                      groupByOperations[operation.name].mostAppearance.date = formatDate(session.date,'month');
+                      groupByOperations[operation.name].mostAppearance.count = 1
+                  }
+              }else{
+                  groupByOperations[operation.name].dateCounts[groupByOperations[operation.name].dateCounts.indexOf(avai)].count++;
+                  if (p_info.gender == 'male') {
+                    groupByOperations[operation.name].dateCounts[groupByOperations[operation.name].dateCounts.indexOf(avai)].genders.male++;
+                  }else{
+                    groupByOperations[operation.name].dateCounts[groupByOperations[operation.name].dateCounts.indexOf(avai)].genders.female++;
+                  }
+                  if (groupByOperations[operation.name].dateCounts[groupByOperations[operation.name].dateCounts.indexOf(avai)].count >
+                    groupByOperations[operation.name].mostAppearance.count) {
+                    groupByOperations[operation.name].mostAppearance.date = groupByOperations[operation.name].dateCounts[groupByOperations[operation.name].dateCounts.indexOf(avai)].date;
+                    groupByOperations[operation.name].mostAppearance.count = groupByOperations[operation.name].dateCounts[groupByOperations[operation.name].dateCounts.indexOf(avai)].count;
+                  }
+              }
+            });
+        })
+        const dataArray = Object.entries(groupByOperations);
+        dataArray.sort(([, a], [, b]) => b.total - a.total);
+        const sortedData = Object.fromEntries(dataArray);
+        groupByOperations = sortedData
+        res.send({success: true, message: groupByOperations[Object.keys(groupByOperations)[0]]})    
     } catch (error) {
         console.log(error)
         return res.status(500).send({success: false, message: errorMessage.is_error})

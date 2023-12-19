@@ -154,8 +154,6 @@ let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z,notificationlinks,addMedic
             x = page.id
             if (x == 'home') {
                 let num_hols = Array.from(page.querySelectorAll('[data-role="num_hol"]'))
-                
-              let messages = sessiondata('messages')
               let nmbrs = {tot_med: 0,med_req : 0, ttfinmed: 0}
                 messages.map(function (me) {
                 if (me.status == 'new') {
@@ -677,7 +675,6 @@ let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z,notificationlinks,addMedic
                             if(!sessiondata[objectId]){
                                 aDePh(holder)
                             }
-                            console.log(sessiondata[objectId])
                         }
                 }
                 let profileLinks = Array.from(page.querySelectorAll(['[data-profile-link="true"]']))
@@ -852,7 +849,6 @@ let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z,notificationlinks,addMedic
           }
     }
     function genClicks(notificationlinks) {
-        let messages = sessiondata('messages')
         notificationlinks.map((link)=>{
             link.addEventListener(`click`, ()=>{
                 if (!link.classList.contains('list-link')) {

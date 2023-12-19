@@ -435,12 +435,11 @@ c.forEach((cudstp)=>{
                     if (v) {
                         Object.assign(b,{ Full_name: n,username: u,fp_data})
                         postschema.body = JSON.stringify(b)
-                        console.log(b)
                         r = await request('api/signup',postschema);
                         alertMessage(r.message)
                         if (r.success) {
-                            localStorage.setItem('userid',b.username)
-                            window.location.href = '../auth'
+                            // localStorage.setItem('userid',b.username)
+                            // window.location.href = '../auth'
                         }
                     }
                 }) 

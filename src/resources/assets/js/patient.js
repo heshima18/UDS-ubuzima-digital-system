@@ -1,4 +1,4 @@
-import { alertMessage, getdata, getschema, postschema, request,deletechild, checkEmpty, showRecs, getchips,getPath,addsCard,cpgcntn, geturl,sessiondata,addChip, showAvaiAssurances, adcm, addshade, addLoadingTab, removeLoadingTab, showAvaiEmps, fT, calcTime, aDePh, extractTime, getDate, triggerRecs, removeRec, addSpinner, removeSpinner, getLocs, viewEmployeeProfile } from "../../../utils/functions.controller.js";
+import { alertMessage, getdata, getschema, postschema, request,deletechild, checkEmpty, showRecs, getchips,getPath,addsCard,cpgcntn, geturl,sessiondata,addChip, showAvaiAssurances, adcm, addshade, addLoadingTab, removeLoadingTab, showAvaiEmps, fT, calcTime, aDePh, extractTime, getDate, triggerRecs, removeRec, addSpinner, removeSpinner, getLocs, viewEmployeeProfile, viewFB } from "../../../utils/functions.controller.js";
 import { showReqCardInFo } from "../../../utils/payments.popup.controller.js";
 import { shedtpopup } from "../../../utils/profile.editor.controller.js";
 import {expirateMssg, getNfPanelLinks, pushNotifs, userinfo,m as messages, openmenu, addFilter} from "./nav.js";
@@ -185,7 +185,9 @@ postschema.body = JSON.stringify({token: getdata('token')});
             }else  if (x == 'medical-history') {
                 let sessionSholder = document.querySelector('ul[data-role="sessions-holder"]')
                 sessionSholder.innerHTML = null
-
+                if (getPath(2)) {
+                    showSession(getPath(2))
+                }
                 // Create a map to store users grouped by year and month
                 const groupedSessions = new Map();
 
@@ -225,7 +227,7 @@ postschema.body = JSON.stringify({token: getdata('token')});
                         sessionSholder.appendChild(li)
                         li.innerHTML = `<div class="w-100 h-70p p-5p my-10p ovh">
                                             <div class="w-100 h-100 bc-tr-white">
-                                                <div class="header w-100 h-60p card br-5p bc-white p-r block hover-2">
+                                                <div class="header w-100 h-60p card-1 br-5p bc-white p-r block hover-2">
                                                     <div class="w-100 h-100 flex jc-sb p-5p bsbb">
                                                         <span class="dgray center capitalize px-10p fs-16p">${month.month} / ${year.year}</span>
                                                         <span class="px-25p center spanner hover-2" data-role="span">
@@ -283,7 +285,7 @@ postschema.body = JSON.stringify({token: getdata('token')});
                 async function showSession(session) {
                     q = addshade();
                     d = document.createElement('div')
-                    d.className = `br-10p cntr card p-20p bsbb w-80 h-85 b-mgc-resp ovh`
+                    d.className = `br-10p cntr card-1 bc-white p-20p bsbb w-80 h-85 b-mgc-resp ovh`
                     q.appendChild(d)
                     b = document.getElementById('view-session')
                     b = b.cloneNode(true)
@@ -297,6 +299,12 @@ postschema.body = JSON.stringify({token: getdata('token')});
                     }
                     removeLoadingTab(d)
                     sessiondata = sessiondata.message
+                    let addFb = b.querySelector('button#add-fb')
+                    addFb.onclick = function (event) {
+                        event.preventDefault();
+                        let session = {session: {id: sessiondata.session_id, receiver: sessiondata.hcp_info.id}}
+                        addfbpopup(session)
+                    }
                     Object.assign(sessiondata.payment_info,{total_amount: Number(sessiondata.payment_info.a_amount) + Number(sessiondata.payment_info.p_amount)})
                     const dataHolders = Array.from(d.querySelectorAll('span[name="info-hol"]'))
                     const loopingDataHolders = Array.from(d.querySelectorAll('ul[name="looping-info"]'))
@@ -433,7 +441,7 @@ postschema.body = JSON.stringify({token: getdata('token')});
                         paymentsHolder.appendChild(li)
                         li.innerHTML = `<div class="w-100 h-70p p-5p my-10p ovh">
                                             <div class="w-100 h-100 bc-tr-white">
-                                                <div class="header w-100 h-60p card br-5p bc-white p-r block hover-2">
+                                                <div class="header w-100 h-60p card-1 br-5p bc-white p-r block hover-2">
                                                     <div class="w-100 h-100 flex jc-sb p-5p bsbb">
                                                         <span class="dgray center capitalize px-10p fs-16p">${month.month} / ${year.year}</span>
                                                         <span class="px-25p center spanner hover-2" data-role="span">
@@ -491,6 +499,9 @@ postschema.body = JSON.stringify({token: getdata('token')});
                 }
             }else if (x == 'appointments') {
                 let appointmentsHolder = document.querySelector('ul[data-role="appointments-holder"]')
+                if (getPath(2)) {
+                    viewAppointmentDiv(getPath(2))
+                }
                 appointmentsHolder.innerHTML = null
                 // Create a map to store users grouped by year and month
                 const groupedAppointments = new Map();
@@ -531,7 +542,7 @@ postschema.body = JSON.stringify({token: getdata('token')});
                         appointmentsHolder.appendChild(li)
                         li.innerHTML = `<div class="w-100 h-70p p-5p my-10p ovh">
                                             <div class="w-100 h-100 bc-tr-white">
-                                                <div class="header w-100 h-60p card br-5p bc-white p-r block hover-2">
+                                                <div class="header w-100 h-60p card-1 br-5p bc-white p-r block hover-2">
                                                     <div class="w-100 h-100 flex jc-sb p-5p bsbb">
                                                         <span class="dgray center capitalize px-10p fs-16p">${month.month} / ${year.year}</span>
                                                         <span class="px-25p center spanner hover-2" data-role="span">
@@ -563,10 +574,11 @@ postschema.body = JSON.stringify({token: getdata('token')});
                                                             <p class="px-5p">
                                                             <span class="capitalize fs-14p">on ${fT(appointment.time)}</span>
                                                             </p>
-                                                            <p class="flex">
-                                                                <span class="dgray fs-15p px-5p">${calcTime(appointment.date_booked)}</span>
-                                                            </p>
                                                         </div>
+                                                        <p class="flex p-15p m-0">
+                                                            <span class="dgray fs-15p px-5p">${calcTime(appointment.date_booked)}</span>
+                                                            <span class="btn btn-sm btn-primary add-fb-button" data-role="button" id="add-fb" data-id="${appointment.id}">add feedback</span>
+                                                        </p>
                                                     </div>`
                             }
                         }
@@ -596,137 +608,150 @@ postschema.body = JSON.stringify({token: getdata('token')});
                         }
                         event.preventDefault();
                         if (button.id == 'appointment') {
-                                addAppointmentDiv(socket)
+                             addAppointmentDiv(socket)
                                 
-                            }else if (button.id == 'view-appointment') {
-                                let appointment = button.getAttribute('data-id');
-                                viewAppointmentDiv(appointment)
-                            }
+                        }else if (button.id == 'view-appointment') {
+                            let appointment = button.getAttribute('data-id');
+                            viewAppointmentDiv(appointment)
+                        }else if (button.id == 'add-fb') {
+                            let appointment = button.getAttribute('data-id');
+                            appointment = appointments.find(function(app){
+                                return app.id == appointment
+                            })
+                            appointment = {appointment: {id: appointment.id, receiver: appointment.hc_provider}}
+                            addfbpopup(appointment)
+                        }
                         }
                     })
             }else if (x == 'my-account') {
-                n = page.querySelector('span.name')
-                z = getdata('userinfo')
-                let pills = Array.from(page.querySelectorAll('a.pills')),conts = Array.from(page.querySelectorAll('div.pagecards')) 
-                pills.forEach(pill=>{
-                    pill.onclick = function (event) {
-                        event.preventDefault();
-                        this.classList.toggle('active')
-                        
-                        
-                        if (pills.indexOf(this) == 0) {
-                            conts[0].classList.remove('hidden')
-                            conts[1].classList.add('hidden')
-                            pills[1].classList.remove('active')
-
-                        }else{
-                            conts[0].classList.add('hidden')
-                            conts[1].classList.remove('hidden')
-                            pills[0].classList.remove('active')
-
+                if (!page.classList.contains('loaded')) {
+                    n = page.querySelector('span.name')
+                    z = getdata('userinfo')
+                    let pills = Array.from(page.querySelectorAll('a.pills')),conts = Array.from(page.querySelectorAll('div.pagecards')) 
+                    pills.forEach(pill=>{
+                        pill.onclick = function (event) {
+                            event.preventDefault();
+                            this.classList.toggle('active')
+                            
+                            
+                            if (pills.indexOf(this) == 0) {
+                                conts[0].classList.remove('hidden')
+                                conts[1].classList.add('hidden')
+                                pills[1].classList.remove('active')
+    
+                            }else{
+                                conts[0].classList.add('hidden')
+                                conts[1].classList.remove('hidden')
+                                pills[0].classList.remove('active')
+    
+                            }
                         }
+                    })
+                    n.textContent = z.Full_name
+                    i = page.querySelector('span.n-img');
+                    i.textContent = z.Full_name.substring(0,1)
+                    let dataHolders = Array.from(page.querySelectorAll('span[data-holder="true"]')),inThol = page.querySelector('div#insurance-table-hol'),
+                    info = userinfo.message,editPform = page.querySelector('form#change-password')
+                    postschema.body = JSON.stringify({
+                        token: getdata('token')
+                    })
+                    addLoadingTab(inThol)
+                    let pinfo = await request(`patient/${info.id}`,postschema)
+                    if (!pinfo.success ) {
+                        return alertMessage(pinfo.message)
                     }
-                })
-                n.textContent = z.Full_name
-                i = page.querySelector('span.n-img');
-                i.textContent = z.Full_name.substring(0,1)
-                let dataHolders = Array.from(page.querySelectorAll('span[data-holder="true"]')),inThol = page.querySelector('div#insurance-table-hol'),
-                info = userinfo.message,editPform = page.querySelector('form#change-password')
-                postschema.body = JSON.stringify({
-                    token: getdata('token')
-                })
-                addLoadingTab(inThol)
-                let pinfo = await request(`patient/${info.id}`,postschema)
-                if (!pinfo.success ) {
-                    return alertMessage(pinfo.message)
-                }
-                info = pinfo.message
-                removeLoadingTab(inThol)
-                let inT = inThol.querySelector('table')
-                for (const insurance of info.assurances) {
-                    let tr = document.createElement('tr')
-                    inT.appendChild(tr)
-                    tr.innerHTML = `<td class="text-truncate border-bottom-0"><span class="text-muted">${insurance.name}</span></span>
-                    </td>
-                    <td class="text-truncate border-bottom-0"><span class="text-muted">${insurance.number}</span></td>
-                    <td class="text-truncate border-bottom-0"><span class="btn ${(insurance.eligibility == 'eligible')? 'bc-tr-green green' : 'bc-tr-red red' }">${insurance.eligibility}</span> </td>`
-                }
-                if (!info.assurances.length) {
-                    let tr = document.createElement('tr'),
-                    td = document.createElement('td')
-                    inT.appendChild(tr)
-                    tr.appendChild(td)
-                    td.setAttribute('colspan','3')
-                    aDePh(td)
-
-                }
-                if (info.role == 'householder') {
-                    let benefThol = page.querySelector('div#benef-hol')
-                    benefThol.classList.remove('hidden')
-                    let benefT = benefThol.querySelector('table')
-                    for (const beneficiary of info.beneficiaries) {
+                    info = pinfo.message
+                    removeLoadingTab(inThol)
+                    let inT = inThol.querySelector('table')
+                    for (const insurance of info.assurances) {
                         let tr = document.createElement('tr')
-                        benefT.appendChild(tr)
-                        tr.innerHTML = `<td class="text-truncate border-bottom-0"><span class="text-muted">${beneficiary.name}</span></span>
+                        inT.appendChild(tr)
+                        tr.innerHTML = `<td class="text-truncate border-bottom-0"><span class="text-muted">${insurance.name}</span></span>
                         </td>
-                        <td class="text-truncate border-bottom-0"><span class="text-muted">${beneficiary.NID}</span></td>
-                        <td class="text-truncate border-bottom-0"><span class="text-muted">${beneficiary.gender}</span></td>
-                        <td class="text-truncate border-bottom-0"><span class="text-muted">${beneficiary.dob}</span> </td>`
+                        <td class="text-truncate border-bottom-0"><span class="text-muted">${insurance.number}</span></td>
+                        <td class="text-truncate border-bottom-0"><span class="btn ${(insurance.eligibility == 'eligible')? 'bc-tr-green green' : 'bc-tr-red red' }">${insurance.eligibility}</span> </td>`
                     }
-                }else if (info.role == 'patient') {
-                    let parentThol = page.querySelector('div#parent-hol'),pholders = Array.from(parentThol.querySelectorAll('[data-p-holder="true"]'))
-                    parentThol.classList.remove('hidden')
-                    for (const holder of pholders) {
-                        holder.innerText = info.householder[holder.id]
+                    if (!info.assurances.length) {
+                        let tr = document.createElement('tr'),
+                        td = document.createElement('td')
+                        inT.appendChild(tr)
+                        tr.appendChild(td)
+                        td.setAttribute('colspan','3')
+                        aDePh(td)
+    
                     }
-                    
-                }
-                dataHolders.forEach(holder=>{
-                    let id = holder.id
-                    holder.innerText = info[id]
-                })
-                let editbuts = Array.from(page.querySelectorAll('span.edit-p-info'))
-                for (const button of editbuts) {
-                    button.onclick = function(event){
-                        event.preventDefault()
-                        shedtpopup(id,info,true)
+                    if (info.role == 'householder') {
+                        let benefThol = page.querySelector('div#benef-hol')
+                        benefThol.classList.remove('hidden')
+                        let benefT = benefThol.querySelector('table')
+                        for (const beneficiary of info.beneficiaries) {
+                            let tr = document.createElement('tr')
+                            benefT.appendChild(tr)
+                            tr.innerHTML = `<td class="text-truncate border-bottom-0"><span class="text-muted">${beneficiary.name}</span></span>
+                            </td>
+                            <td class="text-truncate border-bottom-0"><span class="text-muted">${beneficiary.NID}</span></td>
+                            <td class="text-truncate border-bottom-0"><span class="text-muted">${beneficiary.gender}</span></td>
+                            <td class="text-truncate border-bottom-0"><span class="text-muted">${beneficiary.dob}</span> </td>`
+                        }
+                    }else if (info.role == 'patient') {
+                        let parentThol = page.querySelector('div#parent-hol'),pholders = Array.from(parentThol.querySelectorAll('[data-p-holder="true"]'))
+                        parentThol.classList.remove('hidden')
+                        for (const holder of pholders) {
+                            holder.innerText = info.householder[holder.id]
+                        }
+                        
                     }
-                }
-                let ins = Array.from(editPform.querySelectorAll('input')),shbuts = Array.from(editPform.querySelectorAll('span.showP'))
-                shbuts.forEach(button=>{
-                    button.onclick = function (event) {
-                        event.preventDefault();
-                        if (ins[shbuts.indexOf(this)].type == 'password') {
-                            this.querySelector('i').classList.replace('fa-eye','fa-eye-slash')
-                            ins[shbuts.indexOf(this)].type = 'text'
-                        }else{
-                            this.querySelector('i').classList.replace('fa-eye-slash','fa-eye')
-                            ins[shbuts.indexOf(this)].type = 'password'
+                    dataHolders.forEach(holder=>{
+                        let id = holder.id
+                        holder.innerText = info[id]
+                    })
+                    let editbuts = Array.from(page.querySelectorAll('span.edit-p-info'))
+                    for (const button of editbuts) {
+                        button.onclick = function(event){
+                            event.preventDefault()
+                            let id  = this.id
+                            shedtpopup(id,info,true)
                         }
                     }
-                })
-                editPform.onsubmit = async function (event) {
-                    event.preventDefault();
-                    let v = 1,s = 1
-                    let password = ins.find(function (input) {return input.name == 'password'}),confirm = ins.find(function (input) {return input.name == 'confirm'})
+                    let ins = Array.from(editPform.querySelectorAll('input')),shbuts = Array.from(editPform.querySelectorAll('span.showP'))
+                    shbuts.forEach(button=>{
+                        button.onclick = function (event) {
+                            event.preventDefault();
+                            if (ins[shbuts.indexOf(this)].type == 'password') {
+                                this.querySelector('i').classList.replace('fa-eye','fa-eye-slash')
+                                ins[shbuts.indexOf(this)].type = 'text'
+                            }else{
+                                this.querySelector('i').classList.replace('fa-eye-slash','fa-eye')
+                                ins[shbuts.indexOf(this)].type = 'password'
+                            }
+                        }
+                    })
+                    editPform.onsubmit = async function (event) {
+                        event.preventDefault();
+                        let v = 1,s = 1
+                        let password = ins.find(function (input) {return input.name == 'password'}),confirm = ins.find(function (input) {return input.name == 'confirm'})
+                        
+                        v = checkEmpty(password)
+                        s = checkEmpty(confirm)
+                        if(!v || !s) return 0
                     
-                    v = checkEmpty(password)
-                    s = checkEmpty(confirm)
-                    if(!v || !s) return 0
-                
-                    if (password.value.length < 6) {
-                        return setErrorFor(password, 'this password does not meet minimum requirements')
-                    }else if (password.value != confirm.value) {
-                        return setErrorFor(password, 'passwords do not match')
-                    }else{
-                        postschema.body = JSON.stringify({
-                            token: getdata('token'),
-                            type : 'password',
-                            value : password.value
-                        })
-                        let response = await request('edit-patient-profile',postschema)
-                        alertMessage(response.message)
-                    }
+                        if (password.value.length < 6) {
+                            return setErrorFor(password, 'this password does not meet minimum requirements')
+                        }else if (password.value != confirm.value) {
+                            return setErrorFor(password, 'passwords do not match')
+                        }else{
+                            postschema.body = JSON.stringify({
+                                token: getdata('token'),
+                                type : 'password',
+                                value : password.value
+                            })
+                            let response = await request('edit-patient-profile',postschema)
+                            alertMessage(response.message)
+                        }
+                    }  
+                    page.classList.add('loaded')
+                }else{
+                    page.classList.add('loaded')
                 }
             }else if (x == 'search-medication') {
                 let form = page.querySelector('form.sm-form'),input = form.querySelector('input'),button = form.querySelector('button'),inputs = Array.from(page.querySelectorAll('input.address-field')),proceedB = page.querySelector('button[name="proceed-loc"]')
@@ -820,6 +845,127 @@ postschema.body = JSON.stringify({token: getdata('token')});
                         }
                         showMeds(meds.message)
                 }
+            }else if (x == 'feedbacks') {
+                postschema.body = JSON.stringify({
+                    token: getdata('token')
+                })
+                let fb = await request('get-sent-messages',postschema)
+                if (!fb.success) {
+                    return alertMessage(fb.message)
+                }
+                const feedbacks = fb.message.filter(function (mess) {
+                    return mess.type == 'feedback'
+                })
+                let feedbacksHolder = page.querySelector('ul[data-role="feedbacks-holder"]')
+                feedbacksHolder.innerHTML = null
+                // Create a map to store users grouped by year and month
+                const groupedfeedbacks = new Map();
+                // Iterate through each user
+                feedbacks.forEach(feedback => {
+                    const registrationDate = new Date(feedback.dateadded);
+                    const year = registrationDate.getFullYear();
+                    registrationDate.setMonth(registrationDate.getMonth())
+                    const month = new Intl.DateTimeFormat('en-US',{month: 'long',}).format(registrationDate); // Month is zero-based
+
+                    // Create the year container if it doesn't exist
+                    if (!groupedfeedbacks.has(year)) {
+                        groupedfeedbacks.set(year, new Map());
+                    }
+
+                    // Create the month container if it doesn't exist inside the year container
+                    if (!groupedfeedbacks.get(year).has(month)) {
+                        groupedfeedbacks.get(year).set(month, []);
+                    }
+
+                    // Add the feedback to the appropriate month container inside the year container
+                    groupedfeedbacks.get(year).get(month).push(feedback);
+                });
+
+                // Convert the map to an array for a structured result
+                const structuredArray = Array.from(groupedfeedbacks, ([year, months]) => ({
+                    year: year,
+                    months: Array.from(months, ([month, feedbacks]) => ({
+                        month: month,
+                        feedbacks: feedbacks
+                    }))
+                }));
+                for (const year of structuredArray) {
+                    for (const month of year.months) {
+                        let li = document.createElement('li')
+                        li.className = `ovh`
+                        feedbacksHolder.appendChild(li)
+                        li.innerHTML = `<div class="w-100 h-70p p-5p my-10p ovh">
+                                            <div class="w-100 h-100 bc-tr-white">
+                                                <div class="header w-100 h-60p card-1 br-5p bc-white p-r block hover-2">
+                                                    <div class="w-100 h-100 flex jc-sb p-5p bsbb">
+                                                        <span class="dgray center capitalize px-10p fs-16p">${month.month} / ${year.year}</span>
+                                                        <span class="px-25p center spanner hover-2" data-role="span">
+                                                            <span class="right-arrow tr-0-3"></span>
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                                <div class="w-100 h-a p-10p bsbb feedback-holder"></div>
+                                            </div>
+                                        </div>`
+                        const feedbackHol = li.querySelector(`div.feedback-holder`)
+                        for (const feedback of month.feedbacks) {
+                            let ss = document.createElement('div')
+                            feedbackHol.appendChild(ss)
+                            ss.className = `w-250p h-a bfull-resp p-5p bsbb iblock`
+                            ss.innerHTML = `<div class="card">
+                                                    <div class="p-15p capitalize dgray flex jc-sb">
+                                                        <div class="flex">
+                                                            <span class="black fs-20p px-5p hover-2">#</span><span class="center hover-2">${feedback.id}</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="p-15p hover-2" data-role="button" data-id="${feedback.id}" id ="view-feedback">
+                                                        <h5 class="card-title capitalize">${feedback.addins.type}</h5>
+                                                        <p class="px-5p">
+                                                        <span class="capitalize fs-14p">feedback on ${feedback.addins.type} <span class="hover-6 dgray"> #${feedback.addins.value} <i class="fas fa-external-link-alt px-5p"></i></span></span>
+                                                        </p>
+                                                    </div>
+                                                    <p class="flex p-15p m-0">
+                                                        <span class="dgray fs-15p px-5p">${calcTime(feedback.dateadded)}</span>
+                                                    </p>
+                                                </div>`
+                            
+                        }
+                        if (!feedbackHol.innerHTML) {
+                            let div = document.createElement('div')
+                            div.className = `ovh center-2`
+                            feedbackHol.appendChild(div)
+                            div.innerHTML = `<span class="capitalize dgray flex fs-16p bold-2">no entries available</span>`
+                        }
+                    }
+                }
+                let spans = Array.from(page.querySelectorAll('[data-role="span"]'))
+                for (const spanner of spans) {
+                    spanner.parentNode.parentNode.addEventListener('click', event=>{
+                        event.preventDefault()
+                        spanner.children[0].classList.toggle('down-arrow');
+                        spanner.children[0].classList.toggle('left-arrow');
+                        let lep = spanner.parentNode.parentNode.parentNode.parentNode
+                        lep.classList.toggle('h-a')
+                    })
+                }
+                let buttons = Array.from(page.querySelectorAll('[data-role="button"]'))
+                buttons.map(button=>{
+                    button.onclick = function (event) {
+                        if (button.classList.contains('loading')) {
+                            return 0
+                        }
+                        event.preventDefault();
+                        if (button.id == 'view-feedback') {
+                            let feedback = button.getAttribute('data-id');
+                            feedback = feedbacks.find(function (fb) {
+                                return feedback = fb.id
+                            })
+                            Object.assign(feedback,{sender: {name: getdata('userinfo').Full_name, id: getdata('userinfo').id}})
+                            viewFB(feedback)
+                            console.log(feedback)
+                        }
+                    }
+                })
             }
           } catch (error) {
             console.log(error)
@@ -860,7 +1006,7 @@ function addAppointmentDiv(socket) {
     let bgDiv = addshade();
     let cont = document.createElement('div')
     bgDiv.appendChild(cont)
-    cont.className = `br-10p cntr card p-10p bsbb w-70 h-70 b-mgc-resp`
+    cont.className = `br-10p cntr card-1 p-10p bsbb w-70 h-70 b-mgc-resp`
     cont.innerHTML = `<div class="w-100 h-100 p-5p bp-0-resp">
         <div class="head w-100 px-5p py-10p bsbb">
             <span class="capitalize bold-2 fs-20p">book an appointment</span>
@@ -1026,11 +1172,119 @@ function addAppointmentDiv(socket) {
         }
     })
 }
+async function addfbpopup(data) {
+  s = addshade();
+  a = document.createElement('div')
+  s.appendChild(a)
+  a.className = "w-500p h-a p-20p bsbb bc-white cntr zi-10000 card-1 br-10p b-mgc-resp"
+  a.innerHTML = `<div class="head w-100 h-40p p-5p bsbb bb-1-s-dg">
+							<span class="fs-18p black capitalize igrid center h-100 verdana">add a feedback</span>
+						</div>
+						<div class="body w-100 h-a p-5p grid mt-10p">
+							<form method="post" id="add-feed-back-form" name="add-feed-back-form">
+                                <div class="w-100 h-a mt-10p mb-10p p-10p bsbb">
+                                    <span class="black bold verdana capitalize">rate this ${Object.keys(data)[0]}</span>
+                                    <div class="p-5p bsbb w-100 h-a my-10p flex rates-hol">
+                                    
+                                    </div>
+                                </div>
+                                <div class="w-100 h-a mt-10p mb-10p p-10p bsbb">
+                                    <div class="p-r w-100 igrid mr-10p left parent">
+                                        <textarea rows="4" cols="50" placeholder="Message" name="message" class="form-control main-input" id="message"></textarea>
+                                        <small class="red verdana hidden ml-5p">error mssg</small>
+                                    </div>
+                                 </div>
+								<div class="w-a  h-60p mt-10p p-r right mb-10p p-10p bsbb">
+                                    <div class="w-100 igrid">
+                                        <span class="center iblock">
+                                            <button type="submit" class="btn btn-primary">
+                                                <span class="verdana white fs-15p capitalize">proceed</span>
+                                            </button>
+                                        </span>
+                                    </div>
+                                 </div>
+							</form>
+						</div>`
+		f = a.querySelector('form#add-feed-back-form')
+        let rateshol = a.querySelector('div.rates-hol')
+        for (let index = 1; index <= 5; index++) {
+            rateshol.innerHTML+= ` <span class="#icon h-40p center-2 w-40p">
+            <svg xmlns="http://www.w3.org/2000/svg" class="rateicon" fill="#f2f2f2" width="40" height="40" id="${index}" viewBox="0 0 32 32" version="1.1">
+            <path d="M3.488 13.184l6.272 6.112-1.472 8.608 7.712-4.064 7.712 4.064-1.472-8.608 6.272-6.112-8.64-1.248-3.872-7.808-3.872 7.808z"/>
+            </svg>
+        </span>`
+            
+        }
+        let rateicons = Array.from(rateshol.querySelectorAll('svg.rateicon'));
+        for (const rate of rateicons) {
+            rate.addEventListener('click',v=>{
+                rateicons.forEach(rt=>{
+                    rt.style.fill = ''
+                    rt.classList.remove('active');
+                    if (rateicons.indexOf(rt)< rateicons.indexOf(rate)) {
+                        rt.style.fill = 'var(--main-color)'
+
+                    }
+                })
+                rate.classList.add('active');
+                rate.style.fill = 'var(--main-color)'
+
+                
+            })
+        }
+        let rating = null
+		f.addEventListener('submit',async (e)=>{
+			e.preventDefault()
+			i = Array.from(f.querySelectorAll('.main-input'))
+            l = 1
+            n = {}
+			for(const input of i){
+			 h = checkEmpty(input)
+             if (!h) {
+                l = 0
+             }else{
+                Object.assign(n, {[input.name]: input.value})
+             }
+			}
+            for (const rate of rateicons) {
+                if (rate.classList.contains('active')) {
+                    rating = parseInt(rate.id)
+                    Object.assign(n, {rating})
+                }
+            }
+            if (l && null != rating) {
+                Object.assign(n, {type: Object.keys(data)[0],  'value': data[Object.keys(data)[0]].id})
+               postschema.body =  JSON.stringify(
+                {
+                    token: getdata('token'),
+                    title:'patient rating',
+                    token: getdata('token'),
+                    receiver:  data[Object.keys(data)[0]].receiver,
+                    type: 'feedback', 
+                    content: `incoming feedback regarding a recent ${Object.keys(data)[0]} with ${getdata('userinfo').Full_name}`,
+                    extra: n,
+                    controller: {
+                        looping: false,
+                        recipients: []
+                    }
+                }
+               )
+               addSpinner(f.querySelector('button'))
+               let response = await request('send-message',postschema)
+               removeSpinner(f.querySelector('button'))
+               if (response.success) {
+                deletechild(s,s.parentElement)
+               }
+               alertMessage(response.message)
+            }
+		})
+        
+}
 async function viewAppointmentDiv(appointment) {
     let bgDiv = addshade();
     let cont = document.createElement('div')
     bgDiv.appendChild(cont)
-    cont.className = `br-10p cntr card p-10p bsbb w-450p h-a b-mgc-resp`
+    cont.className = `br-10p cntr card-1 p-10p bsbb w-450p h-a b-mgc-resp bc-white`
     cont.innerHTML = `<div class="w-100 h-100 p-5p bp-0-resp">
                         <div class="head w-100 px-5p py-10p bsbb">
                             <span class="capitalize bold-2 fs-20p">Appointment # <span class="consolas">${appointment}</span></span>
@@ -1098,7 +1352,7 @@ function showMeds(meds) {
     for (const hp of meds) {
         for (const medication of hp.medicines) {
             let div = document.createElement('div')
-            div.className = `card w-a h-a igrid mx-5p bsbb bm-x-0-resp my-10p`
+            div.className = `card-1 w-a h-a igrid mx-5p bsbb bm-x-0-resp my-10p`
             cont.appendChild(div)
             let title = document.createElement('span')
             title.className = `capitalize px-5p card-header`
@@ -1108,7 +1362,7 @@ function showMeds(meds) {
             div.appendChild(title)
             div.appendChild(body)
             body.innerHTML = `<div class=w-100 h-100">
-                    <span class="w-100 h-a p-r block dgray"><span class="flex"><h2 class="black">${medication.price}</h2><span class="fs-18p">RWF</span></span></span>
+                    <span class="w-100 h-a p-r block dgray"><span class="flex"><h2 class="black">${adcm(medication.price)}</h2><span class="fs-18p">RWF</span></span></span>
                     <span class="w-100 h-a p-r block dgray"><h3>${hp.name}</h3></span>
                     <span class="w-100 h-a p-r block dgray">${hp.location}</span>
                 </div>`

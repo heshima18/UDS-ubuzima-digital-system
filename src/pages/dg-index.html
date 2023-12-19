@@ -379,6 +379,50 @@
                                     <div class="row">
                                         <div class="col-12 mb-4">
                                             <div class="my-10p">
+                                                <span class="capitalize dgray bold-2">operations insights</span>
+                                            </div>
+                                        </div>
+                                        <div class="p-r w-96 bfull-resp m-a" id="opsInsights">
+                                            <div class="w-a bfull-resp mb-4 opCard iblock mx-5p bm-x-0-resp">
+                                                <div class="card">
+                                                    <div class="card-body">
+                                                        <h3 class="d-block mb-1 name capitalize bold-2">...</h3>
+                                                        <div class="flex">
+                                                            <h4 class="card-title text-nowrap mb-2 total">...</h4>
+                                                            <span class="capitalize px-10p">case(s)</span>
+                                                        </div>
+                                                        <div class="py-5p flex">
+                                                            <span class=" fw-semibold" id="perc-hol"><i class='bx bx-down-arrow-alt'></i> 0.00%</span>
+                                                        </div>
+                                                    
+                                                        <div>
+                                                            <span>
+                                                                <button class="btn-primary btn btn-sm" id="view-op" data-role="view-op-button">view</button>
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="w-100 h-100 ovh p-a bsbb bc-white t-0 blur shaddow zi-20" data-role="shade">
+                                                <div class="cntr center w-70p h-70p ovh">
+                                                    <div class="sk-grid sk-primary">
+                                                        <div class="sk-grid-cube"></div>
+                                                        <div class="sk-grid-cube"></div>
+                                                        <div class="sk-grid-cube"></div>
+                                                        <div class="sk-grid-cube"></div>
+                                                        <div class="sk-grid-cube"></div>
+                                                        <div class="sk-grid-cube"></div>
+                                                        <div class="sk-grid-cube"></div>
+                                                        <div class="sk-grid-cube"></div>
+                                                        <div class="sk-grid-cube"></div>
+                                                      </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-12 mb-4">
+                                            <div class="my-10p">
                                                 <span class="capitalize dgray bold-2">rankings insights</span>
                                             </div>
                                         </div>
@@ -868,6 +912,96 @@
                                                 </div>
                                                 <div class="buttons">
                                                     <div class="BttnsHol h-a p-r" id="ResViewByBttnsHol">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="h-100" id="opsDiv">
+                        <div class="h-100">
+                            <div class="card h-100">
+                                <div class="row row-bordered g-0 h-100 ovys">
+                                    <div class="col-md-8">
+                                        <h5 class="card-header m-0 me-2 pb-3 dgray"><span><i class="far fa-chart-bar fa-rotate-270 mx-10p"></i></span><span class="capitalize" id="op-name"></span></h5>
+                                        <div class="w-100 h-91 p-10p bsbb">
+                                            <div class="w-100 h-70">
+                                                <div class="w-100 h-100" id="opsChart"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="p-5p">
+                                            <div class="p-5p">
+                                                <span class="capitalize dgray bold-2">actions</span>
+                                            </div>
+                                            <div class="p-10p bsbb">
+                                                <div class="title">
+                                                    <span class="capitalize">range</span>
+                                                </div>
+                                                <div class="px-5p my-10p">
+                                                    <div class="w-100 h-45p p-r ovh">
+                                                        <div class="flex py-10p w-100" data-id="date">
+                                                            <div class="text-center w-40">
+                                                                <input class="form-control form-control-sm required-inps" type="date" id="start" name="start">
+                                                            </div>
+                                                            <span class="center capitalize px-10p w-20">to</span>
+                                                            <div class="text-center w-40">
+                                                                <input class="form-control form-control-sm required-inps" type="date" id="stop" name="stop">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="title">
+                                                    <span class="capitalize">age grouping interval</span>
+                                                </div>
+                                                <div class="px-5p my-10p">
+                                                    <div class="w-100 h-45p p-r ovh">
+                                                        <div class="flex py-10p w-100">
+                                                            <div class="text-center w-100">
+                                                                <input class="form-control form-control-sm required-inps" type="number" name="gap" id="ageGap" placeholder="age gap">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class=" p-10p">
+                                                    <button class="btn btn-primary btn-sm" id="computeSearch">proceed</button>
+                                                </div>
+                                            </div>
+                                            <div class="p-10p bsbb">
+                                                <div class="title">
+                                                    <span class="capitalize">group by</span>
+                                                </div>
+                                                <div class="buttons">
+                                                    <div class="BttnsHol h-70p p-r" id="groupByBttnsHol">
+                                                        <div class="w-100 h-100 ovh p-a bsbb bc-white t-0 blur shaddow zi-20" data-role="shade">
+                                                            <div class="center w-70p h-70p ovh">
+                                                                <div class="sk-grid sk-primary">
+                                                                    <div class="sk-grid-cube bc-theme"></div>
+                                                                    <div class="sk-grid-cube bc-theme"></div>
+                                                                    <div class="sk-grid-cube bc-theme"></div>
+                                                                    <div class="sk-grid-cube bc-theme"></div>
+                                                                    <div class="sk-grid-cube bc-theme"></div>
+                                                                    <div class="sk-grid-cube bc-theme"></div>
+                                                                    <div class="sk-grid-cube bc-theme"></div>
+                                                                    <div class="sk-grid-cube bc-theme"></div>
+                                                                    <div class="sk-grid-cube bc-theme"></div>
+                                                                  </div>
+                                                            </div>
+                                                        </div>
+                                                        
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="p-10p bsbb">
+                                                <div class="title">
+                                                    <span class="capitalize">view by</span>
+                                                </div>
+                                                <div class="buttons">
+                                                    <div class="BttnsHol h-a p-r" id="OpsViewByBttnsHol">
                                                     </div>
                                                 </div>
                                             </div>
