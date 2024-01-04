@@ -25,9 +25,8 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,z,notificationlinks,socket,m
             });
             
             socket.on('message', (message) => {
-                pushNotifs(message);
+                notificationlinks = pushNotifs(message);
                 messages.push(message)
-                notificationlinks = getNfPanelLinks()
                 genClicks(notificationlinks)
                 addsCard(message.title,true)
 
@@ -151,8 +150,6 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,z,notificationlinks,socket,m
             x = page.id
             if (x == 'home') {
                 let num_hols = Array.from(page.querySelectorAll('[data-role="num_hol"]'))
-                
-              let messages = sessiondata('messages')
               let nmbrs = {in_pati: 0,appntmnt_mssg : 0,t_p_sessions: 0, t_s_sessions: 0}
                 messages.map(function (me) {
                 if (me.status == 'new') {
@@ -378,7 +375,6 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,z,notificationlinks,socket,m
                     })
                     n = i.find(function (e) {return e.id == 'patient'})
                     let ass = i.find(function (e) {return e.id == 'assurance'})
-                    console.log(addin)
                     if (addin) {
                       n.value = addin.name
                       n.setAttribute('data-id',addin.patient)

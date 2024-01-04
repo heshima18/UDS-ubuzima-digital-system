@@ -76,7 +76,7 @@ const verification = async (req,res)=>{
                     token = addToken({id:select.id,Full_name:select.Full_name,role: select.role,status: select.status,hospital,department: select.department,dep_name: select.dep_name, title: select.title,hp_name:'N/A',email: select.email, phone: select.phone, username: select.username  })
                 }
             }else if (select.role == 'insurance_manager') {
-                let assurance = await query(`select id from assurances where JSON_CONTAINS(managers, JSON_QUOTE(?),'$')`,[select.id])
+                let assurance = await query(`select id,name from assurances where JSON_CONTAINS(managers, JSON_QUOTE(?),'$')`,[select.id])
                 if(assurance.length > 1){
                     let h = []
                     for (const hos of assurance) {
@@ -88,7 +88,7 @@ const verification = async (req,res)=>{
                 }else{
                     return res.status(403).send({success: false, message: errorMessage.emp_inassigned_to_assu_error_message})
                 }
-                token = addToken({id:select.id,Full_name:select.Full_name,role: select.role,status: select.status,title: select.title, assurance: assurance.id})
+                token = addToken({id:select.id,Full_name:select.Full_name,role: select.role,status: select.status,title: select.title, assurance: assurance.id, assurance_name: assurance.name,email: select.email, phone: select.phone, username: select.username  })
             }else if (select.role == 'mohs') {
                 if (select.extra) {
                     select.extra = JSON.parse(select.extra)

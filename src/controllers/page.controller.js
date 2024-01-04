@@ -399,6 +399,12 @@ export function page (req,res,page){
             case 'home':
                 file = path.join(__dirname,'..','pages', 'insurance-index.html')
                 break;
+            case 'beneficiaries/':
+                file = path.join(__dirname,'..','pages', 'insurance-index.html')
+                break;
+            case 'beneficiaries':
+                file = path.join(__dirname,'..','pages', 'insurance-index.html')
+                break;
             case 'restricted-medications/':
                 file = path.join(__dirname,'..','pages', 'insurance-index.html')
                 break;

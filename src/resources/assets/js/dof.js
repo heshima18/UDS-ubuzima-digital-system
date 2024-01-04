@@ -22,7 +22,9 @@ let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z,socket,assurances,inventor
             });
             
             socket.on('message', (message) => {
-                pushNotifs(message);
+                notificationlinks = pushNotifs(message);
+                messages.push(message)
+                genClicks(notificationlinks)
                 addsCard(message.title,true)
 
             });

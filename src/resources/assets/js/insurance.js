@@ -1,8 +1,8 @@
-import { alertMessage, getdata, getschema, postschema, request,initializeCleave,sessiondata,addLoadingTab,removeLoadingTab, checkEmpty, showRecs, getchips,getPath,addsCard,cpgcntn, geturl, adcm, addshade, deletechild, aDePh } from "../../../utils/functions.controller.js";
+import { alertMessage, getdata, getschema, postschema, request,initializeCleave,sessiondata,addLoadingTab,removeLoadingTab, checkEmpty, showRecs, getchips,getPath,addsCard,cpgcntn, geturl, adcm, addshade, deletechild, aDePh, addSpinner, removeSpinner } from "../../../utils/functions.controller.js";
 import { shedtpopup } from "../../../utils/profile.editor.controller.js";
 import {expirateMssg, pushNotifs, userinfo} from "./nav.js";
 
-let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z,assurance
+let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z,assurance,benef
 (async function () {
     z = userinfo
     let token = getdata('token')
@@ -141,9 +141,14 @@ let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z,assurance
             x = page.id
             if (x == 'home') {
                 let num_hols = Array.from(page.querySelectorAll('[data-role="num_hol"]'))
-                
-              let messages = sessiondata('messages')
-              let nmbrs = {med_inv: 0,equi_inv : 0,serv_inv: 0, tes_inv: 0, op_inv: 0}
+                if (!benef) {
+                    benef =  await request('getBenefs',postschema)
+                    if (!benef.success) {
+                        return alertMessage(benef.message)
+                    }
+                    benef = benef.message
+                }
+              let nmbrs = {med_inv: 0,equi_inv : 0,serv_inv: 0, tes_inv: 0, op_inv: 0,benefs: 0}
               if (assurance) {
               }else{
                 assurance = await request('assurance', postschema)
@@ -164,7 +169,9 @@ let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z,assurance
                 assurance.message.rstrct_o.map(function (inv) {
                     nmbrs.op_inv +=1
                 })
+                
               }
+              nmbrs.benefs = benef.length
               num_hols.forEach(holder=>{
                 let holderlink = holder.parentElement.parentElement.querySelector('a')
                 holderlink.onclick = function (event) {
@@ -1571,6 +1578,364 @@ let q,w,e,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,m,z,assurance
                         }
                     }
                    
+                    
+            }else if (x == 'beneficiaries') {
+                let t = page.querySelector('table')
+                if (!t.classList.contains('loaded')) {
+                    addLoadingTab(page.querySelector('div.theb'));
+                    postschema.body = JSON.stringify({
+                        token: getdata('token')
+                    })
+                    if (!benef) {
+                        benef =  await request('getBenefs',postschema)
+                        if (!benef.success) {
+                            return alertMessage(benef.message)
+                        }
+                        benef = benef.message
+                        initTable(benef)
+                    }else{
+                        initTable(benef)
+                    }
+                }
+                // Delete employee when delete icon clicked
+                function initTable(data) {
+                    removeLoadingTab(page.querySelector('div.theb'))
+                    let table = $('.datatables-beneficiaries');
+                        if (t.classList.contains('loaded')) {
+                            e.destroy()
+                        }
+                        e = table.DataTable({
+                            // Define the structure of the table
+                            dom: '<"row mx-2"<"col-md-2 p-10p"<"me-3"l>><"col-md-10 p-10p"<"dt-action-buttons text-xl-end text-lg-start text-md-end text-start d-flex align-items-center justify-content-end flex-md-row flex-column mb-3 mb-md-0"fB>>>t<"row mx-2"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>',
+                            language: { sLengthMenu: "_MENU_", search: "", searchPlaceholder: "Search..." },
+                            columns: [
+                                { data: "",title: "" }, // Responsive Control column
+                                { data: "Full_name", title: "patient" },
+                                { data: "role", title: "Role" },
+                                { data: "assurances.number", title: "insurance number" },
+                                { data: "assurances.status", title: "Status" },
+                                { title: "Action", data: 'id'}
+                            ],
+                            columnDefs: [
+                                // Define column properties and rendering functions
+                                {
+                                    className: "control",
+                                    searchable: !1,
+                                    orderable: !1,
+                                    responsivePriority: 2,
+                                    targets: 0,
+                                    render: function () {
+                                        return "";
+                                    },
+                                },
+                                {
+                                    targets: 1,
+                                    searchable: 1,
+                                    orderable: 1,
+                                    render: function (e, t, a, n) {
+                                        return (
+                                            `<span class="capitalize text-muted">${e}</span>`
+                                        );
+                                    },
+                                },
+                                {
+                                    targets: 3,
+                                    searchable: 1,
+                                    orderable: !1,
+                                    render: function (e, t, a, n) {
+                                        return (
+                                            `<span class="dgray">${e}</span>`
+                                        );
+                                    },
+                                },
+                                {
+                                    targets: 4,
+                                    searchable: 1,
+                                    orderable: 1,
+                                    render: function (e, t, a, n) {
+                                        return (
+                                            `<span class=" btn btn-sm ${(e == 'eligible')? 'bc-tr-green green' : 'bc-tr-red red'}">${e}</span>`
+                                        );
+                                    },
+                                },
+                                {
+                                    targets: 5,
+                                    searchable: 1,
+                                    orderable: 1,
+                                    render: function (e, t, a, n) {
+                                        return (
+                                            `<div class="d-inline-block text-nowrap">
+                                            <button class="btn btn-sm btn-icon view border border-3 dgray" data-id="${e}"><i class="bx bx-show"></i></button>
+                                        </div>`
+                                        )
+                                    },
+                                },
+                                {
+                                    targets: -1,
+                                    searchable: !1,
+                                    orderable: !1,
+                                    render: function (e, t, a, n) {
+                                        return (
+                                            `<div class="d-inline-block text-nowrap">
+                                            <button class="btn btn-sm btn-icon view border border-3 dgray" data-id="${e}"><i class="bx bx-show"></i></button>
+                                        </div>`
+                                        );
+                                    },
+                                },
+                            ],
+                            order: [[1, "asc"]], // Initial sorting
+                
+                            // Provide the data from the imported inventory
+                            data: data,
+                
+                            // Define buttons for exporting and adding new inventory
+                            buttons: [
+                                {
+                                    extend: "collection",
+                                    className: "btn btn-primary dropdown-toggle mx-3",
+                                    text: '<i class="bx bx-export me-1"></i>Export',
+                                    buttons: [
+                                        {
+                                            extend: "print",
+                                            text: '<i class="bx bx-printer me-2" ></i>Print',
+                                            className: "dropdown-item",
+                                        },
+                                        {
+                                            extend: "excel",
+                                            text: '<i class="bx bxs-file-export me-2"></i>Excel',
+                                            className: "dropdown-item",
+                                        },
+                                        {
+                                            extend: "pdf",
+                                            text: '<i class="bx bxs-file-pdf me-2"></i>Pdf',
+                                            className: "dropdown-item",
+                                        },
+                                    ],
+                                },
+                                
+                            ],
+                
+                            // Initialize filters for position, health post, and status
+                            initComplete: function () {
+                                // Filter by Position
+                                t.classList.add('loaded')
+                                this.api().columns(2).every(function () {
+                                    var t = this,
+                                        a = $('<select class="form-select text-capitalize"><option value=""> filter by role</option></select>')
+                                            .appendTo(".status")
+                                            .on("change", function () {
+                                                var e = $.fn.dataTable.util.escapeRegex($(this).val());
+                                                t.search(e ? "^" + e + "$" : "", !0, !1).draw();
+                                            });
+                                    t.data().unique().sort().each(function (e, t) {
+                                        a.append('<option value="' + e + '">' + e + "</option>");
+                                    });
+                                });
+                                this.api().columns(4).every(function () {
+                                    var t = this,
+                                        a = $('<select class="form-select text-capitalize"><option value=""> filter by status</option></select>')
+                                            .appendTo(".role")
+                                            .on("change", function () {
+                                                var e = $.fn.dataTable.util.escapeRegex($(this).val());
+                                                t.search(e ? "^" + e + "$" : "", !0, !1).draw();
+                                            });
+                                    t.data().unique().sort().each(function (e, t) {
+                                        a.append('<option value="' + e + '">' + e + "</option>");
+                                    });
+                                });
+                            }
+                        });
+                        $.fn.dataTable.ext.search.push(function (settings, data, dataIndex) {
+                            setTimeout(checkButtons,10)
+                            return true
+                        })
+                        let tb = page.querySelector('.dataTables_paginate'),addBenef = page.querySelector('button#addBenef');
+                        addBenef.onclick = function (event) {
+                            event.preventDefault()
+                            showAddBenef();
+                        }
+                        tb.addEventListener('click', e=>{
+                            setTimeout(checkButtons,10)
+    
+                        })
+
+                        checkButtons()
+                        function checkButtons() {
+                            let viewbut = Array.from(page.querySelectorAll('button.view'))
+                            viewbut.forEach(button => {
+                                button.onclick = async function (event) {
+                                    event.preventDefault();
+                                   
+                                   let patient = this.getAttribute('data-id')
+                                   showEditStaTus(patient)
+                                }
+                            });
+                        }
+
+                    }
+                    async function showEditStaTus(patient) {
+                        let b = addshade();
+                        a = document.createElement('div');
+                        b.appendChild(a)
+                        a.className = "w-350p h-a p-10p bsbb bc-white cntr zi-10000 br-5p b-mgc-resp card-1" 
+                        a.innerHTML  =`<div class="head w-100 h-50p py-10p px-10p bsbb">
+                                            <span class="fs-20p bold-2 dgray capitalize igrid h-100 card-title">select status type</span>
+                                        </div>
+                                        <div class="body w-100 h-a p-5p grid">
+                                            <ul class="ls-none px-4p">
+                                                <li class="menu-item my-8p px-6p bsbb" id="eligible">
+                                                    <div class="d-flex">
+                                                        <div class="flex-grow-1 hover-2 emp">
+                                                            <h6 class="mb-1 capitalize green">eligible</h6>
+                                                            <p class="mb-0 flex">
+                                                            <small class=" capitalize dgray">this will make the selected beneficiary able to be served in a supported facility under this insurance.</small>
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                </li>
+                                                <li class="menu-item my-8p px-6p bsbb" id="not eligilbe">
+                                                    <div class="d-flex">
+                                                        <div class="flex-grow-1 hover-2 emp">
+                                                            <h6 class="mb-1 capitalize red">not eligible</h6>
+                                                            <p class="mb-0 flex">
+                                                            <small class=" capitalize dgray">this will restrict the selected beneficiary able to be served medical services under this insurance</small>
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                </li>
+                                            </ul>
+                                        </div>`
+                        let lis = Array.from(a.querySelectorAll('li'))
+                        let type = new Promise((resolve)=>{
+                            lis.forEach(li=>{
+                                li.onclick = async  function () {
+                                    resolve(this.id)
+                                    postschema.body = JSON.stringify({
+                                        token: getdata('token'),
+                                        status: this.id,
+                                        patient
+                                    })
+                                    addLoadingTab(li.parentNode)
+                                    let dec = await request('change-user-assu-status',postschema)
+                                    if (dec.success) {
+                                        deletechild(b,b.parentElement)
+                                    }
+                                    alertMessage(dec.message)
+                                    removeLoadingTab(li.parentNode)
+                                }
+                            })
+                        })
+                    }
+                    async function showAddBenef() {
+                        let b = addshade();
+                        a = document.createElement('div');
+                        b.appendChild(a)
+                        a.className = "w-400p h-a p-10p bsbb bc-white cntr zi-10000 br-5p b-mgc-resp card-1" 
+                        a.innerHTML  =`<div class="head w-100 h-50p py-10p px-10p bsbb">
+                                            <span class="fs-20p bold-2 dgray capitalize igrid h-100 card-title">add beneficiary</span>
+                                        </div>
+                                        <div class="body w-100 h-a p-5p grid">
+                                            <form method="post">
+                                                <div class="col-md-12 p-10p bsbb mb-5p">
+                                                    <label for="patient" class="form-label">Patient</label>
+                                                    <div class="input-group">
+                                                        <input type="text" class="form-control main-input bevalue" placeholder="NID, Phone number, email" name="patient" id="patient">
+                                                        <span class="p-5p b-1-s-dgray hidden">
+                                                            <div class="sk-grid sk-primary h-25p w-25p">
+                                                                <div class="sk-grid-cube bc-theme"></div>
+                                                                <div class="sk-grid-cube bc-theme"></div>
+                                                                <div class="sk-grid-cube bc-theme"></div>
+                                                                <div class="sk-grid-cube bc-theme"></div>
+                                                                <div class="sk-grid-cube bc-theme"></div>
+                                                                <div class="sk-grid-cube bc-theme"></div>
+                                                                <div class="sk-grid-cube bc-theme"></div>
+                                                                <div class="sk-grid-cube bc-theme"></div>
+                                                                <div class="sk-grid-cube bc-theme"></div>
+                                                            </div>
+                                                        </span>
+                                                        <small class="hidden w-100 red pl-3p verdana"></small>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-12 p-10p">
+                                                    <label for="number" class="form-label">Insurance number</label>
+                                                    <div class="input-group">
+                                                        <input type="number" class="form-control" placeholder="number" name="number" id="number">
+                                                        <small class="w-100 red pl-3p verdana"></small>
+                                                    </div>
+                                                </div>
+                                                <div class="my-10p px-10p bsbb">
+                                                    <button type="submit" class="btn btn-primary">Proceed</button>
+                                                </div>
+                                            </form>
+                                        </div>`
+                                        let val,n = a.querySelector('input#patient'),number = a.querySelector('input#number'),addin,f = a.querySelector('form'),ins = f.querySelectorAll('input')
+                                        n.onfocus = ()=>{
+                                            if (addin) {
+                                                if (addin.nid) {
+                                                    n.value = addin.nid
+                                                }else{
+                                                    n.value = addin.patient
+                                                }
+                                                n.setAttribute('data-id',addin.patient)
+                                            }
+                                            val = n.value
+                                        }
+                                        n.onblur = async ()=>{
+                                            if (n.value != val) {
+                                             v = await upPatInfo(n)
+                                            }
+                                            if (addin) {
+                                                n.value = addin.name
+                                                n.setAttribute('data-id',addin.patient)
+                                            }
+                                        }
+                                        async function upPatInfo(n) {
+                                            if (n.value) {
+                                                n.parentNode.querySelector('span').classList.replace('hidden','center-2')
+                                                postschema.body = JSON.stringify({token: getdata('token')})
+                                                const p = await request(`patient/${n.value.trim()}`,postschema)
+                                                if (!p.success) {
+                                                 sessionStorage.removeItem('pinfo');
+                                                 n.removeAttribute('data-id');
+                                                 return n.parentNode.querySelector('span').classList.replace('center-2','hidden')
+                                                }
+                                                n.parentNode.querySelector('span').classList.replace('center-2','hidden')
+                                                n.value = p.message.Full_name
+                                                n.setAttribute('data-id',p.message.id)
+                                                addin = {patient:p.message.id,name:p.message.Full_name,assurance,nid:p.message.nid}
+                                              }else{
+                                                n.parentNode.querySelector('span').classList.replace('center-2','hidden')
+                                              }
+                                        }
+                                        f.onsubmit = async function (event){
+                                            event.preventDefault();
+                                            h = 1
+                                            let assurances = []
+                                            for (const inpt of ins) {
+                                               g = checkEmpty(inpt) 
+                                                if (!g) {
+                                                   h = 0 
+                                                }
+                                            }
+                                            if (h) {
+                                                assurances.push({number: number.value.trim(),id: z.assurance})
+                                                postschema.body = JSON.stringify({
+                                                    token: getdata('token'),
+                                                    assurances,
+                                                    patient: n.getAttribute('data-id')
+                                                })
+                                                addSpinner(f.querySelector('button'))
+                                                let res = await request('add-assurance-to-user',postschema)
+                                                removeSpinner(f.querySelector('button'))
+                                                if (res.success) {
+                                                    deletechild(b,b.parentNode)
+                                                }
+                                                alertMessage(res.message)
+                                            }
+                                            
+                                        }
+                    }
+
                     
             }
             

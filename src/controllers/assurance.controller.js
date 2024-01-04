@@ -259,26 +259,63 @@ export const assuranceHP = async (req,res) =>{
     }
     
   }
-  export const addassuranceToHp = async (req,res)=>{
-    try {
-      let {assurance,hospital,token} = req.body
-      if (!hospital) {
-        let decoded = authenticateToken(token)
-        decoded = decoded.token
-        hospital = decoded.hospital
+export const addassuranceToHp = async (req,res)=>{
+  try {
+    let {assurance,hospital,token} = req.body
+    if (!hospital) {
+      let decoded = authenticateToken(token)
+      decoded = decoded.token
+      hospital = decoded.hospital
+    }
+      let ArrayAvai = await checkArrayAvai('hospitals','assurances',assurance,'id',hospital);
+      if (!ArrayAvai) return res.status(500).send({success: false, message: errorMessage.is_error})
+      if (ArrayAvai.length) {
+        return res.send({success: false, message: errorMessage.err_entr_avai})
       }
-        let ArrayAvai = await checkArrayAvai('hospitals','assurances',assurance,'id',hospital);
-        if (!ArrayAvai) return res.status(500).send({success: false, message: errorMessage.is_error})
-        if (ArrayAvai.length) {
-          return res.send({success: false, message: errorMessage.err_entr_avai})
+      let update = await query(`UPDATE hospitals SET assurances = JSON_ARRAY_APPEND(assurances, '$', ?) where hospitals.id = ?`,[assurance,hospital]);
+      if (!update) return res.status(500).send({success:false, message: errorMessage.is_error})
+      if (!update.affectedRows) return res.status(404).send({success:false, message: errorMessage._err_hc_404})
+      res.send({success: true, message: errorMessage.asuutohp_message})
+    
+  } catch (error) {
+    console.log(error)
+    res.status(500).send({success:false, message: errorMessage.is_error})
+  }
+}
+export const getAssuBenefs = async (req,res)=>{
+    let {token} = req.body
+    let decoded = authenticateToken(token)
+    decoded = decoded.token
+    var assurance =  decoded.assurance;
+    (!assurance)?  assurance = req.body.assurance: null;
+    try {
+        let select = await query(`
+            SELECT
+             patients.id,
+             patients.Full_name,
+             patients.phone,
+             patients.email,
+             patients.role,
+             patients.assurances
+            FROM 
+             patients
+            WHERE 
+            JSON_CONTAINS(patients.assurances, JSON_OBJECT('id',?), '$')
+             GROUP BY patients.id
+        `,[assurance])
+        if (!select) {
+            return res.status(500).send({success:false, message: errorMessage.is_error})
         }
-        let update = await query(`UPDATE hospitals SET assurances = JSON_ARRAY_APPEND(assurances, '$', ?) where hospitals.id = ?`,[assurance,hospital]);
-        if (!update) return res.status(500).send({success:false, message: errorMessage.is_error})
-        if (!update.affectedRows) return res.status(404).send({success:false, message: errorMessage._err_hc_404})
-        res.send({success: true, message: errorMessage.asuutohp_message})
-      
+        select = select.map(record =>{
+            record.assurances = JSON.parse(record.assurances)
+            record.assurances = record.assurances.find(assu =>{
+                return assu.id == assurance
+            })
+            return record
+        })
+        res.send({success: true, message: select})
     } catch (error) {
-      console.log(error)
-      res.status(500).send({success:false, message: errorMessage.is_error})
+        console.log(error)
+        return res.status(500).send({success:false, message: errorMessage.is_error})
     }
   }

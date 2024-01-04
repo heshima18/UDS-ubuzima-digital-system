@@ -24,10 +24,8 @@ postschema.body = JSON.stringify({token: getdata('token')});
             });
             
             socket.on('message', (message) => {
-                pushNotifs(message);
-                addsCard(message.title,true)
+                notificationlinks = pushNotifs(message);
                 messages.push(message)
-                notificationlinks = getNfPanelLinks()
                 genClicks(notificationlinks)
                 addsCard(message.title,true)
 

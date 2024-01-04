@@ -194,8 +194,16 @@
                                         <li class="p-5p bsbb">
 											<span class="w-100 h-100 p-10p hover-7 cpcards bsbb flex verdana nowrap capitalize fs-13p br-5p dgray" data-item-type="medical-prescriptions">
                                                 <span class="w-a h-19p mr-10p"><i class="fas fa-prescription fs-16p"></i></span>
-                                                <span class="center pt-2p bsbb">
+                                                <span class="center bsbb">
                                                      medical prescriptions
+                                                </span>
+                                            </span>
+										</li>
+                                        <li class="p-5p bsbb">
+											<span class="w-100 h-100 p-10p hover-7 cpcards bsbb flex verdana nowrap capitalize fs-13p br-5p dgray" data-item-type="beneficiaries">
+                                                <span class="w-a h-19p mr-10p"><i class="fas fa-users fs-16p"></i></span>
+                                                <span class="center bsbb">
+                                                     beneficiaries
                                                 </span>
                                             </span>
 										</li>
@@ -311,6 +319,25 @@
                                                         <span class="bold-2" data-role="num_hol" id="op_inv" >0</span> operations
                                                     </p>
                                                     <a href="restricted-operations" data-redirect="restricted-operations" class="btn btn-primary">View</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 col-lg-4 mb-3">
+                                            <div class="card">
+                                               <div class="card-header dgray">
+                                                    <span>
+                                                        <i class="fas fa-users"></i>
+                                                    </span>
+                                                    <span class="fs-18p bold-2 dgray bold-2 dgray mr-10p">
+                                                        beneficiaries
+                                                    </span>
+                                                </div>
+                                                <div class="card-body">
+                                                    <h5 class="card-title capitalize">total beneficiaries</h5>
+                                                    <p class="card-text">
+                                                        <span class="bold-2" data-role="num_hol" id="benefs" >0</span> beneficiaries
+                                                    </p>
+                                                    <a href="beneficiaries" data-redirect="beneficiaries" class="btn btn-primary">View</a>
                                                 </div>
                                             </div>
                                         </div>
@@ -611,6 +638,31 @@
 								</div>
 							</div>
 							<!-- end of manage medical prescriptions section -->
+                            <!-- manage beneficiaries section -->
+							<div class="br-5p w-100 h-100 p-a ovh hidden t-0 tr-0-3 pagecontentsection" id="beneficiaries">
+								<div class="w-100 h-a p-10p bsbb">
+									<span class="bblock-resp theme capitalize left flex bold fs-20p verdana h-100 pl-10p"><span class="dgray capitalize">insurance manager / </span>&nbsp;beneficiaries</span>
+								</div>
+								<div class="pg-cntnt w-100 h-90 p-20p bp-0-resp bsbb ovys left scroll-2">
+                                    <div class="w-100 h-100 theb p-r"> 
+                                        <div class="card">
+                                            <div class="card-header border-bottom text-center">
+                                                <div class="d-flex justify-content-between align-items-center row pt-3 gap-3 gap-md-0">
+                                                    <div class="col-md-4 status"></div>
+                                                    <div class="col-md-4 role"></div>
+                                                    <div class="col-md-4">
+                                                        <button class="btn btn-primary capitalize" id="addBenef"><span class="fas fa-plus px-5p"></span>add beneficiary</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="card-datatable mb-3 table-responsive">
+                                                <table class="datatables datatables-beneficiaries my-3 table border-top"></table>
+                                            </div>
+                                        </div>
+                                    </div>
+								</div>
+							</div>
+							<!-- end of manage beneficiaries section -->
 							<!-- my account section -->
 							<div class="br-5p w-100 h-100 p-a ovh hidden t-0 tr-0-3 pagecontentsection" id="my-account">
 								<div class="w-100 h-50p ">
@@ -650,12 +702,8 @@
                                                                 <span class="btn green bc-tr-green" data-holder="true" id="status">Active</span>
                                                             </li>
                                                             <li class="mb-3">
-                                                                <span class="fw-bold me-2">hospital:</span>
-                                                                <span class="department" data-holder="true" id="hp_name">Doctor</span>
-                                                            </li>
-                                                            <li class="mb-3">
-                                                                <span class="fw-bold me-2">department:</span>
-                                                                <span class="department" data-holder="true" id="dep_name">Doctor</span>
+                                                                <span class="fw-bold me-2">Insurance Name:</span>
+                                                                <span class="department" data-holder="true" id="assurance_name">Doctor</span>
                                                             </li>
                                                             <li class="mb-3">
                                                                 <span class="fw-bold me-2">Position:</span>

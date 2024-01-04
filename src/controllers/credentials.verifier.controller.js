@@ -17,7 +17,10 @@ export async function checku_name(needle,table) {
     return q
 }
 export async function checkHouseHolder(needle) {
-    let q = await query(`select id from patients where nid = ?  AND role = 'householder'`, [needle])
+    let q = await query(`select id,assurances from patients where nid = ?  AND role = 'householder'`, [needle])
+    if (q.length) {
+        q[0].assurances = JSON.parse(q[0].assurances)
+    }
     return q
 }
 export async function checkObjectAvai(table, column, key, needle,entity, entityId) {

@@ -6,7 +6,7 @@ import id from "./randomInt.generator.controller";
 import EventEmitter from 'events';
 import { io } from '../socket.io/connector.socket.io';
 import addToken from './token.signer.controller';
-import { checkEmail, checkPhone, checku_name } from './credentials.verifier.controller';
+import { checkEmail, checkObjectAvai, checkPhone, checku_name } from './credentials.verifier.controller';
 class MyEventEmitter extends EventEmitter {}
 const event = new MyEventEmitter();
 export const getPatients = async (req,res)=>{
@@ -140,18 +140,25 @@ export const getPatient = async (req,res)=>{
 }
 export const addUserAssurance = async (req,res)=>{
     try {
-      let {assurances,token} = req.body
-        let decoded = authenticateToken(token)
-        let user = decoded.token.id
+      let {assurances,patient} = req.body
+        let user = patient
         if (assurances.length == 0) {
             return res.status(404).send({success:false, message: errorMessage._err_assu_404})
         }
         for (const assurance of assurances) {
-          var t = await query(`select name from assurances where id = ?`, [assurance]);
+          var t = await query(`select name from assurances where id = ?`, [assurance.id]);
           if (!t) return res.status(500).send({success:false, message: errorMessage.is_error})
           if(t.length == 0) {
             return res.status(404).send({success:false, message: errorMessage._err_assu_404})
           }else{
+            let objectAvai =  await checkObjectAvai('patients','assurances','id',assurance.id,'id',user)
+            if (!objectAvai) {
+              return res.status(500).send({success:false, message: errorMessage.is_error})
+            }
+            if (objectAvai.length) {
+              return res.send({success: false, message: errorMessage.err_entr_avai})
+            }
+    
               let updateassurance = await query(`update patients set assurances =  JSON_ARRAY_APPEND(assurances, '$', JSON_OBJECT("id", ? ,"status", ?, "number", ?)) where id = ?`,[assurance.id,'eligible',assurance.number,user])
              if (!updateassurance) {
                 return res.status(500).send({success:false, message: errorMessage.is_error})
@@ -167,13 +174,42 @@ export const addUserAssurance = async (req,res)=>{
       res.status(500).send({success:false, message: errorMessage.is_error})
     }
 }
+export const changeUserAssuranceStatus = async (req,res)=>{
+    try {
+      let {status,patient,token} = req.body,assurances
+        let assurance = authenticateToken(token)
+        assurance = assurance.token.assurance
+        assurances = await selectPatient(patient)
+        if (!assurances) {
+            return res.status(404).send({success:false, message: errorMessage._err_p_404})
+        }
+        assurances = assurances.assurances
+        assurances = assurances.map(assu=>{
+            if (assu.id == assurance) {
+                assu.status= status
+            }
+            return assu
+        })
+        let update = await query('update patients set assurances = ? where id = ?',[JSON.stringify(assurances),patient])
+        if (update) {
+            res.send({success: true, message: errorMessage.assu_st_chng})
+        }else{
+          res.status(500).send({success:false, message: errorMessage.is_error})
+        }
+      
+    } catch (error) {
+      console.log(error)
+      res.status(500).send({success:false, message: errorMessage.is_error})
+    }
+}
 export async function selectPatient(patient) {
     try {
-        let p = await query('select id, Full_name,password, email, phone,resident_province as province,resident_district as district,resident_sector as sector,resident_cell as cell,FA from patients where id = ?',[patient])
+        let p = await query('select id, Full_name,password, email,assurances, phone,resident_province as province,resident_district as district,resident_sector as sector,resident_cell as cell,FA from patients where id = ?',[patient])
         if (!p) {
             return null
         }else{
             p  = p[0]
+            p.assurances = JSON.parse(p.assurances)
             return p
         }
         

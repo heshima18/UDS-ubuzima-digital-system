@@ -24,8 +24,8 @@ import {getInventory,addInventory, addInventoryTests, addInventoryOperations, ad
 import { getMessages, getSentMessages, markAsSeen, sendMessage } from '../controllers/message.controller';
 import { authorizeAppointmentAccess } from '../middlewares/appointment.authorizer.middleware';
 import { authorizeSession } from '../middlewares/session.authorizer.middleware';
-import { addPatiBg, addPatientFP, addUserAssurance, editPatientProfile, getPatient, getPatients } from '../controllers/patients.controller';
-import { addAssurance, addEquipmentToAssuranceRestrictedList, addMedicineToAssuranceRestrictedList, addOperationToAssuranceRestrictedList, addServiceToAssuranceRestrictedList, addTestToAssuranceRestrictedList, assurance, getAssurances, removeItemFromAssurancelist,assuranceHP, addassuranceToHp } from '../controllers/assurance.controller';
+import { addPatiBg, addPatientFP, addUserAssurance, changeUserAssuranceStatus, editPatientProfile, getPatient, getPatients } from '../controllers/patients.controller';
+import { addAssurance, addEquipmentToAssuranceRestrictedList, addMedicineToAssuranceRestrictedList, addOperationToAssuranceRestrictedList, addServiceToAssuranceRestrictedList, addTestToAssuranceRestrictedList, assurance, getAssurances, removeItemFromAssurancelist,assuranceHP, addassuranceToHp, getAssuBenefs } from '../controllers/assurance.controller';
 import { authorizeHospitalAssurance, authorizeUserAssurance } from '../middlewares/assurance.authorizer.middleware';
 import { at } from '../controllers/token.verifier.controller';
 import { io } from '../socket.io/connector.socket.io';
@@ -43,6 +43,12 @@ import { checkFPAvai } from '../middlewares/fp.avai.middleware';
 import { addDisease, getDiseases } from '../controllers/diseases.controller';
 const router = express.Router({ strict: false });
 router.post('/verify',verification)
+
+
+// ================================================================  > ADMIN ROUTES < ====================================================================
+
+
+
 router.post('/getnmbrs',authorizeRole,authorizeAdmin,getAdminNmbrs)
 router.post('/addhealthpost',authorizeRole,authorizeAdmin,addhospital)
 router.post('/add-appointment',authorizeRole,authorizeHc_provider,authorizePatient,CheckAppointmentTimer,addAppointment)
@@ -52,7 +58,6 @@ router.post("/addtest",authorizeRole,authorizeAdmin,addtest)
 router.post("/edittest",authorizeRole,authorizeAdmin,edittest)
 router.post("/add-service",authorizeRole,authorizeAdmin,addService)
 router.post("/editservice",authorizeRole,authorizeAdmin,editService)
-
 router.post("/add-operation",authorizeRole,authorizeAdmin,addOperation)
 router.post("/edit-operation",authorizeRole,authorizeAdmin,editOperation)
 router.post("/add-equipment",authorizeRole,authorizeAdmin,addEquipment)
@@ -66,6 +71,25 @@ router.post("/operation",authorizeRole,getOperation)
 router.post("/add-province",authorizeRole,authorizeAdmin,addProvince)
 router.post("/add-district",authorizeRole,authorizeAdmin,addDistrict)
 router.post("/add-sector",authorizeRole,authorizeAdmin,addSector)
+router.post("/add-cell",authorizeRole,authorizeAdmin,addCell)
+router.post('/add-department',authorizeRole,authorizeAdmin,addDepartment)
+router.post('/add-department-to-hp',authorizeRole,authorizeAdmin,addDepartmentToHp)
+router.post('/remove-employee-from-hp',authorizeRole,authorizeAdmin,removeEmployeFromHospital)
+router.post('/remove-department-from-hp',authorizeRole,authorizeAdmin,removeDepartmentFromHospital)
+router.post('/get-departments',authorizeRole,authorizeAdmin,getDepartments)
+router.post('/get-diseases',authorizeRole,authorizeAdmin,getDiseases)
+router.post('/add-disease',authorizeRole,authorizeAdmin,addDisease)
+router.post('/get-patients',authorizeRole,authorizeAdmin,getPatients);
+router.post('/get-titles',authorizeRole,authorizeAdmin, organiseTitles);
+
+
+// ================================================================  > END OF ADMIN  ROUTES < ====================================================================
+
+
+// ================================================================  > ASSURANCE ROUTES < ====================================================================
+
+
+
 router.post("/add-assurance",authorizeRole,authorizeAdmin,addAssurance)
 router.post("/assurance/:assurance?",authorizeRole,assurance)
 router.post("/aMtA/",authorizeRole,authorizeAdmin,addEmployeetoAssurance)
@@ -77,13 +101,33 @@ router.post("/aEquTA/",authorizeRole,authorizeAssuranceManager,addEquipmentToAss
 router.post("/rAenrs/",authorizeRole,authorizeAssuranceManager,removeItemFromAssurancelist)
 router.post("/gAsSuMH/",authorizeRole,authorizeAssuranceManager,assuranceMH)
 router.post("/gAsSuHP/",authorizeRole,authorizeAssuranceManager,assuranceHP)
+router.post("/getBenefs/",authorizeRole,authorizeAssuranceManager,getAssuBenefs)
 router.post("/gHosPiAsSu/",authorizeRole,(req,res,next) => authorizeMultipleRoles(req,res,next,['dof']),hospitalASSU)
 router.post("/add-hospi-assu/",authorizeRole,(req,res,next) => authorizeMultipleRoles(req,res,next,['dof']),addassuranceToHp)
+router.post("/add-assurance-to-user",authorizeRole,(req,res,next) => authorizeMultipleRoles(req,res,next,['insurance_manager']),addUserAssurance)
+router.post("/change-user-assu-status",authorizeRole,(req,res,next) => authorizeMultipleRoles(req,res,next,['insurance_manager']),changeUserAssuranceStatus)
+
+
+
+// ================================================================  > END OF ASSURANCE ROUTES < ====================================================================
+
+
+
+
 router.post("/add-user-fp",authorizeRole,(req,res,next) => authorizeMultipleRoles(req,res,next,['hc_provider','receptionist']),checkFPAvai,addPatientFP)
 
 router.get("/tp",testPay)
-router.post("/add-assurance-to-user",authorizeRole,authorizePatientToken,addUserAssurance)
-// session routes
+
+
+
+
+
+// ================================================================  > SESSION ROUTES < ====================================================================
+
+
+
+
+
 router.post('/get-user-medical-history/:userid?',authorizeRole,addPati2fa,getUsessions)
 router.post('/get-hospital-medical-history',authorizeRole,getHpsessions)
 router.post('/get-hcp-sessions',authorizeRole,authorizeHc_provider,getHc_pSessions)
@@ -105,8 +149,17 @@ router.post('/tsfOnsp',authorizeRole,authorizeHc_provider,(req,res,next) => auth
 router.post('/approve-assurance-payment',authorizeRole,(req,res,next) => authorizeMultipleRoles(req,res,next,['dof']),approveAssuPayment);
 router.post('/approve-payment',authorizeRole,(req,res,next) => authorizeSession(req,res,next,'isnotopen'),authorizeCashier,approvePayment);
 router.post('/addsession',authorizeRole,authorizeHc_provider,authorizePatient,authorizeUserAssurance,authorizeHospitalAssurance,addSession)
-// end of session routes
-router.post("/add-cell",authorizeRole,authorizeAdmin,addCell)
+
+
+
+
+// ================================================================  > END OF SESSION ROUTES < ====================================================================
+
+
+
+
+
+
 router.get('/get-map',getMap);
 router.get('/get-assurances',getAssurances);
 router.post('/appointment/:id',authorizeRole,authorizeAppointmentAccess,appointment)
@@ -118,7 +171,16 @@ router.post('/appointment/:id',authorizeRole,authorizeHc_provider,appointment)
 router.post('/search-medicine/:medicine',authorizeRole,searchMed);
 router.get('/medicine/:medicine',getMed);
 
+
+
+
+
 // =========================================  > EMPLOYEES ROUTES <  ===========================================================================
+
+
+
+
+
 
 
 router.post('/addemployee',authorizeRole,authorizeAdmin,(req,res,next) => authorizeHospital(req,res,next,'isoptional'),addemployee)
@@ -169,14 +231,7 @@ router.post('/hospital/:hospital?',authorizeRole,getHP)
 router.post('/hpDeps/:hospital?',authorizeRole,getHPDeps)
 
 router.post('/search-hospital/:hospital',authorizeRole,searchHP)
-router.post('/add-department',authorizeRole,authorizeAdmin,addDepartment)
-router.post('/add-department-to-hp',authorizeRole,authorizeAdmin,addDepartmentToHp)
-router.post('/remove-employee-from-hp',authorizeRole,authorizeAdmin,removeEmployeFromHospital)
-router.post('/remove-department-from-hp',authorizeRole,authorizeAdmin,removeDepartmentFromHospital)
 
-router.post('/get-departments',authorizeRole,authorizeAdmin,getDepartments)
-router.post('/get-diseases',authorizeRole,authorizeAdmin,getDiseases)
-router.post('/add-disease',authorizeRole,authorizeAdmin,addDisease)
 router.get('/styles/:filename',stylesheet);
 router.get('/plugins/:filename',pluginScripts);
 router.get('/utils/:filename',utilsScripts);
@@ -185,15 +240,15 @@ router.get('/getSocketIo/:filename',getSocketIo);
 router.get('/getLuxon/:filename',getLuxon);
 
 router.get('/addadmin',addSuperAdmin);
-router.post('/get-patients',authorizeRole,authorizeAdmin,getPatients);
+
 router.post('/patient/:patient?',authorizeRole,getPatient);
-router.get('/',homeController);
 router.post('/user-login',login);
+router.get('/',homeController);
 router.get('/assets/*',assets);
+router.get('/:user/:filename*', (req, res) => page(req, res, 'admin'));
+router.get('/:filename*',(req, res)=> page(req, res, null));
 router.post('/api/signup',authorizeRawRole, signup)
 router.post('/resend-2FA',resend2FA)
-router.get('/:user/:filename*', (req, res) => page(req, res, 'admin'));
-router.post('/get-titles',authorizeRole,authorizeAdmin, organiseTitles);
 
-router.get('/:filename*',(req, res)=> page(req, res, null));
+
 export default router

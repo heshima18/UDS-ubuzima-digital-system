@@ -40,6 +40,7 @@ const errorMessage = {
     assu_hp_error_message:'the selected insurance is not supported by this hospital',
     assu_user_error_message:'the selected user is not eligible for this assurance',
     assu_added_to_user_message:'insurance assigned to the user successfully',
+    assu_st_chng:`user's insurance status changed successfully`,
     FP_added_to_user_message:'Fingerprint data assigned to the user successfully',
 
     bg_added_to_user_message:'blood group assigned to the user successfully',

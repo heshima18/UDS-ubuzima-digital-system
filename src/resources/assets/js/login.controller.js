@@ -22,7 +22,6 @@ form.addEventListener('submit', async event=>{
     c = 1
     for (const input of inputs) {
         v = checkEmpty(input)
-        console.log( checkEmpty(input))
         if (!v) {
            c = 0 
         }

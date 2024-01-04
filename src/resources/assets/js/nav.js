@@ -33,6 +33,8 @@ nfPanel.parentNode.classList.add('h-75');
             n.innerHTML = `<div class="w-100 h-a capitalize wrap fs-14p bold-2 flex px-5p dgray"><span class="center"><i class='bx bxs-user dgray bx-sm'></i></span><span class="px-5p bsbb grid"> ${z.Full_name}</span></div>`
             if (z.role != 'patient' && z.role != 'householder' && z.role != 'admin' && z.role != 'insurance_manager') {
                 t.innerHTML = `<div class="w-100 h-a capitalize wrap fs-12p flex px-5p my-5p"><i class='bx bxs-buildings bx-sm dgray' ></i><span class="center-2 px-10p"><span class="mx-3p center h-100">${z.hp_name}</span><span class="w-5p h-5p br-50 bc-dgray iblock"></span> <span class="center  mx-3p iblock h-100">${z.title}</span></span></div>`
+            }else if(z.role == 'insurance_manager'){
+                t.innerHTML = `<div class="w-100 h-a capitalize wrap fs-12p flex px-5p my-5p"><i class='bx bxs-buildings bx-sm dgray' ></i><span class="center-2 px-10p"><span class="mx-3p center h-100">${z.assurance_name}</span></div>`
             }else{
                 t.innerHTML = null
             }
@@ -242,7 +244,8 @@ export function pushNotifs(message) {
                   </div>`
     nfPanel.insertBefore(li,nfPanel.childNodes[0])
     l = Array.from(nfPanel.querySelectorAll('div.list-link'))
-    clicks(l,b,m)
+    clicks([li],b,m)
+    return [li]
 }
 function clicks(l,b,m) {
     let messages = m
@@ -289,16 +292,6 @@ function clicks(l,b,m) {
                     h = messages.find(function (message) {
                         return message.id == element.getAttribute('data-id')
                     })
-                    // if (v) {
-                    //     s = p.indexOf(v)
-                    //     let url = new URL(window.location.href);
-                    //     if (element.getAttribute('data-message-type') == 'test_res_message' || element.getAttribute('data-message-type') == 'session_message') {
-                    //         url.pathname = `/${getPath()[0]}/${element.getAttribute('data-href-target')}/${sessiondata('minfo').session}`;
-                    //     }else{
-                    //         url.pathname = `/${getPath()[0]}/${element.getAttribute('data-href-target')}`;
-                    //     }
-                    //     window.location.href = url.toString()
-                    // }
                 }
             } catch (error) {
               console.log(error)  
@@ -342,7 +335,7 @@ export function expirateMssg(mssg_id) {
     })
 
 }
-export function getNfPanelLinks() {
+export function getNfPanelLinks(customLi) {
     l = Array.from(nfPanel.querySelectorAll('div.list-link'))
     return l
 }
