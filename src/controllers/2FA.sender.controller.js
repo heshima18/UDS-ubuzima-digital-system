@@ -56,16 +56,16 @@ async function sendmail(email,message,names,type) {
     </html>
   `;
 		const transporter = createTransport({
-			host: 'smtp.gmail.com',
-			port: 587,
-			secure: false,
+			host: 'smtppro.zoho.com',
+			port: 465,
+			secure: true,
 			auth: {
-				user: "hesh.teo@gmail.com",
-				pass: "uwzfszzfuluhdgsk"
+				user: "info@ubuzima.digital",
+				pass: "FZAYrFw8zPvY"
 			}
 		});
 		const mailOptions = {
-			from: "hesh.teo@gmail.com",
+			from: "UDS <info@ubuzima.digital>",
 			to: email,
 			subject: message.subject,
 			html: emailContent
