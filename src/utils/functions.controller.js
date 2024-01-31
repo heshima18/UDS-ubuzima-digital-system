@@ -350,7 +350,7 @@ export function showRecs(input, data,type,noInpAction) {
     for(const info of data){
       let item = document.createElement('li');
       item.className = 'hover p-10p bsbb w-100 item capitalize left wrap'
-      item.textContent = info.name.toLowerCase()
+      item.textContent = info.name.toString().toLowerCase()
       item.setAttribute('data-id',info.id)
       if (type == 'medicines' || type == 'equipments' || type == 'services'|| type == 'tests' || type == 'operations') {
         item.setAttribute('data-price',info.price)
