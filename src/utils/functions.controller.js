@@ -1570,12 +1570,12 @@ export function addAuthDiv(socket,user){
   q.appendChild(a)
   a.className = "w-360p h-a p-20p bsbb bc-white cntr zi-10000 br-10p card-5 authDiv b-mgc-resp" 
   a.innerHTML = `<div class="head w-100 h-60p p-5p bsbb bb-1-s-dg">
-                  <span class="fs-18p black capitalize igrid center h-100 verdana">access authentication</span>
+                  <span class="fs-18p black capitalize igrid center h-100 verdana">${(user.title)? user.title : 'access authentication'}</span>
                 </div>
                 <div class="body w-100 h-a p-5p mt-10p">
                   <form method="post">
                   <div>
-                    <span class="dgray capitalize">enter the 6 digit code we sent the information's owner</span>
+                    <span class="dgray capitalize">${(user.content)? user.content: `enter the 6 digit code we sent the information's owner`} </span>
                   </div>
                   <div class="block">
                   <label for="code" class="form-label">code</label>
@@ -1627,10 +1627,10 @@ export function addAuthDiv(socket,user){
   i.focus()
   initializeSpecialCleave(i,[3,3],6,' - ')
   f.onsubmit = function (event) {
+    event.preventDefault();
     if (!i.value) {
       return
     }
-    event.preventDefault();
     v = i.value.replace(/ - /g, "")
     socket.emit('authCode',{type: 'code',v,user})
     deletechild(q,q.parentElement)
@@ -1661,7 +1661,6 @@ export async function showFingerprintDiv(action,socket,user) {
                     <button class="btn btn-success white d-grid w-100" id="start">start</button>
                     <button class="btn btn-primary d-grid mx-10p w-100" id="proceed">proceed</button>
                     <button class="btn btn-warning d-grid mx-10p w-100" id="proceed">reconnect</button>
-
                   </div>
                 </div>`;
   let preview = a.querySelector('img'),status = a.querySelector('span#status'),start = a.querySelector('button#start'),proceed = a.querySelector('button#proceed')

@@ -178,6 +178,28 @@ d = await request('get-departments',postschema),
     
             k = f.querySelector('input#type')
             b = f.querySelector('button[type="submit"]')
+            l = f.querySelector('label.bggn')
+            m = f.querySelector('label.bppn')
+            l.onclick = function (event) {
+                event.preventDefault();
+                if (this.classList.contains('active')) {
+                    this.classList.remove('active','b-1-s-theme')
+                    this.querySelector('input').checked = false
+                }else{
+                    this.classList.add('active','b-1-s-theme')
+                    this.querySelector('input').checked = true
+                }
+            }
+            m.onclick = function (event) {
+                event.preventDefault();
+                if (this.classList.contains('active')) {
+                    this.classList.remove('active','b-1-s-theme')
+                    this.querySelector('input').checked = false
+                }else{
+                    this.classList.add('active','b-1-s-theme')
+                    this.querySelector('input').checked = true
+                }
+            }
             j.addEventListener('focus', function () {
                 showRecs(j,d.message,'department')
             })
@@ -207,6 +229,16 @@ d = await request('get-departments',postschema),
                         }else{
                             Object.assign(x,{[input.name]: input.getAttribute('data-id')})
                         }
+                     }
+                     if (l.classList.contains('active')) {
+                        Object.assign(x,{reqSecAuth : true})
+                     }else{
+                        Object.assign(x,{reqSecAuth : false})
+                     }
+                     if (m.classList.contains('active')) {
+                        Object.assign(x,{reqPatiAuth : true})
+                     }else{
+                        Object.assign(x,{reqPatiAuth : false})
                      }
                      Object.assign(x,{token: getdata('token')})
                      postschema.body = JSON.stringify(x)
@@ -241,6 +273,37 @@ function showEditTest(info) {
     let departments = d.message
     div.appendChild(b)
     let inputs = Array.from(b.querySelectorAll('input')),form = b.querySelector('form'),button = b.querySelector('button[type="submit"]')
+    l = form.querySelector('label.bggn')
+    m = form.querySelector('label.bppn')
+
+    l.onclick = function (event) {
+        event.preventDefault();
+        if (this.classList.contains('active')) {
+            this.classList.remove('active','b-1-s-theme')
+            this.querySelector('input').checked = false
+        }else{
+            this.classList.add('active','b-1-s-theme')
+            this.querySelector('input').checked = true
+        }
+    }
+    m.onclick = function (event) {
+        event.preventDefault();
+        if (this.classList.contains('active')) {
+            this.classList.remove('active','b-1-s-theme')
+            this.querySelector('input').checked = false
+        }else{
+            this.classList.add('active','b-1-s-theme')
+            this.querySelector('input').checked = true
+        }
+    }
+    if (info.reqSecAuth) {
+        l.classList.add('active','b-1-s-theme')
+        l.querySelector('input').checked = true
+    }
+    if (info.reqPatiAuth) {
+        m.classList.add('active','b-1-s-theme')
+        m.querySelector('input').checked = true
+    }
     k = form.querySelector('input#type')
     k.addEventListener('focus', function () {
         showRecs(k,[{id: 'quick test', name: 'quick test'},{ id: 'core test', name: 'core test'}],'department')
@@ -273,6 +336,16 @@ function showEditTest(info) {
                 }else{
                     Object.assign(x,{[input.name]: input.getAttribute('data-id')})
                 }
+             }
+             if (l.classList.contains('active')) {
+                Object.assign(x,{reqSecAuth : true})
+             }else{
+                Object.assign(x,{reqSecAuth : false})
+             }
+             if (m.classList.contains('active')) {
+                Object.assign(x,{reqPatiAuth : true})
+             }else{
+                Object.assign(x,{reqPatiAuth : false})
              }
              Object.assign(x,{token: getdata('token'), id: info.id})
              postschema.body = JSON.stringify(x)

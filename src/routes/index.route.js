@@ -41,6 +41,7 @@ import { createTransfer, viewTransfer } from '../controllers/transfer.controller
 import getAdminNmbrs from '../controllers/admin-numbers.controller';
 import { checkFPAvai } from '../middlewares/fp.avai.middleware';
 import { addDisease, getDiseases } from '../controllers/diseases.controller';
+import { checkOperation } from '../middlewares/operations.middleware';
 const router = express.Router({ strict: false });
 router.post('/verify',verification)
 
@@ -138,7 +139,7 @@ router.post("/add-session-medicine",authorizeRole,(req,res,next) => authorizeSes
 router.post("/mark-as-served",authorizeRole,(req,res,next) => authorizeSession(req,res,next,'isnotclosed'),authorizePharmacist,markMedicineAsServed)
 router.post("/add-session-equipment",authorizeRole,(req,res,next) => authorizeSession(req,res,next,'isnotclosed'),authorizeHc_provider,addSessionEquipment)
 router.post("/add-session-service",authorizeRole,(req,res,next) => authorizeSession(req,res,next,'isnotclosed'),authorizeHc_provider,addSessionService)
-router.post("/add-session-operation",authorizeRole,(req,res,next) => authorizeSession(req,res,next,'isnotclosed'),authorizeHc_provider,addSessionOperation)
+router.post("/add-session-operation",authorizeRole,(req,res,next) => authorizeSession(req,res,next,'isnotclosed'),authorizeHc_provider,(req,res,next)=>checkOperation(req,res,next,'patiAuth'),(req,res,next)=>checkOperation(req,res,next,'patiNxtknAuth'),addSessionOperation)
 router.post("/add-session-comment",authorizeRole,(req,res,next) => authorizeSession(req,res,next,'isnotclosed'),(req,res,next) =>authorizeMultipleRoles(req,res,next,['hc_provider','pharmacist']),addSessionComment)
 router.post("/add-session-decisions",authorizeRole,(req,res,next) => authorizeSession(req,res,next,'isnotclosed'),authorizeHc_provider,addSessionDecision)
 router.post("/add-session-symptoms",authorizeRole,(req,res,next) => authorizeSession(req,res,next,'isnotclosed'),authorizeHc_provider,addSessionSymptoms)

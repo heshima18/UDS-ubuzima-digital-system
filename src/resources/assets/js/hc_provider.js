@@ -34,8 +34,12 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,z,notificationlinks,socket,m
             socket.on('messagefromserver', (message) => {
                 alertMessage(message)
 
+            });
+            socket.on('RemoveAuthDivs', (message) => {
+                RemoveAuthDivs()
+
             });;
-            socket.on('accessAuth', (message) => {
+            socket.on('patiAuth', (message) => {
                 addAuthDiv(socket,message);
 
             });

@@ -107,16 +107,17 @@ export async  function connectFP(host,callback) {
 
 
 export function MatchTemplate(data1,data2) {
-    if ((data1.length > 256) && (data2.length > 256)) {                                
-        var cmd = "{\"cmd\":\"match\",\"data1\":\"" + data1 + "\",\"data2\":\"" + data2 + "\"}";
-        try {
+    try {
+        if ((data1.length > 256) && (data2.length > 256)) {    
+            console.log(data1,'\n',data2)                            
+            var cmd = "{\"cmd\":\"match\",\"data1\":\"" + data1 + "\",\"data2\":\"" + data2 + "\"}";
             ws.send(cmd);
             return 1
-        } catch (err) {
-            console.log(err)
+        } else {
             return 0
-        }
-    } else {
-       return 0
-    }            
+        }            
+    } catch (err) {
+        console.log(err)
+        return 0
+    }
 }

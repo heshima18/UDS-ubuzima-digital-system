@@ -12,7 +12,7 @@ export const addDepartment = async (req,res)=>{
     res.send({success: true, message: errorMessage.dc_message})
 }
 export const getDepartments = async (req,res)=>{
-    let select = await query(`select name,id from  departments`,[])
+    let select = await query(`select name,id from  departments order by departments.name asc`,[])
     if (!select) {
         res.status(500).send({success:false, message: errorMessage.is_error})
         return

@@ -33,4 +33,7 @@ app.use(express.static('public'));
 app.use(express.json());
 app.use(router)
 app.use(bodyParser.json())
+process.on('uncaughtException', (err) => {
+    console.error('Uncaught Exception:', err);
+  });
 

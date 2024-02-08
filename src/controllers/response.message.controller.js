@@ -57,6 +57,7 @@ const errorMessage = {
     lgIn_message: 'logged in successfully',
     _err_assu_404:'insurance not found',
     _err_u_404: 'user not found',
+    _err_rel_404: 'relatives not found',
     _err_p_404: 'patient not found',
     _err_sess_404: 'the requested session was not found',
     _err_trans_404: 'the requested transfer was not found',
@@ -79,6 +80,7 @@ const errorMessage = {
     _err_NID_avai: 'the provided national ID is available do you wish to login instead ?',
     _err_uname_avai: 'the provided username is available do you wish to login instead ?',
     _err_hc_404: 'the provided hospital was not found',
+    _err_timeout: 'request timeout',
 
     _err_ms_404: 'the provided medical session was not found',
     _err_unknown: 'Oops an unknown error occured',

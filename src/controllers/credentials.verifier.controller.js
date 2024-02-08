@@ -38,6 +38,16 @@ export async function getSession(sessionid) {
     }
     return q
 }
+export async function getRelatives(userid) {
+    let q = await query(`select patients.id from patients where householder = ? OR householder = (select householder from patients where id = ?) and id != ?`,[userid,userid,userid])
+    if (!q) {
+        return undefined
+    }
+    q = q.map(e=>{
+        return e.id
+    })
+    return q
+}
 export async function getMessage(messageid) {
     let q = await query(`select id,sessionid,user,receiver,status from messages where id = ?`,[messageid])
     if (!q) {
@@ -46,7 +56,14 @@ export async function getMessage(messageid) {
     return q
 }
 export async function getTest(testid) {
-    let q = await query(`select id,type,department from tests where id = ?`,[testid])
+    let q = await query(`select id,type,department,reqSecAuth,reqPatiAuth from tests where id = ?`,[testid])
+    if (!q) {
+        return undefined
+    }
+    return q
+}
+export async function getOperation(opid) {
+    let q = await query(`select id,department,reqSecAuth,reqPatiAuth from operations where id = ?`,[opid])
     if (!q) {
         return undefined
     }
