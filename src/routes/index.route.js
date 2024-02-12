@@ -129,7 +129,7 @@ router.get("/tp",testPay)
 
 
 
-router.post('/get-user-medical-history/:userid?',authorizeRole,addPati2fa,getUsessions)
+router.post('/get-user-medical-history/:userid?',authorizeRole,(req,res,next)=>addPati2fa(req,res,next),getUsessions)
 router.post('/get-hospital-medical-history',authorizeRole,getHpsessions)
 router.post('/get-hcp-sessions',authorizeRole,authorizeHc_provider,getHc_pSessions)
 router.post('/get-hp-daily-sessions',authorizeRole,authorizeHospital,getDailyHpSessions)

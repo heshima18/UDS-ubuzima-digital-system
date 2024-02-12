@@ -70,6 +70,7 @@ export async  function connectFP(host,callback) {
                     }else{
                         callback({success: true, message: "Comparison score:",type: 'comparison', data: obj.retmsg})
                     }
+                    console.log(obj.retmsg)
                     ws.close();
                     break;
                 case 10:
@@ -108,11 +109,14 @@ export async  function connectFP(host,callback) {
 
 export function MatchTemplate(data1,data2) {
     try {
-        if ((data1.length > 256) && (data2.length > 256)) {    
-            console.log(data1,'\n',data2)                            
+        if ((data1.length > 256) && (data2.length > 256)) {                              
             var cmd = "{\"cmd\":\"match\",\"data1\":\"" + data1 + "\",\"data2\":\"" + data2 + "\"}";
-            ws.send(cmd);
-            return 1
+            if (ws.readyState) {
+                ws.send(cmd);
+                return 1
+            }else{
+                return 0
+            }
         } else {
             return 0
         }            

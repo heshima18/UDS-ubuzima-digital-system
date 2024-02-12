@@ -14,7 +14,7 @@ export const  addPati2fa = async (req,res,next,mess) =>{
         const {userid} = req.params;
         const decoded = authenticateToken(token);
         if (!decoded.success) return res.status(500).send({ message: errorMessage.is_error, success: false });
-        let {role,id} = decoded.token
+        let {role,id} = decoded.token,isHsent = false
         if (role == 'patient' || role == 'householder') return next()
         let content,title,sender,type,extra = {},code = generate2FAcode() 
         let updateResult = await query(`UPDATE patients SET FA = ? WHERE id = ?`, [code, userid])
@@ -28,11 +28,6 @@ export const  addPati2fa = async (req,res,next,mess) =>{
         type = `info_access_req`
         let messageInfo = {type,content,title,sender,receiver: userid,extra}
         let mssg_id = await ioSendMessage(messageInfo),ReqSocket,ui
-        ui = setTimeout(e=>{
-            if (!req.headersSent) {
-                res.status(408).send({success: false,message: errorMessage._err_timeout})
-            }
-        },60000)
         if (mssg_id) {
             const recipientSocket = Array.from(io.sockets.sockets.values()).filter((sock) => {return sock.handshake.query.id == userid ||  sock.handshake.query.id == id})
             Object.assign(messageInfo,{id: mssg_id})
@@ -42,12 +37,21 @@ export const  addPati2fa = async (req,res,next,mess) =>{
                 }else if (socket.handshake.query.id == id) {
                     socket.emit('patiAuth',userid)
                     ReqSocket = socket
-
                 }
             })
+            ui = setTimeout(e=>{
+                if (!isHsent) {
+                    isHsent = true
+                    res.status(408).send({success: false,message: errorMessage._err_timeout})
+                    ReqSocket.emit('RemoveAuthDivs',true)
+                }
+            },60000)
             if (ReqSocket) {
                 const dec = await new Promise((resolve, reject) => {
                     ReqSocket.on('authCode', async (code)=>{
+                        if (isHsent) {
+                            reject(0)
+                        }
                         if (code.type == 'code') {
                             try {
                                 let p = await selectPatient(userid)
@@ -68,8 +72,7 @@ export const  addPati2fa = async (req,res,next,mess) =>{
                         }else if (code.type == 'fp') {
                            let fp_data = code.fp_data
                            let p = await selectPatientFP(userid)
-                           if (!p) return reject(0);
-                           clearTimeout(ui)
+                           if (!p){clearTimeout(ui); return resolve(0)};
                            let connection
                            try {
                                connection = await connectFP('',callback=>{
@@ -77,10 +80,12 @@ export const  addPati2fa = async (req,res,next,mess) =>{
                                         resolve(1)
                                         clearTimeout(ui)
                                         ReqSocket.emit('RemoveAuthDivs',true)
-    
                                     }else if (callback.type && callback.type == 'comparison' && !callback.success) {
-                                        ReqSocket.emit('messagefromserver','incorrect fingerprint try again')
-                                        // resolve(0)
+                                        resolve(0)
+                                        clearTimeout(ui)
+                                        ReqSocket.emit('RemoveAuthDivs',true)
+
+
                                     }
                                     
                                })
@@ -91,14 +96,17 @@ export const  addPati2fa = async (req,res,next,mess) =>{
                            if (connection) {
                                MatchTemplate(fp_data,p.data)
                            }else{
-                               reject(0)
+                               resolve(0)
                                clearTimeout(ui)
                            }
                         }
                     })
                   });
-                  if (!dec) {clearTimeout(ui);return res.status(401).send({ message: errorMessage._err_forbidden, success: false });}
-                  ReqSocket.emit('RemoveAuthDivs',null)
+                if (!dec) {
+                    ReqSocket.emit('RemoveAuthDivs',null)
+                    clearTimeout(ui);isHsent = true;
+                    return res.status(401).send({ message: errorMessage._err_forbidden, success: false });
+                }
                 next()    
             }
         }else{
@@ -109,15 +117,16 @@ export const  addPati2fa = async (req,res,next,mess) =>{
         res.status(500).send({ message: errorMessage.is_error, success: false });
       }
 }
-export const  addPatiNextOfKin2fa = async (req,res,next) =>{
+export const  addPatiNextOfKin2fa = async (req,res,next,mess) =>{
     try {
         const {token} = req.body;
         const {userid} = req.params;
         const decoded = authenticateToken(token);
         if (!decoded.success) return res.status(500).send({ message: errorMessage.is_error, success: false });
-        let {role,id} = decoded.token
+        let {role,id} = decoded.token,isHsent = false
         let content,title,sender,type,extra = {},code = generate2FAcode(),relatives = await getRelatives(userid)
         if (!relatives || !relatives.length) {
+            isHsent = true
             return res.status(404).send({success: false, message: errorMessage._err_rel_404})
         }
         for (const relative of relatives) {
@@ -138,20 +147,23 @@ export const  addPatiNextOfKin2fa = async (req,res,next) =>{
                 recipientPatientSocket.emit('message',messageInfo)
             }
         }
-        let ui = setTimeout(e=>{
-            if (!req.headersSent) {
-                res.status(408).send({success: false,message: errorMessage._err_timeout})
-            }
-        },60000),ReqSocket
+       
         if (1) {
             const recipientSocket = Array.from(io.sockets.sockets.values()).find((sock) => {return sock.handshake.query.id == id})
             recipientSocket.emit('patiAuth',{title: `patient's relatives confirmation`,content: `enter any of the auth codes we sent to the patient's relatives`})
-            ReqSocket = recipientSocket
-
+            let ReqSocket = recipientSocket,ui = setTimeout(e=>{
+                if (!isHsent) {
+                    res.status(408).send({success: false,message: errorMessage._err_timeout})
+                    isHsent = true
+                    recipientSocket.emit('RemoveAuthDivs',null)
+                }
+            },60000)
             if (ReqSocket) {
                 const dec = await new Promise((resolve, reject) => {
                     ReqSocket.on('authCode', async (code)=>{
-                        
+                        if (isHsent) {
+                            reject(0)
+                        }
                         if (code.type == 'code') {
                             try {
                                 for (const relative of relatives) {
@@ -177,18 +189,24 @@ export const  addPatiNextOfKin2fa = async (req,res,next) =>{
                            let fp_data = code.fp_data
                            for (const relative of relatives) {
                                let p = await selectPatientFP(relative)
-                               if (!p) p = {user: relative, data: 'n/a'}
+                               if (!p) {
+                                if (relatives.indexOf(relative) == (relatives.length - 1)) {
+                                    resolve(0)
+                                }
+                                continue
+                                }
                                let connection
                                try {
-                                   connection = await connectFP('',callback=>{
+                                   connection = await connectFP('',async callback=>{
                                         if (callback.type && callback.type == 'comparison' && callback.success) {
-                                            console.log(relative)
+                                            let p = await selectPatient(relative)
+                                            if (mess.type == 'operation') {
+                                                Object.assign(req.body.operation,{approvedBy: relative})
+                                            }
                                             resolve(1)
                                             clearTimeout(ui)
                                             ReqSocket.emit('RemoveAuthDivs',true)
-        
                                         }else if (callback.type && callback.type == 'comparison' && !callback.success && relatives.indexOf(relative) == (relatives.length - 1)) {
-                                            ReqSocket.emit('messagefromserver',`relative's fingerprint not recognised  try again`)
                                             resolve(0)
                                             clearTimeout(ui)
                                         }
@@ -201,7 +219,7 @@ export const  addPatiNextOfKin2fa = async (req,res,next) =>{
                                if (connection) {
                                    MatchTemplate(fp_data,p.data)
                                }else{
-                                   reject(0)
+                                   resolve(0)
                                    clearTimeout(ui)
                                }
                             
@@ -214,7 +232,6 @@ export const  addPatiNextOfKin2fa = async (req,res,next) =>{
                     recipientSocket.emit('RemoveAuthDivs',null)
                     return res.status(401).send({ message: errorMessage._err_forbidden, success: false });
                 }
-                recipientSocket.emit('RemoveAuthDivs',null)
                 next()    
             }
         }

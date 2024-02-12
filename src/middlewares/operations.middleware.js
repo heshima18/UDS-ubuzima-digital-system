@@ -27,7 +27,7 @@ export const checkOperation = async (req,res,next,action) =>{
         operationinfo = operationinfo[0]
         if (action == 'patiNxtknAuth') {
             if (operationinfo.reqSecAuth) {
-                 return addPatiNextOfKin2fa(req,res,next)
+                 return addPatiNextOfKin2fa(req,res,next,{type: 'operation'})
             }
         }else if (action = 'patiAuth') {
             if (operationinfo.reqPatiAuth) {

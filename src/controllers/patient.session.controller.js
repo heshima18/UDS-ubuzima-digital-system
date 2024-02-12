@@ -497,16 +497,25 @@ GROUP BY mh.id;
         let rawO = response.raw_operations.find(function (o) {
           return o.id == operations.id
         })
-        let operator = await getEmployee(rawO.operator)
+        let operator = await getEmployee(rawO.operator),approver
+        if (rawO.approvedBy) {
+          approver = await selectPatient(rawO.approvedBy)
+         
+        }
         if (!operator) {
           operator = {id: null, Full_name: 'N/A'}
         }
+        
         Object.assign(response.operations[response.operations.indexOf(operations)], {operator: operator.Full_name,operatorId: operator.id})
         delete response.operations[response.operations.indexOf(operations)].price
         for (const key of Object.keys(rawO)) {
           if ('operator' != key && 'price' != key) {
             Object.assign(response.operations[response.operations.indexOf(operations)], {[key]: rawO[key]})
           }
+        }
+        if (approver) {
+          response.operations[response.operations.indexOf(operations)].approvedBy = approver.Full_name
+          Object.assign(response.operations[response.operations.indexOf(operations)], {approverId: approver.id})
         }
         // Object.assign(response.operations[response.tests.indexOf(tests)],{result: response.raw_tests[response.tests.indexOf(tests)].results,sample: response.raw_tests[response.tests.indexOf(tests)].sample})
       }

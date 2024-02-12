@@ -997,11 +997,11 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,z,notificationlinks,socket,m
                             
                         }else if (dataToHold == 'tests' || dataToHold == 'operations') {
                             for (const key of Object.keys(data)) {
-                                if ('operator'!= key && 'tester'!= key && 'name'!= key && 'id'!= key && 'testerId'!= key && 'operatorId'!= key) {
+                                if ('operator'!= key && 'tester'!= key && 'name'!= key && 'id'!= key && 'testerId'!= key && 'operatorId'!= key && 'approverId'!= key) {
                                     let li = document.createElement('li')
                                     li.className = `p-2p bsbb block`
                                     li.innerHTML = `<span class="pname dgray fs-15p pr-5p block">${key}</span>
-                                        <span class="pname dgray fs-16p bold-2" name="looping-info-hol" data-hold="${key}" data-secondary-holder="true">${key}</span>`
+                                        <span class="pname dgray fs-16p bold-2" name="looping-info-hol" data-hold="${key}" data-secondary-holder="true">${key}</span> `
                                     clonedNode.appendChild(li)
                                 }
                                 if (key == 'operator') {
@@ -1014,6 +1014,11 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,z,notificationlinks,socket,m
                                         return elem.getAttribute('data-hold') == 'tester'
                                     })
                                     testerElem.setAttribute('data-id', data.testerId)
+                                }else if (key == 'approvedBy') {
+                                    let approelem = clonedNode.querySelector(`[data-hold = 'approvedBy']`)
+                                    approelem.setAttribute('data-id', data.approverId)
+                                    approelem.setAttribute('data-role', 'show-profile')
+                                    approelem.classList.add('data-buttons','hover-6')
                                 }
                             }
                             dataHolders = Array.from(clonedNode.querySelectorAll('[name="looping-info-hol"]'))
