@@ -174,6 +174,9 @@ export const  addPatiNextOfKin2fa = async (req,res,next,mess) =>{
                                         clearTimeout(ui)
                                     }else if(p.FA == code.v){
                                         resolve(1);
+                                        if (mess.type == 'operation') {
+                                            Object.assign(req.body.operation,{approvedBy: relative})
+                                        }
                                         clearTimeout(ui)
                                     }
                                     
