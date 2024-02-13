@@ -11,7 +11,7 @@ import { authorizeRawRole, authorizeRole } from '../middlewares/roles.authorizer
 import { authorizeAdmin, authorizeAssuranceManager, authorizeCashier, authorizeHc_provider, authorizeHcp_ptnt, authorizeLaboratory_scientist, authorizeMultipleRoles, authorizePatient, authorizePatientToken, authorizePharmacist } from '../middlewares/users.authoriser.middleware';
 import {addEmployeetoAssurance, addEmployeetoHp, addemployee, editProfile, getEmployeeProfile, getEmployees, getEmployeesByRole, getHpEmployees, removeEmployeFromHospital} from '../controllers/employee.controller';
 import { getHP, getHPs, searchHP,addhospital, hospitalASSU, getHPDeps } from '../controllers/hospital.controller';
-import {TransferInteralSession, addSession, addSessionComment, addSessionDecision, addSessionEquipment, addSessionMedicine, addSessionOperation, addSessionService, addSessionSymptoms, addSessionTests, approveAssuPayment, approvePayment, assuranceMH, closeSession, getDailyHpSessions, getHc_pSessions, getHpsessions, getUsessions, markMedicineAsServed, session, testPay } from '../controllers/patient.session.controller';
+import {TransferInteralSession, addSession, addSessionComment, addSessionDecision, addSessionEquipment, addSessionMedicine, addSessionOperation, addSessionService, addSessionSymptoms, addSessionTests, addSessionVS, approveAssuPayment, approvePayment, assuranceMH, closeSession, getDailyHpSessions, getHc_pSessions, getHpsessions, getUsessions, markMedicineAsServed, session, testPay } from '../controllers/patient.session.controller';
 import {addmedicine, editmedicine, getMed, getMeds, searchMed} from '../controllers/medicine.controller';
 import {addDepartment, addDepartmentToHp, getDepartments, removeDepartmentFromHospital} from '../controllers/departments.controller';
 import {addtest,edittest,getTest,getTests} from '../controllers/tests.controller';
@@ -134,7 +134,7 @@ router.post('/get-hospital-medical-history',authorizeRole,getHpsessions)
 router.post('/get-hcp-sessions',authorizeRole,authorizeHc_provider,getHc_pSessions)
 router.post('/get-hp-daily-sessions',authorizeRole,authorizeHospital,getDailyHpSessions)
 router.post('/session/:session',authorizeRole,authorizeRole,(req,res,next) => authorizeSession(req,res,next,'isuserorhcp'),session)
-router.post("/add-session-test",authorizeRole,(req,res,next) => authorizeSession(req,res,next,'isnotclosed'),checkTest,addSessionTests)
+router.post("/add-session-test",authorizeRole,(req,res,next) => authorizeSession(req,res,next,'isnotclosed'),(req,res,next)=>checkTest(req,res,next,'patiAuth'),(req,res,next)=>checkTest(req,res,next,'patiNxtknAuth'),addSessionTests)
 router.post("/add-session-medicine",authorizeRole,(req,res,next) => authorizeSession(req,res,next,'isnotclosed'),authorizeHc_provider,addSessionMedicine)
 router.post("/mark-as-served",authorizeRole,(req,res,next) => authorizeSession(req,res,next,'isnotclosed'),authorizePharmacist,markMedicineAsServed)
 router.post("/add-session-equipment",authorizeRole,(req,res,next) => authorizeSession(req,res,next,'isnotclosed'),authorizeHc_provider,addSessionEquipment)
@@ -142,6 +142,7 @@ router.post("/add-session-service",authorizeRole,(req,res,next) => authorizeSess
 router.post("/add-session-operation",authorizeRole,(req,res,next) => authorizeSession(req,res,next,'isnotclosed'),authorizeHc_provider,(req,res,next)=>checkOperation(req,res,next,'patiAuth'),(req,res,next)=>checkOperation(req,res,next,'patiNxtknAuth'),addSessionOperation)
 router.post("/add-session-comment",authorizeRole,(req,res,next) => authorizeSession(req,res,next,'isnotclosed'),(req,res,next) =>authorizeMultipleRoles(req,res,next,['hc_provider','pharmacist']),addSessionComment)
 router.post("/add-session-decisions",authorizeRole,(req,res,next) => authorizeSession(req,res,next,'isnotclosed'),authorizeHc_provider,addSessionDecision)
+router.post("/add-session-vs",authorizeRole,(req,res,next) => authorizeSession(req,res,next,'isnotclosed'),authorizeHc_provider,addSessionVS)
 router.post("/add-session-symptoms",authorizeRole,(req,res,next) => authorizeSession(req,res,next,'isnotclosed'),authorizeHc_provider,addSessionSymptoms)
 router.post("/crTrns",authorizeRole,(req,res,next) => authorizeSession(req,res,next,'isnotclosed'),authorizeHc_provider,createTransfer)
 router.post("/getTrNsfr",authorizeRole,viewTransfer)

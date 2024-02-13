@@ -16,7 +16,6 @@ export const checkOperation = async (req,res,next,action) =>{
             return res.status(404).send({ message: errorMessage._err_sess_404, success: false });
         }
         sessioninfo = sessioninfo[0]
-
         if (!operationinfo) {
             return res.status(500).send({ message: errorMessage.is_error, success: false }); 
         }
@@ -25,6 +24,9 @@ export const checkOperation = async (req,res,next,action) =>{
         }
         Object.assign(req,{params: {userid: sessioninfo.patient}})
         operationinfo = operationinfo[0]
+        if (operationinfo.department != decoded.token.department) {
+            return res.status.send({success: false, message: errorMessage._err_forbidden})
+        }
         if (action == 'patiNxtknAuth') {
             if (operationinfo.reqSecAuth) {
                  return addPatiNextOfKin2fa(req,res,next,{type: 'operation'})
@@ -34,7 +36,7 @@ export const checkOperation = async (req,res,next,action) =>{
                 return addPati2fa(req,res,next) 
             }
         }
-        return res.status(500).send({ message: errorMessage.is_error, success: false });
+        return next()
     } catch (error) {
         console.log(error)
         res.status(500).send({ message: errorMessage.is_error, success: false });

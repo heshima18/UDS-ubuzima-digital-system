@@ -533,7 +533,7 @@ GROUP BY mh.id;
       delete response.services
       delete response.decisions
     }else if (user != 'cashier' && user != 'insurance_manager' && user != 'dof' && user != 'patient' && user != 'householder') {
-      delete response.assurance_info
+      // delete response.assurance_info
     }else if (user == 'cashier') {
       
     }
@@ -590,9 +590,6 @@ export const addSessionTests = async (req,res)=>{
           }
           str+=`)`;
          query(`update medical_history set tests =  JSON_ARRAY_APPEND(tests, '$', ${str}) where id = ?`,[session])
-        
-      
-      if (itt == 0) return res.status(403).send({success: false, message: errorMessage._err_test_404})
       let pts = await calculatePayments(assurance,{tests: [test]},'tests')
       if (!pts) {
         console.log('error in payments calculations')
@@ -639,7 +636,7 @@ export const addSessionOperation = async (req,res)=>{
       if (!operation.operator) {
         Object.assign(operation, {operator})
       }
-      if (!t) return res.status(500).send({success:false, message: errorMessage._err_operation_404})
+      if (!t) return res.status(404).send({success:false, message: errorMessage._err_operation_404})
          Object.assign(operation,{price: parseInt(t.price)})
          itt +=t.price
          let objectAvai = await checkObjectAvai('medical_history','operations','id',operation.id,'id',session)
@@ -661,9 +658,6 @@ export const addSessionOperation = async (req,res)=>{
           }
           str+=`)`;
          update_mh = query(`update medical_history set operations =  JSON_ARRAY_APPEND(operations, '$', ${str}) where id = ?`,[session])
-        
-      
-      if (itt == 0) return res.status(403).send({success: false, message: errorMessage._err_operation_404})
       let pts = await calculatePayments(assurance,{operations: [operation]},'operations')
       let payment_info = await getPayment(session)
       if (!payment_info) {
@@ -713,9 +707,6 @@ export const addSessionService = async (req,res)=>{
             return res.send({success: false, message: errorMessage.err_entr_avai})
           }
          query(`update medical_history set services =  JSON_ARRAY_APPEND(services, '$', JSON_OBJECT("id", ?, "quantity", ?)) where id = ?`,[service.id,service.quantity,session])
-        
-      
-      if (itt == 0) return res.status(403).send({success: false, message: errorMessage._err_service_404})
       let pts = await calculatePayments(assurance,{services: [service]},'services')
       let payment_info = await getPayment(session)
       if (!payment_info) {
@@ -762,7 +753,6 @@ export const addSessionEquipment = async (req,res)=>{
         query(`update medical_history set equipments =  JSON_ARRAY_APPEND(equipments, '$', JSON_OBJECT("id", ?, "quantity", ?)) where id = ?`,[equipment.id,equipment.quantity,session])
       }
       
-      if (itt == 0) return res.status(403).send({success: false, message: errorMessage._err_equipment_404})
       let pts = await calculatePayments(assurance,{equipments : [equipment]},'equipments')
       let payment_info = await getPayment(session)
       if (!payment_info) {
@@ -843,7 +833,6 @@ export const addSessionMedicine = async (req,res)=>{
           query(`update medical_history set medicines =  JSON_ARRAY_APPEND(medicines, '$', JSON_OBJECT("id", ?, "quantity", ?, "servedOut", ?, "status",?,"comment", ?, "prescribedBy", ?)) where id = ? AND hc_provider = ?`,[medicine.id,medicine.quantity,medicine.servedOut,medicine.status,medicine.comment,hc_provider,session,hc_provider])
         }
         query(`UPDATE inventories  SET medicines = ? where hospital = ?`, [JSON.stringify(meds),decoded.token.hospital])
-        // if (itt == 0) return res.status(403).send({success: false, message: errorMessage._err_med_404})
         let pts = await calculatePayments(assurance,{medicines},'medicines')
        let payment_info = await getPayment(session)
       if (!payment_info) {
@@ -912,6 +901,28 @@ export const addSessionDecision = async (req,res)=>{
         return res.status(401).send({success:false, message: errorMessage._err_forbidden})
       }
       res.send({success: true, message: errorMessage.dec_added_message})
+    
+  } catch (error) {
+    console.log(error)
+    res.status(500).send({success:false, message: errorMessage.is_error})
+  }
+}
+export const addSessionVS = async (req,res)=>{
+  try {
+    let {session,vs,token} = req.body,addVs
+    let decoded = authenticateToken(token)
+      let hc_provider = decoded.token.id
+    
+      addVs = await query(`update medical_history
+         set vs =  ? 
+         where id = ? AND Status != ? AND hc_provider = ?`,[JSON.stringify(vs),session,'closed',hc_provider]) 
+      
+      if (!addVs) {
+        return res.status(500).send({success:false, message: errorMessage.is_error})
+      }else if (addVs.affectedRows == 0) {
+        return res.status(401).send({success:false, message: errorMessage._err_forbidden})
+      }
+      res.send({success: true, message: errorMessage.vs_added_message})
     
   } catch (error) {
     console.log(error)

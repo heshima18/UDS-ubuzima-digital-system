@@ -561,7 +561,7 @@ export function getchips(parent,datatoget) {
 
         return data
       }
-    }) 
+    })
     datatoget = attris
     if (!datatoget || datatoget.length == 0) {
       d.push(chip.querySelector('span').getAttribute(`data-id`))

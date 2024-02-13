@@ -1143,6 +1143,8 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,z,notificationlinks,socket,m
                             }
                             let data = {session: sessiondata.session_id,patient: sessiondata.p_info.id,paymentType: 'user-payment',socket,facility:sessiondata.hp_info}
                             showPaymentPopup(data)
+                        }else if (role == 'vs') {
+                            Modals.addvs(sessiondata.vs)
                         }
                     }
                 })
@@ -1376,7 +1378,7 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,x,c,v,b,n,z,notificationlinks,socket,m
         })
     }
 })();
-function promptVSPopup(inp) {
+function promptVSPopup(inp,data) {
     b = addshade();
     a = document.createElement('div');
     b.appendChild(a)
@@ -1436,6 +1438,16 @@ function promptVSPopup(inp) {
                                       <span class="p-a unit r-0 t-0 mt-69p dgray mr-20p">%</span>
                                       <small class="w-100 red pl-3p verdana hidden"></small>
                                     </div>
+                                    <div class="col-md-12 px-10p py-6p bsbb p-r">
+                                      <label for="Oxygen Saturation" class="form-label capitalize">glycemia (blood sugar)</label>
+                                      <span class="dgray"><br>Normal Ranges: 
+                                      <br>Fasting blood sugar: 70-100 mg/dL (3.9-5.6 mmol/L)
+                                      <br>Blood sugar level 2 hours after eating (postprandial):  140 mg/dL (7.8 mmol/L)
+                                      </span>
+                                      <input type="text" class="form-control" id="Blood Sugar Concentration" placeholder="Patient's Blood Sugar Concentration" name="Blood Sugar Concentration">
+                                      <span class="p-a unit r-0 t-38p mt-100p dgray mr-20p">mg/dL</span>
+                                      <small class="w-100 red pl-3p verdana hidden"></small>
+                                    </div>
                                     <div class="col-md-12 px-10p py-6p bsbb mb-5p p-r">
                                       <label for="height" class="form-label">height</label>
                                       <input type="text" class="form-control" id="height" placeholder="Patient's height" name="height">
@@ -1456,35 +1468,58 @@ function promptVSPopup(inp) {
                                 </div>`
     m = a.querySelector('form#req-VS-info-form')
     v = Array.from(a.querySelectorAll('input'))
-    let chipsHolder = inp.parentElement.childNodes[7]
-      if (!chipsHolder) {
-        chipsHolder = document.createElement('div');
-        chipsHolder.className = 'chipsholder p-5p bsbb w-100'
-        chipsHolder.title = 'CF Questions'
-        if (inp.classList.contains('chips-check')) {
-          inp.parentElement.insertAdjacentElement('beforeEnd',chipsHolder)
+    let chipsHolder
+    if (inp) {
+        chipsHolder = inp.parentElement.childNodes[7]
+    }
+    if (!data) {
+        if (!chipsHolder) {
+          chipsHolder = document.createElement('div');
+          chipsHolder.className = 'chipsholder p-5p bsbb w-100'
+          chipsHolder.title = 'CF Questions'
+          if (inp.classList.contains('chips-check')) {
+            inp.parentElement.insertAdjacentElement('beforeEnd',chipsHolder)
+          }
         }
-      }
-    m.addEventListener('submit', (event)=>{
-      event.preventDefault();
-      l = 1
-      s = []
-      for (const input of v) {
-        k = checkEmpty(input);
-        if (!k) {
-          l = 0
-        }
-        if (k) {
-          s.push({name : input.name, value: input.value +" "+input.parentElement.querySelector('span.unit').innerText})
-        }
-      }
-      if (l) {
-        for (const vs of s) {
-            addChip(vs,chipsHolder,['name','value'])
-            
-        }
-        deletechild(b,b.parentNode)
-      }
+    }else{
+        v.forEach(input=>{
+          let dt = data.find(rec =>{
+            return rec.name == input.name
+          })
+          if (dt) {
+            input.value = dt.value.split(' ')[0]
+          }   
+        })
+
+    }
+    return new Promise((resolve,reject)=>{
+        m.addEventListener('submit', (event)=>{
+          event.preventDefault();
+          l = 1
+          s = []
+          for (const input of v) {
+            k = checkEmpty(input);
+            if (!k) {
+              l = 0
+            }
+            if (k) {
+              s.push({name : input.name, value: input.value +" "+input.parentElement.querySelector('span.unit').innerText})
+            }
+          }
+          if (l) {
+            if (!data) {
+                for (const vs of s) {
+                    addChip(vs,chipsHolder,['name','value'])
+                    
+                }
+            }else{
+                resolve(s)
+            }
+            deletechild(b,b.parentNode)
+          }else{
+            resolve(0)
+          }
+        })
     })
   }
 class popups{
@@ -2200,7 +2235,6 @@ class popups{
                     Object.assign(values,{[input.name]:  getchips(input.parentNode.querySelector('div.chipsholder'),['id']) })
                 } 
                 Object.assign(values,{session: session.session_id,token: getdata('token')})
-                console.log(values)
                 postschema.body = JSON.stringify(values)
                 let results = await request('add-session-symptoms',postschema)
                 if (results.success) {
@@ -2474,6 +2508,19 @@ class popups{
                             })
                         }
 
+    }
+    async addvs(data){
+        const session = this.session
+        let newvs = await promptVSPopup(null, data)
+        if (newvs) {
+            postschema.body = JSON.stringify({
+                vs: newvs,
+                session: session.session_id,
+                token: getdata('token')
+            })
+            let res = await request('add-session-vs',postschema)
+            alertMessage(res.message)
+        }
     }    
 }
 async function viewAppointmentDiv(appointment) {

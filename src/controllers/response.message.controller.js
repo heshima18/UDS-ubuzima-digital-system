@@ -34,6 +34,7 @@ const errorMessage = {
     err_appoi_404_message:'appointment not found',
     ab_message:'appointment booked successfully',
     dec_added_message:'decision(s) added to the session successfully',
+    vs_added_message:'vital sign(s) added to the session successfully',
     symp_added_message:'symptom(s) added to the session successfully',
     la_message:'location recorded successfully',
     assu_added_message:'insurance recorded successfully',
