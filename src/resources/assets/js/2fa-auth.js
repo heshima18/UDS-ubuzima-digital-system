@@ -51,6 +51,7 @@ form.addEventListener('submit', async e=>{
     postschema.body = JSON.stringify(
         {
             email:getdata('userid'),
+            uType:getdata('uType'),
             _2FA_code: val
         }
         )

@@ -11,6 +11,17 @@ let q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,z,x,c,v,b,n,m
             s = Array.from(f.querySelectorAll('select.address-field'));
             g = Array.from(f.querySelectorAll('select.form-select'));
             i = Array.from(f.querySelectorAll('input'))
+            let show = f.querySelector('i.bx');
+            show.addEventListener('click', e=>{
+                show.classList.toggle('bx-hide')
+                show.classList.toggle('bx-show')
+                let password = i.find((inp) => {return inp.name == 'password'})
+            if (password.type == 'password') {
+                password.type = 'text'
+            }else{
+                password.type = 'password'
+            }
+            })
             let hhnid  = i.find(function (inp) {
                 return inp.name == 'householder';
             })

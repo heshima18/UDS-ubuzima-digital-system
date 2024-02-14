@@ -3,19 +3,19 @@ import errorMessage from './response.message.controller';
 import generate2FAcode from './2FA.code.generator.controller';
 import sendmail from "./2FA.sender.controller";
 const login = async (req, res) => {
-  let { username, password } = req.body;
+  let { username, password,uType } = req.body,table;
   try {
     let select;
+    if (!uType) {
+      return res.status(404).send({success: false, message: errorMessage._err_u_404})
+    }
+    (uType == 'staff') ? table = 'users' : table = 'patients';
+
     select = await query(`
     SELECT id, status, email, Full_name,role 
-    FROM patients
+    FROM ${table}
     WHERE 
     (username = ? AND password = ?) OR (email = ? AND password = ?) OR (NID = ? AND password = ?) OR (id = ? AND password = ?)`, [username, password,username, password,username, password,username, password]);
-    
-    if (select.length === 0) {
-      select = await query(`SELECT id, status, email, Full_name,role FROM users WHERE (username = ? AND password = ?) OR (email = ? AND password = ?) OR (NID = ? AND password = ?) OR (id = ? AND password = ?)`, [username, password,username, password, username, password, username, password]);
-    }
-
     if (select.length === 0) {
       res.status(200).send({ success: false, message: errorMessage.lgIn_error_message });
       return;
@@ -36,10 +36,9 @@ const login = async (req, res) => {
         'login-2-fa'
     );
     let updateResult;
-    user.role == 'patient' || user.role == 'householder' ? updateResult = await query(`UPDATE patients SET FA = ? WHERE id = ?`, [FAcode, user.id]):
-     updateResult = await query(`UPDATE users SET FA = ? WHERE id = ?`, [FAcode, user.id]);
+    updateResult = await query(`UPDATE ${table} SET FA = ? WHERE id = ?`, [FAcode, user.id]);
     if (!updateResult) {
-      res.status(500).send({ success: false, message: errorMessage.is_error });
+      res.status(500).send({success: false, message: errorMessage.is_error });
       return;
     }
 

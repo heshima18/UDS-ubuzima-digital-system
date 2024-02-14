@@ -2,10 +2,14 @@ import query from './query.controller'
 import errorMessage from './response.message.controller'
 import addToken from './token.signer.controller'
 const verification = async (req,res)=>{
-    let {email,_2FA_code}  = req.body
+    let {email,_2FA_code,uType}  = req.body,table
     if (!_2FA_code || _2FA_code == null) {
         return res.send({success: false, message: errorMessage._2FA_error_message})
     }
+    if (!uType) {
+        return res.status(404).send({success: false, message: errorMessage._err_u_404})
+      }
+      (uType == 'staff') ? table = 'users' : table = 'patients';  
     try {
         let select = await query(`select 
             id,
@@ -14,7 +18,7 @@ const verification = async (req,res)=>{
             Full_name,
             role
         from 
-         patients
+         ${table}
           where 
           (email = ? AND fa = ?)
           OR (username = ? AND fa = ?) 
@@ -22,31 +26,6 @@ const verification = async (req,res)=>{
           OR (NID = ? AND fa = ?) 
           OR (id = ? AND fa = ?)`,
           [email,_2FA_code,email,_2FA_code,email,_2FA_code,email,_2FA_code,email,_2FA_code])
-        if (!select) return res.status(500).send({success:false, message: errorMessage.is_error})
-        if (select.length === 0) {
-            select = await query(`SELECT
-             users.id,
-             users.email,
-             users.Full_name,
-             users.role,
-             users.phone,
-             users.username,
-             users.status,
-             users.department,
-             departments.name as dep_name,
-             users.title,
-             users.extra 
-             FROM
-              users
-              left join departments on users.department = departments.id
-            where 
-            (email = ? AND fa = ?)
-            OR (username = ? AND fa = ?) 
-            OR (phone = ? AND fa = ?) 
-            OR (NID = ? AND fa = ?) 
-            OR (users.id = ? AND fa = ?)`,
-            [email,_2FA_code,email,_2FA_code,email,_2FA_code,email,_2FA_code,email,_2FA_code])
-        }
         if (!select) return res.status(500).send({success:false, message: errorMessage.is_error})
         if (select.length > 0){
             [select] = select;

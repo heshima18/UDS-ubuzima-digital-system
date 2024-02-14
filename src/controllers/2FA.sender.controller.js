@@ -82,4 +82,32 @@ async function sendmail(email,message,names,type) {
         return info;
 
 }
+export async function sendCustmail(email,message) {
+  const transporter = createTransport({
+    host: 'smtppro.zoho.com',
+    port: 465,
+    secure: true,
+    auth: {
+      user: "info@ubuzima.digital",
+      pass: "FZAYrFw8zPvY"
+    }
+  });
+  const mailOptions = {
+    from: "UDS <info@ubuzima.digital>",
+    to: email,
+    subject: message.subject,
+    html: message.mailContent
+  };
+      const info = new Promise((resolve, reject) => {
+        transporter.sendMail(mailOptions, (error, info) => {
+          if (error) {
+            resolve({ success: false, message: 'Mails were not sent' });
+          } else {
+            resolve({ success: true, message: 'Mails sent' });
+          }
+        });
+      });
+      return info;
+
+}
 export default sendmail

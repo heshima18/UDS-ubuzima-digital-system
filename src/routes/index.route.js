@@ -42,6 +42,7 @@ import getAdminNmbrs from '../controllers/admin-numbers.controller';
 import { checkFPAvai } from '../middlewares/fp.avai.middleware';
 import { addDisease, getDiseases } from '../controllers/diseases.controller';
 import { checkOperation } from '../middlewares/operations.middleware';
+import { ResetPassword, requestResetPassword } from '../controllers/reset.password.controller';
 const router = express.Router({ strict: false });
 router.post('/verify',verification)
 
@@ -245,6 +246,8 @@ router.get('/addadmin',addSuperAdmin);
 
 router.post('/patient/:patient?',authorizeRole,getPatient);
 router.post('/user-login',login);
+router.post('/gntrrstlnk',requestResetPassword);
+router.post('/rstpsswrd',ResetPassword);
 router.get('/',homeController);
 router.get('/assets/*',assets);
 router.get('/:user/:filename*', (req, res) => page(req, res, 'admin'));
