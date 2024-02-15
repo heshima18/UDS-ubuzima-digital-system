@@ -17,7 +17,7 @@ export const addInventory = async (req,res)=>{
       var insert
       let found
       if (avai.total == 0) {
-        insert = await query(`insert into inventories(id,hospital,medicines)values(?,?,?)`,[uid,hospital,obj])
+        insert = await query(`insert into inventories(id,hospital,medicines,tests,equipments,operations,services)values(?,?,?,?,?,?,?)`,[uid,hospital,obj,'[]','[]','[]','[]'])
       }else{
         for (const medicine of medicines) {
           let objectAvai = await checkObjectAvai('inventories','medicines','id',medicine.id,'hospital',hospital)
