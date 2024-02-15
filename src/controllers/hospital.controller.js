@@ -16,8 +16,12 @@ export const addhospital = async (req,res)=>{
         res.status(500).send({success:false, message: errorMessage.is_error})
         return
     }
+    let insert2 = await query(`insert into inventories(id,hospital,medicines,tests,equipments,operations,services)values(?,?,?,?,?,?,?)`,[id(),uid,'[]','[]','[]','[]','[]'])
+    if (!insert2) {
+      res.status(500).send({success:false, message: errorMessage.is_error})
+      return
+    }
     res.send({success: true, message: 'health service center created sucessfully'})
-    await query(`insert into inventories(id,hospital,medicines,tests,equipments,operations,services)values(?,?,?,?,?,?,?)`,[id(),uid,'[]','[]','[]','[]','[]'])
   } catch (error) {
     res.status(500).send({success:false, message: errorMessage.is_error})
     console.log(error)

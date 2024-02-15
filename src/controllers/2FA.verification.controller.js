@@ -49,6 +49,9 @@ const verification = async (req,res)=>{
                 if (!hospital.length && !('id' in hospital)) {
                    return res.status(403).send({success: false, message: errorMessage.emp_inassigned_to_hp_error_message}) 
                 }
+                let emp = await query('select department from users where id = ?',[select.id])
+                emp = emp[0]
+                Object.assign(select,{department: emp.department})
                 if ('id' in hospital) {
                     token = addToken({id:select.id,Full_name:select.Full_name,role: select.role,status: select.status,hospital: hospital.id,department: select.department, dep_name: select.dep_name, title: select.title,hp_name:hospital.name,email: select.email, phone: select.phone, username: select.username })
                 }else{
