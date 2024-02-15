@@ -245,7 +245,7 @@ export const hospitalASSU = async (req,res) =>{
     if (!response) return res.status(500).send({success: true, message: errorMessage.is_error})
     response = response[0]
     response = JSON.parse(response.assurances)
-    res.send({success: true, message: response})
+    res.send({success: true, message: response || []})
   } catch (error) {
     console.log(error)
     return res.status(500).send({success: true, message: errorMessage.is_error})

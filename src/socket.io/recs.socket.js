@@ -7,7 +7,7 @@ export async  function findRecs(socket,entity,needle,type,datatofech,coltosearch
         }
         if (type == 'search') {
             datatofech = datatofech.toString();
-            let results = await query(`select ${datatofech} from ${entity} where ${coltosearch} like ? OR id = ?`,[`%${needle}%`,needle])
+            let results = await query(`select ${datatofech} from ${entity} where ${coltosearch} like ? OR id = ? limit 0,30`,[`%${needle}%`,needle])
             if (!results) {
                 return
             }

@@ -388,7 +388,7 @@ c.forEach((cudstp)=>{
                     }
                 } 
 
-                f.addEventListener('submit', async e =>{
+                f.onsubmit = async e =>{
                     let a,b,n,u,r;
                     n = '';
                     u = '';
@@ -441,8 +441,8 @@ c.forEach((cudstp)=>{
                             // window.location.href = '../auth'
                         }
                     }
-                }) 
-           
+                }
+        
         } catch (error) {
           console.log(error)  
         }
